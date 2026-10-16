@@ -62,12 +62,14 @@ export async function startHive(opts) {
     try {
       const mod = await import(pathToFileURL(lendEntry).href);
       if (typeof mod.default === 'function') {
-        await mod.default({ scheduler, bus, server: { route: server.route, command: server.command }, config: { dir, port: opts.port, token: server.token, lend: !!opts.lend, demo: !!opts.demo, version: VERSION } });
+        // toolbox and approvals: Code together saves editor files through the same tools and approvals (src/collab/).
+        await mod.default({ scheduler, bus, toolbox, approvals, server: { route: server.route, command: server.command }, config: { dir, port: opts.port, token: server.token, lend: !!opts.lend, demo: !!opts.demo, version: VERSION } });
       }
     } catch (err) {
       log(`lend plug-in failed to load: ${err.message}`);
     }
   }
+  try { await (await import('./github/index.js')).default({ bus, hive, scheduler, toolbox, server: { route: server.route, command: server.command }, config: { dir, home, workspace: paths.workspace, demo: !!opts.demo, version: VERSION, github: opts.github } }); } catch (err) { log(`github plug-in failed to load: ${err.message}`); }
 
   await server.listen(opts.port || 0);
 

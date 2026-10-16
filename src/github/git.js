@@ -230,7 +230,7 @@ export function createGit(opts) {
 function samePath(a, b) {
   const norm = (p) => {
     let r = path.resolve(p);
-    try { r = fs.realpathSync(r); } catch { /* keep */ }
+    try { r = fs.realpathSync.native(r); } catch { /* keep */ }
     return process.platform === 'win32' ? r.toLowerCase() : r;
   };
   return norm(a) === norm(b);

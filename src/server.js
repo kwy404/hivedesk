@@ -176,7 +176,20 @@ export function createServer(opts) {
   command('playbook.save', (d) => hive.savePlaybook(d.jobId));
   command('task.reassign', (d) => hive.reassignTask(d.taskId, d.workerId));
   command('task.cancel', (d) => hive.cancelTask(d.taskId));
-  command('settings.set', (d) => ({ settings: hive.setSettings(d) }));
+  command('settings.set', (d) => {
+    const settings = hive.setSettings(d);
+    let problems = [];
+    if (d.workerBrains && opts.brains) problems = opts.brains.applyWorkerBrains(settings.workerBrains).problems;
+    return problems.length ? { settings, problems } : { settings };
+  });
+  const needBrains = () => { if (!opts.brains) throw new CommandError('conflict', 'providers are not available in this mode'); return opts.brains; };
+  command('provider.list', () => ({ providers: needBrains().providers() }));
+  command('provider.setKey', (d) => ({ provider: needBrains().setProvider(String(d.provider), { key: d.key, model: d.model, baseUrl: d.baseUrl }) }));
+  command('provider.removeKey', (d) => ({ removed: needBrains().removeProvider(String(d.provider)) }));
+  command('provider.test', async (d) => needBrains().testProvider(String(d.provider), d.model));
+  command('provider.models', async (d) => {
+    try { return { models: await needBrains().providerModels(String(d.provider)) }; } catch (err) { throw new CommandError('unauthorized', err.message); }
+  });
   command('brain.probe', async () => {
     if (!opts.brains) return { hardware: null, options: [], recommended: null };
     return opts.brains.probe();

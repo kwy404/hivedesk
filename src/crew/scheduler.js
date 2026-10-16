@@ -16,6 +16,8 @@ export class Scheduler {
     this.tick = 0;
     /** @type {Set<string>} */
     this.paused = new Set();
+    /** @type {Map<string, string>} workerId -> preferred brainId */
+    this.prefs = new Map();
     this.maxRetries = opts.maxRetries ?? 1;
     this.turnTimeoutMs = opts.turnTimeoutMs ?? 10 * 60_000;
     this._lastQueueJson = '';
@@ -81,11 +83,12 @@ export class Scheduler {
     this._pump();
   }
 
-  _next() {
+  _next(brainId, brain) {
     if (!this.waiting.length) return null;
     let best = null;
     for (const item of this.waiting) {
       if (this.paused.has(item.workerId)) continue;
+      if (brainId && !this._eligible(item, brainId, brain)) continue;
       if (!best) { best = item; continue; }
       const a = this.lastServed.get(item.workerId) ?? -1;
       const b = this.lastServed.get(best.workerId) ?? -1;
@@ -99,10 +102,28 @@ export class Scheduler {
   _pump() {
     for (const [id, slot] of this.brains) {
       if (slot.busy) continue;
-      const item = this._next();
-      if (!item) break;
+      const item = this._next(id, slot.brain);
+      if (!item) continue;
       this._start(id, slot, item);
     }
+  }
+
+  /**
+   * Per worker brain choice: turns of `workerId` go to `brainId` while that brain is attached.
+   * `null` clears it (the worker uses whatever brain is free).
+   */
+  setPreference(workerId, brainId) {
+    if (brainId) this.prefs.set(workerId, brainId);
+    else this.prefs.delete(workerId);
+    this._pump();
+  }
+
+  /** Can this brain take this turn? A brain with `only` serves just those workers; a preference wins. */
+  _eligible(item, brainId, brain) {
+    if (brain?.only && !brain.only.has(item.workerId)) return false;
+    const pref = this.prefs.get(item.workerId);
+    if (pref && pref !== brainId && this.brains.has(pref)) return false;
+    return true;
   }
 
   async _start(brainId, slot, item) {

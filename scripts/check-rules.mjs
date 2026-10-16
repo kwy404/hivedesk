@@ -8,6 +8,9 @@ const DASHES = new RegExp(`[${String.fromCharCode(0x2013)}${String.fromCharCode(
 const EMOJI = new RegExp(`\\p{Emoji_Presentation}|${String.fromCharCode(0xfe0f)}`, 'u');
 // Built from parts so this file does not match itself.
 const NAMES = new RegExp(`\\b(${['Cla', 'ude'].join('')}|${['Anth', 'ropic'].join('')})\\b`, 'i');
+// Provider and model names may appear as supported options (provider list, adapters, their tests, the
+// Providers window and the setup wizard), never in comparisons: the phrase check below still applies there.
+const PROVIDER_FILES = new Set(['src/brain/cloud.js', 'src/brain/keys.js', 'test/cloud.test.js', 'ui/js/widgets/providers.js', 'src/wizard/core.js', 'src/wizard/i18n.js', 'test/wizard.test.js']);
 const PHRASES = [/\balternative to\b/i, /\ba clone of\b/i, /\bbetter than\b/i, /\binspired by\b/i];
 
 const problems = [];
@@ -18,7 +21,7 @@ for (const f of projectFiles()) {
     const at = `${r}:${i + 1}`;
     if (DASHES.test(line)) problems.push(`${at}: en or em dash`);
     if (EMOJI.test(line)) problems.push(`${at}: emoji`);
-    if (NAMES.test(line)) problems.push(`${at}: names an AI assistant or its maker`);
+    if (NAMES.test(line) && !PROVIDER_FILES.has(r)) problems.push(`${at}: names an AI assistant or its maker`);
     for (const p of PHRASES) if (p.test(line)) problems.push(`${at}: comparison phrase "${line.match(p)[0]}"`);
   });
 }

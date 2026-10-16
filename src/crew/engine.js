@@ -118,6 +118,9 @@ export class Hive {
     if (typeof patch.sound === 'boolean') changed.sound = patch.sound;
     if (Array.isArray(patch.crew)) changed.crew = patch.crew.filter((id) => typeof id === 'string').slice(0, 32);
     if (typeof patch.refine === 'boolean') changed.refine = patch.refine;
+    if (patch.workerBrains && typeof patch.workerBrains === 'object') {
+      changed.workerBrains = Object.fromEntries(Object.entries(patch.workerBrains).filter(([k, v]) => typeof k === 'string' && typeof v === 'string').slice(0, 32));
+    }
     if (Object.keys(changed).length) this.bus.emit('settings.changed', changed);
     if (changed.approvalMode === false) this.approvals.approveAll('auto');
     return this.state.settings;

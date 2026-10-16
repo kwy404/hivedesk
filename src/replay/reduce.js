@@ -205,9 +205,18 @@ export function reduce(state, event) {
     case 'queue.updated':
       state.queue = { running: d.running || [], waiting: d.waiting || [] };
       break;
-    case 'turn.ended':
+    case 'turn.ended': {
       state.tokens.prompt += d.promptTokens || 0;
       state.tokens.completion += d.completionTokens || 0;
+      if (!state.usage) state.usage = {};
+      const u = (state.usage[d.brainId || 'main'] = state.usage[d.brainId || 'main'] || { prompt: 0, completion: 0, turns: 0 });
+      u.prompt += d.promptTokens || 0;
+      u.completion += d.completionTokens || 0;
+      u.turns += 1;
+      break;
+    }
+    case 'providers.changed':
+      state.providers = d.providers || {};
       break;
     case 'chat.message': {
       const ch = d.channel || 'general';

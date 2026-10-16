@@ -5,6 +5,8 @@ import { detectHardware, formatBytes, diskFree } from './hardware.js';
 import { MODELS, modelById, pickModel, chooseModel, smallerModel, isCached, modelPath, downloadModel, DownloadError, modelsDir } from './models.js';
 import { loadRuntime, findRuntime, RUNTIME_PACKAGE } from './runtime.js';
 import { createLocalBrain } from './local.js';
+import { createCloudBrain, PROVIDERS, listModels, testConnection } from './cloud.js';
+import { KeyStore } from './keys.js';
 import { createOllamaBrain, createOpenAIBrain, probeOllama, probeLmStudio, pickServerModel, OLLAMA_URL, LMSTUDIO_URL } from './http.js';
 
 export class BrainManager {
@@ -32,6 +34,9 @@ export class BrainManager {
     this.brain = null;
     this.running = null;
     this.key = this.flags.key || process.env.HIVEDESK_API_KEY || '';
+    this.keys = opts.keyStore || new KeyStore(opts.home);
+    /** brainId -> brain, for workers that use another brain than the main one */
+    this.workerBrains = new Map();
     this.downloadCtrl = null;
   }
 
@@ -83,7 +88,8 @@ export class BrainManager {
     await this._detach();
     if (f.brain === 'ollama') return this._ollama(f.url || OLLAMA_URL, f.model, true);
     if (f.brain === 'lmstudio') return this._lmstudio(f.url || LMSTUDIO_URL, f.model, true);
-    if (f.brain === 'openai') return this._openai();
+    if (f.brain === 'openai' && (f.url || this.key)) return this._openai();
+    if (PROVIDERS[f.brain]) return this._cloud(f.brain, f.model);
     if (f.model && (!f.brain || f.brain === 'local')) return this._localFromFlag(f.model);
     if (f.modelId) return this._localAuto(modelById(f.modelId) || undefined);
     // Auto: a running model server first.
@@ -275,10 +281,89 @@ export class BrainManager {
     }
   }
 
+  /** A cloud provider as the main brain, with the key from the key store (or --key / HIVEDESK_API_KEY). */
+  async _cloud(provider, model) {
+    const saved = this.keys.get(provider) || {};
+    const key = saved.key || (this.flags.brain === provider ? this.key : '');
+    if (!key && provider !== 'compatible') {
+      this.status('error', { backend: provider, detail: `no API key for ${PROVIDERS[provider].label}`, hint: 'Add the key in Settings, Providers, or choose a local model.' });
+      return false;
+    }
+    const m = model || saved.model || PROVIDERS[provider].models[0];
+    if (!m) {
+      this.status('error', { backend: provider, detail: 'no model name', hint: 'Pick a model in Settings, Providers.' });
+      return false;
+    }
+    const brain = createCloudBrain(provider, { key, model: m, baseUrl: saved.baseUrl, fetchImpl: this.fetch, id: 'main' });
+    this.log(`using ${PROVIDERS[provider].label} with ${m}: prompts and file contents sent to it leave this machine and are billed to your account`);
+    this.attach(brain, { backend: provider, model: m, detail: 'cloud' });
+    return true;
+  }
+
+  /** Providers as the UI may see them (never the keys). */
+  providers() {
+    return this.keys.publicView();
+  }
+
+  setProvider(provider, data) {
+    const view = this.keys.set(provider, data);
+    this.bus.emit('providers.changed', { providers: this.providers() });
+    return view;
+  }
+
+  removeProvider(provider) {
+    const had = this.keys.remove(provider);
+    for (const [id, b] of this.workerBrains) if (b.provider === provider) { this.scheduler.removeBrain(id, 'key removed'); this.workerBrains.delete(id); }
+    this.bus.emit('providers.changed', { providers: this.providers() });
+    return had;
+  }
+
+  async testProvider(provider, model) {
+    const s = this.keys.get(provider) || {};
+    if (!s.key && provider !== 'compatible') return { ok: false, code: 'auth', error: 'no key saved for this provider' };
+    return testConnection(provider, { key: s.key, model: model || s.model, baseUrl: s.baseUrl, fetchImpl: this.fetch });
+  }
+
+  async providerModels(provider) {
+    const s = this.keys.get(provider) || {};
+    return listModels(provider, { key: s.key, baseUrl: s.baseUrl, fetchImpl: this.fetch });
+  }
+
+  /**
+   * Per worker brains: { mel: '<provider id>', dev: 'default' }. Each provider named gets one extra brain that only
+   * serves the workers that chose it; everyone else keeps the main brain.
+   */
+  applyWorkerBrains(map = {}) {
+    const wanted = new Map(); // provider -> Set(workers)
+    for (const [workerId, choice] of Object.entries(map || {})) {
+      if (!choice || choice === 'default' || !PROVIDERS[choice]) { this.scheduler.setPreference(workerId, null); continue; }
+      if (!wanted.has(choice)) wanted.set(choice, new Set());
+      wanted.get(choice).add(workerId);
+    }
+    for (const [id, b] of this.workerBrains) {
+      if (!wanted.has(b.provider)) { this.scheduler.removeBrain(id, 'not used'); this.workerBrains.delete(id); }
+    }
+    const problems = [];
+    for (const [provider, workers] of wanted) {
+      const id = `cloud:${provider}`;
+      let brain = this.workerBrains.get(id);
+      if (!brain) {
+        const s = this.keys.get(provider) || {};
+        if (!s.key && provider !== 'compatible') { problems.push(`${PROVIDERS[provider].label} has no key`); for (const w of workers) this.scheduler.setPreference(w, null); continue; }
+        brain = createCloudBrain(provider, { key: s.key, model: s.model || PROVIDERS[provider].models[0], baseUrl: s.baseUrl, fetchImpl: this.fetch, id });
+        this.workerBrains.set(id, brain);
+        this.scheduler.addBrain(brain);
+      }
+      brain.only = workers;
+      for (const w of workers) this.scheduler.setPreference(w, id);
+    }
+    return { problems };
+  }
+
   /** The command `brain.select`. */
   select(choice = {}) {
     const backend = choice.backend;
-    if (!['local', 'ollama', 'lmstudio', 'openai', 'fake'].includes(backend)) throw Object.assign(new Error('unknown backend'), { code: 'bad_request' });
+    if (!['local', 'ollama', 'lmstudio', 'openai', 'fake', ...Object.keys(PROVIDERS)].includes(backend)) throw Object.assign(new Error('unknown backend'), { code: 'bad_request' });
     if (backend === 'fake') throw Object.assign(new Error('the fake brain is only for --demo and tests'), { code: 'bad_request' });
     if (typeof choice.key === 'string' && choice.key) this.key = choice.key;
     const shown = { backend };
