@@ -66,6 +66,7 @@ export function createServer(opts) {
   const host = opts.host || '127.0.0.1';
   const uiDir = opts.uiDir || path.join(PACKAGE_ROOT, 'ui');
   const assetsDir = opts.assetsDir || path.join(PACKAGE_ROOT, 'assets');
+  const i18nDir = opts.i18nDir || path.join(PACKAGE_ROOT, 'i18n');
   const version = opts.version || '0.0.0';
   const clients = new Set();
   const routes = [];
@@ -319,6 +320,13 @@ export function createServer(opts) {
       }
       if (req.method !== 'GET' && req.method !== 'HEAD') return sendError(res, 405, 'bad_request', 'method not allowed');
       if (url.pathname === '/lib/reduce.js') return serveFile(res, path.join(HERE, 'replay', 'reduce.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
+      if (url.pathname.startsWith('/i18n/')) {
+        // Shared UI strings and the message formatter (i18n/<locale>.json, i18n/index.js).
+        const rel = url.pathname.slice('/i18n/'.length);
+        const abs = /^[\w.-]+\.(json|js)$/.test(rel) ? safeJoin(i18nDir, rel) : null;
+        if (abs && serveFile(res, abs, cookie)) return;
+        return sendError(res, 404, 'not_found', 'no such language file');
+      }
       if (url.pathname.startsWith('/assets/')) {
         const abs = safeJoin(assetsDir, url.pathname.slice('/assets/'.length));
         if (abs && serveFile(res, abs, cookie)) return;

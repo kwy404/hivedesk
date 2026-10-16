@@ -71,6 +71,14 @@ describe('server', () => {
     expect((await request(port, `/%2e%2e/secret.txt?t=${token}`)).status).toBe(404);
   });
 
+  it('serves the shared language files', async () => {
+    const r = await request(port, `/i18n/index.js?t=${token}`);
+    expect(r.status).toBe(200);
+    expect(r.text).toContain('LOCALES');
+    expect((await request(port, `/i18n/../package.json?t=${token}`)).status).toBe(404);
+    expect((await request(port, '/i18n/index.js')).status).toBe(401);
+  });
+
   it('serves the reducer module for the UI', async () => {
     const r = await request(port, `/lib/reduce.js?t=${token}`);
     expect(r.status).toBe(200);

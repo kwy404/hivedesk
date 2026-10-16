@@ -16,6 +16,7 @@
     "src",
     "ui",
     "assets",
+    "i18n",
     "PROTOCOL.md",
     "FIRST-RUN.md",
     "README.md",
