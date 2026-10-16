@@ -237,7 +237,7 @@ export class BrainManager {
   async _load(runtime, file, name, gpu, model) {
     this.status('loading', { backend: 'local', model: name, detail: gpu ? 'GPU' : 'CPU' });
     try {
-      const brain = await this.createLocal({ mod: runtime.mod, modelPath: file, gpu, name, contextSize: this.flags.ctx, id: 'local' });
+      const brain = await this.createLocal({ mod: runtime.mod, modelPath: file, gpu, name, contextSize: this.flags.ctx || contextFor(this.hardware, file, gpu), id: 'local' });
       const info = brain.info?.() || {};
       this.attach(brain, { backend: 'local', model: name, detail: info.gpu && info.gpu !== 'cpu' && info.gpu !== false ? `${info.gpu}, ${info.gpuLayers} GPU layers` : 'CPU', ctx: info.contextSize });
       return true;
@@ -319,6 +319,18 @@ export class BrainManager {
   async close() {
     this.downloadCtrl?.abort();
   }
+}
+
+/**
+ * Context size for the local model. A 7B model on a 6 GB card only fits fully on the GPU with 4096 tokens of
+ * context; with 8192 some layers stay on the CPU and generation drops from about 11 to under 2 tokens per second
+ * (measured on a GTX 1060 6GB). Everything else gets 8192.
+ */
+export function contextFor(hw, file, gpu) {
+  const big = /7b/i.test(String(file));
+  const vram = hw?.gpu?.vramBytes || 0;
+  if (gpu && big && vram < 7.5e9) return 4096;
+  return 8192;
 }
 
 export function bar(name, received, total, bps) {
