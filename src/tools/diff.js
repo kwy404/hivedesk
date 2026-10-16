@@ -14,8 +14,14 @@ function lcsTable(a, b) {
 
 /** @returns {Array<{ op: ' ' | '-' | '+', line: string }>} */
 export function diffLines(before, after) {
-  const a = before === '' ? [] : before.split('\n');
-  const b = after === '' ? [] : after.split('\n');
+  const lines = (t) => {
+    if (t === '') return [];
+    const l = t.split('\n');
+    if (l[l.length - 1] === '') l.pop();
+    return l;
+  };
+  const a = lines(before);
+  const b = lines(after);
   // Trim common head and tail so the table stays small.
   let head = 0;
   while (head < a.length && head < b.length && a[head] === b[head]) head++;

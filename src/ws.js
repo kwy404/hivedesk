@@ -126,8 +126,23 @@ export class WsConnection extends EventEmitter {
     socket.setNoDelay?.(true);
     socket.on('data', (chunk) => this.feed(chunk));
     socket.on('close', () => this._closed(1006, ''));
-    socket.on('error', (err) => { this.emit('error', err); this._closed(1006, ''); });
+    socket.on('error', (err) => {
+      if (this.listenerCount('error')) this.emit('error', err);
+      this._closed(1006, '');
+    });
     socket.on('end', () => this._closed(1006, ''));
+  }
+
+  /**
+   * Starts reading on the next turn of the event loop, so the caller can attach listeners first.
+   * Bytes that arrived with the upgrade (head) are parsed before anything else.
+   */
+  start(head) {
+    this.socket.pause();
+    setImmediate(() => {
+      if (head && head.length) this.feed(head);
+      this.socket.resume();
+    });
   }
 
   /** Feeds raw bytes into the parser. */
@@ -260,12 +275,13 @@ export function acceptUpgrade(req, socket, head) {
     '', ''
   ].join('\r\n'));
   const conn = new WsConnection(socket);
-  if (head && head.length) conn.feed(head);
+  conn.start(head);
   return conn;
 }
 
 /** Rejects an upgrade with an HTTP status. */
 export function rejectUpgrade(socket, status, message) {
+  socket.on('error', () => {});
   const body = JSON.stringify({ error: { code: status === 401 ? 'unauthorized' : 'forbidden', message } });
   socket.end(`HTTP/1.1 ${status} ${status === 401 ? 'Unauthorized' : 'Forbidden'}\r\nContent-Type: application/json\r\nContent-Length: ${Buffer.byteLength(body)}\r\nConnection: close\r\n\r\n${body}`);
 }
@@ -290,7 +306,7 @@ export function connect(url, opts = {}) {
         return reject(new Error('bad accept key'));
       }
       const conn = new WsConnection(socket, { client: true });
-      if (head && head.length) conn.feed(head);
+      conn.start(head);
       resolve(conn);
     });
     req.on('response', (res) => {

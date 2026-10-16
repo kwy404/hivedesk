@@ -7,19 +7,19 @@ const STOP = new Set(('a an the and or of to for with in on at by from into is a
 
 /** Lowercase keywords without stop words, with light stemming. */
 export function keywords(text) {
-  const words = String(text || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
+  const words = String(text || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .split(/[^a-z0-9+#]+/).filter((w) => w.length > 1 && !STOP.has(w));
   return [...new Set(words.map(stem))];
 }
 
 function stem(w) {
   if (w.length > 5 && w.endsWith('ing')) return w.slice(0, -3);
-  if (w.length > 4 && w.endsWith('es')) return w.slice(0, -2);
+  if (w.length > 4 && /(s|x|z|ch|sh)es$/.test(w)) return w.slice(0, -2);
   if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) return w.slice(0, -1);
   return w;
 }
 
-/** Similarity between a request and a playbook: Jaccard over keywords, with a bonus for shared rare words. */
+/** Similarity between a request and a playbook: Jaccard over their keywords (0 to 1). */
 export function similarity(a, b) {
   const A = new Set(Array.isArray(a) ? a : keywords(a));
   const B = new Set(Array.isArray(b) ? b : keywords(b));

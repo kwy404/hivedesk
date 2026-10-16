@@ -109,11 +109,6 @@ export async function runTask(ctx) {
   const maxTurns = ctx.maxTurns || MAX_TURNS;
   const schema = workerSchema(worker, task);
   const system = systemPrompt(worker, task);
-  const files = toolbox.ws.list().map((f) => f.path);
-  const first = firstMessage({
-    job, task, graph: ctx.graph, crewById: ctx.crewById, files,
-    notes: memory.crew(6), userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra
-  });
   /** @type {Array<{ action: any, result: string }>} */
   const steps = [];
   const wrote = new Set();
@@ -124,6 +119,11 @@ export async function runTask(ctx) {
 
   for (let n = 1; n <= maxTurns; n++) {
     if (signal?.aborted) throw new Error('cancelled');
+    // Rebuilt every turn: the file list and the user's messages change while the task runs.
+    const first = firstMessage({
+      job, task, graph: ctx.graph, crewById: ctx.crewById, files: toolbox.ws.list().map((f) => f.path),
+      notes: memory.crew(6), userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra
+    });
     const messages = [{ role: 'system', content: system }, { role: 'user', content: first }];
     const older = steps.slice(0, Math.max(0, steps.length - HISTORY_PAIRS));
     if (older.length) {

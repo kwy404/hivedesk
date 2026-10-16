@@ -29,7 +29,8 @@
     "lint": "node scripts/lint.mjs",
     "rules": "node scripts/check-rules.mjs",
     "site": "node scripts/check-site.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "e2e:lend": "node test/lend/e2e-lend.mjs"
   },
   "engines": {
     "node": ">=18.17"
@@ -53,6 +54,7 @@
     "url": "https://github.com/kwy404/hivedesk/issues"
   },
   "devDependencies": {
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "playwright-core": "1.63.0"
   }
 }

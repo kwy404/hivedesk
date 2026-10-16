@@ -20,7 +20,8 @@ Usage: npx hivedesk [options]
   --cpu                 do not use the GPU
   --ctx <n>             context size for the local model (default: up to 8192)
   --demo                scripted demo, no model; every event is labeled as a demo
-  --lend                lend this machine's model to a paired friend
+  --lend                lend this machine's model to a paired friend (opens the Lend screen)
+  --join <link|words>   open the desktop with "Use a friend's PC" filled in with these six words
   --doctor              check Node, GPU, RAM, disk and models, then exit
   --version             print the version
   --help                this help
@@ -29,7 +30,7 @@ First run: see FIRST-RUN.md. Cache folder: ~/.hivedesk (or HIVEDESK_HOME).`;
 
 export function parseArgs(argv) {
   const o = { open: true, download: true };
-  const takes = new Set(['dir', 'port', 'model', 'brain', 'url', 'ctx']);
+  const takes = new Set(['dir', 'port', 'model', 'brain', 'url', 'ctx', 'join']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith('--')) throw new Error(`unexpected argument: ${a}`);
@@ -57,6 +58,26 @@ export function parseArgs(argv) {
   }
   if (o.brain && !['ollama', 'lmstudio', 'openai', 'local'].includes(o.brain)) throw new Error('--brain must be ollama, lmstudio or openai');
   return o;
+}
+
+/** Six words from a share link (#w=...) or from words separated by spaces or dashes. */
+export function joinWords(input) {
+  const s = String(input || '');
+  const m = s.match(/[#&?]w=([^&#\s]+)/);
+  const raw = m ? decodeURIComponent(m[1]) : s;
+  const words = raw.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  return words.length === 6 ? words.join('-') : null;
+}
+
+/** The page to open: the desktop, the Lend screen (--lend) or the desktop with a join link (--join). */
+export function startUrl(port, token, args) {
+  const base = `http://127.0.0.1:${port}`;
+  if (args.lend) return `${base}/lend/?t=${token}`;
+  if (args.join) {
+    const w = joinWords(args.join);
+    if (w) return `${base}/?t=${token}#w=${w}`;
+  }
+  return `${base}/?t=${token}`;
 }
 
 export function openBrowser(url) {
@@ -105,6 +126,10 @@ async function main() {
     console.error(`hivedesk: ${err.message}\nRun "hivedesk --help" for the options.`);
     process.exit(2);
   }
+  if (args.join && !joinWords(args.join)) {
+    console.error('hivedesk: --join needs a share link or the six words');
+    process.exit(2);
+  }
   const { startHive, VERSION, cacheHome, runDoctor } = await import('./index.js');
   if (args.help) return console.log(HELP);
   if (args.version) return console.log(VERSION);
@@ -134,7 +159,9 @@ async function main() {
   });
   console.log(`  folder: ${path.join(dir, '.hivedesk')}`);
   console.log(`  open:   ${app.url}`);
-  if (args.open) openBrowser(app.url);
+  const openUrl = startUrl(app.server.port, app.server.token, args);
+  if (openUrl !== app.url) console.log(`          ${openUrl}`);
+  if (args.open) openBrowser(openUrl);
   console.log('  press Ctrl+C to stop');
   let stopping = false;
   const stop = async () => {

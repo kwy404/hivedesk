@@ -409,8 +409,10 @@ export function createServer(opts) {
   };
 }
 
+// Known codes from PROTOCOL.md plus any short snake_case code a plug-in throws (rate_limited, stopped, ...).
 function mapCode(code) {
-  return ['bad_request', 'not_found', 'conflict', 'unauthorized', 'not_lending', 'busy', 'internal'].includes(code) ? code : code === 'path_denied' ? 'bad_request' : 'internal';
+  if (code === 'path_denied' || code === 'invalid_json') return 'bad_request';
+  return typeof code === 'string' && /^[a-z][a-z_]{1,40}$/.test(code) ? code : 'internal';
 }
 
 function statusFor(err) {
@@ -421,6 +423,8 @@ function statusFor(err) {
     case 'not_lending': return 409;
     case 'busy': return 429;
     case 'unauthorized': return 401;
-    default: return 500;
+    case 'internal': return 500;
+    case 'rate_limited': return 429;
+    default: return 400;
   }
 }

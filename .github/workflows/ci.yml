@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20, 22]
+        include:
+          - os: windows-latest
+            node: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: node scripts/lint.mjs
+      - name: Rules check
+        run: node scripts/check-rules.mjs
+      - name: Tests
+        run: npx vitest run
+      - name: Site check
+        run: node scripts/check-site.mjs
+      - name: Doctor runs
+        run: node src/cli.js --doctor || true

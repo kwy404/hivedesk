@@ -13,7 +13,8 @@ export class BrainManager {
    *   bus: import('../bus.js').EventBus, scheduler: import('../crew/scheduler.js').Scheduler, home: string,
    *   flags?: { brain?: string, model?: string, url?: string, key?: string, noDownload?: boolean, gpu?: boolean, ctx?: number },
    *   log?: (line: string) => void, progress?: (text: string | null) => void,
-   *   fetchImpl?: typeof fetch, loadRuntimeImpl?: typeof loadRuntime, createLocalImpl?: typeof createLocalBrain, hardware?: any
+   *   fetchImpl?: typeof fetch, loadRuntimeImpl?: typeof loadRuntime, createLocalImpl?: typeof createLocalBrain, hardware?: any,
+   *   isCachedImpl?: typeof isCached
    * }} opts
    */
   constructor(opts) {
@@ -27,6 +28,7 @@ export class BrainManager {
     this.loadRuntime = opts.loadRuntimeImpl || loadRuntime;
     this.createLocal = opts.createLocalImpl || createLocalBrain;
     this.hardware = opts.hardware || null;
+    this.isCached = opts.isCachedImpl || isCached;
     this.brain = null;
     this.running = null;
     this.key = this.flags.key || process.env.HIVEDESK_API_KEY || '';
@@ -66,8 +68,9 @@ export class BrainManager {
   }
 
   async hw() {
-    if (!this.hardware) {
-      this.hardware = await detectHardware({ dir: this.home });
+    if (!this.hardware) this.hardware = await detectHardware({ dir: this.home });
+    if (!this._hwShown) {
+      this._hwShown = true;
       const h = this.hardware;
       this.bus.emit('hardware.detected', h);
       this.log(`hardware: ${h.cpus} CPU threads, ${formatBytes(h.ramBytes)} RAM, ${h.gpu ? `${h.gpu.name} with ${formatBytes(h.gpu.vramBytes)} VRAM` : 'no GPU found'}, ${formatBytes(h.diskFreeBytes)} free disk`);
@@ -148,10 +151,10 @@ export class BrainManager {
     const hw = await this.hw();
     let model = forced || pickModel(hw, { gpu: this.flags.gpu });
     // Not enough disk: step down to a model that fits.
-    if (!isCached(this.home, model)) {
-      const free = diskFree(fs.existsSync(this.home) ? this.home : path.dirname(this.home));
+    if (!this.isCached(this.home, model)) {
+      const free = hw.diskFreeBytes ?? diskFree(fs.existsSync(this.home) ? this.home : path.dirname(this.home));
       let m = model;
-      while (m && free != null && free < m.bytes + 100e6 && !isCached(this.home, m)) m = smallerModel(m);
+      while (m && free != null && free < m.bytes + 100e6 && !this.isCached(this.home, m)) m = smallerModel(m);
       if (!m) {
         this.status('error', { backend: 'local', model: model.name, detail: `not enough disk space: ${formatBytes(free)} free, the smallest model needs ${formatBytes(MODELS[0].bytes)}`, hint: 'Free some space, use --model with a GGUF file you already have, or run Ollama or LM Studio.' });
         return;
@@ -189,7 +192,7 @@ export class BrainManager {
   /** Returns the model path, downloading it when needed; null when it is not available. */
   async _ensureModel(model) {
     const target = modelPath(this.home, model);
-    if (isCached(this.home, model)) return target;
+    if (this.isCached(this.home, model)) return target;
     const info = { model: model.name, file: model.file, url: model.url, bytes: model.bytes, source: model.source };
     this.bus.emit('brain.download.required', info);
     if (this.flags.noDownload) {
@@ -205,6 +208,7 @@ export class BrainManager {
       const out = await downloadModel(model, {
         home: this.home,
         fetchImpl: this.fetch,
+        freeBytes: this.hardware?.diskFreeBytes,
         signal: this.downloadCtrl.signal,
         onProgress: ({ received, total, bps }) => {
           this.bus.live('brain.download.progress', { model: model.name, received, total, bps });
@@ -298,7 +302,7 @@ export class BrainManager {
     const options = [
       ...MODELS.map((m) => ({
         backend: 'local', label: m.name, model: m.id, available: true,
-        reason: `${isCached(this.home, m) ? 'downloaded' : formatBytes(m.bytes) + ' download'}${runtime ? '' : ', runtime install needed'}`
+        reason: `${this.isCached(this.home, m) ? 'downloaded' : formatBytes(m.bytes) + ' download'}${runtime ? '' : ', runtime install needed'}`
       })),
       { backend: 'ollama', label: 'Ollama', url: OLLAMA_URL, model: pickServerModel(ollama || []) || undefined, available: !!(ollama && ollama.length), reason: ollama ? (ollama.length ? `${ollama.length} models` : 'no models') : 'not running' },
       { backend: 'lmstudio', label: 'LM Studio', url: LMSTUDIO_URL, model: pickServerModel(lms || []) || undefined, available: !!(lms && lms.length), reason: lms ? (lms.length ? `${lms.length} models` : 'no model loaded') : 'not running' },
