@@ -3,7 +3,7 @@
 const V = window.V;
 const m = /(?:^|[#&?])w=([A-Za-z-]+)/.exec(location.hash);
 const words = m ? m[1].split('-').filter(Boolean).map((w) => w.toLowerCase()) : [];
-const link = `${location.origin}${location.pathname}#w=${words.join('-')}`;
+const link = `https://kwy404.github.io/hivedesk/lend/#w=${words.join('-')}`;
 
 const LEND = V.reactive({
   words: words.length === 6 ? words : [],

@@ -94,7 +94,7 @@ A small model on your own machine is private and free to run. It is also slower 
 
 **Not great at:** large or complex apps in one go, long jobs without you reading and approving the steps, speed on a machine without a GPU, and anything at all without a model.
 
-**Privacy:** everything stays on your machine. Lend mode only sends model prompts to a friend you paired with.
+**Privacy:** everything stays on your machine. Lend mode only sends model prompts and answers to a friend you paired with: never files, one request at a time, at most 20 per minute. The friend sees every request and can stop at any time. There is no TURN relay built in, so two very strict networks may not connect.
 
 ## How the crew works
 

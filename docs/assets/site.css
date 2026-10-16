@@ -320,7 +320,9 @@ kbd { padding: .1em .45em; border: 1px solid var(--line-2); border-bottom-width:
 .panel.bad .i { color: var(--text-2); }
 .panel.bad .muted { margin-top: 16px; }
 .limits-foot { display: flex; align-items: center; gap: 12px; margin: 24px 0 0; padding: 16px 20px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); background: var(--bg-1); }
-.limits-foot .i { color: var(--amber); }
+.limits-foot .i { color: var(--amber); align-self: flex-start; margin-top: 3px; }
+.limits-foot p { margin: 0; color: var(--text-2); }
+.limits-foot b { color: var(--text); }
 
 /* lend */
 .lstep { position: relative; }
@@ -425,7 +427,7 @@ kbd { padding: .1em .45em; border: 1px solid var(--line-2); border-bottom-width:
 
 /* lend link page */
 .lendpage { position: relative; padding-block: clamp(40px, 7vw, 88px); isolation: isolate; min-height: 70vh; }
-.lendpage h1 { margin: 0 0 24px; font-size: clamp(2rem, 4.4vw, 3.2rem); line-height: 1.08; letter-spacing: -.04em; }
+.lendpage h1 { margin: 0 0 24px; font-weight: 700; font-size: clamp(2rem, 4.4vw, 3.2rem); line-height: 1.08; letter-spacing: -.04em; }
 .lend-mel { display: block; width: 120px; margin-bottom: 8px; }
 .words { margin: 0 0 24px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .words li { display: flex; align-items: baseline; gap: 12px; padding: 16px 18px; border: 1px solid rgba(255, 181, 49, .35); border-radius: 12px; background: linear-gradient(180deg, rgba(255, 181, 49, .08), var(--bg-1)); }

@@ -94,7 +94,7 @@ Um modelo pequeno na sua máquina é privado e não custa nada para rodar. Tamb�
 
 **Não é bom em:** apps grandes ou complexos de uma vez só, trabalhos longos sem você ler e aprovar os passos, velocidade numa máquina sem GPU, e qualquer coisa sem um modelo.
 
-**Privacidade:** tudo fica na sua máquina. O modo Emprestar só envia os prompts do modelo para um amigo com quem você pareou.
+**Privacidade:** tudo fica na sua máquina. O modo Emprestar só envia prompts e respostas do modelo para um amigo com quem você pareou: nunca arquivos, um pedido por vez, no máximo 20 por minuto. O amigo vê cada pedido e pode parar quando quiser. Não há relay TURN embutido, então duas redes muito restritas podem não conectar.
 
 ## Como a equipe trabalha
 
