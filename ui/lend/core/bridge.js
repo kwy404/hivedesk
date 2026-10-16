@@ -58,7 +58,7 @@ export class HostBridge extends Emitter {
       this.peer.send({ t: 'req', id: requestId, messages, options });
       const chars = promptChars(messages);
       this.pending.set(requestId, { at: Date.now(), chars });
-      this.emit('log', { kind: 'sent', id: requestId, chars });
+      this.emit('log', { kind: 'sent', id: requestId, chars, messages: messages.length });
     } catch (err) {
       const message = err instanceof FrameError ? err.message : 'Could not send the request to the friend';
       this.hive.command('brain.respond', { requestId, ok: false, error: message }).catch(() => {});

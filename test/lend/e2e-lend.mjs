@@ -10,20 +10,24 @@
 //   5. The friend stops lending: the host's remote brain is detached.
 // Each Edge context gets a fresh --user-data-dir. Needs network access to the public brokers.
 //
+// Both hivedesk instances run in this process through startHive (real HTTP and WebSocket
+// servers on 127.0.0.1, separate folders), so the friend can be given a fake brain.
 // Usage: node test/lend/e2e-lend.mjs
 // Env:   HIVEDESK_BROWSER (path to Edge or Chrome), PLAYWRIGHT_CORE (path to playwright-core
 //        when it is not installed in this package), HIVEDESK_E2E_HEADED=1 to watch.
 
-import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { startHive } from '../../src/index.js';
+import { createFakeBrain } from '../../src/brain/fake.js';
+import { demoRespond } from '../../src/demo.js';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const temps = [];
-const procs = [];
+const apps = [];
 
 function temp(name) {
   const dir = mkdtempSync(join(tmpdir(), `hivedesk-e2e-${name}-`));
@@ -62,30 +66,15 @@ function check(name, ok, detail = '') {
   return ok;
 }
 
-/** Starts `node src/cli.js` and resolves with { url, origin, token, proc } from its output. */
-function startHive(name, args) {
-  const dir = temp(name);
-  const proc = spawn(process.execPath, [join(root, 'src', 'cli.js'), '--no-open', '--dir', dir, ...args], {
-    cwd: root,
-    env: { ...process.env, HIVEDESK_HOME: temp(`${name}-home`), NO_COLOR: '1' },
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  procs.push(proc);
-  let out = '';
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${name}: no URL printed in 30 s\n${out}`)), 30000);
-    const onData = (chunk) => {
-      out += chunk;
-      const m = /(http:\/\/127\.0\.0\.1:\d+)\/[^\s]*[?&]t=([0-9a-f]{32})/.exec(out);
-      if (m) {
-        clearTimeout(timer);
-        resolve({ origin: m[1], token: m[2], proc, dir, log: () => out });
-      }
-    };
-    proc.stdout.on('data', onData);
-    proc.stderr.on('data', onData);
-    proc.on('exit', (code) => reject(new Error(`${name} exited with ${code}\n${out}`)));
-  });
+/**
+ * Starts one hivedesk in this process (the same startHive the CLI uses) and returns
+ * { origin, token, app }. The friend gets a fake brain that answers like the demo script.
+ */
+async function startOne(name, opts) {
+  const app = await startHive({ dir: temp(name), home: temp(`${name}-home`), ...opts });
+  apps.push(app);
+  const u = new URL(app.url);
+  return { origin: u.origin, token: u.searchParams.get('t'), app };
 }
 
 async function api(hive, type, data = {}) {
@@ -117,7 +106,12 @@ async function main() {
   const exe = findBrowser();
   if (!exe) throw new Error('No Edge or Chrome found. Set HIVEDESK_BROWSER.');
 
-  const [friend, host] = await Promise.all([startHive('friend', ['--lend', '--brain', 'fake']), startHive('host', ['--no-download'])]);
+  const fake = createFakeBrain({ id: 'fake', label: 'Fake brain of the friend', model: 'fake-lender', respond: demoRespond, delayMs: 300 });
+  const friend = await startOne('friend', { lend: true, brain: fake });
+  // The host has no model of its own: a placeholder brain keeps the brain manager from
+  // installing a runtime, and is removed right away, so every turn needs the friend.
+  const host = await startOne('host', { brain: createFakeBrain({ id: 'placeholder', respond: () => '' }) });
+  host.app.scheduler.removeBrain('placeholder', 'test: the host has no model');
   check('two hivedesk instances started', true, `${friend.origin} lends, ${host.origin} borrows`);
 
   const launch = (name) =>
@@ -136,8 +130,16 @@ async function main() {
   ])
     p.on('pageerror', (e) => console.log(`[${n} page error] ${e.message}`));
 
+  // HIVEDESK_E2E_SHOTS=<folder> keeps a screenshot of both screens at each step.
+  const shotDir = process.env.HIVEDESK_E2E_SHOTS;
+  const shots = async (step) => {
+    if (!shotDir) return;
+    await pf.screenshot({ path: join(shotDir, `friend-${step}.png`), fullPage: true }).catch(() => {});
+    await ph.screenshot({ path: join(shotDir, `host-${step}.png`), fullPage: true }).catch(() => {});
+  };
+
   // 1. The friend's Lend screen.
-  await pf.goto(`${friend.origin}/lend/?t=${friend.token}`);
+  await pf.goto(`${friend.origin}/lend/?t=${friend.token}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await pf.locator('.lend-screen[data-phase="share"]').waitFor({ timeout: 60000 });
   const words = (await pf.getAttribute('.lend-words.is-big', 'data-words')).split(' ');
   check('the Lend screen shows six words', words.length === 6, words.join(' '));
@@ -145,8 +147,9 @@ async function main() {
   const link = await pf.inputValue('.lend-link');
   check('the share link carries the words', link.endsWith(`#w=${words.join('-')}`), link);
 
+  await shots('share');
   // 2. The host pastes the whole phrase into the first box.
-  await ph.goto(`${host.origin}/lend/?t=${host.token}`);
+  await ph.goto(`${host.origin}/lend/?t=${host.token}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await ph.locator('.lend-join[data-phase="form"]').waitFor({ timeout: 20000 });
   await ph.focus('#lend-w0');
   await ph.evaluate((text) => {
@@ -163,6 +166,7 @@ async function main() {
   const ch = await ph.getAttribute('.lend-words.is-confirm', 'data-words');
   check('both sides show the same confirmation words', cf === ch && cf.split(' ').length === 6, cf);
   check('the confirmation words differ from the pairing words', cf !== words.join(' '));
+  await shots('confirm');
   await pf.click('[data-act="confirm"]');
   await ph.click('[data-act="confirm"]');
   await pf.locator('.lend-screen[data-phase="lending"]').waitFor({ timeout: 20000 });
@@ -180,10 +184,12 @@ async function main() {
   const ended = await waitFor(async () => (await events(host)).find((e) => e.type === 'turn.ended' && e.data.brainId === attached.data.brainId), 30000, 'turn.ended on the remote brain');
   check('the host turn ended with the friend answer', ended.data.completionTokens > 0, `${ended.data.completionTokens} tokens in ${ended.data.ms} ms`);
   const served = (await events(friend)).filter((e) => e.type === 'lend.served' || e.type === 'brain.served' || e.type === 'lend.request');
-  check('the friend server logged the served request', served.length > 0, served.map((e) => e.type).join(', '));
+  check('the friend server logged the served request', served.some((e) => e.type === 'lend.served'), served.map((e) => e.type).join(', '));
+  check('the friend fake brain answered the host turn', fake.calls.length > 0, `${fake.calls.length} call(s)`);
   const leaked = (await events(friend)).some((e) => JSON.stringify(e).includes('bakery'));
   check('the friend event log holds no prompt text', !leaked);
 
+  await shots('lending');
   // 5. Stop lending at any time.
   await pf.click('[data-act="stop"]');
   await pf.locator('.lend-screen[data-phase="stopped"]').waitFor({ timeout: 10000 });
@@ -192,8 +198,8 @@ async function main() {
   const refused = await api(friend, 'lend.chat', { messages: [{ role: 'user', content: 'hi' }] });
   check('the friend server refuses after stop', refused.ok === false, refused.error?.code);
 
-  await pf.screenshot({ path: join(temp('shots'), 'friend.png') }).catch(() => {});
-  await Promise.all([ctxF.close(), ctxH.close()]);
+  await shots('stopped');
+  await Promise.race([Promise.all([ctxF.close(), ctxH.close()]), new Promise((r) => setTimeout(r, 10000))]);
 }
 
 main()
@@ -202,10 +208,16 @@ main()
     console.log(`FAIL ${err.message}`);
   })
   .finally(() => {
-    for (const p of procs) p.kill();
-    setTimeout(() => {
-      for (const d of temps) rmSync(d, { recursive: true, force: true, maxRetries: 3 });
+    // Close both instances, but never let a slow shutdown hang the test run.
+    Promise.race([Promise.allSettled(apps.map((a) => a.close())), new Promise((r) => setTimeout(r, 5000))]).then(() => {
+      for (const d of temps) {
+        try {
+          rmSync(d, { recursive: true, force: true, maxRetries: 3 });
+        } catch {
+          // a browser may still hold a profile file for a moment; the OS cleans temp later
+        }
+      }
       console.log(failed ? `${failed} check(s) failed` : 'all lend e2e checks passed');
       process.exit(failed ? 1 : 0);
-    }, 500);
+    });
   });
