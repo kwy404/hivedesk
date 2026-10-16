@@ -13,7 +13,7 @@ Usage: npx hivedesk [options]
   --dir <folder>        project folder (default: the current folder); files go to <folder>/.hivedesk/
   --port <n>            port on 127.0.0.1 (default: a random free port)
   --no-open             do not open the browser
-  --model <path|uri>    use this GGUF file instead of the automatic choice
+  --model <name|path>   14b, 7b, 3b, 1.5b, 0.5b, or a GGUF file, instead of the automatic choice
   --brain <name>        ollama, lmstudio or openai (with --url, --model and HIVEDESK_API_KEY)
   --url <url>           base URL for --brain
   --no-download         never download a model; the UI offers the download instead
@@ -22,6 +22,7 @@ Usage: npx hivedesk [options]
   --demo                scripted demo, no model; every event is labeled as a demo
   --lend                lend this machine's model to a paired friend (opens the Lend screen)
   --join <link|words>   open the desktop with "Use a friend's PC" filled in with these six words
+  --yes                 skip the setup questions (the saved setup, or the recommended defaults)
   --doctor              check Node, GPU, RAM, disk and models, then exit
   --version             print the version
   --help                this help
@@ -43,7 +44,7 @@ export function parseArgs(argv) {
       o[key] = val;
     } else if (key === 'no-open') o.open = false;
     else if (key === 'no-download') o.download = false;
-    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu'].includes(key)) o[key] = true;
+    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes'].includes(key)) o[key] = true;
     else throw new Error(`unknown option: --${key}`);
   }
   if (o.port !== undefined) {
@@ -141,6 +142,24 @@ async function main() {
     return;
   }
   let dir = path.resolve(args.dir || process.cwd());
+  // The first run wizard: only in a real terminal, and not when flags already decide everything.
+  let setup = null;
+  const decided = args.demo || args.model || args.brain || args.lend || args.join;
+  const tty = process.stdin.isTTY && process.stdout.isTTY;
+  if (!decided && (tty || args.yes)) {
+    const { wizardSetup } = await import('./wizard/index.js');
+    try {
+      setup = await wizardSetup({ home: cacheHome(), cwd: dir, yes: !!args.yes || !tty });
+    } catch (err) {
+      if (err.code === 'cancelled') { console.log('  bye'); process.exit(130); }
+      throw err;
+    }
+    if (setup) {
+      if (!args.dir) dir = setup.dir;
+      if (setup.demo) args.demo = true;
+      if (setup.open === false) args.open = false;
+    }
+  }
   if (args.demo && !args.dir) dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hivedesk-demo-'));
   const progress = makeProgress();
   const log = (line) => { progress(null); console.log(`  ${line}`); };
@@ -154,9 +173,11 @@ async function main() {
     progress,
     flags: {
       brain: args.brain, model: args.model, url: args.url, noDownload: !args.download,
-      gpu: args.cpu ? false : undefined, ctx: args.ctx
+      gpu: args.cpu ? false : undefined, ctx: args.ctx,
+      ...(setup && !setup.demo ? setup.flags : {})
     }
   });
+  if (setup) app.hive.setSettings({ approvalMode: setup.approvalMode, crew: setup.crew });
   console.log(`  folder: ${path.join(dir, '.hivedesk')}`);
   console.log(`  open:   ${app.url}`);
   const openUrl = startUrl(app.server.port, app.server.token, args);

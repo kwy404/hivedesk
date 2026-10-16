@@ -110,6 +110,8 @@ export class Hive {
     const changed = {};
     if (typeof patch.approvalMode === 'boolean') changed.approvalMode = patch.approvalMode;
     if (typeof patch.sound === 'boolean') changed.sound = patch.sound;
+    if (Array.isArray(patch.crew)) changed.crew = patch.crew.filter((id) => typeof id === 'string').slice(0, 32);
+    if (typeof patch.refine === 'boolean') changed.refine = patch.refine;
     if (Object.keys(changed).length) this.bus.emit('settings.changed', changed);
     if (changed.approvalMode === false) this.approvals.approveAll('auto');
     return this.state.settings;
@@ -189,7 +191,9 @@ export class Hive {
     const jobId = job.id;
     const signal = run.ctrl.signal;
     const ev = { jobId };
-    const crew = this.state.crew;
+    // The crew chosen in the setup (settings.crew); hired workers and Mel always take part.
+    const active = this.state.settings.crew;
+    const crew = Array.isArray(active) ? this.state.crew.filter((w) => w.id === 'mel' || !w.builtin || active.includes(w.id)) : this.state.crew;
     const crewById = this.crewById();
     this.chat('mel', `On it: "${job.request}". Let me make a plan.`, undefined, 'general', jobId);
     if (!this.scheduler.hasBrain) {
