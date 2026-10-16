@@ -19,6 +19,8 @@ This is the exact behavior of the engine. The README and the site quote it.
 6. **Downloads it** into `~/.hivedesk/models/` with a progress bar in the terminal and in the UI. The model name, size and source (`huggingface.co/Qwen/...`) are shown as information; the download does not wait for an answer. A cut download resumes where it stopped. The file is checked against its published SHA-256 before use.
 7. **Loads the model** (GPU when possible), then the crew shows "ready" and the request box is enabled.
 
+   Context size: 8192 tokens, except a 7B model on a GPU with less than 7.5 GB of VRAM gets 4096, so that every layer fits on the GPU (with 8192 on a 6 GB card some layers stay on the CPU and generation drops from about 11 to under 2 tokens per second). `--ctx` overrides it.
+
 ## Second run
 
 The runtime and the model are cached in `~/.hivedesk/`, so a second run skips the install and the download and is ready in seconds (the time to load the model into memory).
