@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>A friend is lending you their PC: hivedesk</title>
+<meta name="description" content="Six words to pair your hivedesk with a friend's PC. The words stay in this page; nothing is sent anywhere.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0A0908">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monsooncss@0.2.0/dist/monsoon.min.css">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="https://cdn.jsdelivr.net/npm/voodoojs@1.0.0/dist/voodoo.full.min.js" data-manual defer></script>
+<script type="module" src="lend.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../" aria-label="hivedesk home"><img src="../assets/art/logo.svg" width="26" height="26" alt=""><span>hivedesk</span></a>
+    <div class="top-act"><a class="gh" href="../#lend"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lend"/></svg><span>About lending</span></a></div>
+  </div>
+</header>
+<main class="lendpage" v-data="{ }">
+  <div class="hero-sky" aria-hidden="true"></div>
+  <div class="wrap wrap-narrow">
+    <img class="lend-mel" src="../assets/art/mascot-dark.svg" width="140" height="140" alt="Mel, the bee foreman">
+    <p class="kicker">Lend your PC</p>
+    <h1 v-if="LEND.words.length === 6">A friend is lending you their PC.</h1>
+    <h1 v-else>This link has no words in it.</h1>
+
+    <div v-if="LEND.words.length === 6">
+      <ol class="words" aria-label="The six words">
+        <li v-for="(w, i) in LEND.words" :key="i"><span v-text="i + 1"></span><b v-text="w"></b></li>
+      </ol>
+      <p class="lend-say">Open hivedesk on your computer, choose <b>Use a friend's PC</b> and enter these six words (or paste this link into the first box).</p>
+      <p class="muted">Or start hivedesk with the link and the window fills itself:</p>
+      <div class="cmd cmd-wide">
+        <span class="cmd-p" aria-hidden="true">$</span>
+        <code v-text="LEND.command">npx hivedesk --join "..."</code>
+        <button class="cmd-copy" type="button" @click="LEND.copy()" :aria-label="LEND.copied ? 'Copied' : 'Copy the command'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg></button>
+      </div>
+      <p class="muted small" aria-live="polite" v-text="LEND.copied ? 'Copied.' : ''"></p>
+    </div>
+    <div v-else>
+      <p class="lend-say">Ask your friend to run <code>npx hivedesk --lend</code> and send you the link or the six words it shows.</p>
+    </div>
+
+    <ul class="ticks lend-facts">
+      <li><b>Nothing is sent from this page.</b> The words live in the part of the link after <code>#</code>, which browsers never send to a server.</li>
+      <li><b>The words work once</b> and expire after 10 minutes.</li>
+      <li><b>Only model prompts and answers travel</b> between the two hivedesks. Your friend's files are never read or written, and they can stop lending at any time.</li>
+    </ul>
+  </div>
+</main>
+<footer class="foot foot-slim">
+  <p class="foot-legal wrap">Made by Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a> and <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>). Built with <a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a>. Interactive parts built with <a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a>. <span>hivedesk 0.1.0</span></p>
+</footer>
+</body>
+</html>

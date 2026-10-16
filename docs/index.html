@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>hivedesk: one command, a whole AI crew on your own machine</title>
+<meta name="description" content="Run npx hivedesk and a crew of AI workers plans, talks and builds real files on your computer with a local model. No account and no API key.">
+<link rel="canonical" href="https://kwy404.github.io/hivedesk/">
+<meta name="author" content="Alexandre Kohler">
+<meta name="theme-color" content="#0A0908">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hivedesk">
+<meta property="og:title" content="hivedesk: one command, a whole AI crew on your own machine">
+<meta property="og:description" content="Run npx hivedesk and a crew of AI workers plans, talks and builds real files on your computer with a local model. No account and no API key.">
+<meta property="og:url" content="https://kwy404.github.io/hivedesk/">
+<meta property="og:image" content="https://kwy404.github.io/hivedesk/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="hivedesk: Mel the bee foreman next to the words one command, a whole AI crew on your own machine">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kwy404.github.io/hivedesk/og.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monsooncss@0.2.0/dist/monsoon.min.css">
+<link rel="stylesheet" href="assets/site.css">
+<script src="https://cdn.jsdelivr.net/npm/voodoojs@1.0.0/dist/voodoo.full.min.js" data-manual defer></script>
+<script type="module" src="assets/site.js"></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "hivedesk",
+ "url": "https://kwy404.github.io/hivedesk/",
+ "applicationCategory": "DeveloperApplication",
+ "operatingSystem": "Windows, macOS, Linux",
+ "softwareVersion": "0.1.0",
+ "license": "https://opensource.org/licenses/MIT",
+ "isAccessibleForFree": true,
+ "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+ "author": { "@type": "Person", "name": "Alexandre Kohler", "url": "https://github.com/kwy404" }
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top" v-data="{ open: false }" @keydown.escape="open = false">
+  <div class="top-in">
+    <a class="brand" href="./" aria-label="hivedesk home">
+      <img src="assets/art/logo.svg" width="26" height="26" alt="">
+      <span>hivedesk</span>
+    </a>
+    <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="Main" v-scrollspy v-scrollspy-class="is-current" v-scroll-offset="90">
+      <a href="#install" @click="open = false">Install</a>
+      <a href="#crew" @click="open = false">The crew</a>
+      <a href="#limits" @click="open = false">Limits</a>
+      <a href="#lend" @click="open = false">Lend your PC</a>
+      <a href="#privacy" @click="open = false">Privacy</a>
+      <a href="#faq" @click="open = false">FAQ</a>
+    </nav>
+    <div class="top-act">
+      <a class="gh" href="https://github.com/kwy404/hivedesk" rel="noopener">
+        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-code"/></svg><span>Source</span>
+      </a>
+      <button class="menu-btn" type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'" aria-controls="nav" aria-label="Menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO: the hive desktop, full bleed -->
+<section class="hd-hero" aria-labelledby="hero-h">
+  <div class="hero-sky" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="dot"></span>v0.1.0 &middot; MIT &middot; local first</p>
+    <h1 id="hero-h">One command.<br><span class="honey">A whole AI crew</span> on your machine.</h1>
+    <p class="lede">Type <code>npx hivedesk</code> and it does the rest: checks your hardware, installs the local runtime, downloads the right model with a progress bar and opens the Hive. Then a crew of AI workers plans, talks and builds real files on your computer.</p>
+    <div class="cmd" role="group" aria-label="Install command">
+      <span class="cmd-p" aria-hidden="true">$</span>
+      <code id="cmd-hero">npx hivedesk</code>
+      <button class="cmd-copy" type="button" v-copy="npx hivedesk" v-copy-label="Copied" aria-label="Copy the command">
+        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg>
+      </button>
+    </div>
+    <p class="hero-note">No account. No API key. First run downloads 1.1 to 4.7 GB once. <a href="#limits">Read the limits first</a>.</p>
+  </div>
+
+  <div class="desk" aria-label="The Hive desktop">
+    <div class="desk-frame">
+      <div class="desk-bar" aria-hidden="true"><i></i><i></i><i></i><span>127.0.0.1 &middot; the Hive</span></div>
+      <img class="desk-shot" src="assets/shots/hive.png" width="1600" height="1000" alt="The Hive desktop: a top bar with the request box, task timeline and model status, windows for the crew chat, files with a diff, code, run log and a live preview, and a dock with the worker avatars." fetchpriority="high">
+      <div class="desk-fx" aria-hidden="true">
+        <span class="fly f1"><img src="assets/art/bee.svg" width="34" height="26" alt=""></span>
+        <span class="fly f2"><img src="assets/art/bee.svg" width="28" height="22" alt=""></span>
+        <span class="fly f3"><img src="assets/art/bee.svg" width="24" height="18" alt=""></span>
+        <span class="sweep"></span>
+      </div>
+      <ol class="boot" aria-label="What the first run does">
+        <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-cpu"/></svg>Detecting the hardware<b>GPU 6 GB</b></li>
+        <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg>Installing the runtime<b>once</b></li>
+        <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-model"/></svg>Qwen2.5-Coder 7B<b>4.7 GB</b><span class="bar"><span></span></span></li>
+        <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-hive"/></svg>The crew is ready<b>go</b></li>
+      </ol>
+    </div>
+  </div>
+
+  <ul class="facts" aria-label="At a glance">
+    <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-terminal"/></svg><b>One command</b><span>no setup, no questions</span></li>
+    <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-model"/></svg><b>Local model</b><span>Qwen2.5-Coder on your GPU or CPU</span></li>
+    <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-lock"/></svg><b>No account, no key</b><span>your files stay on your machine</span></li>
+    <li><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-approval"/></svg><b>You approve</b><span>risky steps wait for your yes</span></li>
+  </ul>
+</section>
+
+<!-- INSTALL -->
+<section id="install" class="sec" aria-labelledby="install-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker">Install</p>
+      <h2 id="install-h">Run one command. Everything else happens by itself.</h2>
+      <p>No installer, no config file, no sign up. You need Node.js and a network connection for the first run. From the second run on it works offline.</p>
+    </header>
+
+    <figure class="art">
+      <img src="assets/art/illustrations/first-run.svg" width="1200" height="440" loading="lazy" alt="A terminal running npx hivedesk: it finds no model server, detects a GTX 1060 with 6 GB, installs node-llama-cpp, picks Qwen2.5-Coder 7B, 4.7 GB from huggingface.co/Qwen, and shows a download progress bar. Next to it, four steps: detect the hardware, install the runtime, download the model, open the Hive.">
+    </figure>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-terminal"/></svg>What <code>npx hivedesk</code> does on the first run</h3>
+        <ol class="fr-steps" v-pre>
+          <li><b>Starts the server</b> on <code>127.0.0.1</code> with a secret token in the URL and opens your browser. The Hive shows a progress bar while the rest runs.</li>
+          <li><b>Looks for a model server already running.</b> If Ollama or LM Studio answers with a model, hivedesk uses it and skips the download.</li>
+          <li><b>Detects the hardware:</b> OS, CPU cores, RAM, free disk and the GPU with its VRAM.</li>
+          <li><b>Installs the local runtime</b> <code>node-llama-cpp</code> into <code>~/.hivedesk/runtime/</code>, once. It is not a dependency of the package, so <code>npx hivedesk</code> itself stays small.</li>
+          <li><b>Picks and downloads a model</b> from the official Qwen repositories on Hugging Face into <code>~/.hivedesk/models/</code>, showing its name, size and source. A cut download resumes, and the file is checked against its published SHA-256.</li>
+          <li><b>Loads the model</b>, on the GPU when possible. The crew says ready and the request box opens.</li>
+        </ol>
+        <p class="src">From <a href="https://github.com/kwy404/hivedesk/blob/main/FIRST-RUN.md" rel="noopener">FIRST-RUN.md</a>, the exact behavior of the engine.</p>
+      </div>
+
+      <div class="col-stack">
+        <div class="panel">
+          <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-model"/></svg>Which model you get</h3>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th scope="col">Your hardware</th><th scope="col">Model (Q4_K_M)</th><th scope="col" class="num">Download</th></tr></thead>
+              <tbody>
+                <tr><td>GPU with 6 GB of VRAM or more</td><td>Qwen2.5-Coder 7B Instruct</td><td class="num">4.7 GB</td></tr>
+                <tr><td>GPU with 3.5 GB or more, or no GPU and 16 GB of RAM</td><td>Qwen2.5-Coder 3B Instruct</td><td class="num">2.1 GB</td></tr>
+                <tr><td>Anything else</td><td>Qwen2.5-Coder 1.5B Instruct</td><td class="num">1.1 GB</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" v-data="{ size: 4.7, mbps: 100 }">
+          <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-clock"/></svg>How long the first run takes</h3>
+          <p class="muted">Most of it is the model download. Pick yours to see an estimate.</p>
+          <div class="calc">
+            <label>Model
+              <select v-model.number="size">
+                <option value="4.7">7B, 4.7 GB</option>
+                <option value="2.1">3B, 2.1 GB</option>
+                <option value="1.1">1.5B, 1.1 GB</option>
+              </select>
+            </label>
+            <label>Connection
+              <select v-model.number="mbps">
+                <option value="25">25 Mbit/s</option>
+                <option value="50">50 Mbit/s</option>
+                <option value="100">100 Mbit/s</option>
+                <option value="300">300 Mbit/s</option>
+                <option value="1000">1 Gbit/s</option>
+              </select>
+            </label>
+          </div>
+          <p class="calc-out" aria-live="polite">About <b v-text="dlTime(size, mbps)">6 minutes</b> for the model, plus a few hundred MB for the runtime and a short model load. For reference, the 2.1 GB model took 10 minutes on the connection we tested with.</p>
+          <p class="muted small">The second run skips both and is ready in seconds: the time to load the model into memory.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 req">
+      <div class="panel">
+        <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg>Requirements</h3>
+        <ul class="ticks">
+          <li><b>Node.js 18 or newer</b> on Windows, macOS or Linux.</li>
+          <li><b>Free disk:</b> the model (1.1 to 4.7 GB) plus up to about 0.7 GB for the runtime. If the disk is short, hivedesk picks a smaller model that fits, or stops before downloading.</li>
+          <li><b>A GPU is optional.</b> NVIDIA, Apple Silicon and others through the runtime. Without one it runs on the CPU, slowly.</li>
+          <li><b>A network connection</b> on the first run only, for the runtime and the model.</li>
+          <li><b>A current browser</b> for the Hive.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-key"/></svg>Useful flags</h3>
+        <dl class="flags" v-pre>
+          <dt><code>--demo</code></dt><dd>No model at all: a scripted job replays so you can look around. Every event is labeled as a demo.</dd>
+          <dt><code>--brain ollama</code></dt><dd>Use a model server you already run (also <code>lmstudio</code>, or <code>openai</code> with <code>--url</code> and a key in <code>HIVEDESK_API_KEY</code>).</dd>
+          <dt><code>--model file.gguf</code></dt><dd>Use a GGUF file you already have.</dd>
+          <dt><code>--no-download</code></dt><dd>Never download; the Hive offers a button instead.</dd>
+          <dt><code>--doctor</code></dt><dd>Prints the checks (Node, GPU, RAM, disk, models found) and exits.</dd>
+          <dt><code>--dir path</code></dt><dd>The folder the crew works in. Default: the current folder.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREW -->
+<section id="crew" class="sec" aria-labelledby="crew-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker">How the crew works</p>
+      <h2 id="crew-h">You ask. Mel plans. The crew builds, checks and shows every step.</h2>
+      <p>Each worker is a window on the Hive with an avatar, a status dot and a live chat. They talk in #general, hand work to each other and write real files in your workspace.</p>
+    </header>
+
+    <figure class="art">
+      <img src="assets/art/illustrations/crew.svg" width="1200" height="540" loading="lazy" alt="You ask for a bakery landing page. Mel the foreman plans it: the Writer writes the copy, the Designer does layout and styles, Dev builds the page and QA runs the checks and sends a fix back. Below, one local model with a queue: Dev now, Designer next, QA and Writer waiting.">
+    </figure>
+
+    <ul class="workers">
+      <li class="worker is-mel">
+        <img src="assets/art/mascot-dark.svg" width="64" height="64" alt="" loading="lazy">
+        <div><h3>Mel <small>foreman</small></h3><p>Turns your request into a task graph, assigns it and keeps the timeline honest. Reuses playbooks from jobs that went well.</p></div>
+      </li>
+      <li class="worker"><span class="hx"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-code"/></svg></span><div><h3>Dev</h3><p>Writes and edits code in the workspace. Every write shows up as a diff.</p></div></li>
+      <li class="worker"><span class="hx"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-design"/></svg></span><div><h3>Designer</h3><p>Layout, styles and the small details of the UI.</p></div></li>
+      <li class="worker"><span class="hx"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-qa"/></svg></span><div><h3>QA</h3><p>Runs checks and tests, and sends issues back as fix tasks.</p></div></li>
+      <li class="worker"><span class="hx"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-writer"/></svg></span><div><h3>Writer</h3><p>README, copy and docs, in plain words.</p></div></li>
+      <li class="worker is-hire"><span class="hx"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-hire"/></svg></span><div><h3>Hire your own</h3><p>Give a new worker a role, an avatar color and a list of allowed tools.</p></div></li>
+    </ul>
+
+    <div class="features">
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-queue"/></svg><h3>One model, fair turns</h3><p>Workers never use the model at the same time. A fair scheduler gives turns and the queue is always visible.</p></div>
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-approval"/></svg><h3>Approval mode, on by default</h3><p>Deleting files or running commands waits for your yes, with the diff or the command in front of you.</p></div>
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-folder"/></svg><h3>Tools scoped to the workspace</h3><p>List, read, write, edit, run and preview, inside the workspace only. Commands get a timeout and no network by default.</p></div>
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-playbook"/></svg><h3>Playbooks</h3><p>A job that ends well is saved as a playbook. Mel finds similar ones and reuses the plan.</p></div>
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-replay"/></svg><h3>Replay the day</h3><p>Every event goes to an append-only log. Scrub back to any moment and see what happened and why.</p></div>
+      <div class="feat"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-preview"/></svg><h3>Live preview</h3><p>The workspace is served as a site inside the Hive, so you see the page as the crew builds it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIDE THE HIVE: screenshots -->
+<section id="tour" class="sec sec-tight" aria-labelledby="tour-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker">Inside the Hive</p>
+      <h2 id="tour-h">A desktop for your crew, in the browser.</h2>
+      <p>Drag, resize and snap windows, minimize them to the dock, press <kbd>Ctrl</kbd> <kbd>K</kbd> for the command palette. On a phone the windows become stacked cards.</p>
+    </header>
+    <div class="tour" v-tabs>
+      <div class="tour-tabs" role="tablist" aria-label="Screens">
+        <button type="button" v-tab="desk">Desktop</button>
+        <button type="button" v-tab="files">Files and diffs</button>
+        <button type="button" v-tab="approve">Approvals</button>
+        <button type="button" v-tab="phone">On a phone</button>
+      </div>
+      <div class="tour-panel" v-tab-panel="desk"><img src="assets/shots/hive.png" width="1600" height="1000" loading="lazy" alt="The Hive desktop with the crew at work."></div>
+      <div class="tour-panel" v-tab-panel="files"><img src="assets/shots/files.png" width="1600" height="1000" loading="lazy" alt="The Files window with a tree and a diff of the latest change."></div>
+      <div class="tour-panel" v-tab-panel="approve"><img src="assets/shots/approval.png" width="1600" height="1000" loading="lazy" alt="A worker waiting for approval before running a command."></div>
+      <div class="tour-panel is-phone" v-tab-panel="phone"><img src="assets/shots/phone.png" width="375" height="812" loading="lazy" alt="The Hive on a phone: windows stacked as cards."></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIMITS (mandatory) -->
+<section id="limits" class="sec sec-limits" aria-labelledby="limits-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker kicker-warn">Honest about the limits</p>
+      <h2 id="limits-h">What hivedesk is great at, and what it is not.</h2>
+      <p>A small model on your own machine is real and private, and it is also slower and less capable than the biggest models in a data center. Here is what to expect before you run it.</p>
+    </header>
+
+    <div class="limits-key">
+      <div class="lk"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-model"/></svg><div><h3>It needs a model</h3><p>Without one, nothing is generated. The first run downloads one, 1.1 to 4.7 GB, unless Ollama or LM Studio is already running or you give it a key.</p></div></div>
+      <div class="lk"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-queue"/></svg><div><h3>It is slower than it looks in videos</h3><p>Workers take turns on one model, so a job takes minutes, not seconds. On the CPU only, the model writes a few tokens per second.</p></div></div>
+      <div class="lk"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-approval"/></svg><div><h3>It works best with you steering</h3><p>Ask for one thing at a time, read the diffs, approve the steps. Big apps in one go are out of reach for a small model.</p></div></div>
+    </div>
+
+    <h3 class="sub-h">What your hardware can do</h3>
+    <div class="tbl-wrap">
+      <table class="tbl tbl-hw">
+        <thead><tr><th scope="col">Hardware</th><th scope="col">Model it runs</th><th scope="col">Speed</th><th scope="col">Good for</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-cpu"/></svg>No GPU</th><td>Qwen2.5-Coder 1.5B, or 3B with 16 GB of RAM</td><td><span class="hw-meter m1" aria-label="slow"></span>Slow, a few tokens per second</td><td>Small, single file tasks. Expect to wait.</td></tr>
+          <tr><th scope="row"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-gpu"/></svg>GPU with 3.5 to 6 GB</th><td>Qwen2.5-Coder 3B</td><td><span class="hw-meter m2" aria-label="moderate"></span>Usable</td><td>Small tasks, components, scripts, copy.</td></tr>
+          <tr class="hl"><th scope="row"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-gpu"/></svg>GPU with 6 to 8 GB</th><td>Qwen2.5-Coder 7B</td><td><span class="hw-meter m3" aria-label="good"></span>Good</td><td>Small and medium tasks, with you steering.</td></tr>
+          <tr><th scope="row"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-key"/></svg>Bigger GPU, or a key</th><td>A bigger model through Ollama, LM Studio or any OpenAI compatible endpoint</td><td><span class="hw-meter m4" aria-label="fast"></span>Faster</td><td>Bigger jobs and longer plans.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 verdict">
+      <div class="panel good">
+        <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg>Great at</h3>
+        <ul class="ticks">
+          <li>Landing pages</li>
+          <li>Small CRUD apps</li>
+          <li>Scripts and command line tools</li>
+          <li>UI components</li>
+          <li>Tests for code you already have</li>
+          <li>Docs, READMEs and copy</li>
+          <li>Fixing a bug you describe</li>
+        </ul>
+      </div>
+      <div class="panel bad">
+        <h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-x"/></svg>Not great at</h3>
+        <ul class="crosses">
+          <li>Large or complex apps in one go</li>
+          <li>Long jobs without you reading and approving the steps</li>
+          <li>Speed on a machine without a GPU</li>
+          <li>Anything at all without a model: no model, no output</li>
+        </ul>
+        <p class="muted small">It works best when you split the work, steer and approve. That is what the timeline and approval mode are for.</p>
+      </div>
+    </div>
+
+    <p class="limits-foot"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-lock"/></svg>Everything stays on your machine. Lend mode only sends model prompts to a friend you paired with.</p>
+  </div>
+</section>
+
+<!-- LEND -->
+<section id="lend" class="sec" aria-labelledby="lend-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker">Lend your PC</p>
+      <h2 id="lend-h">A friend with a better GPU can lend you their model.</h2>
+      <p>Your crew keeps working on your machine. Only the model turns go to your friend, over an encrypted peer link, and only while they say so.</p>
+    </header>
+    <figure class="art">
+      <img src="assets/art/illustrations/lend.svg" width="1200" height="460" loading="lazy" alt="Your PC runs the Hive and keeps the files. A friend's PC runs npx hivedesk --lend and shows six words, a request log and a Stop lending button. Between them an encrypted peer link carries only model prompts and replies.">
+    </figure>
+    <div class="grid-3">
+      <div class="panel lstep"><span class="n">1</span><h3>Your friend runs</h3><div class="cmd cmd-sm"><span class="cmd-p" aria-hidden="true">$</span><code>npx hivedesk --lend</code><button class="cmd-copy" type="button" v-copy="npx hivedesk --lend" v-copy-label="Copied" aria-label="Copy the lend command"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg></button></div><p>They get six words, a QR code and a share link.</p></div>
+      <div class="panel lstep"><span class="n">2</span><h3>You enter the six words</h3><p>Or open the link. The two browsers pair over WebRTC and show the same confirmation words, so you know nobody is in the middle.</p></div>
+      <div class="panel lstep"><span class="n">3</span><h3>Your crew uses their model</h3><p>The scheduler sends model turns to the friend's brain. They see every request in a log and can stop lending at any time.</p></div>
+    </div>
+    <ul class="ticks lend-facts">
+      <li><b>Only model requests travel.</b> The friend's files are never touched, and your files never leave your machine.</li>
+      <li><b>Pairing is encrypted with the six words.</b> It goes through public MQTT relays that only see a random topic and AES-GCM ciphertext, then the browsers talk directly.</li>
+      <li><b>Each side talks only to its own hivedesk</b>, over the local WebSocket on 127.0.0.1.</li>
+      <li><b>Limits that protect the friend:</b> one request at a time, at most 20 per minute, prompts up to 120,000 characters. The words work once and expire after 10 minutes.</li>
+      <li><b>No TURN relay is built in</b>, so two very strict networks may not connect.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section id="privacy" class="sec" aria-labelledby="privacy-h">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="kicker">Privacy</p>
+      <h2 id="privacy-h">Your code, your prompts and your model stay on your machine.</h2>
+    </header>
+    <figure class="art">
+      <img src="assets/art/illustrations/privacy.svg" width="1200" height="420" loading="lazy" alt="Inside a dashed border labeled your machine: your browser on 127.0.0.1 with a secret token, the engine, the model and the .hivedesk folder. Outside: the first run download, and Lend mode, which sends only model prompts to a friend you paired with.">
+    </figure>
+    <div class="grid-3">
+      <div class="panel"><h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-lock"/></svg>Local only</h3><p>The server binds <code>127.0.0.1</code> and checks a secret token on every request, so other devices and other sites cannot reach it.</p></div>
+      <div class="panel"><h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-offline"/></svg>No account, no tracking</h3><p>No sign up, no analytics. The network is used for the first run download and for Lend mode, and nothing else unless you pick a remote endpoint yourself.</p></div>
+      <div class="panel"><h3><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-folder"/></svg>Plain files you own</h3><p>Everything lives in <code>.hivedesk/</code> in your folder: an event log, a state snapshot, playbooks and the workspace. The cache lives in <code>~/.hivedesk/</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec" aria-labelledby="faq-h">
+  <div class="wrap wrap-narrow">
+    <header class="sec-head">
+      <p class="kicker">FAQ</p>
+      <h2 id="faq-h">Questions people ask first.</h2>
+    </header>
+    <div class="faq">
+      <details name="faq" open><summary>Do I need an account or an API key?</summary><p>No. The default is a model that runs on your own machine. A key is optional, only if you want to point hivedesk at an OpenAI compatible endpoint.</p></details>
+      <details name="faq"><summary>How big is the download, and how long does the first run take?</summary><p>The model is 1.1 GB, 2.1 GB or 4.7 GB depending on your hardware, plus a few hundred MB for the runtime. On a 100 Mbit/s connection the 7B model takes about 6 minutes; on 25 Mbit/s, about 25 minutes. It happens once. After that a run is ready in the time it takes to load the model.</p></details>
+      <details name="faq"><summary>Will it run on a laptop without a GPU?</summary><p>Yes, on the CPU with the 1.5B model, or the 3B model with 16 GB of RAM. It is slow: a few tokens per second. Small tasks work; expect to wait.</p></details>
+      <details name="faq"><summary>Can I use a model I already have?</summary><p>Yes. If Ollama or LM Studio is running with a model, hivedesk uses it and skips the download. You can also pass <code>--model</code> with a GGUF file, or <code>--brain openai</code> with an endpoint and a key.</p></details>
+      <details name="faq"><summary>Can it build a big app for me in one go?</summary><p>No, and it does not pretend to. It is good at landing pages, small CRUD apps, scripts, components, tests, docs and fixing a bug you describe. For anything bigger, split it into steps and approve as you go.</p></details>
+      <details name="faq"><summary>Why does a job take minutes?</summary><p>All workers share one model and take turns, and each turn is a full answer from that model. The queue is on screen, so you always see who is thinking and who is waiting.</p></details>
+      <details name="faq"><summary>Can a worker break my computer?</summary><p>Workers only have tools scoped to the workspace folder. Paths that try to escape it are refused. Commands run with a timeout, an output cap and no network by default, and approval mode makes risky steps wait for you.</p></details>
+      <details name="faq"><summary>Can I look around without downloading a model?</summary><p>Yes: <code>npx hivedesk --demo</code> replays a scripted job. Everything it shows is labeled as a demo.</p></details>
+      <details name="faq"><summary>What does lending cost my friend?</summary><p>Their GPU time and some power while your crew uses it. They see each request, nothing touches their files, and they can stop at any time.</p></details>
+      <details name="faq"><summary>How do I remove it?</summary><p>Delete <code>~/.hivedesk/</code> (the runtime and the models) and the <code>.hivedesk/</code> folder in your project. There is nothing else to uninstall.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" aria-labelledby="cta-h">
+  <div class="wrap cta-in">
+    <img class="cta-mel" src="assets/art/mascot-dark.svg" width="220" height="220" alt="Mel, the bee foreman, holding a hexagon checklist" loading="lazy">
+    <div>
+      <h2 id="cta-h">Mel is ready when you are.</h2>
+      <p>One command, then the crew is on your desk.</p>
+      <div class="cmd">
+        <span class="cmd-p" aria-hidden="true">$</span>
+        <code>npx hivedesk</code>
+        <button class="cmd-copy" type="button" v-copy="npx hivedesk" v-copy-label="Copied" aria-label="Copy the command"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg></button>
+      </div>
+      <p class="muted small">Needs Node.js 18 or newer. <a href="#limits">Read the limits</a> before you start.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="brand" href="./"><img src="assets/art/logo.svg" width="26" height="26" alt=""><span>hivedesk</span></a>
+      <p>A crew of AI workers that plans, talks and builds real files on your own machine, with a local model.</p>
+      <p>Made by <strong>Alexandre Kohler</strong> (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a> and <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).</p>
+      <p>Built with <a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a>. Interactive parts built with <a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a>.</p>
+    </div>
+    <div>
+      <h2 class="foot-h">hivedesk</h2>
+      <ul class="foot-list">
+        <li><a href="#install">Install</a></li>
+        <li><a href="#limits">Limits</a></li>
+        <li><a href="https://github.com/kwy404/hivedesk" rel="noopener">Source on GitHub</a></li>
+        <li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        <li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">Security policy</a></li>
+        <li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener">Leia em português</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="foot-h">More from kwy404</h2>
+      <ul class="foot-list foot-more">
+        <li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a><small>CSS with no build step</small></li>
+        <li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a><small>JSX in plain HTML</small></li>
+        <li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a><small>TypeScript ORM</small></li>
+        <li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a><small>your handwriting as a font</small></li>
+        <li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a><small>send files between your devices</small></li>
+        <li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a><small>peer to peer voice and chat</small></li>
+        <li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a><small>make a site installable</small></li>
+        <li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a><small>accessibility checks with fixes</small></li>
+        <li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a><small>cookie consent for LGPD and GDPR</small></li>
+      </ul>
+    </div>
+  </div>
+  <p class="foot-legal wrap">MIT License. Free and open source, no tracking. <span>hivedesk 0.1.0</span></p>
+</footer>
+</body>
+</html>

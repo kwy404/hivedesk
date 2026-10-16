@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kwy404.github.io/hivedesk/sitemap.xml
