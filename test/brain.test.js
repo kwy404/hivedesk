@@ -323,3 +323,25 @@ describe('brain manager (first run pipeline)', () => {
     expect(p.options.find((o) => o.backend === 'ollama').available).toBe(false);
   });
 });
+
+describe('runtime install', () => {
+  it('retries with a private npm cache, then reports no network', async () => {
+    const { installRuntime } = await import('../src/brain/runtime.js');
+    const { EventEmitter } = await import('node:events');
+    const calls = [];
+    const fakeSpawn = (cmd, args) => {
+      calls.push(args);
+      const child = new EventEmitter();
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      setImmediate(() => {
+        child.stderr.emit('data', calls.length === 1 ? 'npm error EPERM stat cache\n' : 'npm error ENOTFOUND registry.npmjs.org\n');
+        child.emit('close', 1);
+      });
+      return child;
+    };
+    await expect(installRuntime(tmpDir(), { spawnImpl: fakeSpawn })).rejects.toMatchObject({ code: 'no_network' });
+    expect(calls).toHaveLength(2);
+    expect(calls[1]).toContain('--cache');
+  });
+});
