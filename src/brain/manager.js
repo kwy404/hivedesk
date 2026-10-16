@@ -239,25 +239,27 @@ export class BrainManager {
     try {
       const brain = await this.createLocal({ mod: runtime.mod, modelPath: file, gpu, name, contextSize: this.flags.ctx || contextFor(this.hardware, file, gpu), id: 'local' });
       const info = brain.info?.() || {};
-      this.attach(brain, { backend: 'local', model: name, detail: info.gpu && info.gpu !== 'cpu' && info.gpu !== false ? `${info.gpu}, ${info.gpuLayers} GPU layers` : 'CPU', ctx: info.contextSize });
+      const onGpu = info.gpu && info.gpu !== 'cpu' && info.gpu !== false;
+      const layers = info.totalLayers ? `${info.gpuLayers} of ${info.totalLayers}` : `${info.gpuLayers}`;
+      this.attach(brain, { backend: 'local', model: name, detail: onGpu ? `${info.gpu}, ${layers} layers on the GPU` : 'CPU', ctx: info.contextSize });
       return true;
     } catch (err) {
-      if (!gpu) {
-        this.status('error', { backend: 'local', model: name, detail: `could not load the model: ${err.message}`, hint: 'Try a smaller model, close other apps to free memory, or use Ollama or LM Studio.' });
+      if (err.code === 'no_memory' || !gpu) {
+        this.status('error', { backend: 'local', model: name, detail: `could not load the model: ${err.message}`, hint: err.hint || 'Try a smaller model, close other apps to free memory, or use Ollama or LM Studio.' });
         return false;
       }
-      // GPU init failed: CPU with the next smaller model (down to 1.5B).
-      const smaller = model ? smallerModel(model) || model : null;
+      // The GPU could not take the model: the 1.5B model on the CPU (small enough for most machines).
+      const small = MODELS[0];
+      const same = model && model.id === small.id;
       this.bus.emit('brain.fallback', {
         from: { backend: 'local', model: name, gpu: true },
-        to: { backend: 'local', model: smaller ? smaller.name : name, gpu: false },
-        reason: `the GPU failed to load the model: ${String(err.message).slice(0, 200)}`
+        to: { backend: 'local', model: small.name, gpu: false },
+        reason: `the GPU could not load the model: ${String(err.message).slice(0, 200)}`
       });
-      this.log(`GPU failed (${err.message}); trying the CPU${smaller && smaller !== model ? ' with ' + smaller.name : ''}`);
-      if (!smaller) return this._load(runtime, file, name, false, null);
-      const f2 = await this._ensureModel(smaller);
+      this.log(`GPU failed (${err.message}); trying ${small.name} on the CPU`);
+      const f2 = same ? file : await this._ensureModel(small);
       if (!f2) return false;
-      return this._load(runtime, f2, smaller.name, false, null);
+      return this._load(runtime, f2, small.name, false, small);
     }
   }
 
@@ -322,15 +324,14 @@ export class BrainManager {
 }
 
 /**
- * Context size for the local model. A 7B model on a 6 GB card only fits fully on the GPU with 4096 tokens of
- * context; with 8192 some layers stay on the CPU and generation drops from about 11 to under 2 tokens per second
- * (measured on a GTX 1060 6GB). Everything else gets 8192.
+ * Context size for the local model: 4096 tokens, or 8192 on a GPU with 8 GB of VRAM or more.
+ * On a 6 GB card a 7B model only fits fully on the GPU with 4096 (with 8192 some layers stay on the CPU and
+ * generation drops from about 11 to under 2 tokens per second, measured on a GTX 1060 6GB), and a small
+ * context keeps the RAM use low on the CPU.
  */
 export function contextFor(hw, file, gpu) {
-  const big = /7b/i.test(String(file));
   const vram = hw?.gpu?.vramBytes || 0;
-  if (gpu && big && vram < 7.5e9) return 4096;
-  return 8192;
+  return gpu && vram >= 7.5e9 ? 8192 : 4096;
 }
 
 export function bar(name, received, total, bps) {

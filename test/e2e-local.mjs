@@ -16,6 +16,11 @@ if (!model) {
 }
 const request = arg('request', 'A tiny static page for a coffee stand called Bean There: a heading, a short menu with three drinks and prices, and opening hours. Use index.html and style.css.');
 const dir = arg('dir') || fs.mkdtempSync(path.join(os.tmpdir(), 'hivedesk-e2e-'));
+// Never start a model on a machine that is short of memory (the engine checks too, this stops earlier).
+if (os.freemem() < 4e9) {
+  console.error(`only ${(os.freemem() / 1e9).toFixed(1)} GB of RAM free; need 4 GB. Skipping.`);
+  process.exit(3);
+}
 const t0 = Date.now();
 const secs = () => ((Date.now() - t0) / 1000).toFixed(1);
 

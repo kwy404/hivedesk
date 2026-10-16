@@ -17,9 +17,12 @@ This is the exact behavior of the engine. The README and the site quote it.
    | anything else | Qwen2.5-Coder 1.5B Instruct, Q4_K_M | 1.1 GB |
 
 6. **Downloads it** into `~/.hivedesk/models/` with a progress bar in the terminal and in the UI. The model name, size and source (`huggingface.co/Qwen/...`) are shown as information; the download does not wait for an answer. A cut download resumes where it stopped. The file is checked against its published SHA-256 before use.
-7. **Loads the model** (GPU when possible), then the crew shows "ready" and the request box is enabled.
+7. **Loads the model, GPU first**, then the crew shows "ready" and the request box is enabled.
 
-   Context size: 8192 tokens, except a 7B model on a GPU with less than 7.5 GB of VRAM gets 4096, so that every layer fits on the GPU (with 8192 on a 6 GB card some layers stay on the CPU and generation drops from about 11 to under 2 tokens per second). `--ctx` overrides it.
+   * As many layers as fit go to the GPU next to the context (CUDA, Vulkan or Metal); the log and the model status show how many, for example "vulkan, 37 of 37 layers on the GPU". If less than half of the layers fit, it does not run the model half on the CPU: it falls back (see below).
+   * The weights are memory mapped, not copied into RAM.
+   * Free RAM is checked before loading: 2.5 GB when the model goes to the GPU, the model size plus 1.5 GB (at least 4 GB) on the CPU. With less, it does not load, so the machine never freezes; it says how much is free and what to do.
+   * Context size: 4096 tokens, or 8192 on a GPU with 8 GB of VRAM or more. On a 6 GB card a 7B model only fits fully on the GPU with 4096 (with 8192 some layers stay on the CPU and generation drops from about 11 to under 2 tokens per second). `--ctx` overrides it.
 
 ## Second run
 
@@ -46,7 +49,8 @@ Every failure prints a plain message and a suggestion, in the terminal and in th
 | --- | --- | --- |
 | Not enough free disk for the chosen model | tries the next smaller model that fits; if none fits, stops before downloading | free some space, or use `--model` with a file you already have, or run Ollama or LM Studio |
 | No network (runtime install or model download) | stops that step, keeps any partial download for later | check the connection and press Retry, or use `--model <file.gguf>`, or `--demo` to look around |
-| The GPU fails to initialize or runs out of memory | loads again on the CPU with the next smaller model (down to 1.5B), and says so | update the GPU driver, or close other GPU apps, or keep the CPU mode (slower) |
+| The GPU fails to initialize, or less than half of the layers fit in VRAM | loads the 1.5B model on the CPU instead (downloading it first if needed), and says so | update the GPU driver, or close other GPU apps, or keep the CPU mode (slower) |
+| Not enough free RAM to load the model | does not load it | close some apps and press Retry, or use a smaller model, or Ollama or LM Studio |
 | The runtime install fails | stops, keeps the server up | run `hivedesk --doctor`, or use Ollama or LM Studio with `--brain` |
 | The model file is corrupt (checksum mismatch) | deletes it and downloads it again once | none unless it fails twice |
 

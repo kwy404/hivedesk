@@ -266,14 +266,14 @@ describe('brain manager (first run pipeline)', () => {
     expect(t.bus.events.find((e) => e.type === 'hardware.detected')).toBeTruthy();
   });
 
-  it('falls back to the CPU and a smaller model when the GPU fails', async () => {
+  it('falls back to the 1.5B model on the CPU when the GPU fails', async () => {
     const t = make({ gpuFails: true });
     t.cache(MODELS[2]);
-    t.cache(MODELS[1]);
+    t.cache(MODELS[0]);
     await t.m.start();
-    expect(t.loaded.map((o) => [o.name, o.gpu])).toEqual([[MODELS[2].name, true], [MODELS[1].name, false]]);
+    expect(t.loaded.map((o) => [o.name, o.gpu])).toEqual([[MODELS[2].name, true], [MODELS[0].name, false]]);
     const fb = t.bus.events.find((e) => e.type === 'brain.fallback');
-    expect(fb.data.to).toMatchObject({ gpu: false, model: MODELS[1].name });
+    expect(fb.data.to).toMatchObject({ gpu: false, model: MODELS[0].name });
     expect(t.bus.state.brain.state).toBe('ready');
   });
 
@@ -343,5 +343,43 @@ describe('runtime install', () => {
     await expect(installRuntime(tmpDir(), { spawnImpl: fakeSpawn })).rejects.toMatchObject({ code: 'no_network' });
     expect(calls).toHaveLength(2);
     expect(calls[1]).toContain('--cache');
+  });
+});
+
+describe('local brain guards', () => {
+  it('refuses to load when free RAM is too low, before touching the runtime', async () => {
+    const { createLocalBrain, ramNeeded } = await import('../src/brain/local.js');
+    let touched = false;
+    const mod = { getLlama: async () => { touched = true; throw new Error('should not load'); } };
+    const file = path.join(tmpDir(), 'm.gguf');
+    fs.writeFileSync(file, 'x');
+    await expect(createLocalBrain({ mod, modelPath: file, gpu: false, freeMem: () => 1e9 })).rejects.toMatchObject({ code: 'no_memory' });
+    expect(touched).toBe(false);
+    expect(ramNeeded(4.7e9, true)).toBe(2.5e9);
+    expect(ramNeeded(4.7e9, false)).toBeCloseTo(6.2e9);
+    expect(ramNeeded(1e9, false)).toBe(4e9);
+  });
+
+  it('asks for as many GPU layers as fit the context, memory mapped, and fails when too few fit', async () => {
+    const { createLocalBrain, fileSize } = await import('../src/brain/local.js');
+    const dir = tmpDir();
+    fs.writeFileSync(path.join(dir, 'm-00001-of-00002.gguf'), 'abc');
+    fs.writeFileSync(path.join(dir, 'm-00002-of-00002.gguf'), 'de');
+    expect(fileSize(path.join(dir, 'm-00001-of-00002.gguf'))).toBe(5);
+    let loadOpts;
+    let ctxOpts;
+    const fakeModel = (layers) => ({
+      gpuLayers: layers, fileInfo: { architectureMetadata: { block_count: 28 } },
+      dispose: async () => {},
+      createContext: async (o) => { ctxOpts = o; return { contextSize: o.contextSize, getSequence: () => ({}) }; }
+    });
+    let layers = 29;
+    const mod = { getLlama: async () => ({ gpu: 'vulkan', dispose: async () => {}, loadModel: async (o) => { loadOpts = o; return fakeModel(layers); } }), LlamaChat: class {} };
+    const b = await createLocalBrain({ mod, modelPath: path.join(dir, 'm-00001-of-00002.gguf'), freeMem: () => 8e9 });
+    expect(loadOpts).toMatchObject({ gpuLayers: { fitContext: { contextSize: 4096 } }, useMmap: true });
+    expect(ctxOpts.contextSize).toBe(4096);
+    expect(b.info()).toMatchObject({ gpu: 'vulkan', gpuLayers: 29, totalLayers: 29 });
+    layers = 5;
+    await expect(createLocalBrain({ mod, modelPath: path.join(dir, 'm-00001-of-00002.gguf'), freeMem: () => 8e9 })).rejects.toThrow('only 5 of 29 layers');
   });
 });
