@@ -51,6 +51,10 @@ try {
   const text = await page.evaluate(() => document.body.innerText);
   check(/index\.html/.test(text), 'the UI lists index.html');
   check(/QA passed|All checks passed|passed/i.test(text), 'the UI shows the QA result');
+  await page.waitForFunction(() => /improved prompt/i.test(document.body.innerText), null, { timeout: 15000 }).catch(() => {});
+  const text2 = await page.evaluate(() => document.body.innerText);
+  check(/improved brief|brief/i.test(text2), 'the brief is shown');
+  check(/improved prompt/i.test(text2) && /next prompts/i.test(text2), 'the report shows the improved prompt and next prompts');
   // The preview of the workspace is served sandboxed.
   const preview = await page.evaluate(async () => (await fetch('/preview/')).status);
   check(preview === 200, `the live preview answers (${preview})`);
