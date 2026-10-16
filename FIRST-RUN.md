@@ -8,13 +8,20 @@ This is the exact behavior of the engine. The README and the site quote it.
 2. **Looks for a model server already running.** If Ollama (`127.0.0.1:11434`) or LM Studio (`127.0.0.1:1234`) answers and has at least one model, hivedesk uses it and skips steps 3 to 6. With Ollama it prefers a `qwen2.5-coder` model when one is installed.
 3. **Detects the hardware:** OS, CPU cores, RAM, free disk and the GPU with its VRAM (NVIDIA through `nvidia-smi`, Apple Silicon through unified memory, others through the runtime itself).
 4. **Installs the local runtime** `node-llama-cpp` into `~/.hivedesk/runtime/` if it is not there yet. It is not a dependency of the package, so `npx hivedesk` itself stays small. It uses prebuilt binaries for the usual platforms (CUDA, Vulkan, Metal or CPU).
-5. **Picks a model** from the official Qwen repositories on Hugging Face:
+5. **Picks a model** from the official Qwen repositories on Hugging Face, all Qwen2.5-Coder Instruct, Q4_K_M:
 
-   | Hardware | Model | Download |
-   | --- | --- | --- |
-   | GPU with 6 GB of VRAM or more | Qwen2.5-Coder 7B Instruct, Q4_K_M | 4.7 GB |
-   | GPU with 3.5 GB or more, or no GPU and 16 GB of RAM or more | Qwen2.5-Coder 3B Instruct, Q4_K_M | 2.1 GB |
-   | anything else | Qwen2.5-Coder 1.5B Instruct, Q4_K_M | 1.1 GB |
+   | Hardware | Model | Download | Runs on |
+   | --- | --- | --- | --- |
+   | GPU with 10 GB of VRAM or more | 14B | 9.0 GB | GPU |
+   | GPU with 7 to 10 GB of VRAM | 7B | 4.7 GB | GPU |
+   | GPU with 4 to 7 GB of VRAM (for example a GTX 1060 6 GB) | 3B | 2.1 GB | GPU, every layer, so it is fast and leaves VRAM for the context |
+   | No usable GPU, 16 GB of RAM or more | 3B | 2.1 GB | CPU |
+   | No usable GPU, 8 to 16 GB of RAM | 1.5B | 1.1 GB | CPU |
+   | Under 8 GB of RAM | 0.5B | 0.5 GB | CPU, with a warning that results will be basic and a suggestion to use Ollama, LM Studio or a key |
+
+   The decision and the reason are shown in one line in the terminal and in the UI, for example:
+   "NVIDIA GeForce GTX 1060 6GB (6.4 GB VRAM) found: using Qwen2.5-Coder 3B (2.1 GB), fully on the GPU."
+   Change it later in Settings (a list with sizes and a "recommended" tag) or with `--model 14b|7b|3b|1.5b|0.5b|<path>`.
 
 6. **Downloads it** into `~/.hivedesk/models/` with a progress bar in the terminal and in the UI. The model name, size and source (`huggingface.co/Qwen/...`) are shown as information; the download does not wait for an answer. A cut download resumes where it stopped. The file is checked against its published SHA-256 before use.
 7. **Loads the model, GPU first**, then the crew shows "ready" and the request box is enabled.

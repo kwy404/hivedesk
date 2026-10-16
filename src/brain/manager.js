@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { detectHardware, formatBytes, diskFree } from './hardware.js';
-import { MODELS, modelById, pickModel, smallerModel, isCached, modelPath, downloadModel, DownloadError, modelsDir } from './models.js';
+import { MODELS, modelById, pickModel, chooseModel, smallerModel, isCached, modelPath, downloadModel, DownloadError, modelsDir } from './models.js';
 import { loadRuntime, findRuntime, RUNTIME_PACKAGE } from './runtime.js';
 import { createLocalBrain } from './local.js';
 import { createOllamaBrain, createOpenAIBrain, probeOllama, probeLmStudio, pickServerModel, OLLAMA_URL, LMSTUDIO_URL } from './http.js';
@@ -130,6 +130,9 @@ export class BrainManager {
   }
 
   async _localFromFlag(spec) {
+    // --model 7b, 3b, 1.5b, 0.5b or 14b: that catalog model, downloaded when needed.
+    const short = modelById(spec);
+    if (short) return this._localAuto(short);
     if (/^(hf:|https?:)/i.test(spec)) {
       const known = MODELS.find((m) => spec.includes(m.file) || spec.includes(m.repo));
       if (known) return this._localAuto(known);
@@ -149,7 +152,16 @@ export class BrainManager {
   /** Auto pick by hardware, download when needed, load. */
   async _localAuto(forced) {
     const hw = await this.hw();
-    let model = forced || pickModel(hw, { gpu: this.flags.gpu });
+    const choice = chooseModel(hw, { gpu: this.flags.gpu });
+    let model = forced || choice.model;
+    const onGpu = choice.gpu || (!!forced && this.flags.gpu !== false && !!hw.gpu && (hw.gpu.vramBytes || 0) >= 3.8e9);
+    const reason = forced ? `${model.name} chosen with --model or in Settings, ${onGpu ? 'on the GPU' : 'on the CPU'}.` : choice.reason;
+    this.bus.emit('brain.choice', {
+      model: model.name, id: model.id, file: model.file, bytes: model.bytes, source: model.source,
+      gpu: onGpu, reason, ...(choice.warning && !forced ? { warning: choice.warning } : {})
+    });
+    this.log(reason);
+    if (choice.warning && !forced) this.log(choice.warning);
     // Not enough disk: step down to a model that fits.
     if (!this.isCached(this.home, model)) {
       const free = hw.diskFreeBytes ?? diskFree(fs.existsSync(this.home) ? this.home : path.dirname(this.home));
@@ -168,7 +180,7 @@ export class BrainManager {
     // Runtime and model in parallel.
     const [runtime, file] = await Promise.all([this._runtime(), this._ensureModel(model)]);
     if (!runtime || !file) return;
-    await this._load(runtime, file, model.name, this.flags.gpu !== false && !!hw.gpu, model);
+    await this._load(runtime, file, model.name, onGpu, model);
   }
 
   async _runtime() {
@@ -249,7 +261,7 @@ export class BrainManager {
         return false;
       }
       // The GPU could not take the model: the 1.5B model on the CPU (small enough for most machines).
-      const small = MODELS[0];
+      const small = modelById('qwen2.5-coder-1.5b');
       const same = model && model.id === small.id;
       this.bus.emit('brain.fallback', {
         from: { backend: 'local', model: name, gpu: true },
@@ -299,18 +311,19 @@ export class BrainManager {
   async probe() {
     const hw = await this.hw();
     const [ollama, lms] = await Promise.all([probeOllama(OLLAMA_URL, this.fetch), probeLmStudio(LMSTUDIO_URL, this.fetch)]);
-    const rec = pickModel(hw, { gpu: this.flags.gpu });
+    const choice = chooseModel(hw, { gpu: this.flags.gpu });
+    const rec = choice.model;
     const runtime = await findRuntime(this.home);
     const options = [
       ...MODELS.map((m) => ({
-        backend: 'local', label: m.name, model: m.id, available: true,
+        backend: 'local', label: m.name, model: m.id, available: true, bytes: m.bytes, recommended: m.id === rec.id,
         reason: `${this.isCached(this.home, m) ? 'downloaded' : formatBytes(m.bytes) + ' download'}${runtime ? '' : ', runtime install needed'}`
       })),
       { backend: 'ollama', label: 'Ollama', url: OLLAMA_URL, model: pickServerModel(ollama || []) || undefined, available: !!(ollama && ollama.length), reason: ollama ? (ollama.length ? `${ollama.length} models` : 'no models') : 'not running' },
       { backend: 'lmstudio', label: 'LM Studio', url: LMSTUDIO_URL, model: pickServerModel(lms || []) || undefined, available: !!(lms && lms.length), reason: lms ? (lms.length ? `${lms.length} models` : 'no model loaded') : 'not running' },
       { backend: 'openai', label: 'OpenAI compatible endpoint', available: true, reason: 'needs a URL, a model name and a key' }
     ];
-    return { hardware: hw, options, recommended: { backend: 'local', model: rec.id, label: rec.name } };
+    return { hardware: hw, options, recommended: { backend: 'local', model: rec.id, label: rec.name, reason: choice.reason, gpu: choice.gpu, ...(choice.warning ? { warning: choice.warning } : {}) } };
   }
 
   cachedModels() {

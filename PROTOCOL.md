@@ -93,6 +93,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `brain.download.failed` | `{ model, code, message, hint }` code: `"no_disk"` \| `"no_network"` \| `"http"` \| `"aborted"` \| `"io"` \| `"checksum"` |
 | `brain.runtime` | `{ state: "installing" \| "ready" \| "failed", package: "node-llama-cpp", version?, path?, message?, hint? }` |
 | `brain.fallback` | `{ from: { backend, model?, gpu? }, to: { backend, model?, gpu? }, reason }` for example a failed GPU init moving to the CPU and a smaller model |
+| `brain.choice` | `{ model, id, file, bytes, source, gpu, reason, warning? }` the automatic choice from the hardware table (FIRST-RUN.md) in one line, for example "NVIDIA GeForce GTX 1060 6GB (6.4 GB VRAM) found: using Qwen2.5-Coder 3B (2.1 GB), fully on the GPU." |
 | `hardware.detected` | `{ os, arch, cpus, ramBytes, freeRamBytes, gpu: { name?, vramBytes?, backend? } \| null, diskFreeBytes }` |
 | `brain.attached` | `{ brainId, label, kind: "local" \| "remote", model? }` |
 | `brain.detached` | `{ brainId, reason }` |
@@ -173,7 +174,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 ```text
 BrainChoice  { backend: "local" | "ollama" | "lmstudio" | "openai" | "fake", model?, url?, key? }
              key is kept in memory only and never logged; settings.changed shows "key": "set".
-BrainOption  { backend, label, model?, url?, available: boolean, reason? }
+BrainOption  { backend, label, model?, url?, available: boolean, reason?, bytes?, recommended? }
 DoctorReport { ok, checks: [{ id, label, ok, detail, hint? }], hardware, models: [{ file, bytes, path }] }
 ```
 

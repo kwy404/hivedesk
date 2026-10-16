@@ -8,7 +8,7 @@ import { withSchema } from '../src/brain/types.js';
 import { createFakeBrain } from '../src/brain/fake.js';
 import { createRelayBrain } from '../src/brain/relay.js';
 import { createOllamaBrain, createOpenAIBrain, probeOllama, probeLmStudio, pickServerModel } from '../src/brain/http.js';
-import { MODELS, pickModel, smallerModel, downloadModel, isCached } from '../src/brain/models.js';
+import { MODELS, pickModel, chooseModel, modelById, smallerModel, downloadModel, isCached } from '../src/brain/models.js';
 import { BrainManager, bar } from '../src/brain/manager.js';
 import { EventBus } from '../src/bus.js';
 import { Scheduler } from '../src/crew/scheduler.js';
@@ -154,12 +154,24 @@ describe('relay brain', () => {
 describe('model choice and download', () => {
   const GB = 1e9;
   it('picks the model by VRAM and RAM', () => {
-    expect(pickModel({ gpu: { vramBytes: 6442450944 }, ramBytes: 16 * GB }).id).toBe('qwen2.5-coder-7b');
-    expect(pickModel({ gpu: { vramBytes: 4 * GB }, ramBytes: 8 * GB }).id).toBe('qwen2.5-coder-3b');
-    expect(pickModel({ gpu: null, ramBytes: 32 * GB }).id).toBe('qwen2.5-coder-3b');
-    expect(pickModel({ gpu: null, ramBytes: 8 * GB }).id).toBe('qwen2.5-coder-1.5b');
+    const MiB = 1024 * 1024;
+    // The table from FIRST-RUN.md, with the sizes real cards report.
+    expect(chooseModel({ gpu: { vramBytes: 12288 * MiB }, ramBytes: 32 * GB })).toMatchObject({ gpu: true, model: { id: 'qwen2.5-coder-14b' } });
+    expect(chooseModel({ gpu: { vramBytes: 8192 * MiB }, ramBytes: 16 * GB })).toMatchObject({ gpu: true, model: { id: 'qwen2.5-coder-7b' } });
+    const gtx = chooseModel({ gpu: { name: 'NVIDIA GeForce GTX 1060 6GB', vramBytes: 6144 * MiB }, ramBytes: 16 * GB });
+    expect(gtx).toMatchObject({ gpu: true, model: { id: 'qwen2.5-coder-3b' } });
+    expect(gtx.reason).toBe('NVIDIA GeForce GTX 1060 6GB (6.4 GB VRAM) found: using Qwen2.5-Coder 3B (2.1 GB), fully on the GPU.');
+    expect(chooseModel({ gpu: { vramBytes: 4096 * MiB }, ramBytes: 8 * GB }).model.id).toBe('qwen2.5-coder-3b');
+    expect(chooseModel({ gpu: { vramBytes: 2048 * MiB }, ramBytes: 16 * GB })).toMatchObject({ gpu: false, model: { id: 'qwen2.5-coder-3b' } });
+    expect(chooseModel({ gpu: null, ramBytes: 32 * GB })).toMatchObject({ gpu: false, model: { id: 'qwen2.5-coder-3b' } });
+    expect(chooseModel({ gpu: null, ramBytes: 8 * 1024 * MiB })).toMatchObject({ gpu: false, model: { id: 'qwen2.5-coder-1.5b' } });
+    const tiny = chooseModel({ gpu: null, ramBytes: 4 * GB });
+    expect(tiny.model.id).toBe('qwen2.5-coder-0.5b');
+    expect(tiny.warning).toMatch(/basic/);
     expect(pickModel({ gpu: { vramBytes: 8 * GB }, ramBytes: 8 * GB }, { gpu: false }).id).toBe('qwen2.5-coder-1.5b');
-    expect(smallerModel(MODELS[2]).id).toBe('qwen2.5-coder-3b');
+    expect(modelById('7B').id).toBe('qwen2.5-coder-7b');
+    expect(modelById('1.5b').id).toBe('qwen2.5-coder-1.5b');
+    expect(smallerModel(modelById('3b')).id).toBe('qwen2.5-coder-1.5b');
     expect(smallerModel(MODELS[0])).toBeNull();
     for (const m of MODELS) expect(m.url).toMatch(/^https:\/\/huggingface\.co\/Qwen\/Qwen2\.5-Coder-.*-Instruct-GGUF\/resolve\/main\/.*q4_k_m\.gguf$/);
   });
@@ -269,11 +281,11 @@ describe('brain manager (first run pipeline)', () => {
   it('falls back to the 1.5B model on the CPU when the GPU fails', async () => {
     const t = make({ gpuFails: true });
     t.cache(MODELS[2]);
-    t.cache(MODELS[0]);
+    t.cache(MODELS[1]);
     await t.m.start();
-    expect(t.loaded.map((o) => [o.name, o.gpu])).toEqual([[MODELS[2].name, true], [MODELS[0].name, false]]);
+    expect(t.loaded.map((o) => [o.name, o.gpu])).toEqual([[MODELS[2].name, true], [MODELS[1].name, false]]);
     const fb = t.bus.events.find((e) => e.type === 'brain.fallback');
-    expect(fb.data.to).toMatchObject({ gpu: false, model: MODELS[0].name });
+    expect(fb.data.to).toMatchObject({ gpu: false, model: MODELS[1].name });
     expect(t.bus.state.brain.state).toBe('ready');
   });
 
@@ -281,7 +293,8 @@ describe('brain manager (first run pipeline)', () => {
     const t = make({ flags: { noDownload: true } });
     await t.m.start();
     expect(t.bus.state.brain).toMatchObject({ state: 'needs_download', model: MODELS[2].name });
-    expect(t.bus.events.find((e) => e.type === 'brain.download.required').data).toMatchObject({ bytes: MODELS[2].bytes, source: 'https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF' });
+    expect(t.bus.events.find((e) => e.type === 'brain.download.required').data).toMatchObject({ bytes: MODELS[2].bytes, source: 'https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF' });
+    expect(t.bus.events.find((e) => e.type === 'brain.choice').data.reason).toMatch(/Test GPU \(6\.4 GB VRAM\) found: using Qwen2\.5-Coder 3B/);
     expect(t.scheduler.hasBrain).toBe(false);
   });
 
@@ -292,7 +305,7 @@ describe('brain manager (first run pipeline)', () => {
     expect(t.bus.state.brain.hint).toMatch(/Retry/);
     expect(t.bus.events.find((e) => e.type === 'brain.download.failed').data.code).toBe('no_network');
 
-    const small = make({ hardware: { ...hw, diskFreeBytes: 3 * GB } });
+    const small = make({ hardware: { ...hw, diskFreeBytes: 1.5 * GB } });
     await small.m.start();
     const fb = small.bus.events.find((e) => e.type === 'brain.fallback');
     expect(fb.data.to.model).toBe(MODELS[1].name);
@@ -319,7 +332,8 @@ describe('brain manager (first run pipeline)', () => {
   it('probes the options', async () => {
     const t = make();
     const p = await t.m.probe();
-    expect(p.recommended.model).toBe('qwen2.5-coder-7b');
+    expect(p.recommended.model).toBe('qwen2.5-coder-3b');
+    expect(p.options.find((o) => o.recommended).model).toBe('qwen2.5-coder-3b');
     expect(p.options.find((o) => o.backend === 'ollama').available).toBe(false);
   });
 });

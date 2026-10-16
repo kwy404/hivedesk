@@ -9,7 +9,15 @@ const HF = 'https://huggingface.co';
 /** Smallest first. Sizes and SHA-256 come from the Hugging Face file listing. */
 export const MODELS = [
   {
-    id: 'qwen2.5-coder-1.5b',
+    id: 'qwen2.5-coder-0.5b', short: '0.5b',
+    name: 'Qwen2.5-Coder 0.5B Instruct (Q4_K_M)',
+    repo: 'Qwen/Qwen2.5-Coder-0.5B-Instruct-GGUF',
+    file: 'qwen2.5-coder-0.5b-instruct-q4_k_m.gguf',
+    bytes: 491400064,
+    sha256: '1d9614638d18024d0fbb36575a15f1302a3adf044df10345688ec4f6e1c4ff32'
+  },
+  {
+    id: 'qwen2.5-coder-1.5b', short: '1.5b',
     name: 'Qwen2.5-Coder 1.5B Instruct (Q4_K_M)',
     repo: 'Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF',
     file: 'qwen2.5-coder-1.5b-instruct-q4_k_m.gguf',
@@ -17,7 +25,7 @@ export const MODELS = [
     sha256: 'cc324af070c2ecbfd324a30884d2f951a7ff756aba85cb811a6ec436933bb046'
   },
   {
-    id: 'qwen2.5-coder-3b',
+    id: 'qwen2.5-coder-3b', short: '3b',
     name: 'Qwen2.5-Coder 3B Instruct (Q4_K_M)',
     repo: 'Qwen/Qwen2.5-Coder-3B-Instruct-GGUF',
     file: 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
@@ -25,34 +33,68 @@ export const MODELS = [
     sha256: '724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7'
   },
   {
-    id: 'qwen2.5-coder-7b',
+    id: 'qwen2.5-coder-7b', short: '7b',
     name: 'Qwen2.5-Coder 7B Instruct (Q4_K_M)',
     repo: 'Qwen/Qwen2.5-Coder-7B-Instruct-GGUF',
     file: 'qwen2.5-coder-7b-instruct-q4_k_m.gguf',
     bytes: 4683073536,
     sha256: '509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c'
+  },
+  {
+    id: 'qwen2.5-coder-14b', short: '14b',
+    name: 'Qwen2.5-Coder 14B Instruct (Q4_K_M)',
+    repo: 'Qwen/Qwen2.5-Coder-14B-Instruct-GGUF',
+    file: 'qwen2.5-coder-14b-instruct-q4_k_m.gguf',
+    bytes: 8988110272,
+    sha256: 'c1e659736d89ac1065fb495330fb824d94001974a4bfa78e7270e43476a8d940'
   }
 ].map((m) => ({ ...m, url: `${HF}/${m.repo}/resolve/main/${m.file}`, source: `${HF}/${m.repo}` }));
 
+/** By id ("qwen2.5-coder-3b"), short name ("3b", "3B") or display name. */
 export function modelById(id) {
-  return MODELS.find((m) => m.id === id) || null;
+  const key = String(id || '').toLowerCase();
+  return MODELS.find((m) => m.id === key || m.short === key || m.name.toLowerCase() === key) || null;
 }
 
 const GB = 1e9;
 
+function gb(n) {
+  return `${(n / GB).toFixed(1)} GB`;
+}
+
 /**
- * The rule from FIRST-RUN.md:
- * 6 GB of VRAM or more: 7B. 3.5 GB of VRAM, or no usable GPU and 16 GB of RAM: 3B. Otherwise 1.5B.
- * @param {{ gpu: null | { vramBytes: number }, ramBytes: number }} hw
- * @param {{ gpu?: boolean }} [opts] gpu:false picks for the CPU
+ * The table from FIRST-RUN.md (all Qwen2.5-Coder Instruct, Q4_K_M):
+ *   GPU with 10 GB of VRAM or more: 14B.  GPU with 7 to 10 GB: 7B.  GPU with 4 to 7 GB: 3B fully on the GPU.
+ *   No usable GPU and 16 GB of RAM or more: 3B on the CPU.  8 to 16 GB of RAM: 1.5B on the CPU.
+ *   Under 8 GB of RAM: 0.5B, with a warning.
+ * Cards report a little less than their label (a "6 GB" card is about 6.4e9 bytes, an "8 GB" one about 8.6e9),
+ * so the limits sit just under the round numbers.
+ * @param {{ gpu: null | { name?: string, vramBytes: number }, ramBytes: number }} hw
+ * @param {{ gpu?: boolean }} [opts] gpu:false chooses for the CPU
+ * @returns {{ model: typeof MODELS[number], gpu: boolean, reason: string, warning?: string }}
  */
+export function chooseModel(hw, opts = {}) {
+  const vram = opts.gpu !== false && hw.gpu ? hw.gpu.vramBytes || 0 : 0;
+  const ram = hw.ramBytes || 0;
+  const gpuName = hw.gpu?.name ? `${hw.gpu.name} (${gb(vram)} VRAM)` : `GPU with ${gb(vram)} VRAM`;
+  const pick = (id, gpu, why, warning) => {
+    const model = modelById(id);
+    const where = gpu ? 'fully on the GPU' : 'on the CPU';
+    return { model, gpu, reason: `${why}: using ${model.name.replace(' Instruct (Q4_K_M)', '')} (${gb(model.bytes)}), ${where}.`, ...(warning ? { warning } : {}) };
+  };
+  if (vram >= 9.5 * GB) return pick('qwen2.5-coder-14b', true, `${gpuName} found`);
+  if (vram >= 6.9 * GB) return pick('qwen2.5-coder-7b', true, `${gpuName} found`);
+  if (vram >= 3.8 * GB) return pick('qwen2.5-coder-3b', true, `${gpuName} found`);
+  const noGpu = hw.gpu && opts.gpu !== false ? `${gpuName} is too small to help` : 'No usable GPU';
+  if (ram >= 15.5 * GB) return pick('qwen2.5-coder-3b', false, `${noGpu}, ${gb(ram)} RAM`);
+  if (ram >= 7.5 * GB) return pick('qwen2.5-coder-1.5b', false, `${noGpu}, ${gb(ram)} RAM`);
+  return pick('qwen2.5-coder-0.5b', false, `${noGpu}, only ${gb(ram)} RAM`,
+    'Results with the 0.5B model will be basic. For better work, use Ollama, LM Studio or an endpoint with a key (--brain).');
+}
+
+/** The model from the table above. */
 export function pickModel(hw, opts = {}) {
-  const useGpu = opts.gpu !== false && !!hw.gpu;
-  const vram = useGpu ? hw.gpu.vramBytes || 0 : 0;
-  // 6 GB cards report a little under 6.0e9 usable on some drivers.
-  if (vram >= 5.8 * GB) return modelById('qwen2.5-coder-7b');
-  if (vram >= 3.5 * GB || hw.ramBytes >= 15.5 * GB) return modelById('qwen2.5-coder-3b');
-  return modelById('qwen2.5-coder-1.5b');
+  return chooseModel(hw, opts).model;
 }
 
 /** The next smaller model, or null. */
