@@ -15,3 +15,8 @@
    one request at a time; the pairing words expire after 10 minutes and work once; pairing uses
    public MQTT relays that only see a random topic and ciphertext; no TURN relay is built in,
    so two very strict networks may not connect.
+
+## Status (site)
+
+- Done: `docs/lend/index.html` reads `#w=` and shows the six words, the `--join` command with the public link, and the privacy facts.
+- Done: the lending facts are quoted in the limits section of the site and the README.
