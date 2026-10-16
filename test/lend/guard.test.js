@@ -75,7 +75,13 @@ describe('lend server guard', () => {
     expect(findLocalChat({ chatLocal: chat })).toBe(chat);
     expect(typeof findLocalChat({ brain: { chat } })).toBe('function');
     expect(typeof findLocalChat({ scheduler: { getLocalBrain: async () => ({ chat }) } })).toBe('function');
-    expect(findLocalChat({})).toBeNull();
+    const turns = [];
+    const viaQueue = findLocalChat({ scheduler: { turn: async (req) => (turns.push(req), { text: 'q' }) } });
+    return viaQueue([{ role: 'user', content: 'x' }], {}).then((r) => {
+      expect(r.text).toBe('q');
+      expect(turns[0]).toMatchObject({ workerId: 'lend:friend' });
+      expect(findLocalChat({})).toBeNull();
+    });
   });
 
   it('keeps prompt text out of browser log entries', () => {

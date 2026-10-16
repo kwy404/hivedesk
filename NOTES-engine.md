@@ -2,13 +2,11 @@
 
 ## From lend (src/lend/, ui/lend/)
 
-1. Local brain for the plug-in. `register(ctx)` in `src/lend/index.js` looks for the local
-   brain in this order: `ctx.chatLocal(messages, options)`, `ctx.brain`, `ctx.localBrain`,
-   `ctx.scheduler.localBrain`, `ctx.scheduler.local`, `ctx.scheduler.getLocalBrain()`
-   (any object with `chat()`). Please pass one of them. With it, the friend's browser uses
-   `lend.chat`, which the server checks again (size caps, rate limit, one at a time, refused
-   after Stop). Without it, `lend.status` says `guarded: false` and the browser falls back to
-   the engine's `brain.chat` (still checked and rate limited in the browser).
+1. Plug-in loading: please call the default export of `src/lend/index.js` with
+   `{ scheduler, bus, server, config }` as PROTOCOL.md section 6 says. `lend.chat` runs the
+   friend's turn through `scheduler.turn({ workerId: 'lend:friend', messages, options })`
+   after its own checks (size caps, rate limit, one at a time, refused after Stop). Without the
+   plug-in the browser falls back to the engine's `brain.chat` (still checked in the browser).
 2. Error codes: when a `server.command` handler throws an error with `err.code`
    (`rate_limited`, `busy`, `stopped`, `prompt_too_long`, `not_lending`...), please keep that
    code in the failed `reply`.

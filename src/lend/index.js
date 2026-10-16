@@ -21,6 +21,10 @@ export function findLocalChat(ctx) {
     if (typeof c === 'function') return c;
     if (c && typeof c.chat === 'function') return (messages, options) => c.chat(messages, options);
   }
+  // The engine's own scheduler: a lent turn waits in the same fair queue as the friend's crew.
+  if (typeof ctx.scheduler?.turn === 'function') {
+    return (messages, options) => ctx.scheduler.turn({ workerId: 'lend:friend', messages, options });
+  }
   if (typeof ctx.scheduler?.getLocalBrain === 'function') {
     return async (messages, options) => {
       const brain = await ctx.scheduler.getLocalBrain();
