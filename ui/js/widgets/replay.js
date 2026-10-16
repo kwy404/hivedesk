@@ -25,6 +25,14 @@ function describe(ev) {
     case 'approval.resolved': return d.approved ? 'Approved' : 'Rejected';
     case 'run.finished': return `Ran ${d.command} (exit ${d.exitCode})`;
     case 'turn.started': return `${name(d.workerId)} took a turn on the model`;
+    case 'turn.ended': return `${name(d.workerId)} finished a turn`;
+    case 'queue.updated': return `Turn queue: ${(d.running || []).length} running, ${(d.waiting || []).length} waiting`;
+    case 'worker.status': return `${name(d.workerId)}: ${String(d.status || '').replace('_', ' ')}`;
+    case 'tool.called': return `${name(d.workerId)} used ${d.tool}${d.args?.path ? ` on ${d.args.path}` : ''}`;
+    case 'tool.result': return d.ok ? 'Tool finished' : 'Tool failed';
+    case 'qa.report': return d.passed ? 'QA passed' : `QA found ${(d.issues || []).length} issues`;
+    case 'playbook.saved': return 'Playbook saved';
+    case 'brain.status': return `Model: ${d.state}`;
     default: return ev.type;
   }
 }

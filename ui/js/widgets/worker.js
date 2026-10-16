@@ -106,6 +106,7 @@ register('worker', {
       let txt = t.text.length > 4000 ? `...${t.text.slice(-4000)}` : t.text;
       if (!active) { try { txt = JSON.stringify(JSON.parse(t.text), null, 2); } catch {} }
       pre.textContent = txt;
+      if (active && !t.text) pre.append(h('span', { class: 'faint', text: 'Waiting for the first words from the model ' }));
       if (active) pre.append(h('span', { class: 'caret' }));
       pre.scrollTop = pre.scrollHeight;
     });

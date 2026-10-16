@@ -171,7 +171,13 @@ register('files', {
     track(() => [rev.files, ui.replay, sel.path, sel.reveal], renderTree);
     track(() => [rev.files, sel.path, sel.mode, ui.replay], renderView);
     track(() => [sel.reveal], () => {
-      requestAnimationFrame(() => tree.querySelector(`.frow[data-path="${CSS.escape(sel.path || '')}"]`)?.scrollIntoView({ block: 'nearest' }));
+      requestAnimationFrame(() => {
+        // Scroll only the tree: scrollIntoView would also scroll the stacked cards on phones.
+        const row = tree.querySelector(`.frow[data-path="${CSS.escape(sel.path || '')}"]`);
+        if (!row) return;
+        const top = row.offsetTop - tree.offsetTop;
+        if (top < tree.scrollTop || top > tree.scrollTop + tree.clientHeight - row.offsetHeight) tree.scrollTop = top - tree.clientHeight / 2;
+      });
     });
   },
 });

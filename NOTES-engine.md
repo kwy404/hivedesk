@@ -18,3 +18,18 @@
    back to the env var `PLAYWRIGHT_CORE`, a path to an installed copy). Script suggestion:
    `"e2e:lend": "node test/lend/e2e-lend.mjs"`.
 
+
+## From ui (ui/)
+
+1. The context menus send four commands the protocol does not list yet. Until the engine
+   knows them the UI shows "This engine version does not support it yet" (it reads a
+   `bad_request` reply whose message says unknown or not supported):
+   * `task.retry { taskId }` put a failed, blocked or done task back to `ready`.
+   * `task.reassign { taskId, workerId }` hand a task that is not done to another worker.
+   * `task.cancel { taskId }` mark a task `skipped` (dependents become `blocked`).
+   * `crew.update { workerId, paused: true | false }` the scheduler skips a paused worker's
+     turns; the UI shows "Paused" when `worker.paused` is true.
+2. Unknown commands: please answer `bad_request` with a message containing "unknown command"
+   so the toast can say it honestly.
+3. `turn.ended.tps` and `brain.stats.tps` feed the tokens per second in the top bar; the
+   UI hides the number while it is 0.

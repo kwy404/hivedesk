@@ -190,6 +190,7 @@ net.on('hello', (f) => {
     firstHello = false;
     const saved = wm.savedLayout();
     wm.applyLayout(saved?.wins?.length ? saved : defaultLayout());
+    if (wm.isPhone()) requestAnimationFrame(() => { desk.scrollTop = 0; });
     if (/(?:^|[#&?])w=[A-Za-z-]+/.test(location.hash + location.search)) wm.open('lend');
   }
   if (f.lend) wm.open('lending', undefined, { snap: 'max' });

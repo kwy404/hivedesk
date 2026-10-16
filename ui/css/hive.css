@@ -459,7 +459,7 @@ button { font: inherit; color: inherit; }
 .job.cur { border-color: rgb(255 181 49 / .2); }
 .job-h { display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px 9px; }
 .job-q { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
-.job-m { font-size: 11.5px; color: var(--muted-t); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.job-m { min-width: 0; font-size: 11.5px; color: var(--muted-t); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .tasks { padding: 2px 0 6px; }
 .task { position: relative; display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 6px 12px 6px calc(12px + var(--depth, 0) * 14px); font-size: 12.5px; }
 .task:hover { background: rgb(242 233 218 / .025); }
@@ -792,6 +792,8 @@ dialog.dlg::backdrop { background: rgb(8 7 6 / .6); backdrop-filter: blur(4px); 
   .hire-grid { grid-template-columns: 1fr; }
   .ntoasts { right: 12px; left: 12px; width: auto; }
   .kpal { top: 8vh; }
+  .kpal-foot { display: none; }
+  .tb .url { display: none; }
   .snap-ghost { display: none; }
 }
 

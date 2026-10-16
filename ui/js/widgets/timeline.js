@@ -62,7 +62,7 @@ function jobCard(j, isCur) {
           tasks.length ? h('span', { text: `${done} of ${tasks.length} tasks` }) : null,
           h('span', { text: ago(j.createdAt) }),
           j.approval === false ? h('span', { class: 'hchip hchip-warn', text: 'No approvals' }) : null,
-          pb ? h('span', { class: 'hchip hchip-info', title: 'Plan reused from a playbook' }, icon('playbook', 'ico-sm'), pb.title) : null)),
+          pb ? h('span', { class: 'hchip hchip-info', style: 'max-width:100%', title: `Plan reused from the playbook: ${pb.title}` }, icon('playbook', 'ico-sm'), h('span', { class: 'ellipsis', text: pb.title })) : null)),
       ['planning', 'running'].includes(j.status) && !ui.replay ? btn('Cancel', () => act.cancelJob(j.id), 'btn btn-xs btn-quiet', 'stop') : null));
   if (j.status === 'planning' && !tasks.length) {
     card.append(h('div', { class: 'tasks' }, h('div', { class: 'task', dataset: { s: 'running' } },
