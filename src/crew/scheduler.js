@@ -14,6 +14,8 @@ export class Scheduler {
     /** @type {Map<string, number>} last time each worker was served (a counter, not a clock) */
     this.lastServed = new Map();
     this.tick = 0;
+    /** @type {Set<string>} */
+    this.paused = new Set();
     this.maxRetries = opts.maxRetries ?? 1;
     this.turnTimeoutMs = opts.turnTimeoutMs ?? 10 * 60_000;
     this._lastQueueJson = '';
@@ -71,15 +73,25 @@ export class Scheduler {
   }
 
   /** Picks the next turn: the worker served longest ago, then the oldest turn. */
+  /** A paused worker keeps its place in the queue but gets no turns until it is resumed. */
+  setPaused(workerId, paused) {
+    if (paused) this.paused.add(workerId);
+    else this.paused.delete(workerId);
+    this._emitQueue();
+    this._pump();
+  }
+
   _next() {
     if (!this.waiting.length) return null;
     let best = null;
     for (const item of this.waiting) {
+      if (this.paused.has(item.workerId)) continue;
       if (!best) { best = item; continue; }
       const a = this.lastServed.get(item.workerId) ?? -1;
       const b = this.lastServed.get(best.workerId) ?? -1;
       if (a < b || (a === b && item.enq < best.enq)) best = item;
     }
+    if (!best) return null;
     this.waiting.splice(this.waiting.indexOf(best), 1);
     return best;
   }

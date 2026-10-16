@@ -170,6 +170,9 @@ export function createServer(opts) {
   command('crew.hire', (d) => ({ worker: hive.hire(d) }));
   command('crew.update', (d) => ({ worker: hive.updateWorker(d.workerId, d) }));
   command('crew.fire', (d) => { hive.fire(d.workerId); return {}; });
+  command('task.retry', (d) => hive.retryTask(d.taskId));
+  command('task.reassign', (d) => hive.reassignTask(d.taskId, d.workerId));
+  command('task.cancel', (d) => hive.cancelTask(d.taskId));
   command('settings.set', (d) => ({ settings: hive.setSettings(d) }));
   command('brain.probe', async () => {
     if (!opts.brains) return { hardware: null, options: [], recommended: null };

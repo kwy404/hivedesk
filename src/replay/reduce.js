@@ -130,6 +130,20 @@ export function reduce(state, event) {
       }
       break;
     }
+    case 'task.updated': {
+      const t = d.task && state.tasks[d.task.id];
+      if (t) Object.assign(t, d.task);
+      break;
+    }
+    case 'job.resumed': {
+      const j = findJob(state, event.jobId);
+      if (j) {
+        j.status = 'running';
+        delete j.finishedAt;
+        delete j.error;
+      }
+      break;
+    }
     case 'task.status': {
       const t = state.tasks[d.taskId];
       if (t) {

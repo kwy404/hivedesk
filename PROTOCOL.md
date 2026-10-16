@@ -66,7 +66,7 @@ Events are the source of truth. They are appended to `.hivedesk/events.jsonl` (o
 ### Shared shapes
 
 ```text
-Worker   { id, name, role, color, avatar, prompt, tools: string[], builtin: boolean }
+Worker   { id, name, role, color, avatar, prompt, tools: string[], builtin: boolean, paused?: boolean }
          avatar is a short glyph or a URL path under /assets/; color is a CSS hex color.
          builtin ids: "mel", "dev", "designer", "qa", "writer"; hired ids start with "w_".
 Task     { id, jobId, title, detail, assignee, dependsOn: string[], status, attempts, kind }
@@ -107,7 +107,9 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `job.failed` | `{ error }` |
 | `job.cancelled` | `{ by: "user" }` |
 | `task.added` | `{ task: Task }` (QA or the planner adds a fix task later) |
-| `task.status` | `{ taskId, status, note? }` |
+| `task.status` | `{ taskId, status, note? }` (`ready` means pending with every dependency done) |
+| `task.updated` | `{ task: { id, ...changed fields } }` for example a new `assignee` |
+| `job.resumed` | `{ by: "user" }` a finished or failed job runs again after `task.retry` |
 | `queue.updated` | `{ running: [{ workerId, taskId, brainId }], waiting: [{ workerId, taskId }] }` |
 | `turn.started` | `{ turnId, workerId, taskId, brainId, n }` (n: turn number inside the task) |
 | `turn.ended` | `{ turnId, workerId, taskId, brainId, promptTokens, completionTokens, ms, tps, error? }` |
@@ -145,8 +147,11 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `chat.send` | `{ channel, text }` user message; in a running job it is added to the context of the addressed worker (or Mel for `general`) | `{ id }` |
 | `approval.resolve` | `{ approvalId, approved: boolean, note? }` | `{}` |
 | `crew.hire` | `{ name, role, prompt, color?, avatar?, tools?: string[] }` | `{ worker }` |
-| `crew.update` | `{ workerId, ...fields }` | `{ worker }` |
+| `crew.update` | `{ workerId, ...fields }`; `paused: true` makes the scheduler skip that worker's turns (they keep their place in the queue) until `paused: false` | `{ worker }` |
 | `crew.fire` | `{ workerId }` (builtin workers cannot be fired) | `{}` |
+| `task.retry` | `{ taskId }` a failed, blocked, cancelled or done task goes back in line (status `ready`, or `pending` while its dependencies run); tasks blocked by it are unblocked; a job that already ended is reopened (`job.resumed`) | `{}` |
+| `task.reassign` | `{ taskId, workerId }` hand a task that is not done to another worker (`task.updated`); a running task stops and starts again with the new worker; a failed one is also retried | `{}` |
+| `task.cancel` | `{ taskId }` the task becomes `skipped` (a running one is stopped); tasks that depend on it become `blocked` | `{}` |
 | `settings.set` | `{ approvalMode?, sound? }` | `{ settings }` |
 | `brain.probe` | `{}` | `{ hardware, options: BrainOption[], recommended }` |
 | `brain.select` | `BrainChoice` | `{ status }` |
@@ -172,7 +177,7 @@ BrainOption  { backend, label, model?, url?, available: boolean, reason? }
 DoctorReport { ok, checks: [{ id, label, ok, detail, hint? }], hardware, models: [{ file, bytes, path }] }
 ```
 
-Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`.
+Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`, plus short snake_case codes from plug-ins (for example `rate_limited`). An unknown command answers `bad_request` with the message `unknown command: <type>`.
 
 ## 5. REST
 

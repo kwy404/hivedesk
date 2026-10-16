@@ -9,6 +9,17 @@ import { checkWorkspace } from '../tools/check.js';
 const MAX_FIX_ROUNDS = 2;
 let chatSeq = 0;
 
+/** A signal that aborts when any of the given signals aborts (AbortSignal.any is not in Node 18). */
+function anySignal(signals) {
+  const ctrl = new AbortController();
+  for (const sig of signals) {
+    if (!sig) continue;
+    if (sig.aborted) { ctrl.abort(); break; }
+    sig.addEventListener('abort', () => ctrl.abort(), { once: true });
+  }
+  return ctrl.signal;
+}
+
 export class Hive {
   /**
    * @param {{
@@ -36,6 +47,7 @@ export class Hive {
 
   /** First start: hire the builtin crew, sync playbooks, and close jobs left open by a crash. */
   init() {
+    for (const w of this.state.crew) if (w.paused) this.scheduler.setPaused(w.id, true);
     const have = new Set(this.state.crew.map((w) => w.id));
     for (const w of BUILTIN) if (!have.has(w.id)) this.bus.emit('crew.hired', { worker: w });
     const known = new Set(this.state.playbooks.map((p) => p.id));
@@ -79,6 +91,10 @@ export class Hive {
     const next = { ...w };
     for (const k of ['name', 'role', 'prompt', 'color', 'avatar']) if (typeof fields[k] === 'string' && fields[k].trim()) next[k] = fields[k].trim().slice(0, k === 'prompt' ? 2000 : 64);
     if (Array.isArray(fields.tools) && !w.builtin) next.tools = hireWorker({ name: 'x', role: 'x', tools: fields.tools }).tools;
+    if (typeof fields.paused === 'boolean') {
+      next.paused = fields.paused;
+      this.scheduler.setPaused(workerId, fields.paused);
+    }
     this.bus.emit('crew.updated', { worker: next });
     return next;
   }
@@ -209,16 +225,32 @@ export class Hive {
     this.bus.emit('job.planned', playbook ? { tasks: tasks.map((t) => ({ ...t })), playbookId: playbook.id } : { tasks: tasks.map((t) => ({ ...t })) }, ev);
     const lines = tasks.map((t, i) => `${i + 1}. ${crewById.get(t.assignee)?.name || t.assignee}: ${t.title}`);
     this.chat('mel', `${plan.summary ? plan.summary + '\n' : ''}Plan:\n${lines.join('\n')}`, undefined, 'general', jobId);
+    await this._drive(job, run, {
+      graph, tasks, preexisting: new Set(files), fixRounds: 0, nextIdx: tasks.length + 1,
+      qaPassed: !crew.some((w) => w.id === 'qa'), openIssues: [], playbook, score
+    });
+  }
 
-    const preexisting = new Set(files);
+  /** Runs the task graph of a job to the end: workers take turns, QA adds fix rounds, then done. */
+  async _drive(job, run, st) {
+    const jobId = job.id;
+    const signal = run.ctrl.signal;
+    const ev = { jobId };
+    const { graph } = st;
+    const jobNum = jobId.slice(2);
+    /** @type {Map<string, Promise<any>>} */
     const active = new Map();
+    /** @type {Map<string, { ctrl: AbortController, why?: string }>} per task control, for cancel and reassign */
+    const controls = new Map();
     const busy = new Set();
-    let fixRounds = 0;
-    let nextIdx = tasks.length + 1;
-    let qaPassed = !crew.some((w) => w.id === 'qa');
-    let openIssues = [];
+    let wake = null;
+    const woken = () => new Promise((resolve) => { wake = resolve; });
+    run.graph = graph;
+    run.controls = controls;
+    run.kick = () => { if (wake) { const w = wake; wake = null; w({ wake: true }); } };
 
     const startTask = (task) => {
+      const crewById = this.crewById();
       const worker = crewById.get(task.assignee) || crewById.get('dev');
       graph.setStatus(task.id, 'running');
       this.bus.emit('task.status', { taskId: task.id, status: 'running' }, ev);
@@ -241,34 +273,45 @@ export class Hive {
         }
         if (shown.length) extra += `\n\nThe files now:\n${shown.join('\n')}\n\nCheck them against the job: is anything missing, duplicated, empty or broken?`;
       }
+      const control = { ctrl: new AbortController() };
+      controls.set(task.id, control);
       const p = runTask({
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
-        signal, maxTurns: this.maxTurns, extra, userNotes, preexisting,
+        signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting,
         verify: task.kind === 'qa' ? undefined : (wrote) => {
           // Fix tasks must clear every static issue; build tasks only the ones in their own files
           // (a link to a file another worker has not written yet is not their problem).
-          const r = checkWorkspace(this.toolbox.ws, task.kind === 'fix' ? undefined : wrote);
           if (task.kind !== 'fix' && !wrote.length) return [];
+          const r = checkWorkspace(this.toolbox.ws, task.kind === 'fix' ? undefined : wrote);
           return r.issues.filter((i) => task.kind === 'fix' || !/ links to /.test(i));
         },
         chat: (from, text, taskId) => this.chat(from, text, taskId, 'general', jobId)
-      }).then((res) => ({ task, worker, res, checks }), (err) => ({ task, worker, err, checks }));
+      }).then((res) => ({ task, worker, res, checks, control }), (err) => ({ task, worker, err, checks, control }));
       active.set(task.id, p);
       busy.add(task.assignee);
     };
 
     while (true) {
       if (signal.aborted) return;
-      for (const t of graph.propagateBlocked()) this.bus.emit('task.status', { taskId: t.id, status: 'blocked', note: 'a task it depends on failed' }, ev);
+      for (const t of graph.propagateBlocked()) this.bus.emit('task.status', { taskId: t.id, status: 'blocked', note: 'a task it depends on failed or was cancelled' }, ev);
       // One task at a time per worker: two tasks of the same worker would fight over the same files.
       for (const t of graph.ready()) {
         if (!active.has(t.id) && !busy.has(t.assignee)) startTask(t);
       }
       if (!active.size) break;
-      const { task, worker, res, err, checks } = await Promise.race(active.values());
+      const out = await Promise.race([...active.values(), woken()]);
+      if (out.wake) continue;
+      const { task, worker, res, err, checks, control } = out;
       active.delete(task.id);
+      controls.delete(task.id);
+      busy.delete(worker.id);
       busy.delete(task.assignee);
       if (signal.aborted) return;
+      if (control.why) {
+        // Cancelled or reassigned by the user: the command already set the new status.
+        this.bus.emit('worker.status', { workerId: worker.id, status: 'idle' }, ev);
+        continue;
+      }
       if (err) {
         graph.setStatus(task.id, 'failed');
         this.bus.emit('task.status', { taskId: task.id, status: 'failed', note: String(err.message || err).slice(0, 300) }, ev);
@@ -285,18 +328,18 @@ export class Hive {
         graph.setStatus(task.id, 'done');
         this.bus.emit('task.status', { taskId: task.id, status: 'done', note: report.passed ? 'passed' : `${report.issues.length} issues` }, ev);
         this.chat(worker.id, report.passed ? 'All checks passed.' : `Found ${report.issues.length} issues:\n- ${report.issues.join('\n- ')}`, task.id, 'general', jobId);
-        qaPassed = report.passed;
-        openIssues = report.passed ? [] : report.issues;
-        if (!report.passed && fixRounds < MAX_FIX_ROUNDS && crewById.has('dev')) {
-          fixRounds++;
+        st.qaPassed = report.passed;
+        st.openIssues = report.passed ? [] : report.issues;
+        if (!report.passed && st.fixRounds < MAX_FIX_ROUNDS && this.crewById().has('dev')) {
+          st.fixRounds++;
           const fix = graph.add({
-            id: `t_${jobNum}_${nextIdx++}`, jobId, title: `Fix the QA issues (round ${fixRounds})`,
+            id: `t_${jobNum}_${st.nextIdx++}`, jobId, title: `Fix the QA issues (round ${st.fixRounds})`,
             detail: `QA found these problems. Read the files and fix each one:\n- ${report.issues.join('\n- ')}`,
             assignee: 'dev', dependsOn: [task.id], status: 'pending', attempts: 0, kind: 'fix'
           });
           this.bus.emit('task.added', { task: { ...fix } }, ev);
           const recheck = graph.add({
-            id: `t_${jobNum}_${nextIdx++}`, jobId, title: 'Check the fixes', detail: `Check that these problems are fixed:\n- ${report.issues.join('\n- ')}`,
+            id: `t_${jobNum}_${st.nextIdx++}`, jobId, title: 'Check the fixes', detail: `Check that these problems are fixed:\n- ${report.issues.join('\n- ')}`,
             assignee: 'qa', dependsOn: [fix.id], status: 'pending', attempts: 0, kind: 'qa'
           });
           this.bus.emit('task.added', { task: { ...recheck } }, ev);
@@ -309,24 +352,27 @@ export class Hive {
       }
       this.bus.emit('worker.status', { workerId: worker.id, status: 'idle' }, ev);
     }
+    run.kick = null;
 
     const all = graph.all();
     const failed = all.filter((t) => t.status === 'failed' || t.status === 'blocked');
+    const skipped = all.filter((t) => t.status === 'skipped').length;
     const outFiles = this.toolbox.ws.list().map((f) => f.path);
-    if (failed.length && failed.length === all.filter((t) => t.kind !== 'qa').length) {
+    const buildTasks = all.filter((t) => t.kind !== 'qa' && t.status !== 'skipped');
+    if (buildTasks.length && buildTasks.every((t) => t.status === 'failed' || t.status === 'blocked')) {
       this.bus.emit('job.failed', { error: `${failed.length} tasks failed` }, ev);
-      this.chat('mel', 'This job did not work out. Try a smaller request, or a bigger model.', undefined, 'general', jobId);
+      this.chat('mel', 'This job did not work out. You can retry a task from its menu, try a smaller request, or use a bigger model.', undefined, 'general', jobId);
       return;
     }
     const summary = failed.length
       ? `Finished with ${failed.length} failed tasks.`
-      : qaPassed ? 'Finished, and QA passed.' : `Finished, but QA still reports ${openIssues.length} issues.`;
+      : st.qaPassed ? `Finished, and QA passed.${skipped ? ` ${skipped} tasks were cancelled.` : ''}` : `Finished, but QA still reports ${st.openIssues.length} issues.`;
     this.bus.emit('job.done', { summary, files: outFiles }, ev);
     const url = this.previewUrl();
     this.chat('mel', `${summary} Files: ${outFiles.join(', ') || 'none'}.${url ? ' Open the Live preview to see it.' : ''}`, undefined, 'general', jobId);
-    if (!failed.length && qaPassed && !(playbook && score >= 0.6)) {
+    if (st.tasks && !failed.length && !skipped && st.qaPassed && !(st.playbook && st.score >= 0.6)) {
       // Save the original plan (without the fix rounds) as a playbook.
-      const base = tasks.filter((t) => t.kind !== 'fix');
+      const base = st.tasks.filter((t) => t.kind !== 'fix');
       const index = new Map(base.map((t, i) => [t.id, i]));
       const playbookSaved = this.playbooks.save({
         request: job.request,
@@ -334,6 +380,115 @@ export class Hive {
       });
       this.bus.emit('playbook.saved', { playbook: playbookSaved }, ev);
     }
+  }
+
+  // ---- task commands (PROTOCOL.md: task.retry, task.reassign, task.cancel) ----
+  _taskAndJob(taskId) {
+    const t = this.state.tasks[taskId];
+    if (!t) throw Object.assign(new Error(`no task ${taskId}`), { code: 'not_found' });
+    const job = this.state.jobs.find((j) => j.id === t.jobId);
+    if (!job) throw Object.assign(new Error(`no job for task ${taskId}`), { code: 'not_found' });
+    return { t, job };
+  }
+
+  /** Puts a failed, blocked, cancelled or done task back in line; reopens its job when the job already ended. */
+  retryTask(taskId) {
+    const { t, job } = this._taskAndJob(taskId);
+    if (!['failed', 'blocked', 'skipped', 'done'].includes(t.status)) {
+      throw Object.assign(new Error(`task ${taskId} is ${t.status}; only failed, blocked, cancelled or done tasks can be retried`), { code: 'conflict' });
+    }
+    if (job.status === 'cancelled' && !this.active.has(job.id)) throw Object.assign(new Error('the job was cancelled; start a new one'), { code: 'conflict' });
+    const run = this.active.get(job.id) || this._reopen(job);
+    const graph = run.graph;
+    const reset = (id, note) => {
+      graph.setStatus(id, 'pending');
+      const ready = graph.get(id).dependsOn.every((d) => graph.get(d)?.status === 'done');
+      this.bus.emit('task.status', { taskId: id, status: ready ? 'ready' : 'pending', note }, { jobId: job.id });
+    };
+    reset(taskId, 'retry');
+    // Tasks that were blocked because of this one can run again.
+    let again = true;
+    while (again) {
+      again = false;
+      for (const n of graph.all()) {
+        if (n.status === 'blocked' && n.dependsOn.every((d) => !['failed', 'blocked', 'skipped'].includes(graph.get(d)?.status))) {
+          reset(n.id, 'unblocked by a retry');
+          again = true;
+        }
+      }
+    }
+    run.kick?.();
+    return {};
+  }
+
+  /** Gives a task that is not done to another worker. A running task restarts with the new worker. */
+  reassignTask(taskId, workerId) {
+    const { t, job } = this._taskAndJob(taskId);
+    const worker = this.state.crew.find((w) => w.id === workerId);
+    if (!worker || workerId === 'mel') throw Object.assign(new Error(`no worker ${workerId} who can take tasks`), { code: 'bad_request' });
+    if (t.status === 'done') throw Object.assign(new Error('the task is already done; retry it instead'), { code: 'conflict' });
+    const run = this.active.get(job.id);
+    const node = run?.graph?.get(taskId);
+    if (node) {
+      node.assignee = workerId;
+      const control = run.controls?.get(taskId);
+      if (control) {
+        control.why = 'reassigned';
+        control.ctrl.abort();
+        node.status = 'pending';
+      }
+    }
+    this.bus.emit('task.updated', { task: { id: taskId, assignee: workerId } }, { jobId: job.id });
+    if (['failed', 'blocked', 'skipped'].includes(node ? node.status : t.status)) return this.retryTask(taskId);
+    if (node) {
+      this.bus.emit('task.status', { taskId, status: 'pending', note: `reassigned to ${worker.name}` }, { jobId: job.id });
+      run.kick?.();
+    }
+    return {};
+  }
+
+  /** Cancels one task; tasks that depend on it become blocked. */
+  cancelTask(taskId) {
+    const { t, job } = this._taskAndJob(taskId);
+    if (['done', 'skipped'].includes(t.status)) throw Object.assign(new Error(`task ${taskId} is already ${t.status}`), { code: 'conflict' });
+    const run = this.active.get(job.id);
+    const node = run?.graph?.get(taskId);
+    if (node) {
+      node.status = 'skipped';
+      const control = run.controls?.get(taskId);
+      if (control) {
+        control.why = 'cancelled';
+        control.ctrl.abort();
+      }
+    }
+    this.bus.emit('task.status', { taskId, status: 'skipped', note: 'cancelled by the user' }, { jobId: job.id });
+    run?.kick?.();
+    return {};
+  }
+
+  /** Rebuilds the graph of a finished job from the state and runs it again. */
+  _reopen(job) {
+    const graph = new TaskGraph();
+    for (const id of job.taskIds) {
+      const t = this.state.tasks[id];
+      if (!t) continue;
+      graph.add({ ...t, dependsOn: [...(t.dependsOn || [])], status: t.status === 'running' || t.status === 'review' ? 'pending' : t.status });
+    }
+    const ctrl = new AbortController();
+    const run = { ctrl, notes: new Map(), promise: null, graph, controls: new Map(), kick: null };
+    this.active.set(job.id, run);
+    this.bus.emit('job.resumed', { by: 'user' }, { jobId: job.id });
+    const st = {
+      graph, tasks: null, preexisting: new Set(this.toolbox.ws.list().map((f) => f.path)),
+      fixRounds: graph.all().filter((t) => t.kind === 'fix').length, nextIdx: job.taskIds.length + 1,
+      qaPassed: !this.state.crew.some((w) => w.id === 'qa'), openIssues: [], playbook: null, score: 0
+    };
+    // Start after the caller has reset the task it wants to retry.
+    run.promise = Promise.resolve().then(() => this._drive(job, run, st)).catch((err) => {
+      if (ctrl.signal.aborted) return;
+      this.bus.emit('job.failed', { error: String(err?.message || err) }, { jobId: job.id });
+    }).finally(() => this.active.delete(job.id));
+    return run;
   }
 
   async close() {

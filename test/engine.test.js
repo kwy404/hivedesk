@@ -266,3 +266,88 @@ describe('done is checked', () => {
     expect(t.bus.state.jobs[0].summary).toBe('Finished, and QA passed.');
   });
 });
+
+describe('task commands', () => {
+  const slow = (brain, ms = 15) => {
+    brain.chat = ((orig) => async (m, o) => { await new Promise((r) => setTimeout(r, ms)); return orig(m, o); })(brain.chat);
+  };
+
+  it('retries a failed task and reopens the job', async () => {
+    let fail = true;
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Write', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'Write') {
+        if (fail) return 'broken';
+        return step(messages) === 0 ? { tool: 'write_file', args: { path: 'a.txt', content: 'a' } } : { tool: 'done', args: { summary: 'ok' } };
+      }
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    });
+    await t.hive.createJob({ request: 'x', approval: false }).done;
+    expect(t.bus.state.tasks.t_1_1.status).toBe('failed');
+    expect(t.bus.state.tasks.t_1_2.status).toBe('blocked');
+    expect(t.bus.state.jobs[0].status).toBe('failed');
+    fail = false;
+    t.hive.retryTask('t_1_1');
+    expect(t.bus.state.jobs[0].status).toBe('running');
+    expect(t.bus.state.tasks.t_1_2.status).toBe('pending');
+    await t.hive.active.get('j_1').promise;
+    expect(t.bus.state.tasks.t_1_1.status).toBe('done');
+    expect(t.bus.state.tasks.t_1_2.status).toBe('done');
+    expect(t.bus.state.jobs[0].status).toBe('done');
+    expect(t.bus.events.some((e) => e.type === 'job.resumed')).toBe(true);
+    expect(() => t.hive.retryTask('nope')).toThrow('no task');
+  });
+
+  it('cancels a running task; its dependents are blocked', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Long', detail: '', assignee: 'dev', dependsOn: [] }, { title: 'After', detail: '', assignee: 'writer', dependsOn: [1] }] };
+      return { tool: 'list_files', args: {} };
+    }, { maxTurns: 50 });
+    slow(t.brain);
+    const { done } = t.hive.createJob({ request: 'x', approval: false });
+    await waitFor(() => t.bus.state.tasks.t_1_1?.status === 'running');
+    t.hive.cancelTask('t_1_1');
+    await done;
+    expect(t.bus.state.tasks.t_1_1.status).toBe('skipped');
+    expect(t.bus.state.tasks.t_1_2.status).toBe('blocked');
+    expect(() => t.hive.cancelTask('t_1_1')).toThrow('already');
+  });
+
+  it('reassigns a running task to another worker', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Copy', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'Copy') {
+        const writer = messages[0].content.startsWith('You are Writer');
+        if (!writer) return { tool: 'list_files', args: {} };
+        return step(messages) === 0 ? { tool: 'write_file', args: { path: 'copy.md', content: 'hi' } } : { tool: 'done', args: { summary: 'written by Writer' } };
+      }
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    }, { maxTurns: 50 });
+    slow(t.brain);
+    const { done } = t.hive.createJob({ request: 'x', approval: false });
+    await waitFor(() => t.bus.events.some((e) => e.type === 'turn.started' && e.data.workerId === 'dev' && e.data.taskId === 't_1_1'));
+    t.hive.reassignTask('t_1_1', 'writer');
+    await done;
+    const task = t.bus.state.tasks.t_1_1;
+    expect(task).toMatchObject({ assignee: 'writer', status: 'done', note: 'written by Writer' });
+    expect(() => t.hive.reassignTask('t_1_1', 'dev')).toThrow('already done');
+    expect(() => t.hive.reassignTask('t_1_2', 'ghost')).toThrow('no worker');
+  });
+
+  it('pauses and resumes a worker', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'W', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'W') return step(messages) === 0 ? { tool: 'write_file', args: { path: 'w.txt', content: 'w' } } : { tool: 'done', args: { summary: 'ok' } };
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    });
+    t.hive.updateWorker('dev', { paused: true });
+    expect(t.bus.state.crew.find((w) => w.id === 'dev').paused).toBe(true);
+    const { done } = t.hive.createJob({ request: 'x', approval: false });
+    await waitFor(() => t.bus.state.queue.waiting.some((w) => w.workerId === 'dev'));
+    await new Promise((r) => setTimeout(r, 100));
+    expect(t.bus.events.some((e) => e.type === 'turn.started' && e.data.workerId === 'dev')).toBe(false);
+    t.hive.updateWorker('dev', { paused: false });
+    await done;
+    expect(t.bus.state.jobs[0].status).toBe('done');
+  });
+});

@@ -7,21 +7,17 @@ import { notify } from './notify.js';
 import { S, worker, extra } from './store.js';
 import { copyText } from './dom.js';
 
-const UNSUPPORTED = new Set(['bad_request', 'not_found']);
-
 async function run(type, data, { ok, fail = 'That did not work', quietOk = true } = {}) {
   try {
     const r = await command(type, data);
     if (ok && !quietOk) notify({ title: ok, tone: 'ok' });
     return r;
   } catch (err) {
-    const unknown = err.code === 'bad_request' && /unknown|not supported|unsupported/i.test(err.message);
     notify({
       title: fail,
-      body: unknown ? 'This engine version does not support it yet.' : err.code === 'offline' || err.code === 'timeout' ? `${err.message} Check that hivedesk is still running.` : err.message,
+      body: err.code === 'offline' || err.code === 'timeout' ? `${err.message} Check that hivedesk is still running.` : err.message,
       tone: 'bad', sound: 'error',
     });
-    void UNSUPPORTED;
     return null;
   }
 }
@@ -39,8 +35,8 @@ export const selectBrain = (choice) => run('brain.select', choice, { fail: 'Coul
 export const startDownload = (model) => run('brain.download', model ? { model } : {}, { fail: 'Could not start the download' });
 export const deletePlaybook = (playbookId) => run('playbook.delete', { playbookId }, { fail: 'Could not delete the playbook' });
 
-// Task and worker controls that the context menus offer. They are sent as engine
-// commands; an engine that does not know them answers bad_request and the toast says so.
+// Task and worker controls that the context menus offer (PROTOCOL.md: task.retry, task.reassign,
+// task.cancel, and crew.update with paused).
 export const retryTask = (taskId) => run('task.retry', { taskId }, { fail: 'Could not retry the task' });
 export const reassignTask = (taskId, workerId) => run('task.reassign', { taskId, workerId }, { fail: 'Could not reassign the task' });
 export const cancelTask = (taskId) => run('task.cancel', { taskId }, { fail: 'Could not cancel the task' });
