@@ -5,11 +5,15 @@
 //   lend.stop    stop lending: every later lend.chat is refused
 //   lend.resume  lend again after a stop (a new pairing in the same run)
 //   lend.status  counters for the Lend screen
+//   lend.enable  lend from a hivedesk started without --lend (a Code together guest who
+//                also lends its brain to the host); only this PC's own browser can send it
 //   GET /api/lend the same counters over REST
+// It also loads Code together (src/collab/), which adds files.write for the Code editor.
 // On the host nothing is needed here: the remote brain rides the engine's brain.attach,
 // brain.request and brain.respond frames.
 
 import { createLendGuard } from './guard.js';
+import registerCollab from '../collab/index.js';
 
 const LOG_STATUSES = new Set(['running', 'done', 'refused', 'failed', 'cancelled', 'stopped']);
 const num = (v) => (Number.isFinite(v) && v >= 0 ? Math.round(v) : undefined);
@@ -54,13 +58,19 @@ export default function register(ctx) {
   const chat = findLocalChat(ctx);
   const guard = createLendGuard({ chat, emit });
   // guarded: lend.chat can reach the local brain. When false the browser uses the engine's brain.chat.
-  const status = () => ({ lend: !!config.lend, guarded: !!chat, ...guard.status() });
+  let lending = !!config.lend;
+  const status = () => ({ lend: lending, guarded: !!chat, ...guard.status() });
 
   const onlyLend = () => {
-    if (!config.lend) throw Object.assign(new Error('This hivedesk was not started with --lend'), { code: 'not_lending' });
+    if (!lending) throw Object.assign(new Error('This hivedesk was not started with --lend'), { code: 'not_lending' });
   };
 
   server?.command?.('lend.status', () => status());
+  server?.command?.('lend.enable', () => {
+    lending = true;
+    guard.resume();
+    return status();
+  });
   server?.command?.('lend.chat', (data) => {
     onlyLend();
     return guard.handle(data);
@@ -85,5 +95,6 @@ export default function register(ctx) {
     res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
     res.end(JSON.stringify(status()));
   });
+  registerCollab(ctx);
   return { guard, status };
 }
