@@ -45,7 +45,7 @@ function queueView() {
   const box = h('div');
   box.append(h('div', { class: 'pop-h', text: 'Model' }),
     h('div', { class: 'q-row' }, h('span', { class: `sdot sdot-${bi.dot}` }), h('div', { class: 'grow' }, h('div', { text: bi.label }), bi.detail ? h('div', { class: 'tiny muted', text: bi.detail }) : null),
-      bi.key === 'ready' && extra.stats.tps ? h('span', { class: 'chip chip-mono', text: `${extra.stats.tps.toFixed(1)} tok/s` }) : null));
+      bi.key === 'ready' && extra.stats.tps ? h('span', { class: 'hchip hchip-mono', text: `${extra.stats.tps.toFixed(1)} tok/s` }) : null));
   const running = s.queue.running || [];
   const waiting = s.queue.waiting || [];
   box.append(h('div', { class: 'pop-h', text: `On the model now` }));

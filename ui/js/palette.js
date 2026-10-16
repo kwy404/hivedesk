@@ -90,7 +90,7 @@ export function openPalette() {
   const render = () => {
     const q = input.value.trim().toLowerCase();
     const raw = input.value.trim();
-    results = commands(raw).map((c) => ({ c, m: c.keep ? { s: 999, marks: [] } : score(c.label, q) })).filter((x) => x.m);
+    results = commands(raw).map((c) => ({ c, m: c.keep ? { s: -999, marks: [] } : score(c.label, q) })).filter((x) => x.m);
     if (q) results.sort((a, b) => b.m.s - a.m.s);
     results = results.slice(0, 60);
     sel = Math.min(sel, Math.max(0, results.length - 1));

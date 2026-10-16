@@ -57,7 +57,7 @@ async function loadSprite() {
 const app = document.querySelector('.app');
 const bar = app.querySelector('.topbar');
 const desk = app.querySelector('.desk');
-const dockEl = app.querySelector('.dock');
+const dockEl = app.querySelector('.hdock');
 
 const WALLS = [['comb', 'Honeycomb'], ['fine', 'Fine comb'], ['dusk', 'Dusk'], ['plain', 'Plain charcoal']];
 
@@ -276,6 +276,9 @@ menu.provide(desk, (target) => {
   return desktopMenu();
 });
 desk.tabIndex = -1;
+const empty = h('div', { class: 'desk-empty', hidden: true }, h('div', {}, h('img', { src: '/assets/mascot-dark.svg', alt: '' }), h('p', { text: 'Open a window from the dock, or right click the desktop.' })));
+desk.prepend(empty);
+wm.onChange(() => { empty.hidden = wm.list().some((w) => !w.min); });
 net.connect();
 
 // Keep the desk label up to date for screen readers.

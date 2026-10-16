@@ -13,7 +13,7 @@ let sysAllowed = false;
 try { sysAllowed = localStorage.getItem('hivedesk.sysnotify') === '1'; } catch {}
 
 export function init() {
-  host = h('div', { class: 'toasts', role: 'region', 'aria-label': 'Notifications', 'aria-live': 'polite' });
+  host = h('div', { class: 'ntoasts', role: 'region', 'aria-label': 'Notifications', 'aria-live': 'polite' });
   document.body.append(host);
 }
 
@@ -52,14 +52,14 @@ export function notify(n) {
     try { new Notification(n.title, { body: n.body || '', tag: n.key || undefined, silent: true }); } catch {}
   }
   if (n.quiet) return entry;
-  const lead = n.worker ? beeAvatar(n.worker, 28, { ring: true }) : h('div', { class: `toast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive', 'ico-sm'));
+  const lead = n.worker ? beeAvatar(n.worker, 28, { ring: true }) : h('div', { class: `ntoast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive', 'ico-sm'));
   const closeBtn = h('button', { class: 'ibtn ibtn-sm', type: 'button', 'aria-label': 'Dismiss', on: { click: () => dismiss() } }, icon('x', 'ico-sm'));
-  const actions = n.actions?.length ? h('div', { class: 'toast-a' }, n.actions.map((a) => h('button', {
+  const actions = n.actions?.length ? h('div', { class: 'ntoast-a' }, n.actions.map((a) => h('button', {
     type: 'button', class: `btn btn-xs ${a.primary ? 'btn-primary' : a.danger ? 'btn-bad' : 'btn-quiet'}`, text: a.label,
     on: { click: () => { dismiss(); a.run(); } },
   }))) : null;
-  const el = h('div', { class: 'toast', role: n.tone === 'bad' || n.tone === 'warn' ? 'alert' : 'status', dataset: n.key ? { key: n.key } : undefined },
-    lead, h('div', { class: 'grow' }, h('div', { class: 'toast-t', text: n.title }), n.body ? h('div', { class: 'toast-b', text: n.body }) : null, actions), closeBtn);
+  const el = h('div', { class: 'ntoast', role: n.tone === 'bad' || n.tone === 'warn' ? 'alert' : 'status', dataset: n.key ? { key: n.key } : undefined },
+    lead, h('div', { class: 'grow' }, h('div', { class: 'ntoast-t', text: n.title }), n.body ? h('div', { class: 'ntoast-b', text: n.body }) : null, actions), closeBtn);
   host.append(el);
   while (host.children.length > MAX_VISIBLE) host.firstElementChild.remove();
   let timer = null;
@@ -87,7 +87,7 @@ export function historyView(onAfter) {
   if (!history.length) listEl.append(h('div', { class: 'pop-note', style: 'border:0', text: 'Nothing yet. Finished jobs, approvals and problems show up here.' }));
   for (const n of history.slice(0, 40)) {
     listEl.append(h('div', { class: 'noti' },
-      h('div', { class: `toast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive')),
+      h('div', { class: `ntoast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive')),
       h('div', { class: 'grow' }, h('div', { class: 'row' }, h('b', { class: 'grow ellipsis', style: 'font-weight:600', text: n.title }), h('span', { class: 'tiny faint', text: fmtTime(n.ts) })),
         n.body ? h('div', { class: 'small muted', text: n.body }) : null)));
   }

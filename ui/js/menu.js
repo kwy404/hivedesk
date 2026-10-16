@@ -153,6 +153,7 @@ function build(items, parent) {
     h('span', { class: 'grow ellipsis', text: it.label }),
     it.kb ? h('span', { class: 'kb', text: it.kb }) : null,
     it.items ? h('span', { class: 'sub-ar', html: '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>' }) : null);
+    el.append(b);
     const node = { el: b, it };
     nodes.push(node);
     const openSub = (focusFirst) => {

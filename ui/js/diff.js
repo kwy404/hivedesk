@@ -17,7 +17,7 @@ export function diffStats(diff) {
  * whole content is shown as added lines.
  */
 export function diffView(diff, content) {
-  const root = h('div', { class: 'diff', role: 'table', 'aria-label': 'Changes' });
+  const root = h('div', { class: 'udiff', role: 'table', 'aria-label': 'Changes' });
   let text = String(diff || '');
   if (!text.trim() && content != null) text = `@@ -0,0 +1,${content.split('\n').length} @@\n${content.split('\n').map((l) => `+${l}`).join('\n')}`;
   if (!text.trim()) { root.append(h('div', { class: 'hunk', text: 'No line changes.' })); return root; }

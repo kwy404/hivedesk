@@ -40,7 +40,7 @@ export const TASK_LABEL = {
   failed: 'Failed', blocked: 'Blocked', skipped: 'Skipped',
 };
 
-export const TASK_CHIP = { running: 'chip-honey', done: 'chip-ok', failed: 'chip-bad', review: 'chip-info', blocked: 'chip-warn' };
+export const TASK_CHIP = { running: 'hchip-honey', done: 'hchip-ok', failed: 'hchip-bad', review: 'hchip-info', blocked: 'hchip-warn' };
 
 /** Keeps a scroll container pinned to the bottom unless the user scrolled up. */
 export function stickyScroll(el) {
