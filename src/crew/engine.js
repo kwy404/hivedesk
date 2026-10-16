@@ -228,10 +228,29 @@ export class Hive {
       if (task.kind === 'qa') {
         checks = checkWorkspace(this.toolbox.ws);
         extra = `Automatic checks: ${checks.passed ? `all passed (${checks.checked.length} files)` : `issues:\n- ${checks.issues.join('\n- ')}`}`;
+        // Small models review better when the files are right in front of them.
+        let budget = 6000;
+        const shown = [];
+        for (const f of this.toolbox.ws.list()) {
+          if (budget <= 0 || !/\.(html?|css|m?js|json|md)$/i.test(f.path)) continue;
+          let text = '';
+          try { text = this.toolbox.ws.read(f.path); } catch { continue; }
+          const cut = text.slice(0, Math.min(2500, budget));
+          budget -= cut.length;
+          shown.push(`--- ${f.path}\n${cut}${cut.length < text.length ? '\n[cut]' : ''}`);
+        }
+        if (shown.length) extra += `\n\nThe files now:\n${shown.join('\n')}\n\nCheck them against the job: is anything missing, duplicated, empty or broken?`;
       }
       const p = runTask({
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
         signal, maxTurns: this.maxTurns, extra, userNotes, preexisting,
+        verify: task.kind === 'qa' ? undefined : (wrote) => {
+          // Fix tasks must clear every static issue; build tasks only the ones in their own files
+          // (a link to a file another worker has not written yet is not their problem).
+          const r = checkWorkspace(this.toolbox.ws, task.kind === 'fix' ? undefined : wrote);
+          if (task.kind !== 'fix' && !wrote.length) return [];
+          return r.issues.filter((i) => task.kind === 'fix' || !/ links to /.test(i));
+        },
         chat: (from, text, taskId) => this.chat(from, text, taskId, 'general', jobId)
       }).then((res) => ({ task, worker, res, checks }), (err) => ({ task, worker, err, checks }));
       active.set(task.id, p);

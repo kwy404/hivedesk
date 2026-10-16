@@ -100,7 +100,8 @@ function capResult(tool, text) {
  *   job: any, task: any, worker: any, graph?: import('./taskgraph.js').TaskGraph, crewById: Map<string, any>,
  *   scheduler: import('./scheduler.js').Scheduler, toolbox: import('../tools/index.js').ToolBox, memory: import('./memory.js').Memory,
  *   bus: import('../bus.js').EventBus, signal?: AbortSignal, maxTurns?: number, extra?: string,
- *   userNotes?: () => string[], preexisting?: Set<string>, chat: (from: string, text: string, taskId?: string) => void
+ *   userNotes?: () => string[], preexisting?: Set<string>, chat: (from: string, text: string, taskId?: string) => void,
+ *   verify?: (wrote: string[]) => string[]
  * }} ctx
  * @returns {Promise<{ status: 'done' | 'failed', summary: string, report?: { passed: boolean, issues: string[] }, wrote: string[] }>}
  */
@@ -115,6 +116,7 @@ export async function runTask(ctx) {
   let invalid = 0;
   let lastKey = '';
   let repeats = 0;
+  let rejected = 0;
   const jobOpt = { jobId: job.id };
   const finish = task.kind === 'qa' ? 'report' : 'done';
 
@@ -153,6 +155,14 @@ export async function runTask(ctx) {
     lastKey = key;
 
     if (action.tool === 'done') {
+      // Do not take "done" at face value when the static checks still fail on this task's files.
+      const remaining = ctx.verify ? ctx.verify([...wrote]) : [];
+      if (remaining.length && rejected < 2) {
+        rejected++;
+        const list = remaining.map((i) => `- ${i}`).join('\n');
+        steps.push({ action, result: `Not done yet. These problems remain:\n${list}\nFix them (read the file, then write it again), then answer with done.` });
+        continue;
+      }
       const summary = String(action.args?.summary || 'done').slice(0, 300);
       memory.add(worker.id, `${task.title}: ${summary}${wrote.size ? ` (files: ${[...wrote].join(', ')})` : ''}`);
       return { status: 'done', summary, wrote: [...wrote] };

@@ -88,7 +88,7 @@ const HTML_FIRST = `<!doctype html>
         <p>Crumb bakes small batches every morning with flour from local mills.</p>
         <a class="button" href="mailto:hello@crumb.example">Order for tomorrow</a>
       </div>
-      <img src="bread.svg" width="320" height="220">
+      <img src="bread.svg" alt="A fresh loaf of bread" width="320" height="220">
     </section>
   </header>
   <main>
@@ -108,7 +108,7 @@ const HTML_FIRST = `<!doctype html>
     </section>
   </main>
   <footer>
-    <p>Crumb bakery, 12 Mill Street. Write to <a href="mailto:hello@crumb.example">hello@crumb.example</a>. <span id="year"></span></p>
+    <p>Crumb bakery, 12 Mill Street. <span id="year"></span></p>
   </footer>
   <script src="app.js"></script>
 </body>
@@ -167,12 +167,12 @@ const SCRIPTS = {
   'Check the page': [
     { tool: 'check', args: {} },
     { tool: 'run', args: { command: 'node --check app.js' } },
-    { tool: 'report', args: { passed: false, issues: ['index.html: the hero <img> has no alt text. Fix: add alt="A fresh loaf of bread".'] } }
+    { tool: 'report', args: { passed: false, issues: ['index.html: the footer has no way to reach the bakery. Fix: add the email link hello@crumb.example to the footer.'] } }
   ],
   'Fix the QA issues (round 1)': [
     { tool: 'read_file', args: { path: 'index.html' } },
-    { tool: 'edit_file', args: { path: 'index.html', search: '<img src="bread.svg"', replace: '<img src="bread.svg" alt="A fresh loaf of bread"' } },
-    { tool: 'done', args: { summary: 'Added alt text to the hero image.' } }
+    { tool: 'edit_file', args: { path: 'index.html', search: 'Crumb bakery, 12 Mill Street.', replace: 'Crumb bakery, 12 Mill Street. Write to <a href="mailto:hello@crumb.example">hello@crumb.example</a>.' } },
+    { tool: 'done', args: { summary: 'Added the email link to the footer.' } }
   ],
   'Check the fixes': [
     { tool: 'check', args: {} },

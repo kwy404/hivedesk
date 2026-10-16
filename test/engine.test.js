@@ -47,7 +47,7 @@ describe('the full loop', () => {
       ['designer', 'done'], ['dev', 'done'], ['writer', 'done'], ['qa', 'done'], ['dev', 'done'], ['qa', 'done']
     ]);
     expect(t.ws.list().map((f) => f.path).sort()).toEqual(['README.md', 'app.js', 'bread.svg', 'index.html', 'style.css']);
-    expect(t.ws.read('index.html')).toContain('alt="A fresh loaf of bread"');
+    expect(t.ws.read('index.html')).toContain('Write to <a href="mailto:hello@crumb.example">');
     const reports = t.bus.events.filter((e) => e.type === 'qa.report').map((e) => e.data.passed);
     expect(reports).toEqual([false, true]);
     expect(t.bus.events.filter((e) => e.type === 'playbook.saved')).toHaveLength(1);
@@ -242,5 +242,27 @@ describe('planner and worker helpers', () => {
     expect(r.source).toBe('model');
     expect(r.tasks.map((t) => t.assignee)).toEqual(['designer', 'qa']);
     expect(b.calls[0].options.schema.properties.tasks.items.properties.assignee.enum).toEqual(['dev', 'designer', 'qa', 'writer']);
+  });
+});
+
+describe('done is checked', () => {
+  it('sends a fix task back when the static checks still fail', async () => {
+    const respond = (messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Page', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'Page') {
+        const n = step(messages);
+        if (n === 0) return { tool: 'write_file', args: { path: 'index.html', content: '<p>no doctype' } };
+        if (n === 1) return { tool: 'done', args: { summary: 'done' } };
+        if (n === 2) return { tool: 'write_file', args: { path: 'index.html', content: '<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width"><title>T</title></head><body><p>ok</p></body></html>' } };
+        return { tool: 'done', args: { summary: 'fixed' } };
+      }
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    };
+    const t = setup(respond);
+    await t.hive.createJob({ request: 'page', approval: false }).done;
+    const sent = t.brain.calls.find((c) => c.messages.some((m) => m.role === 'user' && m.content.startsWith('Not done yet')));
+    expect(sent).toBeTruthy();
+    expect(t.bus.state.tasks.t_1_1.note).toBe('fixed');
+    expect(t.bus.state.jobs[0].summary).toBe('Finished, and QA passed.');
   });
 });
