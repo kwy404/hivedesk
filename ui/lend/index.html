@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>hivedesk lend</title>
+  <link rel="icon" href="/assets/mascot.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/monsoon-0.2.0.min.css">
+  <link rel="stylesheet" href="/lend/lend.css">
+</head>
+<body class="lend-page">
+  <main id="lend-root" class="lend-root" aria-live="polite">
+    <p class="lend-status">Connecting to the local hivedesk...</p>
+  </main>
+  <script type="module">
+    import { boot } from '/lend/index.js';
+    boot().catch((err) => {
+      document.getElementById('lend-root').innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'lend-error';
+      p.textContent = `Could not reach the local hivedesk: ${err.message}`;
+      document.getElementById('lend-root').append(p);
+    });
+  </script>
+</body>
+</html>

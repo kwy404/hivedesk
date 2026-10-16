@@ -49,7 +49,8 @@ export default function register(ctx) {
   const emit = (type, data) => bus?.emit?.(type, data);
   const chat = findLocalChat(ctx);
   const guard = createLendGuard({ chat, emit });
-  const status = () => ({ lend: !!config.lend, ...guard.status() });
+  // guarded: lend.chat can reach the local brain. When false the browser uses the engine's brain.chat.
+  const status = () => ({ lend: !!config.lend, guarded: !!chat, ...guard.status() });
 
   const onlyLend = () => {
     if (!config.lend) throw Object.assign(new Error('This hivedesk was not started with --lend'), { code: 'not_lending' });

@@ -4,8 +4,19 @@
 
 import { Emitter } from './core/emitter.js';
 
+/** The token from the address bar, or the copy ui/js/net.js keeps after it cleans the address bar. */
+export function readToken(loc = globalThis.location) {
+  const t = new URLSearchParams(loc.search).get('t');
+  if (t) return t;
+  try {
+    return globalThis.sessionStorage?.getItem('hivedesk.token') || '';
+  } catch {
+    return ''; // storage blocked: the HttpOnly cookie still authorizes the socket
+  }
+}
+
 export function socketUrl(loc = globalThis.location) {
-  const token = new URLSearchParams(loc.search).get('t');
+  const token = readToken(loc);
   return `${loc.protocol === 'https:' ? 'wss' : 'ws'}://${loc.host}/ws${token ? `?t=${encodeURIComponent(token)}` : ''}`;
 }
 
