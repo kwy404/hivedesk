@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0E0D0B">
+  <meta name="referrer" content="no-referrer">
+  <title>hivedesk</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Monsoon 0.2.0 and Voodoo.js 1.0.0, vendored so the Hive works offline -->
+  <link rel="stylesheet" href="/vendor/monsoon-0.2.0.min.css">
+  <link rel="stylesheet" href="/css/hive.css">
+  <script src="/vendor/voodoo-1.0.0.full.min.js" data-manual data-no-observer data-xray-shortcut="false"></script>
+  <script type="module" src="/js/main.js"></script>
+  <link rel="modulepreload" href="/js/actions.js">
+  <link rel="modulepreload" href="/js/bees.js">
+  <link rel="modulepreload" href="/js/brainstate.js">
+  <link rel="modulepreload" href="/js/diff.js">
+  <link rel="modulepreload" href="/js/dock.js">
+  <link rel="modulepreload" href="/js/dom.js">
+  <link rel="modulepreload" href="/js/highlight.js">
+  <link rel="modulepreload" href="/js/hive.js">
+  <link rel="modulepreload" href="/js/menu.js">
+  <link rel="modulepreload" href="/js/net.js">
+  <link rel="modulepreload" href="/js/notify.js">
+  <link rel="modulepreload" href="/js/palette.js">
+  <link rel="modulepreload" href="/js/sound.js">
+  <link rel="modulepreload" href="/js/store.js">
+  <link rel="modulepreload" href="/js/topbar.js">
+  <link rel="modulepreload" href="/js/widgets/approvals.js">
+  <link rel="modulepreload" href="/js/widgets/chat.js">
+  <link rel="modulepreload" href="/js/widgets/files.js">
+  <link rel="modulepreload" href="/js/widgets/hire.js">
+  <link rel="modulepreload" href="/js/widgets/lend.js">
+  <link rel="modulepreload" href="/js/widgets/playbooks.js">
+  <link rel="modulepreload" href="/js/widgets/preview.js">
+  <link rel="modulepreload" href="/js/widgets/replay.js">
+  <link rel="modulepreload" href="/js/widgets/runlog.js">
+  <link rel="modulepreload" href="/js/widgets/settings.js">
+  <link rel="modulepreload" href="/js/widgets/timeline.js">
+  <link rel="modulepreload" href="/js/widgets/util.js">
+  <link rel="modulepreload" href="/js/widgets/worker.js">
+  <link rel="modulepreload" href="/js/wm.js">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar" aria-label="hivedesk"></header>
+    <main class="desk" aria-label="Hive desktop"></main>
+    <footer class="dock"></footer>
+  </div>
+  <div class="boot" role="status" aria-live="polite">
+    <div class="boot-in">
+      <img src="/assets/mascot-dark.svg" alt="Mel, the crew foreman bee" width="120" height="120">
+      <h1>Opening the Hive</h1>
+      <p>Connecting to hivedesk on this computer.</p>
+      <span class="spin" aria-hidden="true"></span>
+    </div>
+  </div>
+  <noscript><p style="padding:24px;color:#F2E9DA">hivedesk needs JavaScript to show the Hive.</p></noscript>
+</body>
+</html>
