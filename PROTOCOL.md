@@ -72,10 +72,14 @@ Worker   { id, name, role, color, avatar, prompt, tools: string[], builtin: bool
 Task     { id, jobId, title, detail, assignee, dependsOn: string[], status, attempts, kind }
          status: "pending" | "ready" | "running" | "review" | "done" | "failed" | "blocked" | "skipped"
          kind:   "build" | "qa" | "fix" | "docs"
-Job      { id, request, status, approval, createdAt, finishedAt?, taskIds: string[], playbookId?, summary? }
-         status: "planning" | "running" | "done" | "failed" | "cancelled"
+Job      { id, request, status, approval, refine, createdAt, finishedAt?, taskIds: string[], playbookId?, summary?,
+           briefProposed?: Brief, brief?: { text, source }, report?: Report & { improvedPrompt, nextPrompts } }
+         status: "refining" | "awaiting_brief" | "planning" | "running" | "done" | "failed" | "cancelled"
+Brief    { goal, build: string[], constraints: string[], acceptance: string[], questions: [{ question, answer }], text }
+         text is the Markdown the user sees and edits; acceptance items are "- [ ] ..." lines in it.
+Report   { built, files: [{ path, op, added, removed }], checks: [{ name, ok, detail }], missing: string[], turns, seconds }
 Approval { id, jobId, taskId, workerId, tool, args, summary, diff?, createdAt }
-Playbook { id, title, request, keywords: string[], tasks: [{ title, detail, assignee, dependsOn: number[] , kind }], createdAt, uses }
+Playbook { id, title, request, prompt?, keywords: string[], tasks: [{ title, detail, assignee, dependsOn: number[] , kind }], createdAt, uses }
 Message  { role: "system" | "user" | "assistant", content: string }
 ```
 
@@ -102,6 +106,11 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `crew.updated` | `{ worker: Worker }` |
 | `crew.fired` | `{ workerId }` |
 | `job.created` | `{ job: Job }` |
+| `job.refining` | `{ workerId: "mel" }` Mel is writing the brief |
+| `brief.proposed` | `{ original, brief: Brief }` the job waits (status `awaiting_brief`) until `brief.approve` |
+| `brief.approved` | `{ text, source: "refined" \| "edited" \| "original", brief?: Brief, by?: "user" \| "auto" }` the planner and the workers work from `text` |
+| `job.report` | `{ report: Report, improvedPrompt, nextPrompts: string[] }` after `job.done` or `job.failed` |
+| `worker.note` | `{ workerId, taskId, text }` a decision the worker wrote in its scratchpad |
 | `job.planning` | `{ workerId: "mel", playbookId?, playbookScore? }` |
 | `job.planned` | `{ tasks: Task[], playbookId? }` |
 | `job.done` | `{ summary, files: string[] }` |
@@ -143,7 +152,9 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | type | data | result |
 | --- | --- | --- |
 | `ping` | `{}` | `{ pong: true, ts }` |
-| `job.create` | `{ request, approval?: boolean, playbookId?: string }` | `{ jobId }` |
+| `job.create` | `{ request, approval?: boolean, refine?: boolean, playbookId?: string }` (`refine` defaults to `settings.refine`, true) | `{ jobId }` |
+| `brief.approve` | `{ jobId, use: "refined" \| "edited" \| "original", text? }` (`text` with `edited`) | `{}` |
+| `playbook.save` | `{ jobId }` keep a job plan and its improved prompt as a playbook | `{ playbook }` |
 | `job.cancel` | `{ jobId }` | `{}` |
 | `chat.send` | `{ channel, text }` user message; in a running job it is added to the context of the addressed worker (or Mel for `general`) | `{ id }` |
 | `approval.resolve` | `{ approvalId, approved: boolean, note? }` | `{}` |
@@ -153,7 +164,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `task.retry` | `{ taskId }` a failed, blocked, cancelled or done task goes back in line (status `ready`, or `pending` while its dependencies run); tasks blocked by it are unblocked; a job that already ended is reopened (`job.resumed`) | `{}` |
 | `task.reassign` | `{ taskId, workerId }` hand a task that is not done to another worker (`task.updated`); a running task stops and starts again with the new worker; a failed one is also retried | `{}` |
 | `task.cancel` | `{ taskId }` the task becomes `skipped` (a running one is stopped); tasks that depend on it become `blocked` | `{}` |
-| `settings.set` | `{ approvalMode?, sound? }` | `{ settings }` |
+| `settings.set` | `{ approvalMode?, sound?, refine?: boolean, crew?: string[] }` (`crew`: the builtin roles that take part; Mel and hired workers always do) | `{ settings }` |
 | `brain.probe` | `{}` | `{ hardware, options: BrainOption[], recommended }` |
 | `brain.select` | `BrainChoice` | `{ status }` |
 | `brain.download` | `{ model? }` start (or retry) the automatic model download; needed only after `--no-download` or a failure | `{}` |
