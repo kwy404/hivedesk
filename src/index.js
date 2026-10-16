@@ -44,7 +44,7 @@ export async function startHive(opts) {
   let server;
   const previewUrl = () => server?.previewUrl() || null;
   const toolbox = new ToolBox({ workspace, bus, approvals, previewUrl });
-  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns, previewUrl });
+  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns, previewUrl, autoApproveBriefMs: opts.demo ? (opts.demoApproveMs ?? 2500) : 0 });
   const brains = opts.demo || opts.brain ? null : new BrainManager({ bus, scheduler, home, flags: opts.flags, log, progress: opts.progress });
 
   bus.emit('session.started', { version: VERSION, protocol: PROTOCOL, dir, workspace: paths.workspace, demo: !!opts.demo, lend: !!opts.lend, pid: process.pid });

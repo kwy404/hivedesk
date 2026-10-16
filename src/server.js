@@ -157,7 +157,7 @@ export function createServer(opts) {
   command('ping', () => ({ pong: true, ts: new Date().toISOString() }));
   command('job.create', (d) => {
     need(typeof d.request === 'string' && d.request.trim(), 'request is required');
-    const { jobId } = hive.createJob({ request: d.request, approval: typeof d.approval === 'boolean' ? d.approval : undefined, playbookId: d.playbookId });
+    const { jobId } = hive.createJob({ request: d.request, approval: typeof d.approval === 'boolean' ? d.approval : undefined, refine: typeof d.refine === 'boolean' ? d.refine : undefined, playbookId: d.playbookId });
     return { jobId };
   });
   command('job.cancel', (d) => { hive.cancelJob(d.jobId); return {}; });
@@ -171,6 +171,8 @@ export function createServer(opts) {
   command('crew.update', (d) => ({ worker: hive.updateWorker(d.workerId, d) }));
   command('crew.fire', (d) => { hive.fire(d.workerId); return {}; });
   command('task.retry', (d) => hive.retryTask(d.taskId));
+  command('brief.approve', (d) => hive.approveBrief(d.jobId, { use: d.use, text: d.text }));
+  command('playbook.save', (d) => hive.savePlaybook(d.jobId));
   command('task.reassign', (d) => hive.reassignTask(d.taskId, d.workerId));
   command('task.cancel', (d) => hive.cancelTask(d.taskId));
   command('settings.set', (d) => ({ settings: hive.setSettings(d) }));

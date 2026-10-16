@@ -186,8 +186,23 @@ function taskTitle(messages) {
   return m ? m[1].trim() : '';
 }
 
-/** The demo responder: the plan for Mel, then a fixed list of actions per task. */
+const BRIEF = {
+  goal: 'A one page site for Crumb, a neighborhood bakery, so neighbors know what is baked and when the shop is open.',
+  build: ['index.html: a hero with a call to order, the three breads, opening hours and a contact link', 'style.css: warm bakery colors, cards for the breads, a layout that stacks on phones', 'bread.svg: a simple picture for the hero', 'README.md: what the site is and how to open it'],
+  constraints: ['Plain HTML and CSS, a tiny app.js at most', 'No network access, no build step', 'Readable text with good contrast'],
+  acceptance: ['index.html shows the bakery name, three breads, the opening hours and a way to contact the bakery', 'The page passes the static checks (doctype, lang, viewport, title, alt text, links)', 'The layout works at 375 px wide', 'README.md lists the files'],
+  questions: [{ question: 'Online orders?', answer: 'No, an email link is enough' }, { question: 'Photos?', answer: 'One drawn bread picture, no photos' }]
+};
+
+const REPORT = {
+  improvedPrompt: 'Build a one page site for Crumb, a neighborhood bakery, in plain HTML and CSS with no build step and no network. Files: index.html (hero with "Order for tomorrow", three bread cards: country sourdough, seeded rye, morning brioche; opening hours Tuesday to Sunday; footer with the email hello@crumb.example), style.css (warm colors, cards, stacks under 700 px), bread.svg (a drawn loaf with alt text), app.js (current year in the footer) and README.md (files and how to open). Check: doctype, lang, viewport, title, alt text, every local link exists, works at 375 px.',
+  nextPrompts: ['Add a dark mode that follows the system setting.', 'Add a small weekly specials section that reads from a specials.json file.', 'Add a test that checks every local link and image in index.html.']
+};
+
+/** The demo responder: the brief and the plan for Mel, a fixed list of actions per task, then the report. */
 export function demoRespond(messages, options) {
+  if (options.schema?.properties?.goal) return BRIEF;
+  if (options.schema?.properties?.improvedPrompt) return REPORT;
   if (options.schema?.properties?.tasks) return PLAN;
   const title = taskTitle(messages);
   const step = messages.filter((m) => m.role === 'assistant').length;

@@ -1,5 +1,6 @@
 // One worker doing one task: a loop of model turns, each producing exactly one JSON action.
 import { TOOLS, actionSchema } from '../tools/index.js';
+import { checkWorkspace } from '../tools/check.js';
 
 export const MAX_TURNS = 10;
 const HISTORY_PAIRS = 6;
@@ -27,8 +28,16 @@ function reportAction() {
 }
 
 /** The action schema for a worker: its allowed tools, say, and done (or report for QA tasks). */
+const noteAction = () => ({
+  type: 'object',
+  properties: { tool: { const: 'note' }, args: { type: 'object', properties: { text: { type: 'string', description: 'a short decision to remember' } }, required: ['text'], additionalProperties: false } },
+  required: ['tool', 'args'],
+  additionalProperties: false
+});
+
 export function workerSchema(worker, task) {
   const schema = actionSchema(worker.tools);
+  schema.oneOf.push(noteAction());
   if (task.kind === 'qa') {
     schema.oneOf = schema.oneOf.filter((o) => o.properties.tool.const !== 'done');
     schema.oneOf.push(reportAction());
@@ -50,6 +59,7 @@ export function systemPrompt(worker, task) {
     lines.push(`- ${name} {${args}}: ${t.description}`);
   }
   lines.push('- say {text}: post a short message to the crew chat.');
+  lines.push('- note {text}: write a short decision in your scratchpad (for example "colors: #2b1d12 on #fff8ef").');
   if (task.kind === 'qa') lines.push('- report {passed, issues}: finish your check. passed is true only when there are no real problems; each issue names the file, the problem and the fix.');
   else lines.push('- done {summary}: finish your task when the files are written.');
   lines.push('', 'Rules: relative paths only (index.html, css/style.css). Always write complete files, never placeholders. One action per turn. Do not repeat an action that already worked.');
@@ -64,12 +74,13 @@ function planLines(job, graph, task, crewById) {
   }).join('\n');
 }
 
-export function firstMessage({ job, task, graph, crewById, files, notes, userNotes, extra }) {
-  const parts = [`Job: ${job.request}`];
+export function firstMessage({ job, task, graph, crewById, files, notes, userNotes, extra, scratchpad }) {
+  const parts = [job.brief ? `Job brief:\n${job.brief}` : `Job: ${job.request}`];
   if (graph) parts.push(`Plan:\n${planLines(job, graph, task, crewById)}`);
   parts.push(`Your task: ${task.title}${task.detail ? '\n' + task.detail : ''}`);
   parts.push(`Files now: ${files.length ? files.join(', ') : '(none yet)'}`);
   if (notes.length) parts.push(`Crew notes:\n${notes.join('\n')}`);
+  if (scratchpad && scratchpad.length) parts.push(`Your scratchpad (decisions you noted):\n${scratchpad.map((n) => `- ${n}`).join('\n')}`);
   if (userNotes.length) parts.push(`Messages from the user:\n${userNotes.join('\n')}`);
   if (extra) parts.push(extra);
   parts.push('What is your first action?');
@@ -120,12 +131,19 @@ export async function runTask(ctx) {
   const jobOpt = { jobId: job.id };
   const finish = task.kind === 'qa' ? 'report' : 'done';
 
+  /** Files this worker read or created in this task: changing any other existing file needs a read first. */
+  const known = new Set();
   for (let n = 1; n <= maxTurns; n++) {
     if (signal?.aborted) throw new Error('cancelled');
+    if (ctx.budget) {
+      if (ctx.budget.turns >= ctx.budget.max) return { status: 'failed', summary: `stopped by Mel: the job used its ${ctx.budget.max} model turns`, wrote: [...wrote] };
+      ctx.budget.turns++;
+    }
     // Rebuilt every turn: the file list and the user's messages change while the task runs.
     const first = firstMessage({
       job, task, graph: ctx.graph, crewById: ctx.crewById, files: toolbox.ws.list().map((f) => f.path),
-      notes: memory.crew(6), userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra
+      notes: memory.crew(6), userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra,
+      scratchpad: memory.get(`pad:${worker.id}`)
     });
     const messages = [{ role: 'system', content: system }, { role: 'user', content: first }];
     const older = steps.slice(0, Math.max(0, steps.length - HISTORY_PAIRS));
@@ -173,6 +191,15 @@ export async function runTask(ctx) {
       memory.add(worker.id, `${task.title}: ${report.passed ? 'passed' : 'found ' + report.issues.length + ' issues'}`);
       return { status: 'done', summary: report.passed ? 'all checks passed' : `${report.issues.length} issues`, report, wrote: [...wrote] };
     }
+    if (action.tool === 'note') {
+      const text = String(action.args?.text || '').trim().slice(0, 240);
+      if (text) {
+        memory.add(`pad:${worker.id}`, text);
+        bus.emit('worker.note', { workerId: worker.id, taskId: task.id, text }, jobOpt);
+      }
+      steps.push({ action, result: 'Noted. Now do the next step.' });
+      continue;
+    }
     if (action.tool === 'say') {
       ctx.chat(worker.id, String(action.args?.text || '').slice(0, 600), task.id);
       steps.push({ action, result: `Posted. If your task is complete, answer with ${finish}. Otherwise do the next step.` });
@@ -182,13 +209,26 @@ export async function runTask(ctx) {
       steps.push({ action, result: 'You already did exactly this. Do the next step of your task, or finish.' });
       continue;
     }
+    // Read before you change: an existing file must be read (or created) by this worker in this task first.
+    const target = typeof action.args?.path === 'string' ? action.args.path.trim().replace(/\\/g, '/').replace(/^\.\//, '') : '';
+    if ((action.tool === 'edit_file' || action.tool === 'write_file') && target && !known.has(target) && toolbox.ws.exists(target)) {
+      steps.push({ action, result: `Error: ${target} already exists and you have not read it. Read it first with read_file, then change it with a small edit_file.` });
+      continue;
+    }
     bus.emit('worker.status', { workerId: worker.id, status: 'tool', detail: `${action.tool}${action.args?.path ? ' ' + action.args.path : ''}`, taskId: task.id }, jobOpt);
     const out = await toolbox.execute(action.tool, action.args, {
       jobId: job.id, taskId: task.id, workerId: worker.id, allowed: worker.tools,
       preexisting: ctx.preexisting, approval: job.approval, signal
     });
     if (out.ok && (action.tool === 'write_file' || action.tool === 'edit_file')) wrote.add(String(action.args.path).replace(/^\.\//, ''));
+    if (out.ok && target && ['read_file', 'write_file', 'edit_file'].includes(action.tool)) known.add(target);
     let observation = out.ok ? `Result: ${capResult(action.tool, out.result)}` : `Error: ${out.error}`;
+    // After each change, the checks run on the changed file and the exact result goes back to the worker.
+    if (out.ok && (action.tool === 'write_file' || action.tool === 'edit_file') && target) {
+      const r = checkWorkspace(toolbox.ws, [target]);
+      const own = r.issues.filter((i) => !/ links to /.test(i) || task.kind === 'fix');
+      observation += own.length ? `\nChecks on ${target} found problems:\n- ${own.join('\n- ')}` : `\nChecks on ${target}: ok.`;
+    }
     // Small models often keep polishing; remind them how to finish after every change.
     if (out.ok && ['write_file', 'edit_file', 'delete_file', 'preview', 'check'].includes(action.tool)) observation += `\nIf your task is complete, answer with ${finish}.`;
     if (!out.ok && action.tool === 'edit_file') observation += '\nRead the file first, or write the whole file with write_file.';

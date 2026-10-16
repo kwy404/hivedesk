@@ -5,8 +5,11 @@ import { Memory } from './memory.js';
 import { makePlan } from './planner.js';
 import { runTask } from './worker.js';
 import { checkWorkspace } from '../tools/check.js';
+import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
 
-const MAX_FIX_ROUNDS = 2;
+const MAX_FIX_ROUNDS = 3;
+/** Mel stops a job that uses more model turns than this (a loop that does not converge). */
+const JOB_TURN_BUDGET = 160;
 let chatSeq = 0;
 
 /** A signal that aborts when any of the given signals aborts (AbortSignal.any is not in Node 18). */
@@ -25,7 +28,8 @@ export class Hive {
    * @param {{
    *   bus: import('../bus.js').EventBus, scheduler: import('./scheduler.js').Scheduler,
    *   toolbox: import('../tools/index.js').ToolBox, approvals: import('../tools/approvals.js').Approvals,
-   *   playbooks: import('../playbooks/index.js').PlaybookStore, maxTurns?: number, previewUrl?: () => string | null
+   *   playbooks: import('../playbooks/index.js').PlaybookStore, maxTurns?: number, previewUrl?: () => string | null,
+   *   autoApproveBriefMs?: number
    * }} opts
    */
   constructor(opts) {
@@ -35,6 +39,8 @@ export class Hive {
     this.approvals = opts.approvals;
     this.playbooks = opts.playbooks;
     this.maxTurns = opts.maxTurns;
+    /** Demo and tests: approve the proposed brief by itself after this many ms (0: wait for the user). */
+    this.autoApproveBriefMs = opts.autoApproveBriefMs || 0;
     this.previewUrl = opts.previewUrl || (() => null);
     this.memory = new Memory();
     /** @type {Map<string, { ctrl: AbortController, notes: Map<string, string[]>, promise: Promise<any> }>} */
@@ -149,6 +155,7 @@ export class Hive {
     const job = {
       id: jobId, request, status: 'planning',
       approval: spec.approval === undefined ? this.state.settings.approvalMode !== false : !!spec.approval,
+      refine: spec.refine === undefined ? this.state.settings.refine !== false : !!spec.refine,
       createdAt: new Date().toISOString(), taskIds: []
     };
     const ctrl = new AbortController();
@@ -195,10 +202,19 @@ export class Hive {
     const active = this.state.settings.crew;
     const crew = Array.isArray(active) ? this.state.crew.filter((w) => w.id === 'mel' || !w.builtin || active.includes(w.id)) : this.state.crew;
     const crewById = this.crewById();
-    this.chat('mel', `On it: "${job.request}". Let me make a plan.`, undefined, 'general', jobId);
+    run.budget = { turns: 0, max: JOB_TURN_BUDGET };
     if (!this.scheduler.hasBrain) {
       this.chat('system', 'No model yet: the job waits until a model is ready. See the model status in the top bar or open Settings.', undefined, 'general', jobId);
     }
+    // 1. The prompt refiner: Mel turns the request into a brief, the user approves, edits or keeps the original.
+    if (job.refine) {
+      this.chat('mel', `On it: "${job.request}". First I will write it up as a clear brief for you to check.`, undefined, 'general', jobId);
+      await this._refine(job, run);
+      if (signal.aborted) return;
+    } else {
+      this.chat('mel', `On it: "${job.request}". Let me make a plan.`, undefined, 'general', jobId);
+    }
+    const work = job.brief || job.request;
     // Playbook retrieval.
     let playbook = null;
     let score = 0;
@@ -206,7 +222,7 @@ export class Hive {
       playbook = this.playbooks.get(playbookId);
       score = playbook ? 1 : 0;
     } else {
-      const hit = this.playbooks.search(job.request, { limit: 1, min: 0.25 })[0];
+      const hit = this.playbooks.search(work, { limit: 1, min: 0.25 })[0];
       if (hit) { playbook = hit.playbook; score = hit.score; }
     }
     this.bus.emit('job.planning', playbook ? { workerId: 'mel', playbookId: playbook.id, playbookScore: score } : { workerId: 'mel' }, ev);
@@ -216,7 +232,7 @@ export class Hive {
       this.chat('mel', `This looks like an earlier job ("${playbook.title}"), so I am reusing its playbook.`, undefined, 'general', jobId);
     }
     const files = this.toolbox.ws.list().map((f) => f.path);
-    const plan = await makePlan({ scheduler: this.scheduler, request: job.request, crew, playbook, files, notes: this.memory.crew(4), jobId, signal });
+    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, notes: this.memory.crew(4), jobId, signal });
     if (signal.aborted) return;
     if (plan.error) this.chat('system', `The planner answer was not usable (${plan.error}). Using a ${plan.source === 'playbook' ? 'saved playbook' : 'simple default plan'}.`, undefined, 'general', jobId);
 
@@ -276,12 +292,13 @@ export class Hive {
           shown.push(`--- ${f.path}\n${cut}${cut.length < text.length ? '\n[cut]' : ''}`);
         }
         if (shown.length) extra += `\n\nThe files now:\n${shown.join('\n')}\n\nCheck them against the job: is anything missing, duplicated, empty or broken?`;
+        if (job.acceptance?.length) extra += `\n\nAcceptance criteria to check one by one (each unmet one is an issue):\n${job.acceptance.map((a) => `- [ ] ${a}`).join('\n')}`;
       }
       const control = { ctrl: new AbortController() };
       controls.set(task.id, control);
       const p = runTask({
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
-        signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting,
+        signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting, budget: run.budget,
         verify: task.kind === 'qa' ? undefined : (wrote) => {
           // Fix tasks must clear every static issue; build tasks only the ones in their own files
           // (a link to a file another worker has not written yet is not their problem).
@@ -366,6 +383,7 @@ export class Hive {
     if (buildTasks.length && buildTasks.every((t) => t.status === 'failed' || t.status === 'blocked')) {
       this.bus.emit('job.failed', { error: `${failed.length} tasks failed` }, ev);
       this.chat('mel', 'This job did not work out. You can retry a task from its menu, try a smaller request, or use a bigger model.', undefined, 'general', jobId);
+      await this._report(job, run);
       return;
     }
     const summary = failed.length
@@ -384,6 +402,96 @@ export class Hive {
       });
       this.bus.emit('playbook.saved', { playbook: playbookSaved }, ev);
     }
+    await this._report(job, run);
+  }
+
+  // ---- prompt refiner ----
+  async _refine(job, run) {
+    const jobId = job.id;
+    const ev = { jobId };
+    this.bus.emit('job.refining', { workerId: 'mel' }, ev);
+    let brief;
+    try {
+      const r = await this.scheduler.turn({
+        workerId: 'mel', jobId, signal: run.ctrl.signal,
+        messages: briefMessages(job.request, this.toolbox.ws.list().map((f) => f.path)),
+        options: { schema: BRIEF_SCHEMA, maxTokens: 900, temperature: 0.2 }
+      });
+      brief = normalizeBrief(r.json, job.request);
+    } catch (err) {
+      if (run.ctrl.signal.aborted) return;
+      this.chat('system', `The brief could not be written (${err.message}). The crew works from your request as written.`, undefined, 'general', jobId);
+      job.brief = null;
+      this.bus.emit('brief.approved', { brief: null, text: job.request, source: 'original' }, ev);
+      return;
+    }
+    brief.text = briefText(brief);
+    this.bus.emit('brief.proposed', { original: job.request, brief }, ev);
+    this.chat('mel', 'Here is the brief. Use it, edit it, or keep your original request.', undefined, 'general', jobId);
+    const decision = await new Promise((resolve, reject) => {
+      run.briefWaiter = resolve;
+      if (this.autoApproveBriefMs) {
+        const t = setTimeout(() => resolve({ use: 'refined', by: 'auto' }), this.autoApproveBriefMs);
+        t.unref?.();
+      }
+      run.ctrl.signal.addEventListener('abort', () => reject(new Error('cancelled')), { once: true });
+    }).catch(() => null);
+    run.briefWaiter = null;
+    if (!decision) return;
+    let text = brief.text;
+    let source = 'refined';
+    if (decision.use === 'original') { text = job.request; source = 'original'; }
+    else if (decision.use === 'edited' && typeof decision.text === 'string' && decision.text.trim()) { text = decision.text.trim().slice(0, 8000); source = 'edited'; }
+    job.brief = source === 'original' ? null : text;
+    job.acceptance = source === 'original' ? [] : acceptanceFrom(text);
+    this.bus.emit('brief.approved', { brief: source === 'refined' ? brief : null, text, source, ...(decision.by ? { by: decision.by } : {}) }, ev);
+  }
+
+  /** The command `brief.approve`. */
+  approveBrief(jobId, { use = 'refined', text } = {}) {
+    const run = this.active.get(jobId);
+    if (!run || !run.briefWaiter) throw Object.assign(new Error('no brief is waiting for that job'), { code: 'conflict' });
+    if (!['refined', 'edited', 'original'].includes(use)) throw Object.assign(new Error('use must be refined, edited or original'), { code: 'bad_request' });
+    run.briefWaiter({ use, text, by: 'user' });
+    return {};
+  }
+
+  // ---- end of job: report and improved prompt ----
+  async _report(job, run) {
+    const jobId = job.id;
+    const report = buildReport(this.bus.events, jobId, this.state);
+    let prompt;
+    try {
+      const r = await this.scheduler.turn({
+        workerId: 'mel', jobId, signal: run.ctrl.signal,
+        messages: reportMessages({ request: job.request, brief: job.brief, report }),
+        options: { schema: REPORT_SCHEMA, maxTokens: 700, temperature: 0.3 }
+      });
+      const improvedPrompt = String(r.json?.improvedPrompt || '').trim();
+      const nextPrompts = (r.json?.nextPrompts || []).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
+      prompt = improvedPrompt && nextPrompts.length >= 2 ? { improvedPrompt: improvedPrompt.slice(0, 4000), nextPrompts } : fallbackPrompt({ request: job.request, brief: job.brief, report });
+    } catch {
+      if (run.ctrl.signal.aborted) return;
+      prompt = fallbackPrompt({ request: job.request, brief: job.brief, report });
+    }
+    this.bus.emit('job.report', { report, ...prompt }, { jobId });
+    this.chat('mel', `Report: ${report.files.length} files changed, ${report.checks.filter((c) => c.ok).length} of ${report.checks.length} checks passed${report.missing.length ? `, ${report.missing.length} things still missing` : ''}. The improved prompt is in the Report window.`, undefined, 'general', jobId);
+  }
+
+  /** The command `playbook.save`: keep a finished job (and its improved prompt) as a playbook. */
+  savePlaybook(jobId) {
+    const job = this.state.jobs.find((j) => j.id === jobId);
+    if (!job) throw Object.assign(new Error(`no job ${jobId}`), { code: 'not_found' });
+    const tasks = job.taskIds.map((id) => this.state.tasks[id]).filter((t) => t && t.kind !== 'fix');
+    if (!tasks.length) throw Object.assign(new Error('that job has no plan to save'), { code: 'conflict' });
+    const index = new Map(tasks.map((t, i) => [t.id, i]));
+    const playbook = this.playbooks.save({
+      request: job.request,
+      prompt: job.report?.improvedPrompt,
+      tasks: tasks.map((t) => ({ title: t.title, detail: t.detail, assignee: t.assignee, kind: t.kind, dependsOn: (t.dependsOn || []).map((d) => index.get(d)).filter((d) => d !== undefined) }))
+    });
+    this.bus.emit('playbook.saved', { playbook }, { jobId });
+    return { playbook };
   }
 
   // ---- task commands (PROTOCOL.md: task.retry, task.reassign, task.cancel) ----

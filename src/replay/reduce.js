@@ -130,6 +130,42 @@ export function reduce(state, event) {
       }
       break;
     }
+    case 'job.refining': {
+      const j = findJob(state, event.jobId);
+      if (j) j.status = 'refining';
+      break;
+    }
+    case 'brief.proposed': {
+      const j = findJob(state, event.jobId);
+      if (j) {
+        j.status = 'awaiting_brief';
+        j.briefProposed = d.brief;
+      }
+      break;
+    }
+    case 'brief.approved': {
+      const j = findJob(state, event.jobId);
+      if (j) {
+        j.status = 'planning';
+        j.brief = { text: d.text, source: d.source };
+      }
+      break;
+    }
+    case 'job.report': {
+      const j = findJob(state, event.jobId);
+      if (j) j.report = { ...d.report, improvedPrompt: d.improvedPrompt, nextPrompts: d.nextPrompts };
+      break;
+    }
+    case 'worker.note': {
+      if (!state.notes) state.notes = {};
+      const list = (state.notes[d.workerId] = state.notes[d.workerId] || []);
+      list.push({ text: d.text, taskId: d.taskId, ts: event.ts });
+      if (list.length > 20) list.splice(0, list.length - 20);
+      break;
+    }
+    case 'brain.choice':
+      state.choice = { ...d };
+      break;
     case 'task.updated': {
       const t = d.task && state.tasks[d.task.id];
       if (t) Object.assign(t, d.task);

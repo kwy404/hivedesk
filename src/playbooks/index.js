@@ -59,7 +59,7 @@ export class PlaybookStore {
 
   /**
    * Saves the plan of a finished job.
-   * @param {{ title?: string, request: string, tasks: Array<{ title: string, detail: string, assignee: string, dependsOn: number[], kind?: string }> }} spec
+   * @param {{ title?: string, request: string, prompt?: string, tasks: Array<{ title: string, detail: string, assignee: string, dependsOn: number[], kind?: string }> }} spec
    */
   save(spec) {
     const id = `pb_${Date.now().toString(36)}${++n}`;
@@ -67,6 +67,7 @@ export class PlaybookStore {
       id,
       title: (spec.title || spec.request).slice(0, 80),
       request: spec.request,
+      ...(spec.prompt ? { prompt: String(spec.prompt).slice(0, 4000) } : {}),
       keywords: keywords(spec.request),
       tasks: spec.tasks.map((t) => ({ title: t.title, detail: t.detail, assignee: t.assignee, dependsOn: t.dependsOn || [], kind: t.kind || 'build' })),
       createdAt: new Date().toISOString(),

@@ -86,7 +86,7 @@ describe('server', () => {
     await waitFor(() => got[0]);
     expect(got[0]).toMatchObject({ kind: 'hello', protocol: 1, demo: false });
     expect(got[0].state.crew).toHaveLength(5);
-    c.send(JSON.stringify({ kind: 'command', id: 'c1', type: 'job.create', data: { request: 'a page', approval: false } }));
+    c.send(JSON.stringify({ kind: 'command', id: 'c1', type: 'job.create', data: { request: 'a page', approval: false, refine: false } }));
     const reply = await waitFor(() => got.find((f) => f.kind === 'reply' && f.id === 'c1'));
     expect(reply).toMatchObject({ ok: true, result: { jobId: 'j_1' } });
     await waitFor(() => got.some((f) => f.kind === 'event' && f.event.type === 'job.done'));

@@ -18,12 +18,13 @@ function setup(respond, opts = {}) {
   const dir = tmpDir();
   const bus = new EventBus();
   if (opts.approvalMode === false) bus.emit('settings.changed', { approvalMode: false });
+  if (!opts.refine) bus.emit('settings.changed', { refine: false });
   const scheduler = new Scheduler(bus);
   const approvals = new Approvals(bus);
   const ws = new Workspace(path.join(dir, 'ws'));
   const toolbox = new ToolBox({ workspace: ws, bus, approvals });
   const playbooks = new PlaybookStore(path.join(dir, 'pb'));
-  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns });
+  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns, autoApproveBriefMs: opts.autoApproveBriefMs });
   hive.init();
   const brain = typeof respond === 'function' ? createFakeBrain({ respond }) : respond;
   scheduler.addBrain(brain);
@@ -349,5 +350,126 @@ describe('task commands', () => {
     t.hive.updateWorker('dev', { paused: false });
     await done;
     expect(t.bus.state.jobs[0].status).toBe('done');
+  });
+});
+
+describe('prompt refiner and report', () => {
+  const brief = { goal: 'A page for a coffee stand', build: ['index.html: menu and hours'], constraints: ['plain HTML'], acceptance: ['index.html lists three drinks', 'hours are shown'], questions: [{ question: 'Prices?', answer: 'yes' }] };
+  const respond = (seen) => (messages, options) => {
+    if (options.schema?.properties?.goal) return brief;
+    if (options.schema?.properties?.improvedPrompt) return { improvedPrompt: 'Build index.html for a coffee stand with three drinks and hours.', nextPrompts: ['Add a dark mode.', 'Add prices in a table.'] };
+    if (options.schema?.properties?.tasks) { seen.plan = messages[1].content; return { summary: 's', tasks: [{ title: 'Page', detail: '', assignee: 'dev', dependsOn: [] }] }; }
+    if (userTask(messages) === 'Page') {
+      seen.worker = messages[1].content;
+      return step(messages) === 0 ? { tool: 'write_file', args: { path: 'index.html', content: '<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width"><title>C</title></head><body><p>menu</p></body></html>' } } : { tool: 'done', args: { summary: 'page written' } };
+    }
+    seen.qa = messages[1].content;
+    return { tool: 'report', args: { passed: true, issues: [] } };
+  };
+
+  it('proposes a brief, waits, and plans from the approved (edited) brief', async () => {
+    const seen = {};
+    const t = setup(respond(seen), { refine: true });
+    const { jobId, done } = t.hive.createJob({ request: 'coffee page', approval: false });
+    const proposed = await waitFor(() => t.bus.events.find((e) => e.type === 'brief.proposed'));
+    expect(proposed.data.original).toBe('coffee page');
+    expect(proposed.data.brief.text).toContain('Goal: A page for a coffee stand');
+    expect(proposed.data.brief.text).toContain('- [ ] index.html lists three drinks');
+    expect(t.bus.state.jobs[0].status).toBe('awaiting_brief');
+    expect(t.bus.events.some((e) => e.type === 'job.planning')).toBe(false);
+    const edited = proposed.data.brief.text.replace('three drinks', 'four drinks');
+    t.hive.approveBrief(jobId, { use: 'edited', text: edited });
+    await done;
+    expect(t.bus.events.find((e) => e.type === 'brief.approved').data).toMatchObject({ source: 'edited', text: edited });
+    expect(seen.plan).toContain('four drinks');
+    expect(seen.worker).toContain('Job brief:');
+    expect(seen.qa).toContain('- [ ] index.html lists four drinks');
+    expect(() => t.hive.approveBrief(jobId, {})).toThrow('no brief');
+  });
+
+  it('keeps the original request when asked', async () => {
+    const seen = {};
+    const t = setup(respond(seen), { refine: true });
+    const { jobId, done } = t.hive.createJob({ request: 'coffee page', approval: false });
+    await waitFor(() => t.bus.events.find((e) => e.type === 'brief.proposed'));
+    t.hive.approveBrief(jobId, { use: 'original' });
+    await done;
+    expect(seen.plan).toContain('Request: coffee page');
+    expect(seen.worker).toContain('Job: coffee page');
+  });
+
+  it('ends with a report, an improved prompt and next prompts, and saves it as a playbook', async () => {
+    const seen = {};
+    const t = setup(respond(seen), { refine: true, autoApproveBriefMs: 5 });
+    const { jobId, done } = t.hive.createJob({ request: 'coffee page', approval: false });
+    await done;
+    const rep = t.bus.events.find((e) => e.type === 'job.report').data;
+    expect(rep.report.files).toEqual([{ path: 'index.html', op: 'create', added: 1, removed: 0 }]);
+    expect(rep.report.checks.some((c) => c.name.startsWith('QA') && c.ok)).toBe(true);
+    expect(rep.report.missing).toEqual([]);
+    expect(rep.improvedPrompt).toMatch(/coffee stand/);
+    expect(rep.nextPrompts).toHaveLength(2);
+    expect(t.bus.state.jobs[0].report.improvedPrompt).toBe(rep.improvedPrompt);
+    const { playbook } = t.hive.savePlaybook(jobId);
+    expect(playbook.prompt).toBe(rep.improvedPrompt);
+  });
+
+  it('writes a plain improved prompt when the model cannot', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.improvedPrompt) return 'nope';
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Page', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'Page') return step(messages) === 0 ? { tool: 'write_file', args: { path: 'a.js', content: 'export const a = 1;\n' } } : { tool: 'done', args: { summary: 'ok' } };
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    });
+    await t.hive.createJob({ request: 'a module', approval: false }).done;
+    const rep = t.bus.events.find((e) => e.type === 'job.report').data;
+    expect(rep.improvedPrompt).toContain('a module');
+    expect(rep.improvedPrompt).toContain('a.js');
+    expect(rep.nextPrompts.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('quality loop', () => {
+  it('stops after 3 fix rounds and reports what is still missing', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Page', detail: '', assignee: 'dev', dependsOn: [] }] };
+      const title = userTask(messages) || '';
+      if (title === 'Page') return step(messages) === 0 ? { tool: 'write_file', args: { path: 'x.txt', content: 'x' } } : { tool: 'done', args: { summary: 'ok' } };
+      if (title.startsWith('Fix')) return { tool: 'done', args: { summary: 'tried' } };
+      return { tool: 'report', args: { passed: false, issues: ['x.txt: says x, should say y'] } };
+    });
+    await t.hive.createJob({ request: 'y', approval: false }).done;
+    const fixes = Object.values(t.bus.state.tasks).filter((x) => x.kind === 'fix');
+    expect(fixes).toHaveLength(3);
+    expect(t.bus.events.filter((e) => e.type === 'qa.report')).toHaveLength(4);
+    expect(t.bus.state.jobs[0].summary).toBe('Finished, but QA still reports 1 issues.');
+    expect(t.bus.events.find((e) => e.type === 'job.report').data.report.missing).toEqual(['x.txt: says x, should say y']);
+  });
+
+  it('makes a worker read an existing file before changing it, runs the checks after each change, and keeps notes', async () => {
+    const t = setup((messages, options) => {
+      if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Edit', detail: '', assignee: 'dev', dependsOn: [] }] };
+      if (userTask(messages) === 'Edit') {
+        return [
+          { tool: 'note', args: { text: 'keep the old heading' } },
+          { tool: 'edit_file', args: { path: 'page.html', search: 'Old', replace: 'New' } },
+          { tool: 'read_file', args: { path: 'page.html' } },
+          { tool: 'edit_file', args: { path: 'page.html', search: 'Old', replace: 'New' } },
+          { tool: 'done', args: { summary: 'edited' } },
+          { tool: 'done', args: { summary: 'edited' } },
+          { tool: 'done', args: { summary: 'edited' } }
+        ][step(messages)];
+      }
+      return { tool: 'report', args: { passed: true, issues: [] } };
+    });
+    t.ws.write('page.html', '<h1>Old</h1>');
+    await t.hive.createJob({ request: 'edit', approval: false }).done;
+    const calls = t.brain.calls.filter((c) => c.messages[1]?.content.includes('Your task: Edit'));
+    const all = calls.flatMap((c) => c.messages.filter((m) => m.role === 'user').map((m) => m.content));
+    expect(all.some((r) => r.includes('you have not read it'))).toBe(true);
+    expect(all.some((r) => r.includes('Checks on page.html found problems'))).toBe(true);
+    expect(calls.at(-1).messages[1].content).toContain('Your scratchpad');
+    expect(t.ws.read('page.html')).toBe('<h1>New</h1>');
+    expect(t.bus.events.find((e) => e.type === 'worker.note').data).toMatchObject({ workerId: 'dev', text: 'keep the old heading' });
   });
 });
