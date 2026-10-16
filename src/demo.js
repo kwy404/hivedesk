@@ -1,0 +1,209 @@
+// --demo: a scripted job that runs the real loop (planner, task graph, scheduler, tools, QA) with a fake brain.
+// No model is involved. Every event is labeled demo: true by the bus.
+import { createFakeBrain } from './brain/fake.js';
+
+export const DEMO_REQUEST = 'A tiny landing page for Crumb, a neighborhood bakery: hero, three breads, opening hours and a contact link.';
+export const DEMO_NOTICE = 'This is a demo. No model is running; the crew follows a script.';
+
+const STYLE = `:root {
+  --bg: #fff8ef;
+  --ink: #2b1d12;
+  --muted: #7a6450;
+  --accent: #d9822b;
+  --card: #ffffff;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+header, main, footer { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 64px 0 40px;
+}
+
+.hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; margin: 0 0 12px; }
+.hero p { color: var(--muted); font-size: 1.1rem; margin: 0 0 24px; }
+.hero img { width: 100%; height: auto; }
+
+.button {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0 48px; }
+.bread { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: 0 1px 3px rgba(43, 29, 18, 0.08); }
+.bread h3 { margin: 0 0 6px; }
+.bread p { margin: 0; color: var(--muted); }
+
+.hours { background: var(--card); border-radius: var(--radius); padding: 24px; margin-bottom: 48px; }
+.hours dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 24px; margin: 0; }
+.hours dt { font-weight: 600; }
+
+footer { padding: 24px 20px 48px; color: var(--muted); }
+
+@media (max-width: 700px) {
+  .hero { grid-template-columns: 1fr; padding-top: 40px; }
+  .breads { grid-template-columns: 1fr; }
+}
+`;
+
+const BREAD_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="A loaf of bread">
+  <ellipse cx="160" cy="190" rx="130" ry="14" fill="#e9d6bf"/>
+  <path d="M40 150c0-60 55-100 120-100s120 40 120 100c0 22-18 34-40 34H80c-22 0-40-12-40-34z" fill="#d9822b"/>
+  <path d="M95 95c12 8 18 20 18 34M150 82c12 10 18 24 18 40M205 95c12 8 18 20 18 34" stroke="#f6c58a" stroke-width="10" stroke-linecap="round" fill="none"/>
+</svg>
+`;
+
+const HTML_FIRST = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crumb, neighborhood bakery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <section class="hero">
+      <div>
+        <h1>Bread worth waking up for.</h1>
+        <p>Crumb bakes small batches every morning with flour from local mills.</p>
+        <a class="button" href="mailto:hello@crumb.example">Order for tomorrow</a>
+      </div>
+      <img src="bread.svg" width="320" height="220">
+    </section>
+  </header>
+  <main>
+    <h2>Our breads</h2>
+    <div class="breads">
+      <article class="bread"><h3>Country sourdough</h3><p>Slow, tangy, a crackling crust.</p></article>
+      <article class="bread"><h3>Seeded rye</h3><p>Dense, nutty, keeps for days.</p></article>
+      <article class="bread"><h3>Morning brioche</h3><p>Soft and buttery, gone by ten.</p></article>
+    </div>
+    <section class="hours">
+      <h2>Opening hours</h2>
+      <dl>
+        <dt>Tuesday to Friday</dt><dd>7:00 to 15:00</dd>
+        <dt>Saturday and Sunday</dt><dd>8:00 to 13:00</dd>
+        <dt>Monday</dt><dd>Closed, the oven rests</dd>
+      </dl>
+    </section>
+  </main>
+  <footer>
+    <p>Crumb bakery, 12 Mill Street. Write to <a href="mailto:hello@crumb.example">hello@crumb.example</a>. <span id="year"></span></p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
+`;
+
+const APP_JS = `// Small touch: keep the footer year current.
+const year = document.getElementById('year');
+if (year) year.textContent = 'Since 2019, still baking in ' + new Date().getFullYear() + '.';
+`;
+
+const README = `# Crumb
+
+A one page site for Crumb, a neighborhood bakery.
+
+## Files
+
+* \`index.html\`: hero, the three breads, opening hours and a contact link
+* \`style.css\`: warm colors, a grid that stacks on phones
+* \`bread.svg\`: the hero picture
+* \`app.js\`: keeps the footer year current
+
+## Run it
+
+Open \`index.html\` in a browser. There is no build step.
+`;
+
+const PLAN = {
+  summary: 'A small one page site: Designer sets the look, Dev builds the page, Writer adds a README, QA checks it.',
+  tasks: [
+    { title: 'Set the look', detail: 'Write style.css (warm bakery colors, a hero grid, cards for the breads, a layout that stacks on phones) and bread.svg for the hero.', assignee: 'designer', dependsOn: [] },
+    { title: 'Build the page', detail: 'Write index.html with the hero, the three breads, opening hours and a contact link, using style.css. Add app.js for the footer year.', assignee: 'dev', dependsOn: [1] },
+    { title: 'Write the README', detail: 'Write README.md: what the site is, the files, how to open it.', assignee: 'writer', dependsOn: [2] },
+    { title: 'Check the page', detail: 'Run the checks and look at index.html, style.css and app.js.', assignee: 'qa', dependsOn: [2, 3] }
+  ]
+};
+
+const SCRIPTS = {
+  'Set the look': [
+    { tool: 'say', args: { text: 'Going for warm crust colors and a lot of air around the text.' } },
+    { tool: 'write_file', args: { path: 'style.css', content: STYLE } },
+    { tool: 'write_file', args: { path: 'bread.svg', content: BREAD_SVG } },
+    { tool: 'done', args: { summary: 'style.css and bread.svg are ready.' } }
+  ],
+  'Build the page': [
+    { tool: 'read_file', args: { path: 'style.css' } },
+    { tool: 'write_file', args: { path: 'index.html', content: HTML_FIRST } },
+    { tool: 'write_file', args: { path: 'app.js', content: APP_JS } },
+    { tool: 'done', args: { summary: 'index.html and app.js are written, using the styles from Designer.' } }
+  ],
+  'Write the README': [
+    { tool: 'list_files', args: {} },
+    { tool: 'write_file', args: { path: 'README.md', content: README } },
+    { tool: 'done', args: { summary: 'README.md explains the files and how to open the page.' } }
+  ],
+  'Check the page': [
+    { tool: 'check', args: {} },
+    { tool: 'run', args: { command: 'node --check app.js' } },
+    { tool: 'report', args: { passed: false, issues: ['index.html: the hero <img> has no alt text. Fix: add alt="A fresh loaf of bread".'] } }
+  ],
+  'Fix the QA issues (round 1)': [
+    { tool: 'read_file', args: { path: 'index.html' } },
+    { tool: 'edit_file', args: { path: 'index.html', search: '<img src="bread.svg"', replace: '<img src="bread.svg" alt="A fresh loaf of bread"' } },
+    { tool: 'done', args: { summary: 'Added alt text to the hero image.' } }
+  ],
+  'Check the fixes': [
+    { tool: 'check', args: {} },
+    { tool: 'report', args: { passed: true, issues: [] } }
+  ]
+};
+
+function taskTitle(messages) {
+  const first = messages.find((m) => m.role === 'user')?.content || '';
+  const m = first.match(/Your task: ([^\n]+)/);
+  return m ? m[1].trim() : '';
+}
+
+/** The demo responder: the plan for Mel, then a fixed list of actions per task. */
+export function demoRespond(messages, options) {
+  if (options.schema?.properties?.tasks) return PLAN;
+  const title = taskTitle(messages);
+  const step = messages.filter((m) => m.role === 'assistant').length;
+  const script = SCRIPTS[title];
+  const isQa = !!options.schema?.oneOf?.some((o) => o.properties?.tool?.const === 'report');
+  if (!script) return isQa ? { tool: 'report', args: { passed: true, issues: [] } } : { tool: 'done', args: { summary: 'Done.' } };
+  return script[Math.min(step, script.length - 1)];
+}
+
+export function createDemoBrain(opts = {}) {
+  return createFakeBrain({
+    id: 'demo',
+    label: 'Demo script (no model)',
+    model: 'demo script',
+    respond: demoRespond,
+    delayMs: opts.delayMs ?? 400,
+    tokenDelayMs: opts.tokenDelayMs ?? 20
+  });
+}

@@ -1,0 +1,58 @@
+{
+  "name": "hivedesk",
+  "version": "0.1.0",
+  "description": "A crew of AI workers that plan, talk and build real files on your machine with a local model.",
+  "type": "module",
+  "bin": {
+    "hivedesk": "src/cli.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./reduce": "./src/replay/reduce.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "ui",
+    "assets",
+    "PROTOCOL.md",
+    "FIRST-RUN.md",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "start": "node src/cli.js",
+    "demo": "node src/cli.js --demo",
+    "doctor": "node src/cli.js --doctor",
+    "lint": "node scripts/lint.mjs",
+    "rules": "node scripts/check-rules.mjs",
+    "site": "node scripts/check-site.mjs",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "local-model",
+    "llm",
+    "desktop",
+    "code-generation"
+  ],
+  "author": "Alexandre Kohler (https://github.com/kwy404)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwy404/hivedesk.git"
+  },
+  "homepage": "https://kwy404.github.io/hivedesk/",
+  "bugs": {
+    "url": "https://github.com/kwy404/hivedesk/issues"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

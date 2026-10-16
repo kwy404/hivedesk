@@ -86,11 +86,11 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `session.started` | `{ version, protocol, dir, workspace, demo, lend, pid }` |
 | `session.stopped` | `{ reason }` |
 | `settings.changed` | `{ approvalMode?: boolean, brain?: BrainChoice, sound?: boolean, ... }` (only the changed keys) |
-| `brain.status` | `{ state, backend, model?, detail?, ctx? }` state: `"none"` (no model yet) \| `"needs_download"` \| `"downloading"` \| `"loading"` \| `"ready"` \| `"error"` |
+| `brain.status` | `{ state, backend, model?, detail?, hint?, ctx? }` (hint: a plain suggestion to show with an error) state: `"none"` (no model yet) \| `"needs_download"` \| `"downloading"` \| `"loading"` \| `"ready"` \| `"error"` |
 | `brain.download.required` | `{ model, file, url, bytes, source }` information only: the download starts by itself right after (see FIRST-RUN.md). With `--no-download` it does not start and the UI offers a button that sends `brain.download` |
 | `brain.download.started` | `{ model, file, url, bytes, source, path }` |
 | `brain.download.finished` | `{ model, path, bytes, ms }` |
-| `brain.download.failed` | `{ model, code, message, hint }` code: `"no_disk"` \| `"no_network"` \| `"http"` \| `"aborted"` \| `"io"` |
+| `brain.download.failed` | `{ model, code, message, hint }` code: `"no_disk"` \| `"no_network"` \| `"http"` \| `"aborted"` \| `"io"` \| `"checksum"` |
 | `brain.runtime` | `{ state: "installing" \| "ready" \| "failed", package: "node-llama-cpp", version?, path?, message?, hint? }` |
 | `brain.fallback` | `{ from: { backend, model?, gpu? }, to: { backend, model?, gpu? }, reason }` for example a failed GPU init moving to the CPU and a smaller model |
 | `hardware.detected` | `{ os, arch, cpus, ramBytes, freeRamBytes, gpu: { name?, vramBytes?, backend? } \| null, diskFreeBytes }` |
@@ -110,12 +110,12 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `task.status` | `{ taskId, status, note? }` |
 | `queue.updated` | `{ running: [{ workerId, taskId, brainId }], waiting: [{ workerId, taskId }] }` |
 | `turn.started` | `{ turnId, workerId, taskId, brainId, n }` (n: turn number inside the task) |
-| `turn.ended` | `{ turnId, workerId, taskId, brainId, promptTokens, completionTokens, ms, tps }` |
+| `turn.ended` | `{ turnId, workerId, taskId, brainId, promptTokens, completionTokens, ms, tps, error? }` |
 | `worker.status` | `{ workerId, status, detail? }` status: `"idle"` \| `"queued"` \| `"thinking"` \| `"tool"` \| `"waiting_approval"` \| `"error"` |
 | `chat.message` | `{ id, channel, from, text, taskId? }` channel: `"general"` or `"dm:<workerId>"`; from: a worker id, `"user"` or `"system"` |
 | `tool.called` | `{ callId, workerId, taskId, tool, args }` |
 | `tool.result` | `{ callId, ok, result?, error? }` result is truncated to 4 KB in the log |
-| `file.changed` | `{ path, op: "create" \| "modify" \| "delete", diff, bytes, content?, workerId, taskId }` path is relative to the workspace with `/` separators; `content` is included when the file is 64 KB or less (replay uses it) |
+| `file.changed` | `{ path, op: "create" \| "modify" \| "delete", diff, bytes, added, removed, content?, workerId, taskId }` path is relative to the workspace with `/` separators; `content` is included when the file is 64 KB or less (replay uses it) |
 | `run.finished` | `{ callId, command, exitCode, timedOut, ms, stdout, stderr }` (each capped at 16 KB) |
 | `approval.requested` | `{ approval: Approval }` |
 | `approval.resolved` | `{ approvalId, approved, by: "user" \| "auto", note? }` |
@@ -158,6 +158,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `brain.chat` | `{ messages, options }` run one turn on the local brain; only accepted when the server runs with `--lend` | `ChatResult` |
 | `events.since` | `{ seq, limit? }` | `{ events: Event[], lastSeq }` |
 | `replay.at` | `{ seq }` | `{ state: State }` state rebuilt from events 1..seq |
+| `replay.marks` | `{}` | `{ marks: [{ seq, ts, kind: "job" \| "done" \| "failed" \| "cancelled" \| "approval", jobId, label? }], lastSeq }` jump points for the scrubber |
 | `files.list` | `{}` | `{ files: [{ path, bytes }] }` |
 | `files.read` | `{ path }` | `{ path, content }` |
 | `playbook.list` | `{}` | `{ playbooks }` |
@@ -192,7 +193,7 @@ All JSON unless noted. Same token rule as section 1.
 | `GET /api/playbooks` | `{ playbooks }` |
 | `GET /api/doctor` | `DoctorReport` |
 | `POST /api/command` | body `{ "type": "...", "data": {...} }`, answer `{ ok, result }` or `{ ok:false, error }` |
-| `GET /preview/<path>` | the workspace served as a static site (`/preview/` serves `index.html`) |
+| `GET /preview/<path>` | the workspace served as a static site (`/preview/` serves `index.html`). This route does not need the token: it is read only, checks the Host header, and is served with `Content-Security-Policy: sandbox allow-scripts ...` so the page runs in an opaque origin and cannot call the API |
 
 ### State
 
