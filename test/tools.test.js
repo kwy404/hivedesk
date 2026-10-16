@@ -217,3 +217,11 @@ describe('toolbox and approval mode', () => {
     expect(Object.keys(TOOLS)).toContain('preview');
   });
 });
+
+describe('checks for empty files', () => {
+  it('reports an empty file', () => {
+    const ws = new Workspace(path.join(tmpDir(), 'empty'));
+    ws.write('style.css', '  \n');
+    expect(checkWorkspace(ws).issues).toEqual(['style.css: the file is empty']);
+  });
+});

@@ -212,6 +212,7 @@ export class Hive {
 
     const preexisting = new Set(files);
     const active = new Map();
+    const busy = new Set();
     let fixRounds = 0;
     let nextIdx = tasks.length + 1;
     let qaPassed = !crew.some((w) => w.id === 'qa');
@@ -234,15 +235,20 @@ export class Hive {
         chat: (from, text, taskId) => this.chat(from, text, taskId, 'general', jobId)
       }).then((res) => ({ task, worker, res, checks }), (err) => ({ task, worker, err, checks }));
       active.set(task.id, p);
+      busy.add(task.assignee);
     };
 
     while (true) {
       if (signal.aborted) return;
       for (const t of graph.propagateBlocked()) this.bus.emit('task.status', { taskId: t.id, status: 'blocked', note: 'a task it depends on failed' }, ev);
-      for (const t of graph.ready()) if (!active.has(t.id)) startTask(t);
+      // One task at a time per worker: two tasks of the same worker would fight over the same files.
+      for (const t of graph.ready()) {
+        if (!active.has(t.id) && !busy.has(t.assignee)) startTask(t);
+      }
       if (!active.size) break;
       const { task, worker, res, err, checks } = await Promise.race(active.values());
       active.delete(task.id);
+      busy.delete(task.assignee);
       if (signal.aborted) return;
       if (err) {
         graph.setStatus(task.id, 'failed');

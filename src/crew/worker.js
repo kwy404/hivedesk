@@ -116,6 +116,7 @@ export async function runTask(ctx) {
   let lastKey = '';
   let repeats = 0;
   const jobOpt = { jobId: job.id };
+  const finish = task.kind === 'qa' ? 'report' : 'done';
 
   for (let n = 1; n <= maxTurns; n++) {
     if (signal?.aborted) throw new Error('cancelled');
@@ -164,7 +165,7 @@ export async function runTask(ctx) {
     }
     if (action.tool === 'say') {
       ctx.chat(worker.id, String(action.args?.text || '').slice(0, 600), task.id);
-      steps.push({ action, result: 'Posted. Now continue with your task.' });
+      steps.push({ action, result: `Posted. If your task is complete, answer with ${finish}. Otherwise do the next step.` });
       continue;
     }
     if (repeats >= 2) {
@@ -177,7 +178,11 @@ export async function runTask(ctx) {
       preexisting: ctx.preexisting, approval: job.approval, signal
     });
     if (out.ok && (action.tool === 'write_file' || action.tool === 'edit_file')) wrote.add(String(action.args.path).replace(/^\.\//, ''));
-    steps.push({ action, result: out.ok ? `Result: ${capResult(action.tool, out.result)}` : `Error: ${out.error}` });
+    let observation = out.ok ? `Result: ${capResult(action.tool, out.result)}` : `Error: ${out.error}`;
+    // Small models often keep polishing; remind them how to finish after every change.
+    if (out.ok && ['write_file', 'edit_file', 'delete_file', 'preview', 'check'].includes(action.tool)) observation += `\nIf your task is complete, answer with ${finish}.`;
+    if (!out.ok && action.tool === 'edit_file') observation += '\nRead the file first, or write the whole file with write_file.';
+    steps.push({ action, result: observation });
   }
   // Out of turns.
   if (task.kind === 'qa') return { status: 'done', summary: 'QA ran out of turns', report: { passed: false, issues: ['QA could not finish the review in time'] }, wrote: [...wrote] };

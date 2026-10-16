@@ -86,6 +86,10 @@ export function checkWorkspace(ws, only) {
   const exists = (rel) => ws.exists(rel);
   for (const f of files) {
     const ext = path.extname(f).toLowerCase();
+    if (!ws.read(f).trim()) {
+      issues.push(`${f}: the file is empty`);
+      continue;
+    }
     try {
       if (ext === '.html' || ext === '.htm') issues.push(...checkHtml(f, ws.read(f), exists));
       else if (ext === '.css') issues.push(...checkCss(f, ws.read(f)));
