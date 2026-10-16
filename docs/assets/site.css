@@ -211,8 +211,8 @@ kbd { padding: .1em .45em; border: 1px solid var(--line-2); border-bottom-width:
 .kicker { margin: 0 0 14px; color: var(--amber); font: 600 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 .sec h2 { margin: 0; font-size: clamp(1.85rem, 3.7vw, 3rem); line-height: 1.08; font-weight: 700; letter-spacing: -.035em; color: #F7F1E6; }
 .sec-head p:not(.kicker) { margin: 18px 0 0; color: var(--text-2); font-size: 1.08rem; }
-.sec h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.06rem; font-weight: 650; letter-spacing: -.01em; color: var(--text); }
-.sec h3 .i { color: var(--amber); }
+.sec h3 { display: block; margin: 0 0 12px; font-size: 1.06rem; font-weight: 650; letter-spacing: -.01em; color: var(--text); }
+.sec h3 .i { display: inline-block; vertical-align: -4px; margin-right: 10px; color: var(--amber); }
 .art { margin: 0 0 clamp(28px, 3vw, 40px); border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px -30px rgba(255, 181, 49, .2), 0 0 0 1px var(--line); }
 .art img { display: block; width: 100%; }
 .panel { padding: clamp(20px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, #110F0D, #0C0B0A); }
