@@ -1,0 +1,65 @@
+// Who may do what in Code together. The host's browser checks every guest command here before
+// it reaches the host's engine, and the engine then applies its own approval rules as usual.
+//
+//   viewer        sees everything, can chat
+//   collaborator  can also send requests to the crew, approve steps and edit files
+//   host          everything (the person whose hivedesk and disk it is)
+//
+// There is no command that runs a shell. Commands that change the model, settings, crew, lent
+// brains or anything not listed here stay with the host.
+
+export const ROLES = Object.freeze(['viewer', 'collaborator', 'host']);
+export const GUEST_ROLES = Object.freeze(['viewer', 'collaborator']);
+
+const READ = ['ping', 'events.since', 'replay.at', 'replay.marks', 'files.list', 'files.read', 'playbook.list'];
+const VIEWER = new Set([...READ, 'chat.send']);
+const COLLABORATOR = new Set([...VIEWER, 'job.create', 'job.cancel', 'approval.resolve', 'task.retry', 'task.reassign', 'task.cancel', 'files.write']);
+
+export class PermissionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'PermissionError';
+    this.code = 'forbidden';
+  }
+}
+
+export const isRole = (r) => ROLES.includes(r);
+
+/** True when this role may send this command type. */
+export function canCommand(role, type) {
+  if (role === 'host') return true;
+  if (role === 'collaborator') return COLLABORATOR.has(type);
+  if (role === 'viewer') return VIEWER.has(type);
+  return false;
+}
+
+/** True when this role may change shared files in the editor. */
+export const canEdit = (role) => role === 'host' || role === 'collaborator';
+
+const short = (v, n) => String(v ?? '').slice(0, n);
+
+/**
+ * Checks one guest command and returns what the host forwards to its engine, or throws a
+ * PermissionError. guest is { id, name, role }.
+ *   chat.send    the text is signed with the guest's name
+ *   files.write  carries `as` so the engine asks the host for approval like any crew write
+ *   job.create   the request is signed with the guest's name in the job log
+ */
+export function checkCommand(guest, type, data = {}) {
+  if (typeof type !== 'string' || !canCommand(guest.role, type)) {
+    throw new PermissionError(guest.role === 'viewer' ? `A viewer cannot use ${type}. Ask the host to make you a collaborator.` : `Guests cannot use ${type}.`);
+  }
+  const d = data && typeof data === 'object' && !Array.isArray(data) ? { ...data } : {};
+  switch (type) {
+    case 'chat.send':
+      return { type, data: { channel: short(d.channel, 60) || 'general', text: `${guest.name}: ${short(d.text, 4000)}` } };
+    case 'files.write':
+      return { type, data: { path: short(d.path, 300), content: String(d.content ?? ''), as: { id: guest.id, name: guest.name } } };
+    case 'job.create':
+      return { type, data: { request: short(d.request, 4000), ...(d.playbookId ? { playbookId: short(d.playbookId, 80) } : {}) } };
+    case 'approval.resolve':
+      return { type, data: { approvalId: short(d.approvalId, 80), approved: !!d.approved, note: `${guest.name}${d.note ? `: ${short(d.note, 300)}` : ''}` } };
+    default:
+      return { type, data: d };
+  }
+}
