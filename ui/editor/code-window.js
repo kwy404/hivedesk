@@ -6,44 +6,60 @@
 // PC's engine; in Code together everyone edits the same text and sees each other's cursors.
 
 import { h, clear } from '/js/dom.js';
+import { t } from '/js/i18n.js';
 import { collab } from '/lend/collab/client.js';
 import { avatar } from '/lend/collab/panel.js';
 import { loadMonaco } from './monaco.js';
 import { FORMATTABLE, badgeOf, languageLabel, languageOf } from './languages.js';
 import { acceptHunk, changedLines, hunks, rejectHunk } from './linediff.js';
 
+// Every string reads the current language when used (i18n/*.json, keys code.*).
+const tc = (key, params) => t(`code.${key}`, params);
 const T = {
-  explorer: 'Explorer',
-  newFile: 'New file',
-  newFilePrompt: 'File name, for example about.html',
-  refresh: 'Refresh',
-  empty: 'Open a file from the tree on the left, or create a new one.',
-  emptyTree: 'The workspace is empty. The crew writes its files here.',
-  loading: 'Loading the editor...',
-  save: 'Save',
-  saved: 'Saved',
-  saving: 'Saving...',
-  approval: 'Waiting for the host to approve your save...',
-  unsaved: 'Unsaved',
-  readOnly: 'Read only: you are a viewer',
-  format: 'Format',
-  review: (n) => `Review changes${n ? ` (${n})` : ''}`,
-  reviewTitle: (p) => `Crew changes in ${p}`,
-  accept: 'Accept',
-  reject: 'Reject',
-  acceptAll: 'Accept all',
-  rejectAll: 'Reject all',
-  closeReview: 'Close review',
-  editing: (who, file) => `${who} is editing ${file}`,
-  diskChanged: (who) => `${who} changed this file while you had unsaved edits.`,
-  loadTheirs: 'Load their version',
-  keepMine: 'Keep mine',
-  runlog: 'Run log',
-  runlogEmpty: 'Commands the crew runs show their output here.',
-  theme: 'Switch light or dark theme',
-  follow: (n) => `Following ${n}`,
-  stopFollow: 'Stop following',
-  lnCol: (l, c) => `Ln ${l}, Col ${c}`,
+  get explorer() { return tc('explorer'); },
+  get newFile() { return tc('newFile'); },
+  get newFilePrompt() { return tc('newFilePrompt'); },
+  get refresh() { return tc('refresh'); },
+  get empty() { return tc('empty'); },
+  get emptyTree() { return tc('emptyTree'); },
+  get loading() { return tc('loading'); },
+  get save() { return tc('save'); },
+  get saved() { return tc('saved'); },
+  get saving() { return tc('saving'); },
+  get approval() { return tc('approval'); },
+  notSaved: (error) => tc('notSaved', { error }),
+  get readOnly() { return tc('readOnly'); },
+  get format() { return tc('format'); },
+  formatLang: (lang) => tc('formatLang', { lang }),
+  get trim() { return tc('trim'); },
+  review: (count) => (count ? tc('reviewCount', { count }) : tc('review')),
+  reviewTitle: (path) => tc('reviewTitle', { path }),
+  get toReview() { return tc('toReview'); },
+  get accept() { return tc('accept'); },
+  get reject() { return tc('reject'); },
+  get acceptAll() { return tc('acceptAll'); },
+  get rejectAll() { return tc('rejectAll'); },
+  get closeReview() { return tc('closeReview'); },
+  hunkLines: (from, to) => tc('hunkLines', { from, to }),
+  hunkAfter: (line) => tc('hunkAfter', { line }),
+  editing: (who, file) => tc('editing', { who, file }),
+  editingShort: (who) => tc('editingShort', { who }),
+  diskChanged: (who) => tc('diskChanged', { who }),
+  get loadTheirs() { return tc('loadTheirs'); },
+  get keepMine() { return tc('keepMine'); },
+  get runlog() { return tc('runlog'); },
+  get runlogEmpty() { return tc('runlogEmpty'); },
+  exit: (code, ms, timedOut) => `${tc('exit', { code, ms })}${timedOut ? `, ${tc('timedOut')}` : ''}`,
+  get theme() { return tc('theme'); },
+  follow: (name) => tc('follow', { name }),
+  get stopFollow() { return tc('stopFollow'); },
+  clickFollow: (name, file) => (file ? tc('clickFollow', { name, file }) : tc('clickFollowNoFile', { name })),
+  you: (name) => tc('you', { name }),
+  lnCol: (line, col) => tc('lnCol', { line, col }),
+  spaces: (n) => tc('spaces', { n }),
+  closeFile: (path) => tc('closeFile', { path }),
+  get breadcrumb() { return tc('breadcrumb'); },
+  action: (k) => tc(`action.${k}`),
 };
 
 const store = {
@@ -120,7 +136,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
   const refreshBtn = h('button', { class: 'ed-ibtn', type: 'button', title: T.refresh, attrs: { 'aria-label': T.refresh }, html: '<svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5"/><path d="M19 4v4h-4"/></svg>', on: { click: () => refreshFiles() } });
   const explorer = h('aside', { class: 'ed-explorer' }, h('div', { class: 'ed-side-h' }, h('span', { text: T.explorer }), h('span', { class: 'ed-sp' }), newBtn, refreshBtn), treeEl);
   const tabsEl = h('div', { class: 'ed-tabs', role: 'tablist' });
-  const crumbs = h('nav', { class: 'ed-crumbs', attrs: { 'aria-label': 'Breadcrumb' } });
+  const crumbs = h('nav', { class: 'ed-crumbs', attrs: { 'aria-label': T.breadcrumb } });
   const reviewBtn = h('button', { class: 'ed-btn', type: 'button', dataset: { act: 'review' }, on: { click: () => (st.review ? closeReview() : openReview(st.active)) } });
   const formatBtn = h('button', { class: 'ed-btn', type: 'button', text: T.format, on: { click: () => format(st.active) } });
   const saveBtn = h('button', { class: 'ed-btn is-primary', type: 'button', text: T.save, dataset: { act: 'save' }, on: { click: () => save() } });
@@ -184,7 +200,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
         const [txt, color] = badgeOf(p);
         const dots = (viewing.get(p) || []).map((x) => h('span', { class: 'ed-dot', style: { background: x.color }, title: x.name }));
         treeEl.append(h('div', { class: `ed-row${p === st.active ? ' is-active' : ''}`, role: 'treeitem', tabindex: '0', style: { paddingLeft: `${20 + depth * 12}px` }, dataset: { path: p }, on: { click: () => openFile(p), keydown: (e) => e.key === 'Enter' && openFile(p) } },
-          h('span', { class: 'ed-badge', style: { color }, text: txt }), h('span', { class: 'ed-name', text: p.split('/').pop() }), st.baselines.has(p) ? h('span', { class: 'ed-mark', title: 'Crew changes to review' }) : null, ...dots));
+          h('span', { class: 'ed-badge', style: { color }, text: txt }), h('span', { class: 'ed-name', text: p.split('/').pop() }), st.baselines.has(p) ? h('span', { class: 'ed-mark', title: T.toReview }) : null, ...dots));
       }
     };
     walk(tree, '', 0);
@@ -221,7 +237,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
       const e = entries.get(p);
       const [txt, color] = badgeOf(p);
       const dots = people.filter((x) => x.file === p && x.id !== collab.myId()).map((x) => h('span', { class: 'ed-dot', style: { background: x.color }, title: x.name }));
-      const close = h('button', { class: 'ed-x', type: 'button', attrs: { 'aria-label': `Close ${p}` }, html: '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></svg>', on: { click: (ev) => { ev.stopPropagation(); closeTab(p); } } });
+      const close = h('button', { class: 'ed-x', type: 'button', attrs: { 'aria-label': T.closeFile(p) }, html: '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></svg>', on: { click: (ev) => { ev.stopPropagation(); closeTab(p); } } });
       tabsEl.append(h('div', { class: `ed-tab${p === st.active ? ' is-active' : ''}${e?.handle.dirty ? ' is-dirty' : ''}`, role: 'tab', tabindex: '0', title: p, attrs: { 'aria-selected': String(p === st.active) }, dataset: { path: p }, on: { click: () => openFile(p), auxclick: (ev) => ev.button === 1 && closeTab(p) } },
         h('span', { class: 'ed-badge', style: { color }, text: txt }), h('span', { class: 'ed-name', text: p.split('/').pop() }), ...dots, h('span', { class: 'ed-dirty' }), close));
     }
@@ -242,7 +258,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     const lang = languageOf(st.active);
     formatBtn.hidden = !collab.canEdit();
     saveBtn.disabled = !collab.canEdit();
-    formatBtn.title = FORMATTABLE.has(lang) ? `Format ${languageLabel(lang)}` : 'Trim trailing spaces';
+    formatBtn.title = FORMATTABLE.has(lang) ? T.formatLang(languageLabel(lang)) : T.trim;
   }
 
   function paintStatus() {
@@ -253,7 +269,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     const left = h('div', { class: 'ed-status-l' },
       lang ? h('span', { class: 'ed-st', text: languageLabel(lang) }) : null,
       pos && st.active ? h('span', { class: 'ed-st', dataset: { pos: `${pos.lineNumber}:${pos.column}` }, text: T.lnCol(pos.lineNumber, pos.column) }) : null,
-      st.active ? h('span', { class: 'ed-st', text: 'Spaces: 2' }) : null,
+      st.active ? h('span', { class: 'ed-st', text: T.spaces(2) }) : null,
       st.active ? h('span', { class: 'ed-st', text: 'UTF-8' }) : null,
       !collab.canEdit() ? h('span', { class: 'ed-st is-warn', text: T.readOnly }) : null,
       saveState ? h('span', { class: 'ed-st', dataset: { save: saveState }, text: saveState }) : null);
@@ -262,7 +278,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
       for (const p of people) {
         const av = avatar(p, 18);
         const mine = p.id === collab.myId();
-        av.title = mine ? `${p.name} (you)` : `${p.name}${p.file ? ` in ${p.file}` : ''}. Click to follow.`;
+        av.title = mine ? T.you(p.name) : T.clickFollow(p.name, p.file);
         if (!mine) {
           av.classList.add('is-click');
           av.addEventListener('click', () => setFollow(st.follow === p.id ? null : p.id));
@@ -448,7 +464,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
       setSave(T.saved);
       refreshFiles();
     } catch (err) {
-      setSave(`Not saved: ${err.message}`);
+      setSave(T.notSaved(err.message));
     }
     paintTabs();
   }
@@ -532,7 +548,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     const ls = changedLines(before ?? '', after).slice(0, 400);
     const decos = ls.map((line, i) => ({
       range: new monaco.Range(line, 1, line, 1),
-      options: { isWholeLine: true, className: `ed-crew-line ed-w-${c}`, linesDecorationsClassName: `ed-crew-gutter ed-w-${c}`, ...(i === 0 ? { after: { content: `  ${w.name} is editing`, inlineClassName: `ed-crew-tag ed-w-${c}` } } : {}) },
+      options: { isWholeLine: true, className: `ed-crew-line ed-w-${c}`, linesDecorationsClassName: `ed-crew-gutter ed-w-${c}`, ...(i === 0 ? { after: { content: `  ${T.editingShort(w.name)}`, inlineClassName: `ed-crew-tag ed-w-${c}` } } : {}) },
     }));
     crewDecos = editor.deltaDecorations(crewDecos, decos);
     clearTimeout(crewTimer);
@@ -572,7 +588,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     } else if (ev.type === 'tool.called' && d.tool === 'run') {
       appendRun(`\n$ ${d.args?.command || ''}\n`, 'cmd');
     } else if (ev.type === 'run.finished') {
-      appendRun(`\n[exit code ${d.exitCode}${d.timedOut ? ', timed out' : ''} in ${d.ms} ms]\n`, d.exitCode === 0 ? 'ok' : 'bad');
+      appendRun(`\n[${T.exit(d.exitCode, d.ms, d.timedOut)}]\n`, d.exitCode === 0 ? 'ok' : 'bad');
     }
   }
 
@@ -651,7 +667,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     hs.forEach((hk) => {
       const added = hk.bEnd - hk.b;
       const removed = hk.aEnd - hk.a;
-      const label = added ? `Lines ${hk.b + 1} to ${hk.bEnd}` : `After line ${hk.b}`;
+      const label = added ? T.hunkLines(hk.b + 1, hk.bEnd) : T.hunkAfter(hk.b);
       list.append(h('li', { dataset: { hunk: String(hk.b) } },
         h('button', { class: 'ed-hunk-go', type: 'button', on: { click: () => diffEditor.getModifiedEditor().revealLineInCenter(Math.max(1, hk.b + 1)) } }, h('span', { text: label }), h('span', { class: 'ed-add', text: `+${added}` }), h('span', { class: 'ed-del', text: `-${removed}` })),
         h('button', { class: 'ed-btn', type: 'button', text: T.accept, dataset: { act: 'accept' }, on: { click: () => { st.baselines.set(path, acceptHunk(base, cur, hk)); originalModel.setValue(st.baselines.get(path)); renderHunks(); } } }),
@@ -762,10 +778,10 @@ export function mountEditor(root, { path: firstPath } = {}) {
       fixedOverflowWidgets: true,
       padding: { top: 8 },
     });
-    editor.addAction({ id: 'hivedesk.save', label: 'hivedesk: Save', keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS], run: () => save() });
-    editor.addAction({ id: 'hivedesk.review', label: 'hivedesk: Review crew changes', run: () => openReview(st.active) });
-    editor.addAction({ id: 'hivedesk.format', label: 'hivedesk: Format file', keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF], run: () => format() });
-    editor.addAction({ id: 'hivedesk.newFile', label: 'hivedesk: New file', run: () => newFile() });
+    editor.addAction({ id: 'hivedesk.save', label: T.action('save'), keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS], run: () => save() });
+    editor.addAction({ id: 'hivedesk.review', label: T.action('review'), run: () => openReview(st.active) });
+    editor.addAction({ id: 'hivedesk.format', label: T.action('format'), keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF], run: () => format() });
+    editor.addAction({ id: 'hivedesk.newFile', label: T.action('newFile'), run: () => newFile() });
     editor.onDidChangeCursorPosition(() => paintStatus());
     editor.onDidChangeCursorSelection(() => sendPresence());
     emptyEl.hidden = false;

@@ -8,6 +8,7 @@
 //   API           window.hivedeskEditor.open(path)
 
 import { h } from '/js/dom.js';
+import { t } from '/js/i18n.js';
 import * as wm from '/js/wm.js';
 
 const CODE_ICON = '<svg class="ico" viewBox="0 0 24 24"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5"/></svg>';
@@ -38,12 +39,12 @@ globalThis.hivedeskEditor = {
   },
 };
 
-function failBox(el, title, err) {
-  el.replaceChildren(h('div', { class: 'ed-empty' }, h('p', { class: 'ed-error', text: `${title}: ${err.message}` })));
+function failBox(el, text) {
+  el.replaceChildren(h('div', { class: 'ed-empty' }, h('p', { class: 'ed-error', text })));
 }
 
 wm.register('editor', {
-  title: 'Code',
+  title: () => t('code.title'),
   glyph: () => h('span', { html: CODE_ICON }),
   size: [1080, 680],
   min: [360, 300],
@@ -68,13 +69,13 @@ wm.register('editor', {
         await api.ready;
         while (queue.length) api.open(queue.shift());
       })
-      .catch((err) => !closed && failBox(el, 'The Code window did not load', err));
+      .catch((err) => !closed && failBox(el, t('code.loadFail', { error: err.message })));
   },
 });
 
 // The desktop's file windows ("Open in code") now open the Code window on that file.
 wm.register('code', {
-  title: (path) => (path ? path.split('/').pop() : 'Code'),
+  title: (path) => (path ? path.split('/').pop() : t('code.title')),
   glyph: () => h('span', { html: CODE_ICON }),
   size: [320, 120],
   create(ctx, path) {
@@ -86,7 +87,7 @@ wm.register('code', {
 });
 
 wm.register('collab', {
-  title: 'Code together',
+  title: () => t('collab.title'),
   glyph: () => h('span', { html: TOGETHER_ICON }),
   size: [620, 640],
   min: [320, 360],
@@ -105,7 +106,7 @@ wm.register('collab', {
       .then((m) => {
         if (!closed) api = m.mountCollab(el, { initial: arg || initialWords() });
       })
-      .catch((err) => !closed && failBox(el, 'Code together did not load', err));
+      .catch((err) => !closed && failBox(el, t('collab.loadFail', { error: err.message })));
   },
 });
 
@@ -116,18 +117,19 @@ function initialWords() {
 
 /* ---------- palette ---------- */
 (globalThis.hivedeskPalette ??= []).push((q) => {
+  const group = t('code.pal.group');
   const out = [
-    { group: 'Code', label: 'Open the Code editor', run: () => wm.open('editor'), icon: 'code' },
-    { group: 'Code', label: 'Code together: share or join a session', run: () => wm.open('collab'), icon: 'chat' },
+    { group, label: t('code.pal.open'), run: () => wm.open('editor'), icon: 'code' },
+    { group, label: t('collab.pal.open'), run: () => wm.open('collab'), icon: 'chat' },
   ];
   const api = editorApi;
   if (api?.active) {
-    out.push({ group: 'Code', label: `Save ${api.active}`, run: () => api.save(), icon: 'check' });
-    out.push({ group: 'Code', label: 'Go to line...', run: () => { wm.open('editor'); api.editor?.focus(); api.editor?.getAction('editor.action.gotoLine')?.run(); }, icon: 'arrow' });
-    out.push({ group: 'Code', label: 'Find and replace...', run: () => { wm.open('editor'); api.editor?.focus(); api.editor?.getAction('editor.action.startFindReplaceAction')?.run(); }, icon: 'arrow' });
-    out.push({ group: 'Code', label: 'Review crew changes', run: () => { wm.open('editor'); api.review(); }, icon: 'approval' });
+    out.push({ group, label: t('code.pal.save', { path: api.active }), run: () => api.save(), icon: 'check' });
+    out.push({ group, label: t('code.pal.gotoLine'), run: () => { wm.open('editor'); api.editor?.focus(); api.editor?.getAction('editor.action.gotoLine')?.run(); }, icon: 'arrow' });
+    out.push({ group, label: t('code.pal.find'), run: () => { wm.open('editor'); api.editor?.focus(); api.editor?.getAction('editor.action.startFindReplaceAction')?.run(); }, icon: 'arrow' });
+    out.push({ group, label: t('code.pal.review'), run: () => { wm.open('editor'); api.review(); }, icon: 'approval' });
   }
-  if (q && /^[\w./-]+\.\w+$/.test(q)) out.push({ group: 'Code', label: `Open ${q} in the Code editor`, run: () => openInEditor(q), icon: 'code' });
+  if (q && /^[\w./-]+\.\w+$/.test(q)) out.push({ group, label: t('code.pal.openFile', { path: q }), run: () => openInEditor(q), icon: 'code' });
   return out;
 });
 
@@ -135,10 +137,10 @@ function initialWords() {
 async function decorate() {
   const right = document.querySelector('.topbar .bar-right');
   if (right && !right.querySelector('.collab-bar')) {
-    const box = h('div', { class: 'collab-bar', attrs: { 'aria-label': 'People in this session' } });
+    const box = h('div', { class: 'collab-bar', attrs: { 'aria-label': t('collab.people') } });
     right.prepend(box);
     const { collab } = await import('/lend/collab/client.js');
-    const { avatar } = await import('/lend/collab/panel.js');
+    const { avatar, T: CT } = await import('/lend/collab/panel.js');
     linkCss();
     const paint = () => {
       box.replaceChildren();
@@ -146,7 +148,7 @@ async function decorate() {
       box.hidden = !people.length;
       for (const p of people) {
         const av = avatar(p, 24);
-        av.title = `${p.name}${p.role ? `, ${p.role}` : ''}${p.file ? `, in ${p.file}` : ''}`;
+        av.title = CT.avatarTip(p.name, CT.role(p.role || 'viewer'), p.file);
         if (p.id !== collab.myId()) {
           av.classList.add('is-click');
           av.addEventListener('click', () => {
@@ -156,7 +158,7 @@ async function decorate() {
         }
         box.append(av);
       }
-      if (people.length) box.append(h('button', { type: 'button', class: 'collab-bar-btn', text: collab.mode === 'guest' ? 'Guest' : 'Sharing', on: { click: () => wm.open('collab') } }));
+      if (people.length) box.append(h('button', { type: 'button', class: 'collab-bar-btn', text: collab.mode === 'guest' ? t('collab.guestTag') : t('collab.sharingTag'), on: { click: () => wm.open('collab') } }));
     };
     collab.on('people', paint);
     collab.on('change', paint);
@@ -166,7 +168,7 @@ async function decorate() {
   if (shelf && !shelf.querySelector('[data-win="editor"]')) {
     const btn = (id, label, svg) => h('button', { class: 'dk', type: 'button', dataset: { win: id }, title: label, attrs: { 'aria-label': label }, on: { click: () => wm.toggleFromDock(id) } }, h('span', { class: 'dk-hex', html: svg }));
     const sep = shelf.querySelector('.dock-sep:last-of-type');
-    const nodes = [btn('editor', 'Code', CODE_ICON), btn('collab', 'Code together', TOGETHER_ICON)];
+    const nodes = [btn('editor', t('code.title'), CODE_ICON), btn('collab', t('collab.title'), TOGETHER_ICON)];
     if (sep) sep.before(...nodes);
     else shelf.append(...nodes);
   }

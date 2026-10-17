@@ -1,46 +1,56 @@
 // The Code together window: share this session (host) or join someone's (guest).
 
+import { t } from '/js/i18n.js';
 import { collab, COLORS } from './client.js';
 import { WORD_COUNT, resolvePhrase, resolveWord } from '../core/words.js';
 import { spread, looksLikePaste } from '../core/paste.js';
 import { lendLink, LINK_BASE } from '../core/link.js';
 import { clear, copyText, h, qrNode, wordGrid } from '../view.js';
 
+// Every string reads the current language when used (i18n/*.json, keys collab.*).
+const tc = (key, params) => t(`collab.${key}`, params);
 export const T = {
-  title: 'Code together',
-  lead: 'Friends join this session with six words. They see the crew, the chat, the files and the preview live, and can edit files with you. Nothing runs on their PC and they never get a shell.',
-  name: 'Your name',
-  color: 'Your color',
-  share: 'Share this session',
-  invite: 'Invite someone',
-  stopShare: 'Stop sharing',
-  people: 'People in this session',
-  viewer: 'Viewer: sees everything, can chat',
-  collaborator: 'Collaborator: can also ask the crew, approve steps and edit files',
-  remove: 'Remove',
-  you: 'you',
-  host: 'host',
-  waiting: 'Waiting for someone to enter these words...',
-  inviteHelp: 'Your friend opens hivedesk, chooses Code together and enters these words, pastes the link or scans the QR code.',
-  confirmHelp: 'Read these words to each other. They must match, in the same order.',
-  match: 'They match',
-  noMatch: 'They do not match',
-  joinTitle: "Join someone's session",
-  join: 'Join',
-  joinHelp: 'Enter the six words from the host. A whole phrase or link pasted into one box fills every box.',
-  knocking: "Looking for the host's session...",
-  waitWelcome: 'Waiting for the host to check the words too...',
-  joined: (who, role) => `You are in ${who}'s session as ${role === 'collaborator' ? 'a collaborator' : 'a viewer'}.`,
-  viewerNote: 'As a viewer you can watch and chat. The host can make you a collaborator.',
-  leave: 'Leave the session',
-  lendBrain: 'Also lend my model to the host',
-  lendingBrain: 'Your model takes turns for the host crew. Only prompts and answers travel.',
-  stopLend: 'Stop lending my model',
-  lentBrain: 'lends a model',
-  ended: (why) => `The session ended: ${why}`,
-  expired: 'These words expired.',
-  failed: 'The connection failed. Try new words.',
-  mismatch: 'The words did not match, so that connection was closed.',
+  get title() { return tc('title'); },
+  get lead() { return tc('lead'); },
+  get name() { return tc('name'); },
+  get color() { return tc('color'); },
+  get share() { return tc('share'); },
+  get invite() { return tc('invite'); },
+  get stopShare() { return tc('stopShare'); },
+  get people() { return tc('people'); },
+  get remove() { return tc('remove'); },
+  get you() { return tc('you'); },
+  get waiting() { return tc('waiting'); },
+  get inviteHelp() { return tc('inviteHelp'); },
+  get confirmTitle() { return tc('confirmTitle'); },
+  get confirmHelp() { return tc('confirmHelp'); },
+  get match() { return tc('match'); },
+  get noMatch() { return tc('noMatch'); },
+  get joinTitle() { return tc('joinTitle'); },
+  get join() { return tc('join'); },
+  get joinHelp() { return tc('joinHelp'); },
+  get knocking() { return tc('knocking'); },
+  get waitWelcome() { return tc('waitWelcome'); },
+  get viewerNote() { return tc('viewerNote'); },
+  get leave() { return tc('leave'); },
+  get lendBrain() { return tc('lendBrain'); },
+  get lendOffer() { return tc('lendOffer'); },
+  get lendingBrain() { return tc('lendingBrain'); },
+  get stopLend() { return tc('stopLend'); },
+  get lentBrain() { return tc('lentBrain'); },
+  get expired() { return tc('expired'); },
+  get failed() { return tc('failed'); },
+  get mismatch() { return tc('mismatch'); },
+  get copyLink() { return tc('copyLink'); },
+  get guestTag() { return tc('guestTag'); },
+  get sharingTag() { return tc('sharingTag'); },
+  get host() { return tc('role.host'); },
+  role: (r) => tc(`role.${r}`),
+  roleOf: (name) => tc('roleOf', { name }),
+  word: (n) => tc('word', { n }),
+  joined: (host, role) => tc(role === 'collaborator' ? 'joinedCollaborator' : 'joinedViewer', { host }),
+  ended: (reason) => tc('ended', { reason }),
+  avatarTip: (name, role, file) => (file ? tc('avatarTipFile', { name, role, file }) : tc('avatarTip', { name, role })),
 };
 
 /** The words in a Code together link (#cw=...), a lend link (#w=...) or typed text. */
@@ -70,7 +80,7 @@ export function avatar(p, size = 26) {
 }
 
 function wordBoxes(onReady) {
-  const inputs = Array.from({ length: WORD_COUNT }, (_, i) => h('input', { id: `collab-w${i}`, class: 'lend-box', autocomplete: 'off', autocapitalize: 'none', spellcheck: false, attrs: { 'aria-label': `Word ${i + 1}` } }));
+  const inputs = Array.from({ length: WORD_COUNT }, (_, i) => h('input', { id: `collab-w${i}`, class: 'lend-box', autocomplete: 'off', autocapitalize: 'none', spellcheck: false, attrs: { 'aria-label': T.word(i + 1) } }));
   const paint = () => inputs.forEach((x) => x.parentElement?.classList.toggle('is-ok', !!resolveWord(x.value)));
   const fill = (i, text) => {
     const r = spread(inputs.map((x) => x.value), i, normalizeLink(text));
@@ -147,7 +157,7 @@ export function mountCollab(root, { initial = '' } = {}) {
       const wait = h('p', { class: 'lend-muted', text: T.waitWelcome, hidden: true });
       const yes = h('button', { class: 'lend-btn is-primary', type: 'button', text: T.match, dataset: { act: 'confirm' }, on: { click: () => { collab.confirmHost(guestState.peer, true); yes.disabled = true; wait.hidden = false; } } });
       const no = h('button', { class: 'lend-btn', type: 'button', text: T.noMatch, on: { click: () => { collab.confirmHost(guestState.peer, false); guestState = { phase: 'form', error: T.mismatch }; render(); } } });
-      box.append(h('h3', { text: 'Check the confirmation words' }), h('p', { text: T.confirmHelp }), wordGrid(guestState.confirm, 'is-confirm'), h('div', { class: 'lend-row' }, yes, no), wait);
+      box.append(h('h3', { text: T.confirmTitle }), h('p', { text: T.confirmHelp }), wordGrid(guestState.confirm, 'is-confirm'), h('div', { class: 'lend-row' }, yes, no), wait);
     }
     clear(root).append(h('header', { class: 'lend-head is-small' }, h('div', null, h('h2', { text: T.joinTitle }))), box);
     root.dataset.phase = guestState.phase;
@@ -159,9 +169,9 @@ export function mountCollab(root, { initial = '' } = {}) {
     const list = h('ul', { class: 'collab-people', attrs: { 'aria-label': T.people } });
     for (const p of collab.people()) {
       const role = p.role === 'host' ? h('span', { class: 'lend-pill', text: T.host })
-        : editable ? h('select', { class: 'collab-role', dataset: { guest: p.id }, attrs: { 'aria-label': `${p.name} role` }, on: { change: (e) => collab.host.setRole(p.id, e.target.value) } },
-          h('option', { value: 'viewer', text: 'Viewer', selected: p.role === 'viewer' }), h('option', { value: 'collaborator', text: 'Collaborator', selected: p.role === 'collaborator' }))
-          : h('span', { class: 'lend-pill', text: p.role });
+        : editable ? h('select', { class: 'collab-role', dataset: { guest: p.id }, attrs: { 'aria-label': T.roleOf(p.name) }, on: { change: (e) => collab.host.setRole(p.id, e.target.value) } },
+          h('option', { value: 'viewer', text: T.role('viewer'), selected: p.role === 'viewer' }), h('option', { value: 'collaborator', text: T.role('collaborator'), selected: p.role === 'collaborator' }))
+          : h('span', { class: 'lend-pill', text: T.role(p.role) });
       list.append(h('li', { dataset: { id: p.id } }, avatar(p), h('div', { class: 'collab-who' }, h('b', { text: `${p.name}${p.id === me ? ` (${T.you})` : ''}` }), h('small', { text: [p.file, lent.has(p.id) ? T.lentBrain : ''].filter(Boolean).join(' · ') })), role,
         editable && p.role !== 'host' ? h('button', { class: 'lend-btn', type: 'button', text: T.remove, on: { click: () => collab.host.remove(p.id) } }) : null));
     }
@@ -172,10 +182,10 @@ export function mountCollab(root, { initial = '' } = {}) {
     const card = h('section', { class: 'lend-card collab-invite', dataset: { state: entry.state } });
     if (entry.state === 'waiting' && entry.words) {
       const link = collabLink(entry.words);
-      const copyBtn = h('button', { class: 'lend-btn', type: 'button', text: 'Copy link', on: { click: () => copyText(link, copyBtn) } });
+      const copyBtn = h('button', { class: 'lend-btn', type: 'button', text: T.copyLink, on: { click: () => copyText(link, copyBtn) } });
       card.append(h('div', { class: 'lend-share' }, h('div', { class: 'lend-share-words' }, wordGrid(entry.words, 'is-big collab-invite-words'), h('p', { class: 'lend-muted', text: T.inviteHelp }), h('div', { class: 'lend-row' }, copyBtn), h('input', { class: 'lend-link', value: link, readOnly: true }), h('p', { class: 'lend-status', text: T.waiting })), qrNode(link, T.title)));
     } else if (entry.state === 'confirm') {
-      card.append(h('h3', { text: 'Check the confirmation words' }), h('p', { text: T.confirmHelp }), wordGrid(entry.confirm, 'is-confirm'),
+      card.append(h('h3', { text: T.confirmTitle }), h('p', { text: T.confirmHelp }), wordGrid(entry.confirm, 'is-confirm'),
         h('div', { class: 'lend-row' }, h('button', { class: 'lend-btn is-primary', type: 'button', text: T.match, dataset: { act: 'confirm-guest' }, on: { click: () => collab.confirmGuest(entry, true) } }), h('button', { class: 'lend-btn', type: 'button', text: T.noMatch, on: { click: () => collab.confirmGuest(entry, false) } })));
     } else if (entry.state === 'expired' || entry.state === 'failed' || entry.state === 'mismatch') {
       card.append(h('p', { class: 'lend-error', text: entry.state === 'expired' ? T.expired : entry.state === 'mismatch' ? T.mismatch : T.failed }));
@@ -203,7 +213,7 @@ export function mountCollab(root, { initial = '' } = {}) {
     return h('div', { class: 'collab-cols' },
       h('section', { class: 'lend-card', dataset: { joined: '1', role } }, h('div', { class: 'lend-live-head' }, h('span', { class: 'lend-dot is-on' }), h('h3', { text: T.joined(host?.name || 'the host', role) }), h('button', { class: 'lend-btn is-danger', type: 'button', text: T.leave, dataset: { act: 'leave' }, on: { click: () => collab.leave() } })),
         role === 'viewer' ? h('p', { class: 'lend-muted', text: T.viewerNote }) : null, peopleList(false)),
-      h('section', { class: 'lend-card' }, h('p', { class: 'lend-muted', text: collab.lender ? T.lendingBrain : 'Your model can help the host crew too. Only prompts and answers travel; your files are never touched.' }), h('div', { class: 'lend-row' }, lendBtn)));
+      h('section', { class: 'lend-card' }, h('p', { class: 'lend-muted', text: collab.lender ? T.lendingBrain : T.lendOffer }), h('div', { class: 'lend-row' }, lendBtn)));
   }
 
   on('change', render);
