@@ -56,18 +56,38 @@
       <span>hivedesk</span>
     </a>
     <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="Main">
-      <a href="#how" @click="open = false">How it works</a>
-      <a href="#features" @click="open = false">Features</a>
-      <a href="#office" @click="open = false">Office</a>
-      <a href="#download" @click="open = false">Download</a>
-      <a href="#limits" @click="open = false">Limits</a>
+      <a href="#try" @click="open = false" data-i18n="nav.try">Try it</a>
+      <a href="#how" @click="open = false" data-i18n="nav.how">How it works</a>
+      <a href="#features" @click="open = false" data-i18n="nav.features">Features</a>
+      <a href="#download" @click="open = false" data-i18n="nav.download">Download</a>
+      <a href="#limits" @click="open = false" data-i18n="nav.limits">Limits</a>
       <a href="#faq" @click="open = false">FAQ</a>
     </nav>
     <div class="top-act">
+      <label class="lang-pick" title="Language">
+        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-globe"/></svg>
+        <select data-lang-select aria-label="Language">
+          <option value="en">English</option><option value="pt-BR">Português</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="zh-Hans">简体中文</option><option value="ru">Русский</option>
+        </select>
+      </label>
+      <details class="theme-pick" data-theme-pick>
+        <summary class="icon-btn" aria-label="Theme"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-design"/></svg></summary>
+        <div class="theme-pop" role="group" aria-label="Theme">
+          <p class="pop-h">Themes from the app</p>
+          <button type="button" data-theme-id="mel" style="--a:#FFB531;--b:#0E0D0B">Mel</button>
+          <button type="button" data-theme-id="meia-noite" style="--a:#8FA8FF;--b:#0A0D14">Meia-noite</button>
+          <button type="button" data-theme-id="floresta" style="--a:#8BCF7A;--b:#0C120E">Floresta</button>
+          <button type="button" data-theme-id="neon" style="--a:#FF3DC8;--b:#07060D">Neon</button>
+          <button type="button" data-theme-id="pixel" style="--a:#FFCC00;--b:#1B1B2F">Pixel</button>
+          <button type="button" data-theme-id="alto-contraste" style="--a:#FFD400;--b:#000000">Alto contraste</button>
+          <button type="button" data-theme-id="colmeia-clara" style="--a:#BD7F0A;--b:#F6F1E7">Colmeia Clara</button>
+          <button type="button" data-theme-id="papel" style="--a:#9A5B00;--b:#EFE6D2">Papel</button>
+        </div>
+      </details>
       <a class="icon-btn" href="https://github.com/kwy404/hivedesk" rel="noopener" aria-label="hivedesk on GitHub">
         <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-github"/></svg>
       </a>
-      <a class="b b-light b-sm magnetic" href="#download">Download</a>
+      <a class="b b-light b-sm magnetic top-dl" href="#download" data-i18n="nav.download">Download</a>
       <button class="menu-btn" type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'" aria-controls="nav" aria-label="Menu">
         <span></span><span></span>
       </button>
@@ -81,12 +101,12 @@
 <section class="hd-hero" aria-labelledby="hero-h">
   <div class="hero-bg" aria-hidden="true"><div class="comb"></div><div class="cursor-glow"></div></div>
   <div class="wrap hero-in">
-    <a class="eyebrow" href="#how"><span class="eb-tag">New</span><span>Mel writes a brief before the crew starts</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
-    <h1 id="hero-h" class="display" aria-label="Your own AI crew. One command away.">
+    <a class="eyebrow" href="#how"><span class="eb-tag">New</span><span data-i18n="hero.eyebrow">Mel writes a brief before the crew starts</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
+    <h1 id="hero-h" class="display" aria-label="Your own AI crew. One command away." data-i18n-h1>
       <span class="w" style="--i:0" aria-hidden="true">Your</span> <span class="w" style="--i:1" aria-hidden="true">own</span> <span class="w" style="--i:2" aria-hidden="true">AI</span> <span class="w" style="--i:3" aria-hidden="true">crew.</span><br>
       <span class="w hl" style="--i:4" aria-hidden="true">One</span> <span class="w hl" style="--i:5" aria-hidden="true">command</span> <span class="w hl" style="--i:6" aria-hidden="true">away.</span>
     </h1>
-    <p class="lede">A crew of AI workers that plans, talks and builds real files on your machine, with a local model.</p>
+    <p class="lede" data-i18n="hero.lede">A crew of AI workers that plans, talks and builds real files on your machine, with a local model.</p>
     <div class="cta-row">
       <div class="pill pill-hero" role="group" aria-label="Install command">
         <span class="pill-p" aria-hidden="true">$</span>
@@ -97,11 +117,11 @@
         </button>
       </div>
       <a class="b b-light b-lg magnetic" href="#download">
-        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg>Download
+        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="nav.download">Download</span>
       </a>
     </div>
     <p class="byline">
-      <span>Made by <b>Alexandre Kohler</b></span>
+      <span><span data-i18n="hero.madeby">Made by</span> <b>Alexandre Kohler</b></span>
       <a href="https://github.com/kwy404" rel="me noopener" aria-label="Alexandre Kohler on GitHub"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-github"/></svg></a>
       <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener" aria-label="Alexandre Kohler on LinkedIn"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-linkedin"/></svg></a>
       <span class="dot-sep" aria-hidden="true"></span><span>MIT</span><span class="dot-sep" aria-hidden="true"></span><span>Windows, macOS, Linux</span>
@@ -142,12 +162,49 @@
   </div>
 </section>
 
+<!-- ================= TRY IT ================= -->
+<section id="try" class="sec try" aria-labelledby="try-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker" data-i18n="try.kicker">Try it here</p>
+      <h2 id="try-h" class="h2" data-i18n-2="try.h2">Ask for something small.<br><span>Watch the crew react.</span></h2>
+    </header>
+    <div class="try-box reveal" data-try>
+      <form class="try-form" data-try-form>
+        <label class="sr" for="try-in" data-i18n="try.label">What should the crew build?</label>
+        <svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-hive"/></svg>
+        <input id="try-in" name="q" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="What should the crew build today?" data-i18n-ph="try.ph">
+        <button class="b b-honey" type="submit"><span data-i18n="try.run">Run the crew</span></button>
+      </form>
+      <div class="try-chips" data-try-chips>
+        <button type="button">a landing page for my bakery</button>
+        <button type="button">a todo app that saves to localStorage</button>
+        <button type="button">a snake game</button>
+        <button type="button">a README for my script</button>
+      </div>
+      <div class="try-stage" aria-live="polite">
+        <div class="try-col">
+          <p class="try-h"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-sparkle"/></svg><span data-i18n="try.brief">Brief by Mel</span></p>
+          <div class="try-brief" data-try-brief><p class="try-empty" data-i18n="try.empty">Type a request or pick one above.</p></div>
+        </div>
+        <div class="try-col">
+          <p class="try-h"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-plan"/></svg><span data-i18n="try.tasks">Tasks, one turn at a time</span></p>
+          <ol class="try-tasks" data-try-tasks></ol>
+          <p class="try-done" data-try-done hidden></p>
+        </div>
+        <div class="try-bees" aria-hidden="true" data-try-bees></div>
+      </div>
+      <p class="try-fine"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-lock"/></svg><span data-i18n="try.fine">A scripted preview that runs in this page. Nothing you type leaves your browser; the real crew runs on your machine with a local model.</span></p>
+    </div>
+  </div>
+</section>
+
 <!-- ================= STORY ================= -->
 <section id="how" class="sec story" aria-labelledby="how-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker">How it works</p>
-      <h2 id="how-h" class="h2">From one sentence to shipped.<br><span>Six steps, all on your machine.</span></h2>
+      <p class="kicker" data-i18n="nav.how">How it works</p>
+      <h2 id="how-h" class="h2" data-i18n-2="how.h2">From one sentence to shipped.<br><span>Six steps, all on your machine.</span></h2>
     </header>
     <div class="story-grid" data-story>
       <div class="story-visual" aria-hidden="true">
@@ -224,8 +281,8 @@
 <section id="features" class="sec" aria-labelledby="feat-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker">Features</p>
-      <h2 id="feat-h" class="h2">Everything the crew needs.<br><span>Nothing it should not touch.</span></h2>
+      <p class="kicker" data-i18n="nav.features">Features</p>
+      <h2 id="feat-h" class="h2" data-i18n-2="feat.h2">Everything the crew needs.<br><span>Nothing it should not touch.</span></h2>
     </header>
 
     <div class="bento">
@@ -351,7 +408,7 @@
   <div class="wrap">
     <header class="head head-center reveal">
       <p class="kicker">Office mode</p>
-      <h2 id="office-h" class="h2">Watch the crew at work.</h2>
+      <h2 id="office-h" class="h2" data-i18n="office.h2">Watch the crew at work.</h2>
       <p class="head-sub">Toggle Office mode in the top bar and the desktop becomes a little honeycomb office. Every pose comes from a real engine event: who is thinking, who waits for a turn on the model, a task handed over, the tests passing. Drag a sticky note from Mel's board onto a bee to hand it the task.</p>
     </header>
     <div class="office-stage reveal" aria-hidden="true">
@@ -396,12 +453,104 @@
 </section>
 
 <!-- ================= DOWNLOAD ================= -->
-<section id="download" class="sec" aria-labelledby="dl-h">
+<section id="download" class="sec download" aria-labelledby="dl-h">
   <div class="wrap">
-    <header class="head reveal">
-      <p class="kicker">Download</p>
-      <h2 id="dl-h" class="h2">Get hivedesk.<br><span>Free, MIT, the same app every way.</span></h2>
+    <header class="head head-center reveal">
+      <p class="kicker" data-i18n="nav.download">Download</p>
+      <h2 id="dl-h" class="h2" data-i18n-2="dl.h2">Get hivedesk.<br><span>Free, open source, on your machine.</span></h2>
+      <p class="first-release" data-first-release><span class="pulse-dot" aria-hidden="true"></span><span data-i18n="dl.first">First release coming out today.</span></p>
     </header>
+
+    <div class="os-grid">
+      <article class="os-card tilt reveal" data-os="win">
+        <span class="hd-chip chip-you" data-i18n="dl.you">Your system</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="assets/icons.svg#i-windows"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-windows"/></svg></span>Windows</h3>
+        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 and 11, x64</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">Download for Windows</span></a>
+        <p class="os-note">Not code signed yet: SmartScreen may say &ldquo;Windows protected your PC&rdquo;. Choose <b>More info</b>, then <b>Run anyway</b>.</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
+          <ol class="thanks-steps"><li>Open the downloaded zip and extract it.</li><li>Run <b>hivedesk</b>.</li><li>If SmartScreen says &ldquo;Windows protected your PC&rdquo;, choose <b>More info</b>, then <b>Run anyway</b>.</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+      <article class="os-card tilt reveal" data-os="mac">
+        <span class="hd-chip chip-you" data-i18n="dl.you">Your system</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="assets/icons.svg#i-macos"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-macos"/></svg></span>macOS</h3>
+        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon and Intel</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">Download for macOS</span></a>
+        <p class="os-note">Not notarized yet: the first time, right click the app and choose <b>Open</b>, or allow it in System Settings, Privacy and Security.</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
+          <ol class="thanks-steps"><li>Open the downloaded zip.</li><li>Move <b>hivedesk</b> to Applications.</li><li>The first time, right click it and choose <b>Open</b> (it is not notarized yet).</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+      <article class="os-card tilt reveal" data-os="linux">
+        <span class="hd-chip chip-you" data-i18n="dl.you">Your system</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="assets/icons.svg#i-linux"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-linux"/></svg></span>Linux</h3>
+        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">Download for Linux</span></a>
+        <p class="os-note">Extract it and run <code>./hivedesk</code>. If your archive tool dropped the run permission, run <code>chmod +x hivedesk</code> once.</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
+          <ol class="thanks-steps"><li>Extract it: <code>tar -xzf hivedesk-linux-x64.tar.gz</code></li><li>Run <code>./hivedesk</code> (if needed, <code>chmod +x hivedesk</code> first).</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="dl-alt reveal">
+      <span data-i18n="dl.or">or run</span>
+      <div class="pill pill-sm" role="group" aria-label="Install command">
+        <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
+        <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copied" aria-label="Copy the command npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copied</span></button>
+      </div>
+      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">See all versions</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
+    </div>
+    <p class="caption caption-center">Prefer a tiny script? The <a href="download/hivedesk-windows.cmd" download>Windows</a>, <a href="download/hivedesk-macos.command" download>macOS</a> and <a href="download/hivedesk-linux.sh" download>Linux</a> launchers check for Node.js 18 or newer and run <code>npx hivedesk@latest</code>; if Node.js is missing, they open the official download page and say why.</p>
 
     <article class="hd-card dl-cmd reveal">
       <div class="dl-cmd-copy">
@@ -424,28 +573,6 @@
         <p class="tl c-ok">Opening the Hive<span class="tcaret"></span></p>
       </div>
     </article>
-
-    <div class="os-grid">
-      <article class="hd-card os-card reveal" data-os="win">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-windows"/></svg></span><h3>Windows</h3><span class="hd-chip chip-you">Your system</span></div>
-        <p>Double click to check for Node.js 18+ and run <code>npx hivedesk@latest</code>.</p>
-        <a class="b b-honey magnetic" href="download/hivedesk-windows.cmd" download><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg>hivedesk-windows.cmd</a>
-        <p class="note">Not code signed, so SmartScreen may say &ldquo;Windows protected your PC&rdquo;. Choose <b>More info</b>, then <b>Run anyway</b>.</p>
-      </article>
-      <article class="hd-card os-card reveal" data-os="mac">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-macos"/></svg></span><h3>macOS</h3><span class="hd-chip chip-you">Your system</span></div>
-        <p>Double click to check for Node.js 18+ and run <code>npx hivedesk@latest</code>.</p>
-        <a class="b b-honey magnetic" href="download/hivedesk-macos.command" download><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg>hivedesk-macos.command</a>
-        <p class="note">Not signed or notarized: right click it and choose <b>Open</b> the first time. If it has no permission to run: <code>chmod +x ~/Downloads/hivedesk-macos.command</code>.</p>
-      </article>
-      <article class="hd-card os-card reveal" data-os="linux">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-linux"/></svg></span><h3>Linux</h3><span class="hd-chip chip-you">Your system</span></div>
-        <p>Checks for Node.js 18+ and runs <code>npx hivedesk@latest</code>.</p>
-        <a class="b b-honey magnetic" href="download/hivedesk-linux.sh" download><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg>hivedesk-linux.sh</a>
-        <p class="note">Browsers drop the run permission on downloads: run it with <code>bash hivedesk-linux.sh</code>.</p>
-      </article>
-    </div>
-    <p class="caption">If Node.js is missing, each launcher opens the official Node.js download page and explains why. They are about 40 lines each: open one in a text editor to read it first.</p>
 
     <div class="grid-2">
       <article class="hd-card reveal">
@@ -500,8 +627,8 @@
 <section id="limits" class="sec sec-line" aria-labelledby="limits-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker kicker-warn">Honest about the limits</p>
-      <h2 id="limits-h" class="h2">What it is great at.<br><span>And what it is not.</span></h2>
+      <p class="kicker kicker-warn" data-i18n="limits.kicker">Honest about the limits</p>
+      <h2 id="limits-h" class="h2" data-i18n-2="limits.h2">What it is great at.<br><span>And what it is not.</span></h2>
       <p class="head-sub">A small model on your own machine is private and free to run. It is also slower and less capable than the biggest models in a data center. Here is what to expect.</p>
     </header>
 
@@ -566,15 +693,15 @@
   <div class="wrap">
     <div class="band-in reveal">
       <div class="band-copy">
-        <h2 id="band-h" class="h2">Mel is ready when you are.</h2>
-        <p>One command, and the crew is on your desk.</p>
+        <h2 id="band-h" class="h2" data-i18n="band.h2">Mel is ready when you are.</h2>
+        <p data-i18n="band.p">One command, and the crew is on your desk.</p>
       </div>
       <div class="band-act">
         <div class="pill" role="group" aria-label="Install command">
           <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
           <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copied" aria-label="Copy the command npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copied</span></button>
         </div>
-        <a class="b b-light b-lg magnetic" href="#download">Download</a>
+        <a class="b b-light b-lg magnetic" href="#download" data-i18n="nav.download">Download</a>
       </div>
     </div>
   </div>

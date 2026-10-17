@@ -175,3 +175,182 @@ if (finePointer && !reduced) {
     el.addEventListener('pointerleave', () => { el.style.transform = ''; });
   }
 }
+
+// ---------- saved choices (best effort; the page works without storage) ----------
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
+};
+
+// ---------- theme switcher: the app's eight themes recolor the page ----------
+const themePick = $('[data-theme-pick]');
+function setTheme(id) {
+  if (!id || id === 'mel') document.documentElement.removeAttribute('data-site-theme');
+  else document.documentElement.setAttribute('data-site-theme', id);
+  $$('[data-theme-id]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeId === (id || 'mel'))));
+}
+setTheme(store.get('hivedesk.site.theme') || 'mel');
+$$('[data-theme-id]').forEach((b) => b.addEventListener('click', () => {
+  setTheme(b.dataset.themeId);
+  store.set('hivedesk.site.theme', b.dataset.themeId);
+}));
+document.addEventListener('click', (e) => { if (themePick?.open && !themePick.contains(e.target)) themePick.open = false; });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && themePick?.open) { themePick.open = false; themePick.querySelector('summary').focus(); } });
+
+// ---------- language switcher: headlines, buttons, the try panel and downloads ----------
+let STR = null;
+const langSelect = $('[data-lang-select]');
+const h1 = $('[data-i18n-h1]');
+function setH1(lines) {
+  let i = 0;
+  h1.textContent = '';
+  lines.forEach((line, n) => {
+    if (n) h1.append(document.createElement('br'));
+    line.split(' ').forEach((w, k) => {
+      if (k) h1.append(' ');
+      const sp = document.createElement('span');
+      sp.className = n ? 'w hl' : 'w';
+      sp.style.setProperty('--i', String(i++));
+      sp.setAttribute('aria-hidden', 'true');
+      sp.textContent = w;
+      h1.append(sp);
+    });
+  });
+  h1.setAttribute('aria-label', lines.join(' '));
+  h1.classList.toggle('display-long', Math.max(...lines.map((l) => l.length)) > 20);
+}
+async function setLang(code) {
+  if (!STR) STR = (await import('./i18n.js')).STRINGS;
+  const t = STR[code] || STR.en;
+  document.documentElement.lang = code;
+  for (const el of $$('[data-i18n]')) { const v = t[el.dataset.i18n]; if (typeof v === 'string') el.textContent = v; }
+  for (const el of $$('[data-i18n-2]')) {
+    const v = t[el.dataset.i18n2];
+    if (!Array.isArray(v)) continue;
+    const sp = document.createElement('span');
+    sp.textContent = v[1];
+    el.replaceChildren(v[0], document.createElement('br'), sp);
+  }
+  for (const el of $$('[data-i18n-ph]')) { const v = t[el.dataset.i18nPh]; if (v) el.placeholder = v; }
+  if (h1 && t['hero.h1']) setH1(t['hero.h1']);
+  if (langSelect) langSelect.value = code;
+}
+const savedLang = store.get('hivedesk.site.lang');
+if (savedLang && savedLang !== 'en') setLang(savedLang);
+langSelect?.addEventListener('change', () => { setLang(langSelect.value); store.set('hivedesk.site.lang', langSelect.value); });
+
+// ---------- release sizes from GitHub, and the "first release today" note ----------
+function fmtSize(b) { return b > 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`; }
+addEventListener('load', () => {
+  setTimeout(() => {
+    // The list endpoint answers 200 with [] before the first release (no 404 in the console).
+    fetch('https://api.github.com/repos/kwy404/hivedesk/releases?per_page=5', { headers: { accept: 'application/vnd.github+json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((list) => {
+        const rel = Array.isArray(list) ? list.find((x) => !x.draft && !x.prerelease) : null;
+        if (!rel || !Array.isArray(rel.assets)) return;
+        $('[data-first-release]')?.setAttribute('hidden', '');
+        for (const el of $$('[data-size]')) {
+          const a = rel.assets.find((x) => x.name === el.dataset.size);
+          if (a) el.textContent = `${el.textContent}, ${fmtSize(a.size)}, ${rel.tag_name}`;
+        }
+      })
+      .catch(() => {});
+  }, 1500);
+}, { once: true });
+
+// ---------- try it: a scripted mini crew that reacts to what you type ----------
+const tryBox = $('[data-try]');
+if (tryBox) {
+  const form = $('[data-try-form]', tryBox);
+  const input = form.elements.q;
+  const brief = $('[data-try-brief]', tryBox);
+  const tasks = $('[data-try-tasks]', tryBox);
+  const done = $('[data-try-done]', tryBox);
+  const bees = $('[data-try-bees]', tryBox);
+  const AV = { dev: 'dev', des: 'designer', qa: 'qa', wri: 'writer' };
+  const NAME = { dev: 'Dev', des: 'Designer', qa: 'QA', wri: 'Writer' };
+  const PLANS = [
+    { re: /game|snake|pong|tetris|jogo|juego|spiel|gioco/i, build: 'A canvas game loop, keyboard and touch controls, a score and a restart button.', checks: 'The game starts, the score counts, restart works.',
+      tasks: [['des', 'Set the look'], ['dev', 'Write the game loop'], ['wri', 'Write how to play'], ['qa', 'Play test the controls']] },
+    { re: /todo|to-do|list|crud|notes|tarefa|lista|notas/i, build: 'A list with add, edit, done and delete, saved in localStorage.', checks: 'Items survive a reload, empty input is refused.',
+      tasks: [['des', 'Style the list'], ['dev', 'Build add, edit and delete'], ['dev', 'Save to localStorage'], ['qa', 'Check the edge cases']] },
+    { re: /readme|docs|documentation|documenta/i, build: 'What it does, how to install it, how to use it, and an example.', checks: 'Every command in the README runs as written.',
+      tasks: [['wri', 'Outline the README'], ['wri', 'Write install and usage'], ['dev', 'Check the commands'], ['qa', 'Read it like a newcomer']] },
+    { re: /.*/, build: 'A hero, the main sections, a contact form and a footer.', checks: 'Images have alt text, the form has labels, it works at 375 px.',
+      tasks: [['des', 'Set the look'], ['dev', 'Build the page'], ['wri', 'Write the copy'], ['qa', 'Check the page']] },
+  ];
+  let run = 0;
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  function bee() {
+    if (reduced) return;
+    const w = bees.clientWidth, h = bees.clientHeight;
+    const img = el('img', 'try-bee');
+    img.src = 'assets/art/bee.svg'; img.alt = ''; img.width = 30; img.height = 23;
+    const ltr = Math.random() > 0.5;
+    img.style.setProperty('--x0', `${ltr ? -40 : w + 10}px`); img.style.setProperty('--y0', `${20 + Math.random() * (h - 60)}px`);
+    img.style.setProperty('--x1', `${ltr ? w + 10 : -40}px`); img.style.setProperty('--y1', `${20 + Math.random() * (h - 60)}px`);
+    if (!ltr) img.style.scale = '-1 1';
+    bees.append(img);
+    setTimeout(() => img.remove(), 2800);
+  }
+  async function go(text) {
+    const id = ++run;
+    const q = text.trim().replace(/\s+/g, ' ').slice(0, 120);
+    if (!q) { input.focus(); return; }
+    const plan = PLANS.find((p) => p.re.test(q));
+    brief.replaceChildren(); tasks.replaceChildren(); done.hidden = true;
+    const think = el('p', 'thinking');
+    const dots = el('span', 'dots'); dots.append(el('i'), el('i'), el('i'));
+    think.append(el('span', null, 'Mel is writing the brief'), dots);
+    brief.append(think); bee();
+    await wait(900); if (id !== run) return;
+    think.remove();
+    const goal = q.charAt(0).toUpperCase() + q.slice(1).replace(/[.!?]+$/, '') + '.';
+    for (const [k, v] of [['Goal', goal], ['Build', plan.build], ['Constraints', 'Plain HTML, CSS and JavaScript, works on phones.'], ['Checks', plan.checks]]) {
+      const p = el('p', 'bl'); p.append(el('b', null, k), v); brief.append(p);
+      await wait(260); if (id !== run) return;
+    }
+    await wait(300);
+    const rows = plan.tasks.map(([who, title]) => {
+      const li = el('li');
+      const img = el('img'); img.src = `assets/crew/${AV[who]}.svg`; img.alt = ''; img.width = 28; img.height = 28;
+      const mid = el('span'); mid.append(el('b', null, title), el('span', 'who', NAME[who]));
+      const st = el('span', 'ts', 'queued'); st.dataset.s = 'queued';
+      li.append(img, mid, st); tasks.append(li);
+      return st;
+    });
+    for (const st of rows) {
+      if (id !== run) return;
+      st.textContent = 'running'; st.dataset.s = 'running'; bee();
+      await wait(900); if (id !== run) return;
+      st.textContent = 'done'; st.dataset.s = 'done';
+    }
+    done.textContent = 'Done in this preview. In the Hive, this writes real files in your folder.';
+    done.hidden = false; bee(); bee();
+  }
+  form.addEventListener('submit', (e) => { e.preventDefault(); go(input.value); });
+  for (const chip of $$('[data-try-chips] button', tryBox)) chip.addEventListener('click', () => { input.value = chip.textContent; go(chip.textContent); });
+  const tio = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    tio.disconnect();
+    if (!input.value) { input.value = 'a landing page for my bakery'; go(input.value); }
+  }, { threshold: 0.4 });
+  tio.observe(tryBox);
+}
+
+// ---------- download: a thank you panel with the first launch steps ----------
+for (const card of $$('.os-card')) {
+  const panel = $('.os-thanks', card);
+  $('.os-dl', card)?.addEventListener('click', () => {
+    card.classList.add('is-thanks');
+    panel.hidden = false;
+    setTimeout(() => $('[data-thanks-close]', panel)?.focus({ preventScroll: true }), 50);
+  });
+  $('[data-thanks-close]', card)?.addEventListener('click', () => {
+    panel.hidden = true;
+    card.classList.remove('is-thanks');
+    $('.os-dl', card)?.focus({ preventScroll: true });
+  });
+}
