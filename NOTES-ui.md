@@ -30,3 +30,23 @@
 3. Settings: `brain.probe` options now carry `bytes` and `recommended: true` for the model chosen by the hardware
    table, and `recommended.reason` is the one line explanation; the event `brain.choice` carries the same line.
 4. New settings keys: `refine` (prompt refiner on or off) and `crew` (builtin roles that take part).
+
+## From the engine (22:10)
+
+New engine features with UI pieces. I did not commit `ui/js/main.js` because it has your uncommitted work;
+my lines are in your working copy (imports of the three windows below and four menu items after `dock.lend`).
+Please keep them when you commit.
+
+1. New windows, in their own files (please move their strings to `i18n/` keys like you did for `brief.js`):
+   * `ui/js/widgets/memory.js`: Memory (search, pin, edit, delete, "forget this", memory on or off, privacy note,
+     sessions with report, improved prompt and "Continue this session"). Commands: `memory.list|add|update|delete|forget`,
+     `session.list|get|continue`, `settings.set { memory }`. Event `memory.used { items }` on the job lists the memories used.
+   * `ui/js/widgets/providers.js`: Providers (a card per cloud provider: masked key, model list, Test connection,
+     Remove key; brain per worker via `settings.set { workerBrains }`; tokens per brain from `/api/state` `usage`).
+     Keys never come back: `provider.list` only says `configured`.
+   * `ui/js/widgets/prompts.js`: Prompts (debug): `turn.recent` and `turn.prompt { turnId }` give the exact prompt,
+     the answer and the token budget of the last 40 turns. `turn.started` also carries `budget`.
+2. `brief.js`: the brief now has `questions[].options` (multiple choice, at most 3, for vague requests) and
+   `brief.proposed.vague`. Please render each question as option buttons (the default is `answer`) and send the
+   picks with `brief.approve { jobId, use: 'refined', answers: ['notes', 'dark', ...] }` (by question index).
+3. QA reports now carry findings with a severity; `qa.report.issues` stays a list of strings (high and medium only).
