@@ -17,7 +17,7 @@ const facts = (over = {}) => ({
 describe('wizard state machine', () => {
   it('Enter everywhere gives the recommended defaults', () => {
     const r = runScripted(facts());
-    expect(r).toEqual({ lang: 'en', dir: facts().cwd, brain: { backend: 'local', model: 'qwen2.5-coder-3b', gpu: true }, approvalMode: true, crew: ['dev', 'designer', 'qa', 'writer'], open: true });
+    expect(r).toEqual({ lang: 'en', dir: facts().cwd, brain: { backend: 'local', model: 'qwen2.5-coder-3b', gpu: true }, approvalMode: true, crew: ['dev', 'designer', 'qa', 'writer'], open: true, app: true });
     expect(r).toEqual(defaults(facts()));
   });
 
@@ -35,7 +35,7 @@ describe('wizard state machine', () => {
       if (q.id === 'download') expect(q.body.join('\n')).toMatch(/2\.1 GB[\s\S]*huggingface\.co\/Qwen\/Qwen2\.5-Coder-3B-Instruct-GGUF[\s\S]*qwen2\.5-coder-3b-instruct-q4_k_m\.gguf/);
       w.answer(undefined);
     }
-    expect(seen).toEqual(['welcome', 'lang', 'folder', 'brain', 'download', 'mode', 'crew', 'summary']);
+    expect(seen).toEqual(['welcome', 'lang', 'folder', 'brain', 'download', 'mode', 'crew', 'summary', 'app']);
   });
 
   it('skips the download question for a model already downloaded, and prefers a running Ollama', () => {
@@ -61,7 +61,7 @@ describe('wizard state machine', () => {
     expect(r).toEqual({
       lang: 'pt', dir: path.resolve(facts().cwd, 'work/site'),
       brain: { backend: 'openai', url: 'http://127.0.0.1:8080/v1', model: 'my-model', key: 'sk-secret' },
-      approvalMode: false, crew: ['dev', 'qa'], open: false
+      approvalMode: false, crew: ['dev', 'qa'], open: false, app: true
     });
     expect(toStartOptions(r)).toMatchObject({ demo: false, approvalMode: false, open: false, flags: { brain: 'openai', url: 'http://127.0.0.1:8080/v1', model: 'my-model', key: 'sk-secret' } });
   });
@@ -131,7 +131,7 @@ describe('wizard in a terminal (simulated keys)', () => {
   it('Enter all the way gives the defaults', async () => {
     const io = term();
     const p = runTty(createWizard(facts()), { input: io.input, output: io.output, color: false });
-    await press(io, Array(8).fill('enter'));
+    await press(io, Array(9).fill('enter'));
     expect(await p).toEqual(defaults(facts()));
     expect(io.text).toContain('hivedesk');
     expect(io.text).toContain('(recommended)');

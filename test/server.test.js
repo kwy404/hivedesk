@@ -182,3 +182,22 @@ describe('demo and lend modes', () => {
     await app.close();
   });
 });
+
+describe('installable app shell', () => {
+  it('serves the manifest, the service worker and the offline page without the token', async () => {
+    const app = await startHive({ dir: tmpDir(), home: tmpDir(), brain: createFakeBrain({ respond: () => 'x' }) });
+    const port = app.server.port;
+    const m = await request(port, '/manifest.webmanifest');
+    expect(m.status).toBe(200);
+    expect(m.headers['content-type']).toContain('application/manifest+json');
+    expect(JSON.parse(m.text).display).toBe('standalone');
+    const sw = await request(port, '/sw.js');
+    expect(sw.status).toBe(200);
+    expect(sw.text).toContain('offline.html');
+    expect((await request(port, '/offline.html')).text).toContain('npx hivedesk');
+    expect((await request(port, '/')).status).toBe(401);
+    const first = await request(port, `/?t=${app.server.token}`);
+    expect(first.headers['set-cookie'][0]).toContain('Max-Age=31536000');
+    await app.close();
+  });
+});

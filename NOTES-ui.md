@@ -50,3 +50,8 @@ Please keep them when you commit.
    `brief.proposed.vague`. Please render each question as option buttons (the default is `answer`) and send the
    picks with `brief.approve { jobId, use: 'refined', answers: ['notes', 'dark', ...] }` (by question index).
 3. QA reports now carry findings with a severity; `qa.report.issues` stays a list of strings (high and medium only).
+4. Installable app (PWA): `ui/manifest.webmanifest`, `ui/sw.js`, `ui/pwa.js` and `ui/offline.html` are in place and served
+   without the token. Please add to the `<head>` of `ui/index.html`:
+   `<link rel="manifest" href="/manifest.webmanifest">` and `<script type="module" src="/pwa.js"></script>`.
+   The CLI now opens an app style window (`--app`, own profile in `~/.hivedesk/browser-profile`), uses port 4174 when free,
+   and keeps the token in `~/.hivedesk/token`, so the installed app reopens without a token in the URL.

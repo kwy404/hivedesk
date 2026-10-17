@@ -33,7 +33,8 @@ export function defaults(facts) {
     brain: facts.ollama?.length ? { backend: 'ollama' } : facts.lmstudio?.length ? { backend: 'lmstudio' } : { backend: 'local', model: choice.model.id, gpu: choice.gpu },
     approvalMode: true,
     crew: [...ROLES],
-    open: true
+    open: true,
+    app: true
   };
 }
 
@@ -101,7 +102,8 @@ export function createWizard(facts, opts = {}) {
       case 'mode': return 'crew';
       case 'crew': return a._crewPick ? 'crewRoles' : 'summary';
       case 'crewRoles': return 'summary';
-      case 'summary': return null;
+      case 'summary': return a.open ? 'app' : null;
+      case 'app': return null;
       default: return null;
     }
   }
@@ -150,6 +152,8 @@ export function createWizard(facts, opts = {}) {
         return { id: step, type: 'checkbox', title: S.crewRoles, options: ROLES.map((r) => ({ value: r, label: r === 'qa' ? 'QA' : r[0].toUpperCase() + r.slice(1) })), default: a.crew };
       case 'summary':
         return { id: step, type: 'confirm', title: S.openBrowser, body: [S.summary, ...summaryLines()], default: a.open };
+      case 'app':
+        return { id: step, type: 'confirm', title: S.openApp, default: a.app !== false };
       default:
         return null;
     }
@@ -226,6 +230,7 @@ export function createWizard(facts, opts = {}) {
         break;
       }
       case 'summary': a.open = !!v; break;
+      case 'app': a.app = !!v; break;
       default: break;
     }
     history.push(step);
@@ -283,5 +288,5 @@ export function toStartOptions(ans) {
   } else if (b.backend === 'openai') {
     Object.assign(flags, { brain: 'openai', url: b.url, model: b.model, key: b.key });
   }
-  return { dir: ans.dir, demo: b.backend === 'demo', flags, approvalMode: ans.approvalMode !== false, crew: ans.crew, open: ans.open !== false };
+  return { dir: ans.dir, demo: b.backend === 'demo', flags, approvalMode: ans.approvalMode !== false, crew: ans.crew, open: ans.open !== false, app: ans.app !== false };
 }

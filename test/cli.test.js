@@ -52,3 +52,20 @@ describe('doctor', () => {
     expect(formatDoctor(r)).toMatch(/\[fail\] Free disk/);
   });
 });
+
+describe('app window and token', () => {
+  it('builds app window arguments with its own profile, lists browsers, keeps a stable token', async () => {
+    const { appArgs, chromiumCandidates, loadToken, stablePort } = await import('../src/cli.js');
+    const args = appArgs('http://127.0.0.1:4174/?t=x', '/home/me/.hivedesk');
+    expect(args[0]).toBe('--app=http://127.0.0.1:4174/?t=x');
+    expect(args).toContain('--window-size=1440,900');
+    expect(args.find((a) => a.startsWith('--user-data-dir='))).toContain('browser-profile');
+    expect(chromiumCandidates('win32', { ProgramFiles: 'C:/PF', 'ProgramFiles(x86)': 'C:/PF86' })[0]).toMatch(/Edge/);
+    expect(chromiumCandidates('linux')).toContain('/usr/bin/chromium');
+    const home = tmpDir();
+    const a = loadToken(home);
+    expect(loadToken(home)).toBe(a);
+    expect(loadToken(home, true)).not.toBe(a);
+    expect(typeof (await stablePort(0))).toBe('number');
+  });
+});

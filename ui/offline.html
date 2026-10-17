@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start hivedesk</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #141210; color: #F2E9DA; font: 16px/1.6 system-ui, sans-serif; padding: 16px; box-sizing: border-box; }
+  main { max-width: 520px; text-align: center; }
+  h1 { font-size: 26px; margin: 12px 0 8px; }
+  code { display: inline-block; margin: 12px 0; padding: 10px 16px; border-radius: 10px; background: #1E1A16; border: 1px solid #3a2f24; color: #FFB531; font: 15px ui-monospace, monospace; }
+  p { color: #b9ad9b; }
+  button { margin-top: 8px; padding: 10px 18px; border-radius: 999px; border: 0; background: #FFB531; color: #24160C; font-weight: 600; font-size: 15px; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/favicon.svg" alt="" width="64" height="64">
+  <h1>hivedesk is not running</h1>
+  <p>The app window talks to the hivedesk server on this computer. Start it in a terminal, then try again:</p>
+  <code>npx hivedesk</code>
+  <p>Everything stays on your machine.</p>
+  <button type="button" onclick="location.reload()">Try again</button>
+</main>
+</body>
+</html>

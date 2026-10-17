@@ -17,8 +17,10 @@ const TYPES = {
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png',
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
   '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
-  '.ogg': 'audio/ogg', '.webm': 'video/webm', '.mp4': 'video/mp4', '.map': 'application/json'
+  '.ogg': 'audio/ogg', '.webm': 'video/webm', '.mp4': 'video/mp4', '.map': 'application/json', '.webmanifest': 'application/manifest+json'
 };
+
+const PWA_FILES = new Set(['/manifest.webmanifest', '/sw.js', '/offline.html', '/pwa.js', '/icon-192.png', '/icon-512.png', '/favicon.svg']);
 
 export class CommandError extends Error {
   constructor(code, message) {
@@ -349,9 +351,16 @@ export function createServer(opts) {
         if (serveFile(res, abs, csp)) return;
         return send(res, 404, '<!doctype html><title>Nothing here yet</title><p style="font-family:system-ui">Nothing here yet. The crew has not written this file.</p>', { 'content-type': 'text/html; charset=utf-8', ...csp });
       }
+      // The installable app shell (manifest, service worker, offline page, icons) holds no data: no token needed.
+      if (PWA_FILES.has(url.pathname) && (req.method === 'GET' || req.method === 'HEAD')) {
+        const abs = safeJoin(uiDir, url.pathname.slice(1));
+        if (abs && serveFile(res, abs, url.pathname === '/sw.js' ? { 'service-worker-allowed': '/' } : {})) return;
+        return sendError(res, 404, 'not_found', 'no such file');
+      }
       const how = authed(req, url);
       if (!how) return sendError(res, 401, 'unauthorized', 'missing or wrong token; open the URL printed by hivedesk');
-      const cookie = how === 'query' ? { 'set-cookie': `hivedesk_token=${token}; HttpOnly; SameSite=Strict; Path=/` } : {};
+      // A year long cookie, so an installed app window (PWA) opens without the token in the URL while the token stays the same.
+      const cookie = how === 'query' ? { 'set-cookie': `hivedesk_token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=31536000` } : {};
       if (url.pathname.startsWith('/api/')) {
         for (const [k, v] of Object.entries(cookie)) res.setHeader(k, v);
         return await handleApi(req, res, url);

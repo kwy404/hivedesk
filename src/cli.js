@@ -5,6 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import net from 'node:net';
+import crypto from 'node:crypto';
 
 const HELP = `hivedesk: a crew of AI workers that build real files on your machine with a local model.
 
@@ -12,7 +14,9 @@ Usage: npx hivedesk [options]
 
   --dir <folder>        project folder (default: the current folder); files go to <folder>/.hivedesk/
   --port <n>            port on 127.0.0.1 (default: a random free port)
-  --no-open             do not open the browser
+  --no-open             do not open a window
+  --browser             open in the normal browser instead of an app window
+  --new-token           make a new access token (an installed app window then needs to be opened again from the terminal link)
   --model <name|path>   14b, 7b, 3b, 1.5b, 0.5b, or a GGUF file, instead of the automatic choice
   --brain <name>        ollama, lmstudio or openai (with --url, --model and HIVEDESK_API_KEY)
   --url <url>           base URL for --brain
@@ -44,7 +48,7 @@ export function parseArgs(argv) {
       o[key] = val;
     } else if (key === 'no-open') o.open = false;
     else if (key === 'no-download') o.download = false;
-    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes'].includes(key)) o[key] = true;
+    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes', 'browser', 'new-token'].includes(key)) o[key] = true;
     else throw new Error(`unknown option: --${key}`);
   }
   if (o.port !== undefined) {
@@ -79,6 +83,63 @@ export function startUrl(port, token, args) {
     if (w) return `${base}/?t=${token}#w=${w}`;
   }
   return `${base}/?t=${token}`;
+}
+
+/** The access token, kept in ~/.hivedesk/token (mode 600) so an installed app window keeps working across runs. */
+export function loadToken(home, rotate = false) {
+  const file = path.join(home, 'token');
+  if (!rotate) {
+    try {
+      const t = fs.readFileSync(file, 'utf8').trim();
+      if (/^[0-9a-f]{32}$/.test(t)) return t;
+    } catch { /* first run */ }
+  }
+  const t = crypto.randomBytes(16).toString('hex');
+  fs.mkdirSync(home, { recursive: true });
+  fs.writeFileSync(file, t + '\n', { mode: 0o600 });
+  try { fs.chmodSync(file, 0o600); } catch { /* not supported */ }
+  return t;
+}
+
+/** A stable port (4174) when it is free, so the installed app finds the server; otherwise any free port. */
+export function stablePort(preferred = 4174) {
+  return new Promise((resolve) => {
+    const srv = net.createServer();
+    srv.once('error', () => resolve(0));
+    srv.listen(preferred, '127.0.0.1', () => srv.close(() => resolve(preferred)));
+  });
+}
+
+/** Installed Chromium based browsers, best first (Edge on Windows, then Chrome, Brave, Chromium). */
+export function chromiumCandidates(platform = process.platform, env = process.env) {
+  if (platform === 'win32') {
+    const roots = [env['ProgramFiles(x86)'], env.ProgramFiles, env.LOCALAPPDATA].filter(Boolean);
+    const rel = ['Microsoft/Edge/Application/msedge.exe', 'Google/Chrome/Application/chrome.exe', 'BraveSoftware/Brave-Browser/Application/brave.exe', 'Chromium/Application/chrome.exe'];
+    return rel.flatMap((r) => roots.map((x) => path.join(x, r)));
+  }
+  if (platform === 'darwin') {
+    return ['Google Chrome', 'Microsoft Edge', 'Brave Browser', 'Chromium'].map((n) => `/Applications/${n}.app/Contents/MacOS/${n}`);
+  }
+  return ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/microsoft-edge', '/usr/bin/brave-browser', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/snap/bin/chromium'];
+}
+
+/** The arguments for an app style window: no tabs or address bar, its own profile folder. */
+export function appArgs(url, home) {
+  return [`--app=${url}`, '--window-size=1440,900', `--user-data-dir=${path.join(home, 'browser-profile')}`, '--no-first-run', '--no-default-browser-check'];
+}
+
+/** Opens hivedesk in its own app window when a Chromium based browser is installed, else in the default browser. */
+export function openApp(url, home) {
+  const exe = chromiumCandidates().find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!exe) return openBrowser(url) && 'browser';
+  try {
+    const child = spawn(exe, appArgs(url, home), { stdio: 'ignore', detached: true, windowsHide: false });
+    child.on('error', () => openBrowser(url));
+    child.unref();
+    return 'app';
+  } catch {
+    return openBrowser(url) && 'browser';
+  }
 }
 
 export function openBrowser(url) {
@@ -164,9 +225,11 @@ async function main() {
   const progress = makeProgress();
   const log = (line) => { progress(null); console.log(`  ${line}`); };
   console.log(`hivedesk ${VERSION}${args.demo ? ' (demo: no model, scripted crew)' : ''}${args.lend ? ' (lend mode)' : ''}`);
+  const port = args.port !== undefined ? args.port : await stablePort(4174);
   const app = await startHive({
     dir,
-    port: args.port,
+    port,
+    token: args.demo ? undefined : loadToken(cacheHome(), !!args['new-token']),
     demo: !!args.demo,
     lend: !!args.lend,
     log,
@@ -182,7 +245,10 @@ async function main() {
   console.log(`  open:   ${app.url}`);
   const openUrl = startUrl(app.server.port, app.server.token, args);
   if (openUrl !== app.url) console.log(`          ${openUrl}`);
-  if (args.open) openBrowser(openUrl);
+  if (args.open) {
+    const how = args.browser || setup?.app === false ? (openBrowser(openUrl) && 'browser') : openApp(openUrl, cacheHome());
+    if (how) console.log(`  opened ${how === 'app' ? 'in its own app window' : 'in the browser'}`);
+  }
   console.log('  press Ctrl+C to stop');
   let stopping = false;
   const stop = async () => {
