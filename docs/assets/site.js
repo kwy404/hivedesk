@@ -20,7 +20,15 @@ function osGuess() {
 }
 
 // ---------- Voodoo, after the first paint ----------
+const MONSOON = 'https://cdn.jsdelivr.net/npm/monsooncss@0.2.0/dist/monsoon.min.css';
 function startVoodoo() {
+  // Monsoon's reset and tokens: site.css already stands on its own, so this changes nothing on screen.
+  const css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = MONSOON;
+  css.crossOrigin = 'anonymous';
+  document.head.append(css);
+
   const s = document.createElement('script');
   s.src = VOODOO;
   s.crossOrigin = 'anonymous';
@@ -33,8 +41,9 @@ function startVoodoo() {
   };
   document.head.append(s);
 }
-if (document.readyState === 'complete') startVoodoo();
-else addEventListener('load', startVoodoo, { once: true });
+const later = () => setTimeout(startVoodoo, 600);
+if (document.readyState === 'complete') later();
+else addEventListener('load', later, { once: true });
 
 // ---------- the download card for this OS ----------
 const os = osGuess();
@@ -60,7 +69,7 @@ const io = new IntersectionObserver((entries) => {
     shown.set(e.target, e.isIntersecting);
   }
 }, { rootMargin: '0px 0px -6% 0px' });
-$$('.reveal, .tile, .stage, .office-stage, [data-term]').forEach((el) => io.observe(el));
+$$('.reveal, .tile, .stage, .office-stage, .download, [data-term]').forEach((el) => io.observe(el));
 const onScreen = (el) => shown.get(el) === true && !document.hidden;
 
 function every(el, ms, fn) {
@@ -353,4 +362,12 @@ for (const card of $$('.os-card')) {
     card.classList.remove('is-thanks');
     $('.os-dl', card)?.focus({ preventScroll: true });
   });
+}
+
+// ---------- the live window's overlay knows its own size, so bees fly in pixels ----------
+for (const fx of $$('.fx')) {
+  new ResizeObserver(([e]) => {
+    fx.style.setProperty('--fw', `${Math.round(e.contentRect.width)}px`);
+    fx.style.setProperty('--fh', `${Math.round(e.contentRect.height)}px`);
+  }).observe(fx);
 }
