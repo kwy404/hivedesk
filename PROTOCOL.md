@@ -33,6 +33,8 @@ Every frame is a JSON object with a `kind`.
 
 After `hello`, a client that reconnects can ask for missed events with the `events.since` command.
 
+`hello` also carries `city: 1` when the engine runs Hive City, and `state.city` is then the city (CITY-PROTOCOL.md).
+
 ### UI to server
 
 ```json
@@ -72,9 +74,10 @@ Worker   { id, name, role, color, avatar, prompt, tools: string[], builtin: bool
 Task     { id, jobId, title, detail, assignee, dependsOn: string[], status, attempts, kind }
          status: "pending" | "ready" | "running" | "review" | "done" | "failed" | "blocked" | "skipped"
          kind:   "build" | "qa" | "fix" | "docs"
-Job      { id, request, status, approval, refine, createdAt, finishedAt?, taskIds: string[], playbookId?, summary?,
+Job      { id, request, status, approval, refine, createdAt, finishedAt?, taskIds: string[], playbookId?, summary?, cityTaskId?,
            briefProposed?: Brief, brief?: { text, source }, report?: Report & { improvedPrompt, nextPrompts } }
          status: "refining" | "awaiting_brief" | "planning" | "running" | "done" | "failed" | "cancelled"
+         cityTaskId: set on a job that runs one hop of a Hive City task (one given task, no brief, no planner, no QA rounds, no report)
 Brief    { goal, build: string[], constraints: string[], acceptance: string[], questions: [{ question, options: string[], answer }], text }
          text is the Markdown the user sees and edits; acceptance items are "- [ ] ..." lines in it.
 Report   { built, files: [{ path, op, added, removed }], checks: [{ name, ok, detail }], missing: string[], turns, seconds }
@@ -139,6 +142,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `playbook.used` | `{ playbookId, score }` |
 | `playbook.deleted` | `{ playbookId }` |
 | `lend.*` | reserved for `src/lend/`; the engine logs and forwards them untouched |
+| `city.*` | Hive City (`src/city/`): machines, rooms, agents, tasks, hops, borrows; see CITY-PROTOCOL.md |
 
 ### Live frames (not logged)
 
@@ -199,6 +203,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `playbook.list` | `{}` | `{ playbooks }` |
 | `playbook.delete` | `{ playbookId }` | `{}` |
 | `doctor` | `{}` | `DoctorReport` |
+| `city.*` | Hive City commands, see CITY-PROTOCOL.md section 6 | |
 
 ```text
 BrainChoice  { backend: "local" | "ollama" | "lmstudio" | "openai" | "fake", model?, url?, key? }
@@ -211,7 +216,7 @@ DoctorReport { ok, checks: [{ id, label, ok, detail, hint? }], hardware, models:
 MemoryEntry { id, scope: "project" | "user", kind: "fact" | "preference" | "rejected" | "session" | "decision", text, pinned, uses, createdAt, updatedAt? }
 ```
 
-Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`, plus short snake_case codes from plug-ins (for example `rate_limited`). An unknown command answers `bad_request` with the message `unknown command: <type>`.
+Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`, `forbidden` (Hive City ownership and guest rules, HTTP 403), plus short snake_case codes from plug-ins (for example `rate_limited`). An unknown command answers `bad_request` with the message `unknown command: <type>`.
 
 ## 5. REST
 
@@ -223,6 +228,7 @@ All JSON unless noted. Same token rule as section 1.
 | `GET /<path>` | static file from `ui/` |
 | `GET /assets/<path>` | static file from `assets/` |
 | `GET /lib/reduce.js` | the engine reducer as an ES module, so the UI can rebuild state for the replay scrubber without a round trip |
+| `GET /lib/city.js` | the Hive City reducer (`initialCity`, `reduceCity`, `replayCity`), pure like `reduce.js` |
 | `GET /api/health` | `{ ok: true, version, protocol, demo, lend }` |
 | `GET /api/state` | `State` |
 | `GET /api/events?since=0&limit=500` | `{ events, lastSeq }` |
@@ -257,7 +263,8 @@ State {
   providers: { [id]: { label, configured, model } },     never keys
   notes:    { [workerId]: [{ text, taskId, ts }] },        worker scratchpads
   choice:   brain.choice data, memoryCount: number,
-  tokens:   { prompt, completion }
+  tokens:   { prompt, completion },
+  city:     CityState                                   Hive City (CITY-PROTOCOL.md section 3); also in replay.at
 }
 ```
 
@@ -345,6 +352,9 @@ Shared cache for every project (override with the env var `HIVEDESK_HOME`):
 ~/.hivedesk/
   runtime/         node-llama-cpp installed here on first use (not a dependency of the package)
   models/          downloaded GGUF files (partial downloads end in .part and resume)
+  city/
+    machine.json   this machine's stable id (m_ + 8 hex) and name
+    agents/        one <agentId>.json per persistent agent: level, xp, stats and its private memory
 ```
 
 Per project:
@@ -356,8 +366,11 @@ Per project:
   state.json       snapshot, rewritten at most every 2 s and on exit (a cache; deleted is fine)
   playbooks/       one <id>.json per playbook
   workspace/       the files the crew builds (preview serves this)
+  city/snapshot.json  the last Hive City snapshot and its seq (a cache for city.sync)
 ```
 
 ## 8. Demo mode
 
 `hivedesk --demo` uses a scripted fake brain, so the whole loop runs with no model. Every event carries `"demo": true`, `session.started.data.demo` is true, `hello.demo` is true, and Mel posts a first `chat.message` in `general`: "This is a demo. No model is running; the crew follows a script."
+
+The demo also plays the Hive City scenario (CITY-PROTOCOL.md section 9), with `city.demo.step` captions.

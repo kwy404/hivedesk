@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Hive City, engine side (CITY-PROTOCOL.md)
+
+* The city is the state of the system: buildings, rooms, agents, tasks, hops and GPU borrows are `city.*` events in the same append-only log, reduced by `src/city/state.js` (served at `/lib/city.js`) into `state.city` and `hello.state.city`.
+* Persistent agents: every crew worker is an agent with a home room, a level and XP from finished work (work 10, review 4, test 3, plus 5 for a task done without a loop), stats, tools and a private memory (at most 40 entries of 300 characters, editable and pinnable). Agents are saved per machine in `~/.hivedesk/city/agents/`, so they keep their level and memory across projects; pinned entries, facts, preferences and decisions go into their prompts.
+* Rooms with rules: Lobby, Design, Code, Review, Test, Ops and Library, each with its allowed tools (an agent's tools are cut to the room's while it works there), what it accepts, an optional approval gate and a host only flag (Ops). Extensions add rooms with `city.room.add`.
+* The task bus: tasks are created by you (in a room or on an agent), by Mel (a Lobby task is planned into crew tasks; every planner task of a job appears on the board) or by the agents (a failed review or test sends work back). Idle agents bid by skill, level and machine load; claims, hops, verdicts, loops and approvals are events.
+* The pipeline: Design writes a spec and criteria, Code runs a crew job with one task, Review reads the diff against the criteria (a model turn for city tasks; the checks of the changed files for planner tasks), Test runs the static checks (for planner tasks, the crew QA report). Failures loop back to the author with the issues, at most 3 times, then the task is blocked. You can approve or send back a task at any hop.
+* Machines: your PC is a building with a stable id, its GPU, model and load. A Code together guest can bring their machine and agents (`city.machine.join`); a friend's agent thinks on its own machine's lent brain, and that brain serves only that friend's agents and accepted borrows.
+* GPU borrowing: an agent asks another machine for a number of turns and minutes, the lender accepts (and may lower the limits) or refuses, every turn is counted, and either side can stop it. It rides the existing lend relay and the lender's guard; only prompts and answers travel.
+* Ownership and safety: the owner of a machine, agent or task wins. Guest commands are signed by the host's browser (`roles.js`), limited to 40 per 10 seconds, and a guest's tasks run with approval mode on, without `run` and `delete_file`, and never in Ops. The full memory of an agent never goes into the log.
+* Replication and persistence: late joiners get a snapshot plus the tail (`city.sync`); after a restart the same agents come back and unfinished tasks open again in their room.
+* `--demo` plays a city scenario (a friend joins with six words, Dev borrows her GPU for three turns, a task goes Design, Code, Review, Test, done), every event labeled demo. `--no-city` turns the city off.
+* The 0.1 APIs are unchanged; PROTOCOL.md gains `hello.city`, `state.city`, `Job.cityTaskId`, the `forbidden` error code and the `city.*` event and command families.
+
 ## 0.1.1 (2026-10-17)
 
 * Node.js 20 or newer is required (Node 18 has reached end of life and lacks the global Web Crypto API that pairing uses). The doctor check, the launchers and the docs say so.

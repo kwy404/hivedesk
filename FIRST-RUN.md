@@ -71,6 +71,18 @@ The runtime and the model are cached in `~/.hivedesk/`, so a second run asks one
 3. **The crew works** from the approved brief: one task per worker at a time, read before edit, small patches, checks after every change, QA against the acceptance criteria with findings by severity, at most 3 fix rounds, then an honest report. The crew writes its prompts and replies in English.
 4. **The report** lists what was built, the files changed, the checks and their results, and what is still missing, plus an **improved prompt** that would rebuild or extend the result next time and 2 or 3 suggested next prompts. Both can be copied with one click and saved as a playbook.
 
+## 6. Hive City (0.2.0, not released yet)
+
+On start the engine also opens the city (CITY-PROTOCOL.md). Nothing is downloaded and no model turn is spent for it.
+
+1. **This machine** gets a stable id and a building: `~/.hivedesk/city/machine.json` holds the id (`m_` and 8 hex characters) and the name, "My PC" until you rename it. The building shows the GPU, the model and the load.
+2. **The crew become agents.** Each worker gets a file in `~/.hivedesk/city/agents/` with its level, XP, stats and private memory. An agent saved by another project on the same machine comes back with its level and memory. Only pinned entries and facts, preferences and decisions go into its prompts; the "finished a task" entries do not.
+3. **The rooms** (Lobby, Design, Code, Review, Test, Ops, Library) are added with their rules. A task put in a room is claimed by an idle agent who works there; a Lobby task goes to Mel, who plans it into crew tasks. A job typed in the top bar runs as before, and its planned tasks also appear on the board and go through Review (the checks of the changed files) and Test (the crew QA report).
+4. **After a restart** the tasks that were in progress open again in their room and are claimed again, borrows are ended, and friends' buildings stay dark until they join again. `.hivedesk/city/snapshot.json` is a cache for friends who join late; deleting it is fine.
+5. **With a friend** (Code together): the friend's browser sends its machine and agents to your engine through your browser, which signs every city command with the guest's name. Guests never get a shell: their tasks run with approval mode on and without the `run` and `delete_file` tools, Ops is closed to them, and they can change only their own machine, agents and tasks.
+
+`--demo` also plays a city scenario: during the bakery job Rita joins with the six words and Dev borrows her GPU for three turns; after it, a task goes Design, Code, Review (by Rita's agent Pip), Test, done. No model runs and every event is labeled demo.
+
 ## Opting out
 
 | Flag | Effect |
@@ -83,6 +95,7 @@ The runtime and the model are cached in `~/.hivedesk/`, so a second run asks one
 | `--demo` | no model at all: a scripted job replays; every event is labeled as a demo |
 | `--doctor` | prints the checks (Node, GPU, RAM, disk, models found) and exits |
 | `--no-open`, `--browser` | open nothing, or the normal browser instead of an app window |
+| `--no-city` | no Hive City: no agents, rooms, task bus or city files |
 
 `HIVEDESK_HOME` moves the cache folder.
 
@@ -105,4 +118,5 @@ Every failure prints a plain message and a suggestion, in the terminal and in th
 
 * Without a model nothing is generated. The first run needs a download of 0.5 to 9.0 GB unless a model server is already running or you use a cloud key.
 * Measured on a GTX 1060 6 GB with the 3B fully on the GPU: 17 to 39 tokens per second while writing, a tiny static page in about 2 to 2.5 minutes after loading. On the CPU only, expect a few tokens per second.
+* Hive City Test runs the static checks, not your test suite, and a friend's agent works only while that friend lends a model.
 * Workers take turns on one model, so a job takes minutes, not seconds, and small models still make mistakes: read the report, it says what is missing.

@@ -9,7 +9,8 @@ Clients must ignore fields, event types and live types they do not know.
 
 * The city is part of the host engine. Every city change is a normal event on the bus with a type that starts with `city.`, appended to `.hivedesk/events.jsonl` like any other event. There is one log and one writer: the host engine. Its order is the order of the city.
 * `hello.state.city` and `GET /api/state` (field `city`) carry the whole `CityState` (section 3). `hello.city` is `1` when the engine has a city.
-* The pure reducer is served at `GET /lib/city.js` (the file `src/city/state.js`, no Node imports). `reduceCity(city, event)` applies one event and returns the same object; `initialCity()` gives an empty city. It also reads a few crew events (`worker.status`, `turn.started`, `turn.ended`, `crew.updated`), so feed it every event, not only `city.*`.
+* The pure reducer is served at `GET /lib/city.js` (the file `src/city/state.js`, no Node imports). `reduceCity(city, event)` applies one event and returns the same object; `initialCity()` gives an empty city. It also reads two crew events, `worker.status` (the agent status: queued is `waiting_model`, thinking is `thinking`, a tool is `working`, an approval is `waiting`) and `turn.started` (which machine's brain the agent thinks on), so feed it every event, not only `city.*`.
+* A host started with `startHive({ city: false })` has no city: no `hello.city`, no `state.city` changes, and `city.*` commands answer `unknown command`.
 * A friend's machine never writes the log. Its browser sends commands to the host through the Code together data channel (`cmd` frames), and the host's browser forwards them to the host engine with `as: { id, name }` added (`ui/lend/collab/roles.js`). The host engine relays every event back to every guest (the existing `engine` frames), so all screens reduce the same events in the same order.
 
 ## 2. Conflict rules
@@ -142,7 +143,7 @@ Every city event is a normal Event (`seq`, `ts`, `type`, `data`, `demo?`).
 | `city.task.hop` | `{ hop: Hop, task: { id, room, stage, status, agentId, loops } }` every move of a task, including loops back |
 | `city.task.updated` | `{ task: { id, ...changed } }` |
 | `city.task.verdict` | `{ taskId, room, agentId, passed, issues: string[], by }` |
-| `city.task.awaiting` | `{ taskId, room }` waiting for the user at this hop |
+| `city.task.awaiting` | `{ taskId, room }` waiting for the user at this hop; `room: null` when the wait is over |
 | `city.task.done` | `{ taskId, by }` |
 | `city.task.blocked` | `{ taskId, reason }` |
 | `city.task.cancelled` | `{ taskId, by }` |
@@ -184,14 +185,15 @@ All take an optional `as: { id, name }` (added by the host's browser for a guest
 | `city.agent.memory.add` | `{ agentId, text, kind?, pinned? }` | `{ entry }` |
 | `city.agent.memory.update` | `{ agentId, id, text?, kind?, pinned? }` | `{ entry }` |
 | `city.agent.memory.delete` | `{ agentId, id }` | `{}` |
-| `city.agents.local` | `{}` this machine's own persistent agents and machine card (what a guest's browser reads from its own engine before joining) | `{ machine, agents: Agent[] }` |
+| `city.agents.local` | `{}` this machine's own persistent agents and machine card (what a guest's browser reads from its own engine before joining); not for guests | `{ machine, agents: Agent[] }` |
+| `city.agents.save` | `{ agents: [{ id, xp }] }` a guest's browser writes back to its own engine the xp its agents earned in a friend's city (only a higher xp is kept); not for guests | `{ saved: string[] }` |
 | `city.machine.join` | `{ machine: { id, name, gpu?, ramBytes?, cpus?, model?, color? }, agents?: Agent[], brainId?, via? }` a friend's building and the agents it contributes | `{ machineId, agents: string[] }` |
 | `city.machine.update` | `{ machineId, name?, model?, brainId?, color? }` | `{ machine }` |
 | `city.machine.leave` | `{ machineId, reason? }` | `{}` |
 | `city.borrow.request` | `{ agentId, machineId, turns?: 1..50 (6), minutes?: 1..60 (10) }` | `{ borrow }` |
 | `city.borrow.answer` | `{ borrowId, accept: boolean, turns?, minutes? }` lender only; limits can only go down | `{ borrow }` |
 | `city.borrow.stop` | `{ borrowId }` either side | `{ borrow }` |
-| `city.presence` | `{ x, y, room?, building?, name?, color? }` | `{}` (send it at most 15 times a second) |
+| `city.presence` | `{ x, y, room?, building?, name?, color? }` or `{ left: true }` (sends `city.presence.left`) | `{}` (send it at most 15 times a second) |
 | `city.room.add` | `{ id, name, kind?, tools?, accepts?, requireApproval?, color? }` host only | `{ room }` |
 | `city.room.update` | `{ roomId, name?, tools?, requireApproval?, mode?, color? }` host only | `{ room }` |
 | `city.room.remove` | `{ roomId }` host only, not builtin | `{}` |
@@ -207,15 +209,15 @@ Error codes: the PROTOCOL.md ones plus `forbidden` (a conflict rule or a guest r
 
 **Routing.** An open task waits in its room. An agent may claim it when the agent is awake, online, has no other city task, works in that room (`specialization`) and its home machine has a brain. With `wantAgent` only that agent may claim. Otherwise the agents bid: `score = 0.6 * skill + 0.25 * min(level, 10) / 10 + 0.15 * (1 - load)` where skill is 1 for the agent's home room and 0.6 for its other rooms, and load is its home machine load. The best score claims (`city.task.claimed` with the bid). A review is never claimed by the task's author; a test prefers someone who is neither author nor reviewer.
 
-**Pipeline.** Each claim and each move emits `city.task.hop`. Work rooms (`design`, `code`, `library`, `ops` and extension work rooms) run a crew job with one task for the claiming agent; `review` checks the changed files, and in `model` mode (or `auto` for tasks the crew did not plan) the reviewer agent reads the diff against the criteria; `test` runs the static checks on the changed files (for planner tasks it waits for the crew QA report). A failed review or test sends the task back to the last work room with the issues (`loops + 1`); after `maxLoops` (3) it is `blocked`. A room with `requireApproval` emits `city.task.awaiting` and waits.
+**Pipeline.** Each claim and each move emits `city.task.hop`. Work rooms (`design`, `code`, `library`, `ops` and extension work rooms) run a crew job with one task for the claiming agent; `review` checks the changed files, and in `model` mode (or `auto` for tasks the crew did not plan) the reviewer agent reads the diff against the criteria; `test` runs the static checks on the changed files (for planner tasks it waits for the crew QA report). A review after a work hop that changed no file fails with "Nothing changed". A failed review or test sends the task back to the last work room with the issues (`loops + 1`, and `wantAgent` is the author, who fixes its own work); after `maxLoops` (3) it is `blocked`. A room with `requireApproval` emits `city.task.awaiting` and waits. For planner tasks the review is the checks of the changed files, a failed one goes to the crew QA as a note, and the QA report is the Test verdict (`by: "qa"`); the crew job can end before the city hops of its last tasks.
 
 **Planner tasks.** When Mel plans a job (`job.planned`), each build and docs task (not the QA and fix tasks) becomes a CityTask with `link`, `createdBy.kind = "planner"`. The crew runs the work hop as before; QA fix rounds of the crew are the loops of these tasks. A Lobby task (`city.task.create` with room `"lobby"`) starts a crew job; its planned tasks become its `children` and it is done when they are.
 
 **Agents.** Crew workers are agents. Levels: `level = floor((1 + sqrt(1 + 8 * xp / 25)) / 2)` (0 xp is level 1, 25 xp level 2, 75 xp level 3, 150 xp level 4). XP: work hop finished 10, review 4, test 3, task done without a loop 5 more for the author.
 
-**Borrowing.** `city.borrow.requested` is shown to the lender, who answers. While a borrow is `active` the agent's model turns go to the lender's `brainId` (the agent walks across the bridge; each `city.borrow.turn` is a light on the bridge). It ends at its turn or time limit, when either side stops it, when the lender leaves, or when that brain detaches. Only `messages` and `options` travel, over the existing lend relay (PROTOCOL.md section 6) and the lender's own guard (`src/lend/guard.js`: size caps, rate limit, one at a time, Stop).
+**Borrowing.** `city.borrow.requested` is shown to the lender, who answers. While a borrow is `active` the agent's model turns go to the lender's `brainId` (the agent walks across the bridge; each `city.borrow.turn` is a light on the bridge). It ends at its turn or time limit, when either side stops it, when the lender leaves, or when that brain detaches. A friend's brain linked to a building (`city.machine.join` with `brainId`) serves only that friend's agents and the borrows its owner accepted; a lent brain outside the city works as in 0.1. Only `messages` and `options` travel, over the existing lend relay (PROTOCOL.md section 6) and the lender's own guard (`src/lend/guard.js`: size caps, rate limit, one at a time, Stop).
 
-**Persistence.** Agents are files per machine in `~/.hivedesk/city/agents/<id>.json` (with the full private memory), so the same Dev keeps its level in every project. Rooms, tasks, hops and borrows replay from the project log. On restart, tasks that were being worked open again in the same room and are claimed again; borrows end with `reason: "stopped"`; friend machines are `online: false` until they join again.
+**Persistence.** Agents are files per machine in `~/.hivedesk/city/agents/<id>.json` (with the full private memory), so the same Dev keeps its level in every project. Rooms, tasks, hops and borrows replay from the project log. On restart, tasks that were being worked open again in the same room and are claimed again; borrows end with `reason: "stopped"`; friend machines are `online: false` until they join again. `.hivedesk/city/snapshot.json` keeps the last snapshot and its seq for `city.sync`.
 
 ## 8. Safety
 

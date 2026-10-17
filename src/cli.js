@@ -21,6 +21,7 @@ Usage: npx hivedesk [options]
   --brain <name>        ollama, lmstudio or openai (with --url, --model and HIVEDESK_API_KEY)
   --url <url>           base URL for --brain
   --no-download         never download a model; the UI offers the download instead
+  --no-city             run without Hive City (agents, rooms and the task bus); the 0.1 desktop works the same
   --cpu                 do not use the GPU
   --ctx <n>             context size for the local model (default: up to 8192)
   --demo                scripted demo, no model; every event is labeled as a demo
@@ -48,6 +49,7 @@ export function parseArgs(argv) {
       o[key] = val;
     } else if (key === 'no-open') o.open = false;
     else if (key === 'no-download') o.download = false;
+    else if (key === 'no-city') o.city = false;
     else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes', 'browser', 'new-token'].includes(key)) o[key] = true;
     else throw new Error(`unknown option: --${key}`);
   }
@@ -237,6 +239,7 @@ async function main() {
     token: args.demo ? undefined : loadToken(cacheHome(), !!args['new-token']),
     demo: !!args.demo,
     lend: !!args.lend,
+    city: args.city !== false,
     log,
     progress,
     flags: {
