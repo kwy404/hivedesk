@@ -551,7 +551,8 @@ export class ExtensionHost {
     const r = this.reg[id];
     let timer = null;
     try {
-      const w = fs.watch(r.dir, { recursive: true }, () => {
+      // The long form of the path: on Windows a short 8.3 name (HADOUK~1) makes libuv abort.
+      const w = fs.watch(fs.realpathSync.native(r.dir), { recursive: true }, () => {
         clearTimeout(timer);
         timer = setTimeout(() => this.reload(id), 250);
         timer.unref?.();

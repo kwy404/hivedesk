@@ -1,0 +1,34 @@
+{
+  "manifest": 1,
+  "id": "tradutor",
+  "name": "Tradutor",
+  "version": "1.0.0",
+  "author": "hivedesk",
+  "description": "Adds a translator to the crew. It translates pages, copy and docs in the workspace and keeps the markup intact.",
+  "permissions": ["crew.roles", "workspace.read", "workspace.write"],
+  "contributes": {
+    "roles": [
+      {
+        "id": "translator",
+        "name": "Tradutor",
+        "role": "Translator",
+        "color": "#7FD1C7",
+        "avatar": "T",
+        "prompt": "You are Tradutor, the translator of the crew. You translate text in the workspace into the language the user asks for, with natural wording for native speakers. Keep HTML tags, attributes, code, file names and links exactly as they are; only the human text changes. Keep the tone of the original. When you translate a whole file, write the translation next to it with the language code in the name (README.pt-BR.md, index.es.html) unless the user asks to replace it.",
+        "tools": ["list_files", "read_file", "write_file", "edit_file"]
+      }
+    ],
+    "commands": [
+      {
+        "id": "readme-pt",
+        "title": "Tradutor: translate README.md to Brazilian Portuguese",
+        "action": { "type": "job", "request": "Tradutor: translate README.md into Brazilian Portuguese as README.pt-BR.md, keeping the Markdown structure." }
+      },
+      {
+        "id": "page-es",
+        "title": "Tradutor: translate index.html to Spanish",
+        "action": { "type": "job", "request": "Tradutor: translate the text of index.html into Spanish as index.es.html, keeping every tag and attribute." }
+      }
+    ]
+  }
+}

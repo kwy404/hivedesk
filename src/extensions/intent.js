@@ -30,14 +30,14 @@ const STOP = new Set(('crie cria criar faca faça faz fazer gere gera gerar mont
 /** A first guess at the extension from the request alone (the crew fills in the rest). */
 export function guessSpec(text) {
   const raw = String(text || '').trim();
-  const words = raw.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(Boolean);
+  const words = raw.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(Boolean);
   const keep = words.filter((w) => !STOP.has(w) && w.length > 1).slice(0, 3);
   let id = keep.join('-').slice(0, 40).replace(/-+$/, '') || 'my-extension';
   if (!/^[a-z]/.test(id)) id = `ext-${id}`.slice(0, 40);
   if (id.length < 2) id = 'my-extension';
   // The display name keeps the accents of the request.
-  const plain = (w) => w.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  const orig = raw.replace(/[^p{L}p{N}s-]/gu, ' ').split(/s+/).filter((w) => keep.includes(plain(w)));
+  const plain = (w) => w.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const orig = raw.replace(/[^\p{L}\p{N}\s-]/gu, ' ').split(/\s+/).filter((w) => keep.includes(plain(w)));
   const shown = orig.length === keep.length ? orig : keep;
   const name = shown.length ? shown.map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(' ') : 'My extension';
   const kind = ROLE.test(raw) ? 'role' : 'widget';

@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "meia-noite",
+  "name": "Meia-noite",
+  "description": "Midnight blue, quiet and cool, with starlight dots.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "colors": {
+    "bg": "#0A0D14",
+    "bg2": "#0E121B",
+    "panel": "#121722",
+    "panel2": "#171D2A",
+    "panel3": "#1E2534",
+    "panel4": "#262E3F",
+    "line": "#DDE6FF",
+    "text": "#E6ECFA",
+    "text2": "#BAC4DA",
+    "muted": "#8E9AB3",
+    "faint": "#6D7891",
+    "accent": "#8FA8FF",
+    "accent2": "#B9C8FF",
+    "accentInk": "#0A0F24",
+    "ok": "#7FD1A8",
+    "warn": "#E9C46A",
+    "bad": "#F08A80",
+    "info": "#7CC4F0"
+  },
+  "radius": {
+    "window": 16,
+    "control": 10,
+    "small": 6
+  },
+  "fonts": {
+    "sans": "system",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "deep",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "dots",
+    "color": "#B9C8FF",
+    "opacity": 0.09,
+    "size": 56
+  },
+  "lines": 1,
+  "motion": 0.9,
+  "sound": "soft"
+}

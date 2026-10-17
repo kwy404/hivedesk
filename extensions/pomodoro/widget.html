@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pomodoro</title>
+  <link rel="stylesheet" href="widget.css">
+</head>
+<body>
+  <main>
+    <div class="modes" role="group" aria-label="Mode">
+      <button type="button" data-mode="focus" aria-pressed="true">Focus</button>
+      <button type="button" data-mode="short" aria-pressed="false">Break</button>
+      <button type="button" data-mode="long" aria-pressed="false">Long break</button>
+    </div>
+    <div class="ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="track"/><circle cx="50" cy="50" r="44" class="fill" id="fill"/></svg></div>
+    <p class="time" id="time" role="timer" aria-live="off">25:00</p>
+    <p class="count" id="count">0 focus blocks today</p>
+    <div class="row">
+      <button type="button" id="start" class="primary">Start</button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+    <label class="len">Focus minutes <input id="len" type="number" min="5" max="90" value="25"></label>
+  </main>
+  <script src="widget.js"></script>
+</body>
+</html>

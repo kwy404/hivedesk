@@ -79,6 +79,7 @@ export class Sandbox {
       child.once('exit', (code) => { clearTimeout(t); reject(new Error(`the extension sandbox stopped (${code}): ${stderr.trim().slice(0, 300)}`)); });
     });
     child.on('message', (m) => this._onMessage(m));
+    child.on('error', () => { /* a send after the child stopped; the pending calls fail below */ });
     child.on('exit', () => {
       if (this.child === child) this.child = null;
       for (const p of this.pending.values()) { clearTimeout(p.timer); p.reject(new Error('the extension sandbox stopped')); }

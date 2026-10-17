@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "neon",
+  "name": "Neon",
+  "description": "Night city glow: hot pink and cyan on near black.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "colors": {
+    "bg": "#07060D",
+    "bg2": "#0B0914",
+    "panel": "#100D1C",
+    "panel2": "#151126",
+    "panel3": "#1C1733",
+    "panel4": "#251E42",
+    "line": "#F0E6FF",
+    "text": "#F4EEFF",
+    "text2": "#D1C6EE",
+    "muted": "#A495C9",
+    "faint": "#7D6FA3",
+    "accent": "#FF3DC8",
+    "accent2": "#FF8FE0",
+    "accentInk": "#1A0016",
+    "ok": "#3DFFB5",
+    "warn": "#FFE14D",
+    "bad": "#FF5C7A",
+    "info": "#3DD8FF"
+  },
+  "radius": {
+    "window": 12,
+    "control": 8,
+    "small": 5
+  },
+  "fonts": {
+    "sans": "system",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "deep",
+    "strength": 1.2
+  },
+  "pattern": {
+    "kind": "grid",
+    "color": "#3DD8FF",
+    "opacity": 0.07,
+    "size": 56
+  },
+  "lines": 1.2,
+  "motion": 1.3,
+  "sound": "chime"
+}

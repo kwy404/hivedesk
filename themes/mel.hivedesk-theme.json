@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "mel",
+  "name": "Mel",
+  "description": "Dark honey on deep charcoal. The default Hive.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "colors": {
+    "bg": "#0E0D0B",
+    "bg2": "#141210",
+    "panel": "#191613",
+    "panel2": "#1F1B17",
+    "panel3": "#27221D",
+    "panel4": "#2F2923",
+    "line": "#F2E9DA",
+    "text": "#F2E9DA",
+    "text2": "#CFC4B3",
+    "muted": "#9A8F80",
+    "faint": "#756B5F",
+    "accent": "#FFB531",
+    "accent2": "#FFD072",
+    "accentInk": "#1A1206",
+    "ok": "#7DC49B",
+    "warn": "#E8B45C",
+    "bad": "#E57B6E",
+    "info": "#86A9D6"
+  },
+  "radius": {
+    "window": 14,
+    "control": 9,
+    "small": 6
+  },
+  "fonts": {
+    "sans": "system",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "soft",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "comb",
+    "color": "#FFD072",
+    "opacity": 0.065,
+    "size": 56
+  },
+  "lines": 1,
+  "motion": 1,
+  "sound": "chime"
+}

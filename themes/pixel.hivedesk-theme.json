@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "pixel",
+  "name": "Pixel",
+  "description": "Retro 8 bit: square corners, hard shadows, chiptune blips.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "colors": {
+    "bg": "#1B1B2F",
+    "bg2": "#20203A",
+    "panel": "#262645",
+    "panel2": "#2E2E52",
+    "panel3": "#383862",
+    "panel4": "#444473",
+    "line": "#E8E8FF",
+    "text": "#F2F2FF",
+    "text2": "#D0D0F0",
+    "muted": "#B4B4E0",
+    "faint": "#9494C6",
+    "accent": "#FFCC00",
+    "accent2": "#FFE066",
+    "accentInk": "#1B1B2F",
+    "ok": "#66FF99",
+    "warn": "#FFB347",
+    "bad": "#FF8A8A",
+    "info": "#66CCFF"
+  },
+  "radius": {
+    "window": 0,
+    "control": 0,
+    "small": 0
+  },
+  "fonts": {
+    "sans": "pixel",
+    "mono": "pixel"
+  },
+  "shadow": {
+    "style": "hard",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "pixel",
+    "color": "#FFE066",
+    "opacity": 0.06,
+    "size": 56
+  },
+  "lines": 2,
+  "motion": 0.7,
+  "sound": "pixel"
+}

@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "colmeia-clara",
+  "name": "Colmeia Clara",
+  "description": "A bright hive: warm paper white with honey accents.",
+  "author": "hivedesk",
+  "scheme": "light",
+  "colors": {
+    "bg": "#F6F1E7",
+    "bg2": "#EFE8DA",
+    "panel": "#FFFDF8",
+    "panel2": "#F7F2E8",
+    "panel3": "#EEE6D7",
+    "panel4": "#E4DACA",
+    "line": "#3A2E1F",
+    "text": "#221A10",
+    "text2": "#4A3F31",
+    "muted": "#6B5E4C",
+    "faint": "#8A7C68",
+    "accent": "#BD7F0A",
+    "accent2": "#8F5A00",
+    "accentInk": "#1A1206",
+    "ok": "#2F7A50",
+    "warn": "#865700",
+    "bad": "#B23A2C",
+    "info": "#2F5F9A"
+  },
+  "radius": {
+    "window": 14,
+    "control": 9,
+    "small": 6
+  },
+  "fonts": {
+    "sans": "system",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "soft",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "comb",
+    "color": "#C98A12",
+    "opacity": 0.12,
+    "size": 56
+  },
+  "lines": 1,
+  "motion": 1,
+  "sound": "chime"
+}

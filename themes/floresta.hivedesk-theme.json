@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "floresta",
+  "name": "Floresta",
+  "description": "Deep forest greens with a soft leaf accent.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "colors": {
+    "bg": "#0C120E",
+    "bg2": "#101812",
+    "panel": "#141D17",
+    "panel2": "#19241C",
+    "panel3": "#202D24",
+    "panel4": "#28372C",
+    "line": "#E3F0E5",
+    "text": "#E8F1E6",
+    "text2": "#C2D2C2",
+    "muted": "#93A694",
+    "faint": "#728674",
+    "accent": "#8BCF7A",
+    "accent2": "#B8E3A6",
+    "accentInk": "#0B1A08",
+    "ok": "#8BD3A0",
+    "warn": "#E6C163",
+    "bad": "#EE8B79",
+    "info": "#8DBEDB"
+  },
+  "radius": {
+    "window": 18,
+    "control": 12,
+    "small": 8
+  },
+  "fonts": {
+    "sans": "rounded",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "soft",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "comb",
+    "color": "#B8E3A6",
+    "opacity": 0.06,
+    "size": 64
+  },
+  "lines": 1,
+  "motion": 1,
+  "sound": "wood"
+}

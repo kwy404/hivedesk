@@ -1,0 +1,52 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "alto-contraste",
+  "name": "Alto contraste",
+  "description": "Pure black, white text and yellow focus. Passes WCAG AAA for text.",
+  "author": "hivedesk",
+  "scheme": "dark",
+  "contrast": "high",
+  "colors": {
+    "bg": "#000000",
+    "bg2": "#000000",
+    "panel": "#0A0A0A",
+    "panel2": "#121212",
+    "panel3": "#1A1A1A",
+    "panel4": "#262626",
+    "line": "#FFFFFF",
+    "text": "#FFFFFF",
+    "text2": "#F0F0F0",
+    "muted": "#D6D6D6",
+    "faint": "#BDBDBD",
+    "accent": "#FFD400",
+    "accent2": "#FFE45C",
+    "accentInk": "#000000",
+    "ok": "#6CFF8F",
+    "warn": "#FFD400",
+    "bad": "#FF8A80",
+    "info": "#8AD4FF"
+  },
+  "radius": {
+    "window": 10,
+    "control": 8,
+    "small": 4
+  },
+  "fonts": {
+    "sans": "system",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "flat",
+    "strength": 1
+  },
+  "pattern": {
+    "kind": "none",
+    "color": "#FFFFFF",
+    "opacity": 0,
+    "size": 56
+  },
+  "lines": 3,
+  "motion": 0.5,
+  "sound": "chime"
+}

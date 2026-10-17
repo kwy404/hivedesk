@@ -1,0 +1,51 @@
+{
+  "format": "hivedesk-theme",
+  "version": 1,
+  "id": "papel",
+  "name": "Papel",
+  "description": "Sepia paper, serif type and ink brown. Easy on the eyes.",
+  "author": "hivedesk",
+  "scheme": "light",
+  "colors": {
+    "bg": "#EFE6D2",
+    "bg2": "#E8DDC5",
+    "panel": "#FAF4E6",
+    "panel2": "#F3EBD8",
+    "panel3": "#EADFC8",
+    "panel4": "#DFD2B7",
+    "line": "#4A3A22",
+    "text": "#2E2416",
+    "text2": "#4E412C",
+    "muted": "#6E5E44",
+    "faint": "#8B7A5E",
+    "accent": "#A0522D",
+    "accent2": "#8A4524",
+    "accentInk": "#FFF8EC",
+    "ok": "#3F6E3A",
+    "warn": "#7A5A10",
+    "bad": "#9E3326",
+    "info": "#3D5A80"
+  },
+  "radius": {
+    "window": 8,
+    "control": 6,
+    "small": 4
+  },
+  "fonts": {
+    "sans": "serif",
+    "mono": "system"
+  },
+  "shadow": {
+    "style": "flat",
+    "strength": 0.6
+  },
+  "pattern": {
+    "kind": "dots",
+    "color": "#8B6B3A",
+    "opacity": 0.1,
+    "size": 56
+  },
+  "lines": 1.3,
+  "motion": 0.8,
+  "sound": "wood"
+}

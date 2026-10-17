@@ -1,0 +1,31 @@
+{
+  "manifest": 1,
+  "id": "seo-check",
+  "name": "SEO Check",
+  "version": "1.0.0",
+  "author": "hivedesk",
+  "description": "Checks the HTML pages in the workspace for the basics search engines and link previews read: title, description, headings, image text, language and social tags.",
+  "permissions": ["workspace.read", "storage"],
+  "main": "main.js",
+  "contributes": {
+    "tools": [
+      {
+        "id": "audit",
+        "description": "Check the HTML pages of the workspace for SEO basics and return a score with the issues per page.",
+        "parameters": {
+          "type": "object",
+          "properties": { "path": { "type": "string", "description": "one page to check, for example index.html; empty checks every page" } },
+          "required": [],
+          "additionalProperties": false
+        }
+      }
+    ],
+    "widgets": [
+      { "id": "report", "title": "SEO Check", "entry": "widget.html", "size": [420, 460], "icon": "qa" }
+    ],
+    "commands": [
+      { "id": "open", "title": "SEO Check: open the report", "action": { "type": "widget", "widget": "report" } },
+      { "id": "run", "title": "SEO Check: check every page now", "action": { "type": "tool", "tool": "audit", "args": {} } }
+    ]
+  }
+}

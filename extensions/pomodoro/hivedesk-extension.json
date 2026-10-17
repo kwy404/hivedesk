@@ -1,0 +1,17 @@
+{
+  "manifest": 1,
+  "id": "pomodoro",
+  "name": "Pomodoro",
+  "version": "1.0.0",
+  "author": "hivedesk",
+  "description": "A focus timer for the desktop: work blocks and breaks, with a notification when each one ends.",
+  "permissions": ["storage", "notify"],
+  "contributes": {
+    "widgets": [
+      { "id": "timer", "title": "Pomodoro", "entry": "widget.html", "size": [300, 340], "icon": "clock" }
+    ],
+    "commands": [
+      { "id": "open", "title": "Pomodoro: open the timer", "action": { "type": "widget", "widget": "timer" } }
+    ]
+  }
+}
