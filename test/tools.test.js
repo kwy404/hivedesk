@@ -33,6 +33,14 @@ describe('workspace sandbox', () => {
     expect(() => ws.write(p, 'x')).toThrow();
   });
 
+  it('keeps the crew out of the .git folder', () => {
+    for (const p of ['.git', '.git/config', '.git/hooks/pre-commit', '.GIT/config', './.git/HEAD']) {
+      expect(() => ws.resolve(p)).toThrow(/off limits/);
+    }
+    expect(ws.resolve('.gitignore')).toBe(path.join(ws.root, '.gitignore'));
+    expect(ws.resolve('src/.git-notes.md')).toBe(path.join(ws.root, 'src', '.git-notes.md'));
+  });
+
   it('accepts normal relative paths', () => {
     expect(ws.resolve('index.html')).toBe(path.join(ws.root, 'index.html'));
     expect(ws.resolve('./css/site.css')).toBe(path.join(ws.root, 'css', 'site.css'));

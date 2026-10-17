@@ -34,6 +34,8 @@ export class Workspace {
     if (/^~/.test(p)) throw new PathError(`home paths are not allowed: ${rel}`);
     const parts = p.split('/').filter((s) => s !== '' && s !== '.');
     if (parts.some((s) => s === '..')) throw new PathError(`".." is not allowed: ${rel}`);
+    // Git config and hooks can run commands, so the crew never touches the repository folder.
+    if (parts.length && /^\.git\.?$/i.test(parts[0])) throw new PathError(`the .git folder is off limits: ${rel}`);
     if (parts.some((s) => /[<>:"|?*]/.test(s) || /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i.test(s))) {
       throw new PathError(`invalid file name: ${rel}`);
     }
