@@ -257,8 +257,9 @@ export async function runTask(ctx) {
       steps.push({ action, result: `Posted. If your task is complete, answer with ${finish}. Otherwise do the next step.` });
       continue;
     }
+    if (repeats >= 4) break; // Mel stops the loop: the same action five times in a row
     if (repeats >= 2) {
-      steps.push({ action, result: 'You already did exactly this. Do the next step of your task, or finish.' });
+      steps.push({ action, result: `You already did exactly this. Do the next step of your task, or finish with ${finish}.` });
       continue;
     }
     // Read before you change: an existing file must be read (or created) by this worker in this task first.
@@ -286,8 +287,11 @@ export async function runTask(ctx) {
     if (!out.ok && action.tool === 'edit_file') observation += '\nRead the file first, or write the whole file with write_file.';
     steps.push({ action, result: observation });
   }
-  // Out of turns.
-  if (task.kind === 'qa') return { status: 'done', summary: 'QA ran out of turns', report: { passed: false, issues: ['QA could not finish the review in time'] }, wrote: [...wrote] };
+  // Out of turns, or stopped in a loop. QA reports what the checks say.
+  if (task.kind === 'qa') {
+    const r = checkWorkspace(toolbox.ws);
+    return { status: 'done', summary: 'QA stopped before its report; the checks decide', report: { passed: r.passed, issues: r.passed ? [] : r.issues.slice(0, 8) }, wrote: [...wrote] };
+  }
   if (wrote.size) {
     memory.add(worker.id, `${task.title}: wrote ${[...wrote].join(', ')}`);
     return { status: 'done', summary: `wrote ${[...wrote].join(', ')} (stopped after ${maxTurns} turns)`, wrote: [...wrote] };

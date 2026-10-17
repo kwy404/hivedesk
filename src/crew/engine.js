@@ -486,7 +486,9 @@ export class Hive {
       });
       const improvedPrompt = String(r.json?.improvedPrompt || '').trim();
       const nextPrompts = (r.json?.nextPrompts || []).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
-      prompt = improvedPrompt && nextPrompts.length >= 2 ? { improvedPrompt: improvedPrompt.slice(0, 4000), nextPrompts } : fallbackPrompt({ request: job.request, brief: job.brief, report });
+      // A small model sometimes describes a prompt instead of writing one: use the plain one then.
+      const describes = /^(create|write|generate|design|craft|make)\b[^.]{0,60}\bprompt\b/i.test(improvedPrompt) || /\bthe prompt should\b/i.test(improvedPrompt);
+      prompt = improvedPrompt && !describes && nextPrompts.length >= 2 ? { improvedPrompt: improvedPrompt.slice(0, 4000), nextPrompts } : fallbackPrompt({ request: job.request, brief: job.brief, report });
     } catch {
       if (run.ctrl.signal.aborted) return;
       prompt = fallbackPrompt({ request: job.request, brief: job.brief, report });

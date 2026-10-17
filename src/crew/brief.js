@@ -97,8 +97,9 @@ export function reportMessages({ request, brief, report }) {
       role: 'system',
       content: [
         'You are Mel. The job is over. Write:',
-        '- improvedPrompt: one reusable, self contained prompt that would produce this result in one go next time.',
-        '  Name the files, the features, the constraints and the acceptance checks. Plain words, no placeholders.',
+        '- improvedPrompt: the request itself, written so that it would produce this result in one go next time.',
+        '  Write it as an instruction that starts with a verb, for example "Build a one page site for ... in index.html and style.css: ...".',
+        '  Name the files, the features, the constraints and the acceptance checks. Do not describe the prompt; write it.',
         '- nextPrompts: 2 or 3 short follow up requests that extend the result (for example "add a dark mode").',
         'Answer with one JSON object.'
       ].join('\n')

@@ -115,7 +115,19 @@ export class Workspace {
     const before = this.read(rel);
     const count = before.split(search).length - 1;
     if (count === 0) throw new Error(`search text not found in ${rel}`);
-    if (count > 1 && !all) throw new Error(`search text appears ${count} times in ${rel}; make it unique or set all`);
+    if (count > 1 && !all) {
+      // Show where, so a small model can add a neighboring line to the search text.
+      const lines = before.split('\n');
+      const where = [];
+      let at = before.indexOf(search);
+      while (at !== -1 && where.length < 4) {
+        const ln = before.slice(0, at).split('\n').length;
+        const ctx = lines.slice(Math.max(0, ln - 2), ln + 1).map((l, i) => `${Math.max(1, ln - 1) + i}| ${l}`).join('\n');
+        where.push(`around line ${ln}:\n${ctx}`);
+        at = before.indexOf(search, at + search.length);
+      }
+      throw new Error(`search text appears ${count} times in ${rel}. Include a line before or after it in search so it matches once:\n${where.join('\n')}`);
+    }
     const after = all ? before.split(search).join(replace) : before.replace(search, () => replace);
     return this.write(rel, after);
   }
