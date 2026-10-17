@@ -1,0 +1,58 @@
+GANCHO ALTERNATIVO 1:
+Eu pedi um site para uma padaria.
+Cinco abelhas fizeram, dentro do meu PC.
+
+GANCHO ALTERNATIVO 2:
+Sem conta, sem assinatura, sem servidor de ninguém.
+Uma equipe inteira de IA rodando numa placa de vídeo de 6 GB.
+
+POST:
+
+Uma equipe inteira de IA.
+Dentro do seu computador.
+
+Parece bruxaria. Não é.
+
+Eu queria ver IA trabalhando como uma equipe de verdade.
+Alguém que entende o pedido, alguém que planeja, alguém que escreve o código e alguém que testa.
+E queria isso rodando na minha máquina, com os meus arquivos ficando comigo.
+
+Então eu fiz o hivedesk.
+
+Você digita "crie um site para minha padaria".
+A Mel, a abelha chefe, transforma o pedido num briefing melhor, com checklist.
+A equipe (Dev, Designer, QA e Writer) planeja, conversa e escreve arquivos de verdade, com diff.
+O QA roda as verificações, acha um erro, e o Dev corrige.
+Cada passo arriscado espera a sua aprovação.
+No fim vem um relatório e um prompt melhorado para a próxima vez.
+
+Tudo isso num escritório animado que parece um jogo.
+
+E ainda tem:
+Modo de voz que pergunta antes de agir.
+Commit, push e pull request no GitHub, só depois do seu sim.
+Code together: um amigo entra com seis palavras, um QR code ou um link, e vocês editam juntos com cursores ao vivo.
+Temas e extensões criados pela própria equipe.
+10 idiomas, tour guiado e memória da sessão.
+
+Como testar em 3 passos:
+1. Baixe o app para Windows, macOS ou Linux, ou rode npx hivedesk.
+2. Responda o assistente. Ele detecta a sua GPU e escolhe o modelo certo.
+3. Peça uma coisa pequena e aprove os passos.
+
+Por que isso importa:
+Roda no seu PC. Sem conta. Seus arquivos ficam com você.
+Numa GPU de 6 GB, o modelo 3B roda inteiro na placa, de 17 a 39 tokens por segundo, pronto em 8 a 15 segundos depois da primeira vez.
+Se preferir, dá para usar um servidor de modelos local ou a sua própria chave de API.
+É grátis e de código aberto.
+
+Limite honesto: um modelo pequeno local vai melhor em tarefas pequenas e médias. Os trabalhadores revezam um único modelo, então um job leva minutos, não segundos. E a primeira execução baixa de 1 a 5 GB.
+
+E o vídeo aí em cima também foi feito só com código: desenho, animação, trilha e efeitos sonoros.
+
+Site: https://kwy404.github.io/hivedesk
+Release 0.1.0: https://github.com/kwy404/hivedesk/releases/tag/v0.1.0
+
+O que você pediria primeiro para uma equipe de IA que mora no seu computador?
+
+#OpenSource #InteligenciaArtificial #JavaScript #DesenvolvimentoDeSoftware #IALocal
