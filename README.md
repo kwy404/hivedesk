@@ -22,8 +22,25 @@
 Run `npx hivedesk` and a short wizard sets everything up: it reads your hardware, installs the local runtime, downloads the right model with a progress bar and opens the Hive in your browser. The Hive is a desktop where a crew of AI workers plans, talks and builds real files in a folder on your computer, with a model that runs on your own machine. No account, no API key.
 
 <p align="center">
+  <a href="https://kwy404.github.io/hivedesk/#film"><img src="assets/video-poster.webp" width="320" alt="Watch the 75 second hivedesk film: Mel the bee foreman and the words Um comando so."></a><br>
+  <a href="https://kwy404.github.io/hivedesk/#film"><b>Watch the 75 second film</b></a> (or <a href="docs/media/hivedesk.mp4">the MP4</a>, with captions in <a href="docs/media/hivedesk.en.vtt">English</a> and <a href="docs/media/hivedesk.pt-BR.vtt">Portuguese</a>)
+</p>
+
+<p align="center">
   <img src="docs/assets/shots/hive.webp" width="900" alt="The Hive in demo mode: the timeline of a bakery landing page job, the crew chat, a live preview of the page, the Files window with a diff and the Dev worker after a turn, with the worker dock at the bottom.">
 </p>
+
+## Download
+
+| | File | Size | Start |
+| --- | --- | --- | --- |
+| Windows 10 and 11, x64 | [hivedesk-windows-x64.zip](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip) | 47 MB | unzip, double click `hivedesk.exe` |
+| macOS, Apple Silicon and Intel | [hivedesk-macos-universal.zip](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip) | 89 MB | unzip, move to Applications, open |
+| Linux x64 | [hivedesk-linux-x64.tar.gz](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz) | 55 MB | `tar -xzf`, then `./hivedesk/hivedesk` |
+| Linux x64, one file | [hivedesk-linux-x86_64.AppImage](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage) | 52 MB | `chmod +x`, then run it |
+| Any system with Node.js 20+ | `npx hivedesk` | small | the wizard does the rest |
+
+The desktop app opens hivedesk in its own window and carries its own Node.js. It is not signed yet, so Windows SmartScreen ("More info", then "Run anyway") and macOS Gatekeeper (System Settings, Privacy and Security, "Open Anyway") ask once, and it does not update itself. The local model is still downloaded on the first run. All files, with `SHA256SUMS.txt`, are on the [releases page](https://github.com/kwy404/hivedesk/releases); [desktop/README.md](desktop/README.md) lists what each package contains.
 
 ## Install
 
@@ -33,7 +50,7 @@ npx hivedesk
 
 The wizard asks for the language, the project folder, which brain to use, how the crew should work and who is on it. Every question has a recommended default, so pressing Enter all the way works. Run it again and it offers to reuse the same setup; `--yes` skips the questions.
 
-Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (about 42 MB), `hivedesk-macos-universal.zip` (about 80 MB) and `hivedesk-linux-x64.tar.gz` (about 35 MB, also as an AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 20 or newer and run `npx hivedesk@latest`.
+Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (47 MB), `hivedesk-macos-universal.zip` (89 MB) and `hivedesk-linux-x64.tar.gz` (55 MB, or the 52 MB AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 20 or newer and run `npx hivedesk@latest`.
 
 ### What the first run does
 
@@ -131,13 +148,30 @@ The default crew is **Mel** (foreman and planner), **Dev**, **Designer**, **QA**
 </p>
 
 - **Office mode.** Toggle it in the top bar and the desktop becomes a small honeycomb office drawn from real engine events. Drag a sticky note from Mel's board onto a bee to hand it a task.
-- **Code together.** Invite a friend into the Code window: you edit the same files and see each other's cursors. Their saves go through approval mode, as a diff.
-- **Voice.** Push to talk with <kbd>Ctrl</kbd> <kbd>Space</kbd>; Mel answers out loud in the UI language.
-- **Themes.** Eight built in, a visual editor with a contrast report, import and export, or ask the crew to design one.
-- **Extensions.** Install from a folder, a zip or a URL. Each one asks for its permissions and runs in a sandbox.
+- **Code together.** Invite a friend into the Code window with six words: you edit the same files and see each other's cursors. Their saves go through approval mode, as a diff.
+- **Voice.** Push to talk with <kbd>Ctrl</kbd> <kbd>Space</kbd>; Mel answers out loud in the UI language. Before anything that acts, like a commit or a push, Mel reads the plan and waits for a clear yes. Recognition is the browser's, which may send audio to the browser maker's service.
+- **Themes.** Eight built in, a visual editor with a contrast report, import and export, or describe one and the crew designs it.
+- **Extensions.** Install from a folder, a zip or a URL, or ask the crew to create one. Each one asks for its permissions and runs in a sandbox.
+- **Session memory.** Small, capped notes per project and per person, plus one session file per job. A few relevant entries go into the next prompt; pin, edit or forget any of them in the Memory window, or turn memory off.
+- **Brief and report.** The refined brief before the job, and at the end a report with what was built and an improved prompt for next time.
+- **Cloud brains, optional.** Local by default. Add a cloud provider or any OpenAI compatible endpoint with your own key, per worker if you like. Keys stay in `~/.hivedesk/keys.json`; prompts and file contents sent to that provider leave your machine.
+- **Desktop app.** The downloads open hivedesk in its own window, with a tray icon, notifications and a single instance; `npx hivedesk` can open the same window.
 - **10 languages.** English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文 and Русский. The Hive follows your browser and switches live.
 - **A guided tour** with Mel on the first open; replay it from Help or the command palette.
 - **Replay** any moment from the append-only event log, a <kbd>Ctrl</kbd> <kbd>K</kbd> command palette, windows that snap, and a phone layout with stacked cards.
+
+## Coming in 0.2.0: Hive City
+
+<p align="center">
+  <img src="assets/illustrations/hive-city.svg" width="900" alt="A sketch of Hive City: your building with rooms for Design, Code, Review, Test, Ops, Library and the Lobby, a friend's building that joined with six words, and a bridge where a bee carries model turns between the machines.">
+</p>
+
+The next release turns the Hive into a small city where agents live. This is the plan being built now, not something you can download today:
+
+- **Agents that stay:** a name, a specialization, a level from finished work, tools and a private memory you can edit. They are still there tomorrow, and unfinished tasks resume.
+- **Rooms with rules:** Design, Code, Review, Test, Ops, Library and the Lobby decide which tools are allowed and which tasks they take.
+- **A task pipeline:** Code, then Review by another agent, then Test, with loops back on failure, and your approval at any hop.
+- **Friends as buildings:** a friend joins with six words and their machine appears next to yours; an agent can borrow GPU turns from a friend, who sees every request and can refuse or stop.
 
 ## Lend your PC
 

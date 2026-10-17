@@ -22,8 +22,25 @@
 Rode `npx hivedesk` e um assistente curto prepara tudo: lê o seu hardware, instala o runtime local, baixa o modelo certo com uma barra de progresso e abre a Colmeia no navegador. A Colmeia é uma área de trabalho onde uma equipe de agentes de IA planeja, conversa e cria arquivos de verdade numa pasta do seu computador, com um modelo que roda na sua própria máquina. Sem conta e sem chave de API.
 
 <p align="center">
+  <a href="https://kwy404.github.io/hivedesk/#film"><img src="../assets/video-poster.webp" width="320" alt="Assista ao filme de 75 segundos do hivedesk: Mel, a abelha mestre de obras, e a frase Um comando só."></a><br>
+  <a href="https://kwy404.github.io/hivedesk/#film"><b>Assista ao filme de 75 segundos</b></a> (ou <a href="../docs/media/hivedesk.mp4">o MP4</a>, com legendas em <a href="../docs/media/hivedesk.pt-BR.vtt">português</a> e <a href="../docs/media/hivedesk.en.vtt">inglês</a>)
+</p>
+
+<p align="center">
   <img src="../docs/assets/shots/hive.webp" width="900" alt="A Colmeia em modo demo: a linha do tempo de uma landing page para uma padaria, o chat da equipe, a prévia ao vivo, a janela de arquivos com diff e o Dev depois de um turno, com o dock da equipe embaixo.">
 </p>
+
+## Baixar
+
+| | Arquivo | Tamanho | Como abrir |
+| --- | --- | --- | --- |
+| Windows 10 e 11, x64 | [hivedesk-windows-x64.zip](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip) | 47 MB | descompacte e clique duas vezes em `hivedesk.exe` |
+| macOS, Apple Silicon e Intel | [hivedesk-macos-universal.zip](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip) | 89 MB | descompacte, mova para Aplicativos e abra |
+| Linux x64 | [hivedesk-linux-x64.tar.gz](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz) | 55 MB | `tar -xzf`, depois `./hivedesk/hivedesk` |
+| Linux x64, um arquivo só | [hivedesk-linux-x86_64.AppImage](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage) | 52 MB | `chmod +x` e rode |
+| Qualquer sistema com Node.js 20+ | `npx hivedesk` | pequeno | o assistente faz o resto |
+
+O app de desktop abre o hivedesk na própria janela e traz o próprio Node.js. Ainda não é assinado, então o SmartScreen do Windows ("Mais informações", depois "Executar assim mesmo") e o Gatekeeper do macOS (Ajustes do Sistema, Privacidade e Segurança, "Abrir Mesmo Assim") perguntam uma vez, e ele não se atualiza sozinho. O modelo local continua sendo baixado na primeira execução. Todos os arquivos, com o `SHA256SUMS.txt`, estão na [página de versões](https://github.com/kwy404/hivedesk/releases).
 
 ## Instalar
 
@@ -33,7 +50,7 @@ npx hivedesk
 
 O assistente pergunta o idioma, a pasta do projeto, qual cérebro usar, como a equipe deve trabalhar e quem faz parte dela. Toda pergunta tem um padrão recomendado, então apertar Enter até o fim funciona. Na próxima vez ele oferece a mesma configuração; `--yes` pula as perguntas.
 
-Prefere o app de desktop? A [página de download](https://kwy404.github.io/hivedesk/#download) tem `hivedesk-windows-x64.zip` (uns 42 MB), `hivedesk-macos-universal.zip` (uns 80 MB) e `hivedesk-linux-x64.tar.gz` (uns 35 MB, também como AppImage) da [última versão](https://github.com/kwy404/hivedesk/releases/latest). Cada um traz o próprio Node.js, então não há nada para instalar antes; o hivedesk abre na própria janela. Eles ainda não são assinados, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam uma vez, e não se atualizam sozinhos. O modelo local continua sendo baixado na primeira execução. O [desktop/README.md](../desktop/README.md) (em inglês) lista o conteúdo de cada pacote e os passos exatos da primeira abertura. Também há scripts pequenos que conferem o Node.js 20 ou mais novo e rodam `npx hivedesk@latest`.
+Prefere o app de desktop? A [página de download](https://kwy404.github.io/hivedesk/#download) tem `hivedesk-windows-x64.zip` (47 MB), `hivedesk-macos-universal.zip` (89 MB) e `hivedesk-linux-x64.tar.gz` (55 MB, ou o AppImage de 52 MB) da [última versão](https://github.com/kwy404/hivedesk/releases/latest). Cada um traz o próprio Node.js, então não há nada para instalar antes; o hivedesk abre na própria janela. Eles ainda não são assinados, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam uma vez, e não se atualizam sozinhos. O modelo local continua sendo baixado na primeira execução. O [desktop/README.md](../desktop/README.md) (em inglês) lista o conteúdo de cada pacote e os passos exatos da primeira abertura. Também há scripts pequenos que conferem o Node.js 20 ou mais novo e rodam `npx hivedesk@latest`.
 
 ### O que a primeira execução faz
 
@@ -127,13 +144,30 @@ A equipe padrão é **Mel** (mestre de obras), **Dev**, **Designer**, **QA** e *
 </p>
 
 - **Modo escritório.** Ligue na barra do topo e a área de trabalho vira um pequeno escritório em favo de mel, desenhado a partir dos eventos reais. Arraste um post-it do quadro da Mel até uma abelha para passar a tarefa.
-- **Code together.** Convide um amigo para a janela de código: vocês editam os mesmos arquivos e veem o cursor um do outro. Os salvamentos dele passam pelo modo de aprovação, como diff.
-- **Voz.** Aperte e fale com <kbd>Ctrl</kbd> <kbd>Space</kbd>; a Mel responde em voz alta no idioma da interface.
-- **Temas.** Oito prontos, um editor visual com relatório de contraste, importar e exportar, ou peça para a equipe criar um.
-- **Extensões.** Instale de uma pasta, um zip ou uma URL. Cada uma pede as suas permissões e roda num sandbox.
+- **Code together.** Convide um amigo para a janela de código com seis palavras: vocês editam os mesmos arquivos e veem o cursor um do outro. Os salvamentos dele passam pelo modo de aprovação, como diff.
+- **Voz.** Aperte e fale com <kbd>Ctrl</kbd> <kbd>Space</kbd>; a Mel responde em voz alta no idioma da interface. Antes de qualquer coisa que age, como um commit ou um push, a Mel lê o plano e espera um sim claro. O reconhecimento é o do navegador, que pode enviar o áudio para o serviço do fabricante.
+- **Temas.** Oito prontos, um editor visual com relatório de contraste, importar e exportar, ou descreva um e a equipe cria.
+- **Extensões.** Instale de uma pasta, um zip ou uma URL, ou peça para a equipe criar uma. Cada uma pede as suas permissões e roda num sandbox.
+- **Memória da sessão.** Notas pequenas e limitadas por projeto e por pessoa, mais um arquivo de sessão por trabalho. Algumas entradas relevantes entram no próximo prompt; fixe, edite ou esqueça qualquer uma na janela Memory, ou desligue a memória.
+- **Briefing e relatório.** O briefing refinado antes do trabalho e, no fim, um relatório com o que foi feito e um prompt melhor para a próxima vez.
+- **Cérebros na nuvem, opcionais.** Local por padrão. Adicione um provedor na nuvem ou um endpoint compatível com a OpenAI com a sua chave, até por agente. As chaves ficam em `~/.hivedesk/keys.json`; prompts e arquivos enviados a esse provedor saem da sua máquina.
+- **App de desktop.** Os downloads abrem o hivedesk na própria janela, com ícone na bandeja, notificações e instância única; o `npx hivedesk` pode abrir a mesma janela.
 - **10 idiomas.** English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文 e Русский. A Colmeia segue o seu navegador e troca na hora.
 - **Um tour guiado** com a Mel na primeira abertura; repita pelo Help ou pela paleta de comandos.
 - **Replay** de qualquer momento a partir do log de eventos, paleta de comandos com <kbd>Ctrl</kbd> <kbd>K</kbd>, janelas que se encaixam e um layout de celular com cartões empilhados.
+
+## Chega na 0.2.0: Hive City
+
+<p align="center">
+  <img src="../assets/illustrations/hive-city.svg" width="900" alt="Um esboço da Hive City: o seu prédio com salas de Design, Code, Review, Test, Ops, Library e o Lobby, o prédio de um amigo que entrou com seis palavras, e uma ponte onde uma abelha leva turnos do modelo entre as máquinas.">
+</p>
+
+A próxima versão transforma a Colmeia numa pequena cidade onde os agentes vivem. Isto é o plano em construção, não algo que dá para baixar hoje:
+
+- **Agentes que ficam:** nome, especialidade, nível ganho com trabalho concluído, ferramentas e uma memória própria que você edita. Amanhã eles continuam lá, e as tarefas inacabadas retomam.
+- **Salas com regras:** Design, Code, Review, Test, Ops, Library e o Lobby decidem quais ferramentas valem ali e que tarefas aceitam.
+- **Uma esteira de tarefas:** Code, depois Review por outro agente, depois Test, voltando quando algo falha, com a sua aprovação em qualquer etapa.
+- **Amigos viram prédios:** um amigo entra com seis palavras e a máquina dele aparece ao lado da sua; um agente pode pegar turnos de GPU emprestados de um amigo, que vê cada pedido e pode recusar ou parar.
 
 ## Empreste seu PC
 
