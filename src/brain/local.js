@@ -69,7 +69,10 @@ export async function createLocalBrain(opts) {
   const model = await llama.loadModel({
     modelPath: opts.modelPath,
     gpuLayers: gpuWanted ? { fitContext: { contextSize: ctxSize } } : 0,
-    useMmap: true,
+    // On the GPU the weights are read once and uploaded, so nothing stays in RAM (measured: 0.45 GB resident
+    // for the 3B, against 2.4 GB with a memory map that keeps the file pages). On the CPU they are memory
+    // mapped, not copied.
+    useMmap: !gpuWanted,
     onLoadProgress: opts.onLoadProgress
   });
   const totalLayers = (model.fileInfo?.architectureMetadata?.block_count ?? 0) + 1;

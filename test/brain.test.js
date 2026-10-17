@@ -390,7 +390,7 @@ describe('local brain guards', () => {
     let layers = 29;
     const mod = { getLlama: async () => ({ gpu: 'vulkan', dispose: async () => {}, loadModel: async (o) => { loadOpts = o; return fakeModel(layers); } }), LlamaChat: class {} };
     const b = await createLocalBrain({ mod, modelPath: path.join(dir, 'm-00001-of-00002.gguf'), freeMem: () => 8e9 });
-    expect(loadOpts).toMatchObject({ gpuLayers: { fitContext: { contextSize: 4096 } }, useMmap: true });
+    expect(loadOpts).toMatchObject({ gpuLayers: { fitContext: { contextSize: 4096 } }, useMmap: false });
     expect(ctxOpts.contextSize).toBe(4096);
     expect(b.info()).toMatchObject({ gpu: 'vulkan', gpuLayers: 29, totalLayers: 29 });
     layers = 5;
