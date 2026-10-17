@@ -29,6 +29,7 @@ import { beeAvatar } from './bees.js';
 import { openHire } from './widgets/hire.js';
 import { shortModel } from './brainstate.js';
 import * as act from './actions.js';
+import { initOffice } from '../office/office.js';
 import * as i18n from './i18n.js';
 import { t } from './i18n.js';
 import * as tooltip from './tooltip.js';
@@ -291,6 +292,7 @@ menu.init();
 notifyMod.init();
 topbar.init(bar);
 dock.init(dockEl, desktopMenu);
+initOffice({ desk, barRight: bar.querySelector('.bar-right'), addDockItem: dock.addDockItem });
 menu.provide(desk, (target) => {
   const win = target.closest?.('.win');
   if (win) return windowMenu(win.dataset.id);

@@ -22,6 +22,15 @@ export const WIDGETS = [
 ];
 
 const items = new Map(); // window id -> dock button
+let pluginBox = null;
+
+/** Lets another module add its own dock button (the Office adds the mini widget). */
+export function addDockItem({ id, label, sub, content, onClick, menu }) {
+  const b = dockBtn(id, label, content, onClick, sub);
+  if (menu) provide(b, menu);
+  pluginBox?.append(b);
+  return b;
+}
 let tip;
 
 function showTip(btn, text, sub) {
@@ -59,7 +68,8 @@ export function init(el, desktopMenu) {
   const crewBox = h('div', { class: 'row', style: 'gap:4px' });
   const widgetBox = h('div', { class: 'row', style: 'gap:4px' });
   const extraBox = h('div', { class: 'row', style: 'gap:4px' });
-  const shelf = h('nav', { class: 'dock-shelf', 'aria-label': 'Dock' }, crewBox, h('div', { class: 'dock-sep' }), widgetBox, extraBox, h('div', { class: 'dock-sep' }),
+  pluginBox = h('div', { class: 'row', style: 'gap:4px' });
+  const shelf = h('nav', { class: 'dock-shelf', 'aria-label': 'Dock' }, crewBox, h('div', { class: 'dock-sep' }), widgetBox, extraBox, pluginBox, h('div', { class: 'dock-sep' }),
     dockBtn('lend', 'Lend your PC', h('span', { class: 'dk-hex' }, icon('lend')), () => wm.toggleFromDock(ui.lend ? 'lending' : 'lend'), () => (ui.lend ? 'you are lending this PC' : "use a friend's model")),
     dockBtn('settings', 'Settings', h('span', { class: 'dk-hex' }, icon('model')), () => wm.toggleFromDock('settings')));
   el.append(shelf);
