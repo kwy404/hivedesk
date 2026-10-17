@@ -1,5 +1,5 @@
 @echo off
-rem hivedesk launcher for Windows. It checks for Node.js 18 or newer, then runs
+rem hivedesk launcher for Windows. It checks for Node.js 20 or newer, then runs
 rem the latest hivedesk with npx. It installs nothing else by itself.
 rem Source: https://github.com/kwy404/hivedesk (MIT)
 setlocal
@@ -14,7 +14,7 @@ if errorlevel 1 goto nonode
 set "MAJOR="
 for /f "delims=" %%v in ('node -p "process.versions.node.split('.')[0]"') do set "MAJOR=%%v"
 if not defined MAJOR goto nonode
-if %MAJOR% LSS 18 goto oldnode
+if %MAJOR% LSS 20 goto oldnode
 
 for /f "delims=" %%v in ('node -v') do echo Node.js %%v found. Starting hivedesk...
 call npx --yes hivedesk@latest %*
@@ -27,13 +27,13 @@ exit /b
 
 :oldnode
 echo.
-echo hivedesk needs Node.js 18 or newer: it runs the crew and the local server.
+echo hivedesk needs Node.js 20 or newer: it runs the crew and the local server.
 for /f "delims=" %%v in ('node -v') do echo This computer has Node.js %%v, which is too old.
 goto opennode
 
 :nonode
 echo.
-echo hivedesk needs Node.js 18 or newer: it runs the crew and the local server.
+echo hivedesk needs Node.js 20 or newer: it runs the crew and the local server.
 echo Node.js was not found on this computer.
 
 :opennode

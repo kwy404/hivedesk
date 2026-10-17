@@ -33,7 +33,7 @@ npx hivedesk
 
 O assistente pergunta o idioma, a pasta do projeto, qual cérebro usar, como a equipe deve trabalhar e quem faz parte dela. Toda pergunta tem um padrão recomendado, então apertar Enter até o fim funciona. Na próxima vez ele oferece a mesma configuração; `--yes` pula as perguntas.
 
-Prefere o app de desktop? A [página de download](https://kwy404.github.io/hivedesk/#download) tem `hivedesk-windows-x64.zip` (uns 42 MB), `hivedesk-macos-universal.zip` (uns 80 MB) e `hivedesk-linux-x64.tar.gz` (uns 35 MB, também como AppImage) da [última versão](https://github.com/kwy404/hivedesk/releases/latest). Cada um traz o próprio Node.js, então não há nada para instalar antes; o hivedesk abre na própria janela. Eles ainda não são assinados, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam uma vez, e não se atualizam sozinhos. O modelo local continua sendo baixado na primeira execução. O [desktop/README.md](../desktop/README.md) (em inglês) lista o conteúdo de cada pacote e os passos exatos da primeira abertura. Também há scripts pequenos que conferem o Node.js 18 ou mais novo e rodam `npx hivedesk@latest`.
+Prefere o app de desktop? A [página de download](https://kwy404.github.io/hivedesk/#download) tem `hivedesk-windows-x64.zip` (uns 42 MB), `hivedesk-macos-universal.zip` (uns 80 MB) e `hivedesk-linux-x64.tar.gz` (uns 35 MB, também como AppImage) da [última versão](https://github.com/kwy404/hivedesk/releases/latest). Cada um traz o próprio Node.js, então não há nada para instalar antes; o hivedesk abre na própria janela. Eles ainda não são assinados, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam uma vez, e não se atualizam sozinhos. O modelo local continua sendo baixado na primeira execução. O [desktop/README.md](../desktop/README.md) (em inglês) lista o conteúdo de cada pacote e os passos exatos da primeira abertura. Também há scripts pequenos que conferem o Node.js 20 ou mais novo e rodam `npx hivedesk@latest`.
 
 ### O que a primeira execução faz
 
@@ -59,7 +59,7 @@ A escolha e o motivo aparecem numa linha. Mude em Settings ou com `--model 14b|7
 
 ### Requisitos
 
-- Node.js 18 ou mais novo, no Windows, macOS ou Linux.
+- Node.js 20 ou mais novo, no Windows, macOS ou Linux.
 - Disco: 0,5 a 9,0 GB para o modelo e até uns 0,7 GB para o runtime.
 - RAM livre para carregar: 2,5 GB quando o modelo vai para a GPU; na CPU, o tamanho do modelo mais 1,5 GB (no mínimo 4 GB).
 - GPU é opcional: NVIDIA, Apple Silicon e outras pelo runtime.
@@ -121,6 +121,10 @@ Um modelo pequeno na sua máquina é privado e não custa nada para rodar. Tamb�
 A equipe padrão é **Mel** (mestre de obras), **Dev**, **Designer**, **QA** e **Writer**. Contrate os seus com uma função, uma cor e uma lista de ferramentas permitidas. As ferramentas só alcançam a pasta do workspace; comandos rodam com tempo limite, limite de saída e sem rede por padrão.
 
 ## Dentro da Colmeia
+
+<p align="center">
+  <img src="../docs/assets/shots/office-working.webp" width="900" alt="Modo escritório: a equipe nas mesas de um escritório isométrico em favo de mel, a Mel no quadro de tarefas, o trabalho em 35 por cento e o turno no modelo.">
+</p>
 
 - **Modo escritório.** Ligue na barra do topo e a área de trabalho vira um pequeno escritório em favo de mel, desenhado a partir dos eventos reais. Arraste um post-it do quadro da Mel até uma abelha para passar a tarefa.
 - **Code together.** Convide um amigo para a janela de código: vocês editam os mesmos arquivos e veem o cursor um do outro. Os salvamentos dele passam pelo modo de aprovação, como diff.

@@ -410,18 +410,21 @@
       <h2 id="office-h" class="h2" data-i18n="office.h2">Watch the crew at work.</h2>
       <p class="head-sub">Toggle Office mode in the top bar and the desktop becomes a little honeycomb office. Every pose comes from a real engine event: who is thinking, who waits for a turn on the model, a task handed over, the tests passing. Drag a sticky note from Mel's board onto a bee to hand it the task.</p>
     </header>
-    <div class="office-stage reveal" aria-hidden="true">
-      <div class="floor"></div>
-      <div class="board"><span class="sticker s1"></span><span class="sticker s2"></span><span class="sticker s3"></span><b>Mel's board</b></div>
-      <div class="desk d-dev"><img src="assets/crew/dev.svg" width="56" height="56" alt=""><span class="bubble">writing index.html</span></div>
-      <div class="desk d-des"><img src="assets/crew/designer.svg" width="56" height="56" alt=""><span class="bubble">picking colors</span></div>
-      <div class="desk d-qa"><img src="assets/crew/qa.svg" width="56" height="56" alt=""><span class="bubble">waiting for a turn</span></div>
-      <div class="desk d-wri"><img src="assets/crew/writer.svg" width="56" height="56" alt=""><span class="bubble">README done</span></div>
-      <div class="mel-walk"><img src="assets/crew/mel.svg" width="64" height="64" alt=""><span class="carry"></span></div>
-      <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <span class="office-toast">QA: all checks passed</span>
-    </div>
-    <p class="caption">An animated sketch of Office mode. The real one is drawn from the engine's events on a canvas inside the Hive.</p>
+    <figure class="office-live reveal" aria-label="Office mode in the Hive, during a demo job">
+      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>hivedesk &middot; Office</span></div>
+      <ol class="office-steps" aria-hidden="true"><li>Working</li><li>Waiting for you</li><li>Done</li></ol>
+      <div class="office-frames">
+        <img class="of of1" src="assets/shots/office-working.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Office mode while the crew works: bees at their desks, Mel at the task board, the current job at 35 percent and the turn on the model.">
+        <img class="of of2" src="assets/shots/office-approval.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Office mode while a worker waits for your approval.">
+        <img class="of of3" src="assets/shots/office-celebrate.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Office mode when the job is done and the crew celebrates.">
+        <div class="office-fx" aria-hidden="true">
+          <span class="fx-bee ob1"><img src="assets/art/bee.svg" width="34" height="26" alt=""></span>
+          <span class="fx-bee ob2"><img src="assets/art/bee.svg" width="28" height="22" alt=""></span>
+          <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </figure>
+    <p class="caption">Real screenshots of Office mode with <code>npx hivedesk --demo</code>. Every demo event is labeled as a demo.</p>
   </div>
 </section>
 
@@ -550,12 +553,12 @@
       </div>
       <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">See all versions</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="caption caption-center">The downloads are not signed yet and do not update themselves; the local model is downloaded on the first run. Prefer a tiny script? The <a href="download/hivedesk-windows.cmd" download>Windows</a>, <a href="download/hivedesk-macos.command" download>macOS</a> and <a href="download/hivedesk-linux.sh" download>Linux</a> launchers check for Node.js 18 or newer and run <code>npx hivedesk@latest</code>; if Node.js is missing, they open the official download page and say why.</p>
+    <p class="caption caption-center">The downloads are not signed yet and do not update themselves; the local model is downloaded on the first run. Prefer a tiny script? The <a href="download/hivedesk-windows.cmd" download>Windows</a>, <a href="download/hivedesk-macos.command" download>macOS</a> and <a href="download/hivedesk-linux.sh" download>Linux</a> launchers check for Node.js 20 or newer and run <code>npx hivedesk@latest</code>; if Node.js is missing, they open the official download page and say why.</p>
 
     <article class="hd-card dl-cmd reveal">
       <div class="dl-cmd-copy">
         <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-terminal"/></svg></span><h3>The command</h3><span class="hd-chip">Recommended</span></div>
-        <p>Any system with Node.js 18 or newer. The wizard asks a few questions, each with a recommended default, so pressing Enter all the way works.</p>
+        <p>Any system with Node.js 20 or newer. The wizard asks a few questions, each with a recommended default, so pressing Enter all the way works.</p>
         <div class="pill pill-block" role="group" aria-label="Install command">
           <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
           <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copied" aria-label="Copy the command npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copied</span></button>
@@ -595,7 +598,7 @@
       <article class="hd-card">
         <h3>Requirements</h3>
         <ul class="ticks">
-          <li><b>Node.js 18 or newer</b> on Windows, macOS or Linux.</li>
+          <li><b>Node.js 20 or newer</b> on Windows, macOS or Linux.</li>
           <li><b>Disk:</b> 0.5 to 9.0 GB for the model, plus up to about 0.7 GB for the runtime, once.</li>
           <li><b>Free RAM to load it:</b> 2.5 GB when the model goes to the GPU; on the CPU, the model size plus 1.5 GB (at least 4 GB). With less it does not load, so the machine never freezes.</li>
           <li><b>A GPU is optional:</b> NVIDIA, Apple Silicon and others through the runtime.</li>

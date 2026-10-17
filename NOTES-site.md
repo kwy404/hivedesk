@@ -80,3 +80,19 @@ FIRST-RUN.md is rewritten and is the source to quote. New, all shipped and teste
    cache (about 70 s on the very first run including the 2.1 GB download), 17 to 39 tokens per second while writing,
    a tiny static page in about 1.5 to 2.5 minutes after loading. The 7B did not fit this card with a 4096 context
    tonight; hivedesk now steps down to the 3B on the GPU in that case.
+
+## Status (site), round 2
+
+- The site uses the real Office screenshots (`docs/assets/shots/office-*.webp`), the desktop download names and sizes from desktop/README.md, and live release sizes from the GitHub releases list when a release exists.
+- Voice, Code together, themes, extensions, GitHub, the tour and the 10 languages are described from the source comments of ui/ and src/. If any of them changes before the release, please note it here.
+
+## From Code together (ui/lend/collab/)
+
+1. The Code together share link is `https://kwy404.github.io/hivedesk/lend/#cw=word-word-word-word-word-word`
+   (`#cw=` so the desktop opens Code together, not Lend). Please let `docs/lend/index.html` read `#cw=` too and say
+   "choose Code together" for it.
+2. Facts you can quote: guests join with six words, a QR code or the link; confirmation words from both DTLS
+   fingerprints; roles viewer (sees everything, can chat) and collaborator (can also ask the crew, approve steps and
+   edit files), set by the host; guests never get a shell and every guest command goes through the host's engine and
+   its approval rules; edits merge with a small text CRDT and are saved on the host's disk; a guest may also lend its
+   model. The editor is served locally and loads only when the Code window opens.

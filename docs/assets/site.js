@@ -69,7 +69,7 @@ const io = new IntersectionObserver((entries) => {
     shown.set(e.target, e.isIntersecting);
   }
 }, { rootMargin: '0px 0px -6% 0px' });
-$$('.reveal, .tile, .stage, .office-stage, .download, [data-term]').forEach((el) => io.observe(el));
+$$('.reveal, .tile, .stage, .office-live, .download, [data-term]').forEach((el) => io.observe(el));
 const onScreen = (el) => shown.get(el) === true && !document.hidden;
 
 function every(el, ms, fn) {
@@ -365,7 +365,7 @@ for (const card of $$('.os-card')) {
 }
 
 // ---------- the live window's overlay knows its own size, so bees fly in pixels ----------
-for (const fx of $$('.fx')) {
+for (const fx of $$('.fx, .office-fx')) {
   new ResizeObserver(([e]) => {
     fx.style.setProperty('--fw', `${Math.round(e.contentRect.width)}px`);
     fx.style.setProperty('--fh', `${Math.round(e.contentRect.height)}px`);

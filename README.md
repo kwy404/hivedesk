@@ -33,7 +33,7 @@ npx hivedesk
 
 The wizard asks for the language, the project folder, which brain to use, how the crew should work and who is on it. Every question has a recommended default, so pressing Enter all the way works. Run it again and it offers to reuse the same setup; `--yes` skips the questions.
 
-Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (about 42 MB), `hivedesk-macos-universal.zip` (about 80 MB) and `hivedesk-linux-x64.tar.gz` (about 35 MB, also as an AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 18 or newer and run `npx hivedesk@latest`.
+Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (about 42 MB), `hivedesk-macos-universal.zip` (about 80 MB) and `hivedesk-linux-x64.tar.gz` (about 35 MB, also as an AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 20 or newer and run `npx hivedesk@latest`.
 
 ### What the first run does
 
@@ -59,7 +59,7 @@ The choice and the reason are shown in one line, for example "NVIDIA GeForce GTX
 
 ### Requirements
 
-- Node.js 18 or newer, on Windows, macOS or Linux.
+- Node.js 20 or newer, on Windows, macOS or Linux.
 - Disk: 0.5 to 9.0 GB for the model, plus up to about 0.7 GB for the runtime.
 - Free RAM to load it: 2.5 GB when the model goes to the GPU; on the CPU, the model size plus 1.5 GB (at least 4 GB).
 - A GPU is optional: NVIDIA, Apple Silicon and others through the runtime.
@@ -125,6 +125,10 @@ A small model on your own machine is private and free to run. It is also slower 
 The default crew is **Mel** (foreman and planner), **Dev**, **Designer**, **QA** and **Writer**. Hire your own with a role, an avatar color and a list of allowed tools. Tools only reach the workspace folder; commands run with a timeout, an output cap and no network by default.
 
 ## Inside the Hive
+
+<p align="center">
+  <img src="docs/assets/shots/office-working.webp" width="900" alt="Office mode: the crew at their desks in an isometric honeycomb office, Mel at the task board, the current job at 35 percent and the turn on the model.">
+</p>
 
 - **Office mode.** Toggle it in the top bar and the desktop becomes a small honeycomb office drawn from real engine events. Drag a sticky note from Mel's board onto a bee to hand it a task.
 - **Code together.** Invite a friend into the Code window: you edit the same files and see each other's cursors. Their saves go through approval mode, as a diff.
