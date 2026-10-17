@@ -14,7 +14,7 @@
 // servers on 127.0.0.1, separate folders), so the friend can be given a fake brain.
 // Usage: node test/lend/e2e-lend.mjs
 // Env:   HIVEDESK_BROWSER (path to Edge or Chrome), PLAYWRIGHT_CORE (path to playwright-core
-//        when it is not installed in this package), HIVEDESK_E2E_HEADED=1 to watch.
+//        when it is not installed in this package).
 
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -117,7 +117,7 @@ async function main() {
   const launch = (name) =>
     chromium.launchPersistentContext(temp(`${name}-profile`), {
       executablePath: exe,
-      headless: process.env.HIVEDESK_E2E_HEADED !== '1',
+      headless: true, // always headless: never open a visible window on the owner's screen
       args: ['--disable-features=WebRtcHideLocalIpsWithMdns', '--no-first-run'],
       permissions: ['clipboard-read', 'clipboard-write'],
     });

@@ -226,6 +226,11 @@ export class CollabHost extends Emitter {
     if (typeof content !== 'string') return;
     this.docs.peek(path).then((h) => {
       if (!h || content === h.saving || content === h.savedText) return;
+      if (h.text() !== h.savedText) {
+        // Unsaved edits in the shared text: the people editing decide (the Code window asks).
+        this.emit('diskChanged', path, content);
+        return;
+      }
       h.setText(content, 'crew');
       h.savedText = content;
     });
