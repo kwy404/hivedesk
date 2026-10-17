@@ -63,7 +63,7 @@ export function play(name) {
   if (muted) return;
   const c = ac();
   if (!c || c.state !== 'running') return;
-  const fn = SOUNDS[name];
+  const fn = globalThis.hivedeskSoundPack?.[name] || SOUNDS[name]; // the theme sound pack (ui/themes/sounds.js)
   if (fn) fn(c, c.currentTime + 0.01);
 }
 
@@ -71,6 +71,6 @@ export function play(name) {
 export function preview(name = 'job') {
   const c = ac();
   if (!c) return;
-  const fn = SOUNDS[name];
+  const fn = globalThis.hivedeskSoundPack?.[name] || SOUNDS[name]; // the theme sound pack (ui/themes/sounds.js)
   if (fn) setTimeout(() => fn(c, c.currentTime + 0.02), 30);
 }

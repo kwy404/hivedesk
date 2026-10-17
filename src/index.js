@@ -73,6 +73,9 @@ export async function startHive(opts) {
     }
   }
   try { await (await import('./github/index.js')).default({ bus, hive, scheduler, toolbox, server: { route: server.route, command: server.command }, config: { dir, home, workspace: paths.workspace, demo: !!opts.demo, version: VERSION, github: opts.github } }); } catch (err) { log(`github plug-in failed to load: ${err.message}`); }
+  // Themes and extensions (src/extensions/); the engine runs without them.
+  let extensions = null;
+  try { extensions = (await import('./extensions/index.js')).default({ bus, hive, scheduler, toolbox, home, server: { route: server.route, command: server.command } }); } catch (err) { log(`extensions plug-in failed to load: ${err.message}`); }
 
   await server.listen(opts.port || 0);
 
@@ -110,6 +113,7 @@ export async function startHive(opts) {
     async close() {
       if (demoTimer) clearInterval(demoTimer);
       if (demoFallback) clearTimeout(demoFallback);
+      extensions?.close();
       await hive.close();
       await brains?.close();
       await scheduler.close();

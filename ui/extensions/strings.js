@@ -1,0 +1,245 @@
+// Strings of the theme and extension windows. The shared tables in i18n/<locale>.json win
+// when they have the key (keys live under themes.* and extensions.*); until then the
+// English below is used. Nodes made with `tx()` are rewritten on a live language switch.
+
+import { t, has, onLocale } from '../js/i18n.js';
+import { format } from '/i18n/index.js';
+
+export const EN = {
+  'themes.title': 'Themes',
+  'themes.subtitle': '{count, plural, one {# theme} other {# themes}}',
+  'themes.apply': 'Apply',
+  'themes.active': 'Active',
+  'themes.edit': 'Edit',
+  'themes.duplicate': 'Duplicate',
+  'themes.export': 'Export',
+  'themes.import': 'Import',
+  'themes.delete': 'Delete',
+  'themes.new': 'New theme',
+  'themes.light': 'Light',
+  'themes.dark': 'Dark',
+  'themes.source.builtin': 'Built in',
+  'themes.source.user': 'Yours',
+  'themes.source.extension': 'From {name}',
+  'themes.system.name': 'Follow the system',
+  'themes.system.desc': 'Follows the light or dark setting of your computer.',
+  'themes.system.light': 'Light theme',
+  'themes.system.dark': 'Dark theme',
+  'themes.create.label': 'Create a theme with the crew',
+  'themes.create.placeholder': 'make a theme that feels like a sunset on the beach',
+  'themes.create.go': 'Ask Mel',
+  'themes.create.working': 'Mel is designing it. The model takes turns with the crew, so it can take a moment.',
+  'themes.create.noModel': 'No model yet: choose one in Settings, then ask again.',
+  'themes.create.failed': 'Mel could not make that theme',
+  'themes.imported': 'Theme imported',
+  'themes.importFailed': 'That file is not a hivedesk theme',
+  'themes.saved': 'Theme saved',
+  'themes.deleted': 'Theme deleted',
+  'themes.applied': '{name} is on',
+  'themes.editor.title': 'Theme editor',
+  'themes.editor.name': 'Name',
+  'themes.editor.description': 'Description',
+  'themes.editor.scheme': 'Scheme',
+  'themes.editor.colors': 'Colors',
+  'themes.editor.shape': 'Shape',
+  'themes.editor.type': 'Type',
+  'themes.editor.depth': 'Depth',
+  'themes.editor.pattern': 'Desktop pattern',
+  'themes.editor.feel': 'Motion and sound',
+  'themes.editor.radiusWindow': 'Window corners',
+  'themes.editor.radiusControl': 'Button corners',
+  'themes.editor.radiusSmall': 'Small corners',
+  'themes.editor.lines': 'Border strength',
+  'themes.editor.fontSans': 'Interface font',
+  'themes.editor.fontMono': 'Code font',
+  'themes.editor.shadowStyle': 'Shadow style',
+  'themes.editor.shadowStrength': 'Shadow strength',
+  'themes.editor.patternKind': 'Motif',
+  'themes.editor.patternColor': 'Motif color',
+  'themes.editor.patternOpacity': 'Motif opacity',
+  'themes.editor.patternSize': 'Motif size',
+  'themes.editor.motion': 'Motion',
+  'themes.editor.sound': 'Sound pack',
+  'themes.editor.playSound': 'Play',
+  'themes.editor.tryOn': 'Preview on the desktop',
+  'themes.editor.save': 'Save',
+  'themes.editor.saveApply': 'Save and apply',
+  'themes.editor.preview': 'Preview',
+  'themes.contrast.title': 'Contrast (WCAG)',
+  'themes.contrast.ok': 'Every text pair passes AA.',
+  'themes.contrast.bad': '{count, plural, one {# pair is below its target} other {# pairs are below their target}}',
+  'themes.contrast.fix': 'Fix the text colors',
+  'themes.contrast.fixed': '{count, plural, one {# color adjusted} other {# colors adjusted}}',
+  'themes.ai.banner': 'Mel made this from: "{prompt}"',
+  'themes.ai.fixes': 'Text colors adjusted for contrast: {list}.',
+  'themes.ai.noFixes': 'The contrast already passed WCAG AA.',
+  'themes.ai.approve': 'Approve and apply',
+  'themes.ai.fallback': 'The model answer was not usable, so this draft starts from Mel. Edit it as you like.',
+  'themes.color.bg': 'Desktop',
+  'themes.color.bg2': 'Desktop, second',
+  'themes.color.panel': 'Window',
+  'themes.color.panel2': 'Raised 1',
+  'themes.color.panel3': 'Raised 2',
+  'themes.color.panel4': 'Raised 3',
+  'themes.color.line': 'Borders',
+  'themes.color.text': 'Text',
+  'themes.color.text2': 'Text, second',
+  'themes.color.muted': 'Labels',
+  'themes.color.faint': 'Hints',
+  'themes.color.accent': 'Accent',
+  'themes.color.accent2': 'Accent text',
+  'themes.color.accentInk': 'Text on accent',
+  'themes.color.ok': 'Success',
+  'themes.color.warn': 'Warning',
+  'themes.color.bad': 'Error',
+  'themes.color.info': 'Info',
+  'themes.pattern.comb': 'Honeycomb',
+  'themes.pattern.fine': 'Fine comb',
+  'themes.pattern.dots': 'Dots',
+  'themes.pattern.grid': 'Grid',
+  'themes.pattern.pixel': 'Pixels',
+  'themes.pattern.none': 'None',
+  'themes.shadow.soft': 'Soft',
+  'themes.shadow.deep': 'Deep',
+  'themes.shadow.hard': 'Hard',
+  'themes.shadow.flat': 'Flat',
+  'themes.sound.chime': 'Chime',
+  'themes.sound.soft': 'Soft',
+  'themes.sound.wood': 'Wood',
+  'themes.sound.pixel': 'Pixel',
+  'themes.sound.off': 'Silent',
+  'themes.font.system': 'System',
+  'themes.font.rounded': 'Rounded',
+  'themes.font.humanist': 'Humanist',
+  'themes.font.serif': 'Serif',
+  'themes.font.mono': 'Monospace',
+  'themes.font.pixel': 'Pixel',
+  'themes.palette.open': 'Open Themes',
+  'themes.palette.use': 'Theme: {name}',
+  'themes.palette.create': 'Create a theme with Mel: {prompt}',
+  'themes.palette.group': 'Themes',
+
+  'extensions.title': 'Extensions',
+  'extensions.subtitle': '{count, plural, =0 {none installed} one {# installed} other {# installed}}',
+  'extensions.tab.installed': 'Installed',
+  'extensions.tab.add': 'Add',
+  'extensions.tab.create': 'Create with the crew',
+  'extensions.empty': 'No extensions yet. Add one, or create one with the crew.',
+  'extensions.enabled': 'On',
+  'extensions.disabled': 'Off',
+  'extensions.pending': 'Needs your approval',
+  'extensions.review': 'Review permissions',
+  'extensions.enable': 'Turn on',
+  'extensions.disable': 'Turn off',
+  'extensions.reload': 'Reload',
+  'extensions.uninstall': 'Uninstall',
+  'extensions.uninstallConfirm': 'Uninstall {name}? Its files and saved data are removed.',
+  'extensions.openWidget': 'Open {title}',
+  'extensions.revoke': 'Take back',
+  'extensions.revokeConfirm': 'Take back "{label}" from {name}?',
+  'extensions.source.builtin': 'Built in',
+  'extensions.source.folder': 'Folder',
+  'extensions.source.zip': 'Zip',
+  'extensions.source.url': 'From a URL',
+  'extensions.source.dev': 'In development',
+  'extensions.by': 'by {author}',
+  'extensions.permissions': 'Permissions',
+  'extensions.noPermissions': 'Asks for no permissions.',
+  'extensions.granted': 'Granted',
+  'extensions.notGranted': 'Not granted',
+  'extensions.contributes': 'Adds',
+  'extensions.kind.tools': '{count, plural, one {# tool} other {# tools}}',
+  'extensions.kind.roles': '{count, plural, one {# worker} other {# workers}}',
+  'extensions.kind.widgets': '{count, plural, one {# widget} other {# widgets}}',
+  'extensions.kind.commands': '{count, plural, one {# command} other {# commands}}',
+  'extensions.kind.themes': '{count, plural, one {# theme} other {# themes}}',
+  'extensions.errors': 'Problems in the manifest',
+  'extensions.sandbox.on': 'Extension code runs in a separate process with no file system and no child processes, and reaches hivedesk only through the permissions below.',
+  'extensions.sandbox.off': 'This Node.js has no permission model: extension code still runs in a separate process and a sandboxed context, but with weaker isolation. Node 20 or newer is safer.',
+  'extensions.add.folder': 'Folder or .zip on this computer',
+  'extensions.add.folderHint': 'The folder with hivedesk-extension.json, or a .zip of it.',
+  'extensions.add.folderPlaceholder': 'C:\\Users\\me\\my-extension',
+  'extensions.add.install': 'Install',
+  'extensions.add.zip': 'Choose a .zip',
+  'extensions.add.url': 'From a URL',
+  'extensions.add.urlPlaceholder': 'https://example.com/extension.zip',
+  'extensions.add.urlWarning': 'Only install from a URL you trust. An extension can read your workspace and download data if you allow it. hivedesk checks the manifest and asks you before anything runs, but it cannot tell whether the author is honest.',
+  'extensions.add.staged': '{name} is ready to review',
+  'extensions.create.label': 'Describe the extension',
+  'extensions.create.placeholder': 'make an extension that shows the weather',
+  'extensions.create.go': 'Create with the crew',
+  'extensions.create.hint': 'Mel sets up the folder in {path}, then the crew writes the manifest and the code as a normal job, with diffs and approvals. Saved files reload by themselves.',
+  'extensions.create.started': 'The crew is building {name}',
+  'extensions.create.running': 'Building',
+  'extensions.create.ready': 'Ready to test',
+  'extensions.create.problems': 'Needs fixes',
+  'extensions.create.installTest': 'Install and test',
+  'extensions.dialog.title': 'Allow {name}?',
+  'extensions.dialog.lead': '{name} {version} by {author} asks for:',
+  'extensions.dialog.none': 'It asks for no permissions. It can only show its own windows.',
+  'extensions.dialog.trust': 'I trust the author of this extension and the site it came from.',
+  'extensions.dialog.approve': 'Allow and turn on',
+  'extensions.dialog.cancel': 'Not now',
+  'extensions.risk.low': 'Low',
+  'extensions.risk.medium': 'Medium',
+  'extensions.risk.high': 'High',
+  'extensions.widget.loading': 'Loading the widget',
+  'extensions.widget.off': 'This extension is off. Turn it on in Extensions to use this window.',
+  'extensions.widget.failed': 'The widget could not load: {message}',
+  'extensions.notify.denied': '{id} was stopped: it does not have "{permission}"',
+  'extensions.notify.reloaded': '{name} reloaded',
+  'extensions.notify.needsApproval': '{name} asks for new permissions',
+  'extensions.notify.ready': '{name} is ready',
+  'extensions.notify.readyBody': 'The crew finished the extension. Install it to try it.',
+  'extensions.notify.failed': 'Could not do that',
+  'extensions.notify.on': '{name} is on',
+  'extensions.palette.open': 'Open Extensions',
+  'extensions.palette.create': 'Create an extension with the crew: {prompt}',
+  'extensions.palette.group': 'Extensions',
+  'extensions.result': 'Result of {tool}',
+  'extensions.perm.workspace.read': 'Read the files in the workspace',
+  'extensions.perm.workspace.write': 'Create and change files in the workspace (shown as diffs, approvals apply)',
+  'extensions.perm.http.get': 'Download data from {host} (HTTPS GET only)',
+  'extensions.perm.storage': 'Keep up to 64 KB of its own settings',
+  'extensions.perm.notify': 'Show notifications on the desktop',
+  'extensions.perm.crew.chat': 'Post messages in #general',
+  'extensions.perm.crew.roles': 'Add workers to the crew',
+  'extensions.perm.brain.ask': 'Ask the model short questions (takes turns in the shared queue)'
+};
+
+/** Translates a themes.* or extensions.* key. */
+export function tr(key, params) {
+  if (has(key)) return t(key, params);
+  const msg = EN[key];
+  if (msg == null) return key;
+  try { return format('en', msg, params); } catch { return msg; }
+}
+
+/** The permission line in the current language (the engine sends English). */
+export function permLabel(p) {
+  const name = p.permission.startsWith('http.get:') ? 'http.get' : p.permission;
+  const key = `extensions.perm.${name}`;
+  return has(key) || EN[key] ? tr(key, { host: p.permission.slice('http.get:'.length) }) : p.label;
+}
+
+/** Sets the text of `el` from a key and keeps it translated. */
+export function tx(el, key, params) {
+  el.dataset.hdx = key;
+  if (params) el.dataset.hdxArgs = JSON.stringify(params);
+  else delete el.dataset.hdxArgs;
+  el.textContent = tr(key, params);
+  return el;
+}
+
+const listeners = new Set();
+/** Runs `fn` after every language switch (to rebuild lists). */
+export function onLang(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+
+onLocale(() => {
+  for (const el of document.querySelectorAll('[data-hdx]')) {
+    let args;
+    try { args = el.dataset.hdxArgs ? JSON.parse(el.dataset.hdxArgs) : undefined; } catch { args = undefined; }
+    el.textContent = tr(el.dataset.hdx, args);
+  }
+  for (const fn of listeners) { try { fn(); } catch (err) { console.error(err); } }
+});

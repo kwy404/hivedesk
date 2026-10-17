@@ -6,6 +6,7 @@ import { ExtensionHost } from './host.js';
 import { ThemeStore, generateTheme } from './themes.js';
 import { createExtension } from './create.js';
 import { detectIntent } from './intent.js';
+import { permissionFlag } from '../tools/run.js';
 
 const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 let flowSeq = 0;
@@ -61,7 +62,8 @@ export default function register(ctx) {
   });
 
   /* ---------- extensions ---------- */
-  const listing = () => ({ extensions: host.list(), devDir: host.dirs.dev, isolated: host.sandbox.isolated });
+  // isolated: the sandbox process gets Node's permission model (no file system, no child processes).
+  const listing = () => ({ extensions: host.list(), devDir: host.dirs.dev, isolated: !!permissionFlag() });
   server.command('extensions.list', listing);
   server.command('extensions.install', (d) => host.install(d));
   server.command('extensions.approve', (d) => ({ extension: host.approve(str(d.id, 'id'), { grant: d.grant, acceptRisk: d.acceptRisk }) }));

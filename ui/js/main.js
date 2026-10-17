@@ -39,6 +39,8 @@ import { t } from './i18n.js';
 import * as tooltip from './tooltip.js';
 import { celebrate } from './fx.js';
 import '../github/index.js'; // GitHub and Changelog windows, dock buttons, Ctrl K entries, runIntent
+import '../themes/index.js'; // Themes window, theme editor, live theme tokens, Ctrl K entries
+import '../extensions/index.js'; // Extensions window, permission prompt, widget frames, Ctrl K entries
 
 const V = window.V;
 const root = document.documentElement;
