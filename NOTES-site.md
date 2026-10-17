@@ -59,3 +59,24 @@ FIRST-RUN.md and the site (marketing copy: "desktop app", do not name the runtim
    downloaded on the first run (FIRST-RUN.md).
 4. Credits (technical, e.g. the README footer or desktop/README.md link): the desktop shell uses
    Neutralinojs (MIT).
+
+## From the engine (2026-10-16, late)
+
+FIRST-RUN.md is rewritten and is the source to quote. New, all shipped and tested:
+
+1. **Wizard:** runs on every `npx hivedesk` in a terminal; full on the first run, then only "Use the same setup?".
+   `--yes` or no terminal skips it. Steps and the hardware table are in FIRST-RUN.md sections 1 and 2.
+2. **Cloud providers** (supported options, no comparisons): Anthropic, OpenAI, xAI, Google Gemini, and any OpenAI
+   compatible endpoint (OpenRouter, Groq, Mistral, local servers). Keys stay in `~/.hivedesk/keys.json`, never reach
+   the browser; Test connection; a brain per worker; tokens per brain. Honest note: providers receive the prompts and
+   file contents and bill the user's account.
+3. **Memory and sessions:** local only, capped, viewable and editable in the Memory window, "forget this", an off switch,
+   sessions that can be reopened and continued.
+4. **Prompting:** every model call is assembled from tagged sections with a token budget; the Prompts window shows the
+   exact prompt and answer per turn. QA findings carry a severity; at most 3 fix rounds.
+5. **Windows:** native desktop window first (desktop/), then an app style browser window, then the browser;
+   installable as an app with a "start hivedesk" page when the server is off.
+6. **Measured** (README limits section has the line): GTX 1060 6 GB, 3B fully on the GPU, ready in 8 to 15 s from
+   cache (about 70 s on the very first run including the 2.1 GB download), 17 to 39 tokens per second while writing,
+   a tiny static page in about 1.5 to 2.5 minutes after loading. The 7B did not fit this card with a 4096 context
+   tonight; hivedesk now steps down to the 3B on the GPU in that case.
