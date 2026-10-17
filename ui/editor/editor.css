@@ -87,7 +87,7 @@
 .ed-monaco[hidden], .ed-review[hidden], .ed-empty[hidden], .ed-editing[hidden] { display: none; }
 .ed-review { display: grid; grid-template-rows: auto minmax(0, 1fr); }
 .ed-diff { min-height: 0; }
-.ed-hunks { max-height: 40%; overflow: auto; padding: 8px 10px; border-bottom: 1px solid var(--ed-line); background: var(--ed-panel); }
+.ed-hunks { max-height: 190px; overflow: auto; padding: 8px 10px; border-bottom: 1px solid var(--ed-line); background: var(--ed-panel); }
 .ed-hunks-h { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
 .ed-hunk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .ed-hunk-list li { display: flex; align-items: center; gap: 6px; }

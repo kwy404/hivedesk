@@ -34,7 +34,6 @@ const T = {
   acceptAll: 'Accept all',
   rejectAll: 'Reject all',
   closeReview: 'Close review',
-  noChanges: 'No crew changes to review in this file.',
   editing: (who, file) => `${who} is editing ${file}`,
   diskChanged: (who) => `${who} changed this file while you had unsaved edits.`,
   loadTheirs: 'Load their version',
@@ -420,7 +419,15 @@ export function mountEditor(root, { path: firstPath } = {}) {
     if (!e || !collab.canEdit() || editor.getModel() !== e.model) return;
     const lang = languageOf(path);
     if (FORMATTABLE.has(lang)) {
+      const NL = String.fromCharCode(10);
+      const hadNewline = e.model.getValue().endsWith(NL);
       await editor.getAction('editor.action.formatDocument')?.run();
+      // Keep the final newline the file had (the CSS and HTML formatters drop it).
+      const now = e.model.getValue();
+      if (hadNewline && now && !now.endsWith(NL)) {
+        const end = e.model.getFullModelRange().getEndPosition();
+        e.model.pushEditOperations([], [{ range: new monaco.Range(end.lineNumber, end.column, end.lineNumber, end.column), text: NL }], () => null);
+      }
       return;
     }
     const text = e.model.getValue();
@@ -430,11 +437,11 @@ export function mountEditor(root, { path: firstPath } = {}) {
     }
   }
 
-  async function save(path = st.active) {
+  async function save(path = st.active, { tidy = true } = {}) {
     const e = entries.get(path);
     if (!e) return;
     if (!collab.canEdit()) return setSave(T.readOnly);
-    if (store.get('formatOnSave', '1') === '1') await format(path).catch(() => {});
+    if (tidy && store.get('formatOnSave', '1') === '1') await format(path).catch(() => {});
     setSave(collab.mode === 'guest' ? T.approval : T.saving);
     try {
       await e.handle.save();
@@ -551,6 +558,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
           if (e.handle.text() === e.handle.savedText) {
             e.handle.setText(d.content, 'crew');
             e.handle.savedText = d.content;
+            paintTabs();
           } else if (e.handle.text() !== d.content) {
             showBanner(T.diskChanged(workerOf(d.workerId).name), [[T.loadTheirs, () => { e.handle.setText(d.content, 'crew'); e.handle.savedText = d.content; paintTabs(); }], [T.keepMine, () => {}]]);
           }
@@ -629,9 +637,9 @@ export function mountEditor(root, { path: firstPath } = {}) {
     const hs = hunks(base, cur);
     clear(hunkBar);
     if (!hs.length) {
+      // Every hunk is accepted or rejected: back to the editor.
       st.baselines.delete(path);
-      hunkBar.append(h('p', { class: 'ed-faint', text: T.noChanges }), h('button', { class: 'ed-btn', type: 'button', text: T.closeReview, on: { click: closeReview } }));
-      paintTree();
+      closeReview();
       return;
     }
     const edit = collab.canEdit();
@@ -657,7 +665,7 @@ export function mountEditor(root, { path: firstPath } = {}) {
     if (!e) return;
     e.handle.setText(text, 'review');
     renderHunks();
-    await save(path);
+    await save(path, { tidy: false }); // a reject restores the old lines exactly
   }
 
   /* ---------- theme ---------- */

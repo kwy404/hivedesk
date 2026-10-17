@@ -3,6 +3,12 @@
 
 let loading = null;
 
+// The editor cancels pending work (a diff, a hover) by rejecting it with a "Canceled" error;
+// that is normal and must not reach the page as an unhandled error.
+addEventListener('unhandledrejection', (e) => {
+  if (e.reason?.name === 'Canceled' || e.reason?.message === 'Canceled') e.preventDefault();
+});
+
 export function loadMonaco() {
   if (globalThis.monaco?.editor) return Promise.resolve(globalThis.monaco);
   loading ??= new Promise((resolve, reject) => {

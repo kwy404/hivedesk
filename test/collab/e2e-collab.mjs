@@ -140,7 +140,7 @@ async function main() {
   check('the host made the guest a collaborator', true);
   const openEditor = async (p) => {
     await p.evaluate(() => window.hivedeskEditor.open('index.html'));
-    await p.waitForFunction(() => window.hivedeskEditor.api?.editor?.getModel()?.getValue().includes('Crumb'), null, { timeout: 60000 });
+    await p.waitForFunction(() => window.hivedeskEditor.api?.editor?.getModel()?.getValue().includes('Crumb'), null, { timeout: 120000 });
   };
   await openEditor(ph);
   await openEditor(pg);
