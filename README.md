@@ -101,7 +101,7 @@ A small model on your own machine is private and free to run. It is also slower 
 | GPU with 7 to 10 GB | Qwen2.5-Coder 7B | Good | Small and medium tasks, with you steering. |
 | 10 GB or more, or a key | Qwen2.5-Coder 14B, or a bigger model through Ollama, LM Studio or a cloud provider with your own key | Faster | Bigger jobs and longer plans. |
 
-**Measured** on a GTX 1060 6 GB (Vulkan, 16 GB of RAM) with the 3B fully on the GPU: ready in 11 to 50 seconds once downloaded, 17 to 39 tokens per second while writing (4 to 10 on turns that read a long prompt), and a tiny static page (brief, plan, write, QA, report) in about 2 to 2.5 minutes after the model was loaded. Results vary between runs: in one run of four, a worker said it was done without writing its file and the report listed it as missing. The 7B could not be measured on that machine: loading it pushed free RAM under 1.5 GB while other apps were open, so the run was stopped.
+**Measured** on a GTX 1060 6 GB (Vulkan, 16 GB of RAM) with the 3B fully on the GPU: ready in 8 to 15 seconds from the cache (about 70 seconds on the very first run, including the 2.1 GB download), 17 to 39 tokens per second while writing (4 to 10 on turns that read a long prompt), and a tiny static page (brief, plan, write, QA, report) in about 1.5 to 2.5 minutes after the model was loaded. Results vary between runs: in some runs a worker left a mistake that QA found and the fix rounds could not repair, and the report listed it as missing. The 7B did not fit that card with a 4096 token context, so hivedesk steps down to the 3B on the GPU.
 
 **Great at:** landing pages, small CRUD apps, scripts, UI components, tests, docs and copy, fixing a bug you describe.
 
