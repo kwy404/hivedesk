@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 import crypto from 'node:crypto';
+import { hasRealLog } from './bus.js';
 
 const HELP = `hivedesk: a crew of AI workers that build real files on your machine with a local model.
 
@@ -24,7 +25,9 @@ Usage: npx hivedesk [options]
   --no-city             run without Hive City (agents, rooms and the task bus); the 0.1 desktop works the same
   --cpu                 do not use the GPU
   --ctx <n>             context size for the local model (default: up to 8192)
-  --demo                scripted demo, no model; every event is labeled as a demo
+  --demo                scripted demo, no model; every event is labeled as a demo. It runs in a
+                        temporary folder with its own home and never writes into a project
+  --demo-dir <folder>   run the demo in this folder instead (never one with a real project log)
   --lend                lend this machine's model to a paired friend (opens the Lend screen)
   --join <link|words>   open the desktop with "Use a friend's PC" filled in with these six words
   --yes                 skip the setup questions (the saved setup, or the recommended defaults)
@@ -34,9 +37,11 @@ Usage: npx hivedesk [options]
 
 First run: see FIRST-RUN.md. Cache folder: ~/.hivedesk (or HIVEDESK_HOME).`;
 
+export { hasRealLog };
+
 export function parseArgs(argv) {
   const o = { open: true, download: true };
-  const takes = new Set(['dir', 'port', 'model', 'brain', 'url', 'ctx', 'join']);
+  const takes = new Set(['dir', 'port', 'model', 'brain', 'url', 'ctx', 'join', 'demo-dir']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith('--')) throw new Error(`unexpected argument: ${a}`);
@@ -65,6 +70,27 @@ export function parseArgs(argv) {
   }
   if (o.brain && !['ollama', 'lmstudio', 'openai', 'local'].includes(o.brain)) throw new Error('--brain must be ollama, lmstudio or openai');
   return o;
+}
+
+/**
+ * Where --demo runs: a new temporary folder; --demo-dir <folder> when given. A --dir that is a real
+ * project (a folder with files in it) is refused, so the demo never writes into a project's log.
+ */
+export function demoFolder(args, { tmp = os.tmpdir(), cwd = process.cwd() } = {}) {
+  if (args['demo-dir']) {
+    const dir = path.resolve(cwd, args['demo-dir']);
+    if (hasRealLog(dir)) throw new Error(`${dir} holds a real hivedesk project; the demo needs a folder of its own`);
+    return dir;
+  }
+  if (args.dir) {
+    const dir = path.resolve(cwd, args.dir);
+    let entries = [];
+    try { entries = fs.readdirSync(dir); } catch { entries = []; }
+    const demoOnly = entries.length === 1 && entries[0] === '.hivedesk' && fs.existsSync(path.join(dir, '.hivedesk', 'events.jsonl')) && !hasRealLog(dir);
+    if (entries.length && !demoOnly) throw new Error(`--demo will not run in ${dir}: the folder is not empty. Leave out --dir for a temporary demo folder, or pass --demo-dir <folder>`);
+    return dir;
+  }
+  return fs.mkdtempSync(path.join(tmp, 'hivedesk-demo-'));
 }
 
 /** Six words from a share link (#w=...) or from words separated by spaces or dashes. */
@@ -228,16 +254,26 @@ async function main() {
       if (setup.open === false) args.open = false;
     }
   }
-  if (args.demo && !args.dir) dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hivedesk-demo-'));
+  if (args['demo-dir'] && !args.demo) {
+    console.error('hivedesk: --demo-dir goes with --demo');
+    process.exit(2);
+  }
+  // The demo never touches a real project or the real ~/.hivedesk: its own folder and its own home.
+  let demoHome;
+  if (args.demo) {
+    try { dir = demoFolder(args); } catch (err) { console.error(`hivedesk: ${err.message}`); process.exit(2); }
+    demoHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hivedesk-demo-home-'));
+  }
   const progress = makeProgress();
   const log = (line) => { progress(null); console.log(`  ${line}`); };
-  console.log(`hivedesk ${VERSION}${args.demo ? ' (demo: no model, scripted crew)' : ''}${args.lend ? ' (lend mode)' : ''}`);
+  console.log(`hivedesk ${VERSION}${args.demo ? ' (DEMO: no model, scripted crew, a separate demo folder)' : ''}${args.lend ? ' (lend mode)' : ''}`);
   const port = args.port !== undefined ? args.port : await stablePort(4174);
   const app = await startHive({
     dir,
     port,
     token: args.demo ? undefined : loadToken(cacheHome(), !!args['new-token']),
     demo: !!args.demo,
+    ...(demoHome ? { home: demoHome } : {}),
     lend: !!args.lend,
     city: args.city !== false,
     log,
@@ -249,7 +285,7 @@ async function main() {
     }
   });
   if (setup) app.hive.setSettings({ approvalMode: setup.approvalMode, crew: setup.crew });
-  console.log(`  folder: ${path.join(dir, '.hivedesk')}`);
+  console.log(`  ${args.demo ? 'demo folder' : 'folder'}: ${path.join(dir, '.hivedesk')}`);
   console.log(`  open:   ${app.url}`);
   const openUrl = startUrl(app.server.port, app.server.token, args);
   if (openUrl !== app.url) console.log(`          ${openUrl}`);

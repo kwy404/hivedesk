@@ -1,7 +1,7 @@
 // Tool definitions (each with a JSON schema) and the executor with approval mode and events.
 import { Workspace } from './workspace.js';
 import { unifiedDiff, diffStats } from './diff.js';
-import { runCommand } from './run.js';
+import { runCommand, splitArgs } from './run.js';
 import { checkWorkspace } from './check.js';
 
 const S = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
@@ -23,6 +23,8 @@ export const TOOLS = {
 };
 
 export const ALL_TOOLS = Object.keys(TOOLS);
+/** Tools that change the workspace or run code: from a guest or a friend's model they always wait for the host. */
+export const STRICT_TOOLS = new Set(['write_file', 'edit_file', 'delete_file', 'run']);
 
 export function toolList(names = ALL_TOOLS) {
   return names.filter((n) => TOOLS[n]).map((name) => ({ name, description: TOOLS[name].description, parameters: TOOLS[name].parameters }));
@@ -56,10 +58,29 @@ export class ToolBox {
     this.approvals = opts.approvals;
     this.previewUrl = opts.previewUrl || (() => null);
     this.isApprovalMode = opts.isApprovalMode || (() => this.bus.state.settings.approvalMode !== false);
+    /** jobId -> origin of jobs that did not start at this PC (a guest's request) */
+    this.origins = new Map();
+  }
+
+  /** Marks a job as started by someone else (a Code together guest): its writes and runs wait for the host. */
+  markOrigin(jobId, origin) {
+    const o = cleanOrigin(origin);
+    if (jobId && o) this.origins.set(jobId, o);
+  }
+
+  /** Where a call comes from when it is not this PC's own crew: a guest or a friend's model. */
+  originOf(ctx = {}) {
+    return cleanOrigin(ctx.origin) || (ctx.jobId && this.origins.get(ctx.jobId)) || null;
+  }
+
+  /** True when this call must wait for the host whatever the approval mode. */
+  isStrict(tool, ctx = {}) {
+    return STRICT_TOOLS.has(tool) && !!this.originOf(ctx);
   }
 
   /** Whether this call needs the user's approval in approval mode. */
   needsApproval(tool, args, ctx = {}) {
+    if (this.isStrict(tool, ctx)) return true;
     const mode = ctx.approval === undefined ? this.isApprovalMode() : ctx.approval && this.isApprovalMode();
     if (!mode) return false;
     if (TOOLS[tool]?.destructive) return true;
@@ -87,9 +108,12 @@ export class ToolBox {
       if (!TOOLS[tool]) throw new Error(`unknown tool: ${tool}`);
       if (ctx.allowed && !ctx.allowed.includes(tool)) throw new Error(`${ctx.workerId || 'this worker'} is not allowed to use ${tool}`);
       if (this.needsApproval(tool, args, ctx)) {
+        const origin = this.originOf(ctx);
+        const script = tool === 'run' ? this.scriptOf(args.command) : null;
         const decision = await this.approvals.request({
           jobId: ctx.jobId, taskId: ctx.taskId, workerId: ctx.workerId, tool, args: redactArgs(tool, args),
-          summary: describe(tool, args), diff: this.previewDiff(tool, args)
+          summary: describe(tool, args), diff: this.previewDiff(tool, args),
+          ...(origin ? { origin, strict: STRICT_TOOLS.has(tool) } : {}), ...(script ? { script } : {})
         }, ctx.signal);
         if (!decision.approved) throw new Error(`the user rejected this action${decision.note ? ': ' + decision.note : ''}`);
       }
@@ -100,6 +124,18 @@ export class ToolBox {
     }
     this.bus.emit('tool.result', { callId, ok: out.ok, result: out.ok ? truncate(out.result) : undefined, error: out.error }, ev);
     return out;
+  }
+
+  /** For "npm test" and "npm run x": the script from package.json that would really run. */
+  scriptOf(command) {
+    let argv;
+    try { argv = splitArgs(String(command || '')); } catch { return null; }
+    if (String(argv[0] || '').toLowerCase().replace(/\.(exe|cmd)$/, '') !== 'npm') return null;
+    const name = ['test', 't'].includes(argv[1]) ? 'test' : ['run', 'run-script'].includes(argv[1]) ? argv[2] : null;
+    if (!name) return null;
+    let body = null;
+    try { body = JSON.parse(this.ws.read('package.json'))?.scripts?.[name] ?? null; } catch { body = null; }
+    return { name: String(name).slice(0, 80), body: typeof body === 'string' ? body.slice(0, 2000) : null };
   }
 
   previewDiff(tool, args) {
@@ -174,6 +210,14 @@ export class ToolBox {
         throw new Error(`unknown tool: ${tool}`);
     }
   }
+}
+
+function cleanOrigin(o) {
+  if (!o || typeof o !== 'object' || !['guest', 'remote'].includes(o.kind)) return null;
+  const out = { kind: o.kind, label: String(o.label || (o.kind === 'guest' ? 'a guest' : "a friend's model")).slice(0, 80) };
+  if (o.id) out.id = String(o.id).slice(0, 40);
+  if (o.brainId) out.brainId = String(o.brainId).slice(0, 40);
+  return out;
 }
 
 function normalize(p) {

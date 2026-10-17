@@ -20,6 +20,8 @@ export const LIMITS = Object.freeze({
   messages: 64, // messages in one request
   promptChars: 120000, // all message contents of one request together
   schemaChars: 16000, // the JSON schema of one request
+  schemaDepth: 16, // how deep the schema nests (it becomes a grammar on the lender)
+  schemaNodes: 1000, // objects and arrays in the schema
   maxTokens: 4096, // the most completion tokens a request may ask for
   completionChars: 120000, // the completion text (and its parsed JSON) of one answer
   tokenChars: 8000, // one streamed token frame
@@ -79,6 +81,22 @@ export function readMessages(messages, limits = LIMITS) {
   return out;
 }
 
+/** How deep a JSON value nests and how many objects and arrays it has. */
+export function schemaShape(value) {
+  let nodes = 0;
+  let depth = 0;
+  const stack = [[value, 1]];
+  while (stack.length) {
+    const [v, d] = stack.pop();
+    if (!v || typeof v !== 'object') continue;
+    nodes++;
+    if (d > depth) depth = d;
+    if (nodes > 100000) break;
+    for (const x of Array.isArray(v) ? v : Object.values(v)) if (x && typeof x === 'object') stack.push([x, d + 1]);
+  }
+  return { depth, nodes };
+}
+
 /** Only schema, maxTokens and temperature travel. Signals, callbacks and tools stay home. */
 export function readOptions(options, limits = LIMITS) {
   const out = {};
@@ -88,6 +106,8 @@ export function readOptions(options, limits = LIMITS) {
     const text = JSON.stringify(options.schema);
     if (text.length > limits.schemaChars) fail('schema_too_big', `The schema has ${text.length} characters, the limit is ${limits.schemaChars}`);
     out.schema = JSON.parse(text);
+    const shape = schemaShape(out.schema);
+    if (shape.depth > (limits.schemaDepth ?? LIMITS.schemaDepth) || shape.nodes > (limits.schemaNodes ?? LIMITS.schemaNodes)) fail('schema_too_big', 'The schema nests too deep or has too many parts');
   }
   if (Number.isFinite(options.maxTokens)) out.maxTokens = clamp(Math.round(options.maxTokens), 1, limits.maxTokens);
   if (Number.isFinite(options.temperature)) out.temperature = clamp(options.temperature, 0, 2);

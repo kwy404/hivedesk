@@ -81,7 +81,10 @@ Job      { id, request, status, approval, refine, createdAt, finishedAt?, taskId
 Brief    { goal, build: string[], constraints: string[], acceptance: string[], questions: [{ question, options: string[], answer }], text }
          text is the Markdown the user sees and edits; acceptance items are "- [ ] ..." lines in it.
 Report   { built, files: [{ path, op, added, removed }], checks: [{ name, ok, detail }], missing: string[], turns, seconds }
-Approval { id, jobId, taskId, workerId, tool, args, summary, diff?, createdAt }
+Approval { id, jobId, taskId, workerId, tool, args, summary, diff?, createdAt, origin?, strict?, script? }
+  origin: { kind: "guest" | "remote", label, id?, brainId? }  the action comes from a guest or a friend's model
+  strict: true   waits for the host whatever the approval mode; a guest cannot answer it (0.2.1)
+  script: { name, body }  for npm test and npm run: the package.json script that would run
 Playbook { id, title, request, prompt?, keywords: string[], tasks: [{ title, detail, assignee, dependsOn: number[] , kind }], createdAt, uses }
 Message  { role: "system" | "user" | "assistant", content: string }
 ```
@@ -190,7 +193,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `brain.probe` | `{}` | `{ hardware, options: BrainOption[], recommended }` |
 | `brain.select` | `BrainChoice` | `{ status }` |
 | `brain.download` | `{ model? }` start (or retry) the automatic model download; needed only after `--no-download` or a failure | `{}` |
-| `brain.attach` | `{ label, model?, ctx? }` this WebSocket becomes a remote brain (section 6) | `{ brainId }` |
+| `brain.attach` | `{ label, model?, ctx?, guest? }` this WebSocket becomes a remote brain (section 6); `guest` is the Code together guest id that lends it (only that guest's building may use it) | `{ brainId }` |
 | `brain.respond` | `{ requestId, ok, result?: ChatResult, error?: string }` | `{}` |
 | `brain.token` | `{ requestId, text }` optional streaming for a pending request | none (no reply) |
 | `brain.detach` | `{ brainId }` | `{}` |
@@ -322,7 +325,8 @@ scheduler.removeBrain(brainId)       // emits brain.detached; a running turn on 
 
 1. A client (the lend UI on the host) sends `brain.attach { label, model, ctx }` and gets `{ brainId }`.
 2. The engine adds a relay brain to the scheduler. When it gets a turn, the engine sends `brain.request` to that same WebSocket.
-3. The client carries the request to the friend (WebRTC), the friend's browser sends `brain.chat` to the friend's own hivedesk started with `--lend`, and the answer goes back the same way.
+3. The client carries the request to the friend (WebRTC), the friend's browser sends `lend.chat` (or the older `brain.chat`, which goes through the same guard) to the friend's own hivedesk started with `--lend`, and the answer goes back the same way. A `cancel` frame becomes `lend.cancel { requestId }` and aborts the turn there. The friend's engine runs lent turns only on its local models (cloud keys only when the friend allows it with `lend.grant { minutes, turns, models, cloud }`) and within a lease of minutes and turns.
+   Tool calls of a task whose turns a remote brain answered always wait for the host's approval (`origin.kind: "remote"`).
 4. The client answers with `brain.respond { requestId, ok, result }` (it may stream `brain.token` before). Timeout: 180 s, then the turn is re-queued on another brain.
 5. `brain.detach` or closing the WebSocket removes the brain.
 

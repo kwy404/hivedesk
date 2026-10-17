@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1 (security) (2026-10-17)
+
+A security update for Code together, Lend your PC, Hive City, `--demo` and extensions. Please update.
+
+* Guest roles are checked by the engine itself, not only by the host's browser. Every guest command carries the guest's role; a missing role counts as a viewer. A viewer can read and chat; a collaborator can also post tasks and jobs, edit files under the host's approval and bring a building into the city. Hiring agents, changing an agent's tools, rooms, settings, models and providers stay with the host.
+* A building in the city can use only a model its owner lends itself. The host's own models, cloud brains and other guests' models can no longer be tied to a guest's building.
+* A guest's agents join with read and check tools only. Only the host can grant more tools, and an agent from an older version that still holds write tools comes back with the safe set.
+* Work that does not come from the person at this PC always waits for the host's answer, even with approval mode off: writes and saves from a guest (new files included), and every write, run or package script of a task whose model turns ran on a friend's machine. The approval card says where the action comes from, `npm run` and `npm test` show the script they would run, turning approval mode off does not approve these, and a guest cannot answer them.
+* Lend your PC: Cancel now stops the model on the lender. Each pairing is a lease with a maximum duration and number of turns (60 minutes and 200 turns by default) that expires on its own. Lent turns run only on the lender's local models: never on a model the lender itself borrowed, and never on the lender's cloud keys unless the lender allows it for that pairing. A model allowlist can be set per pairing (`lend.grant`). The older `brain.chat` entry goes through the same checks, and very deep or very large remote schemas are refused.
+* `--demo` runs in a temporary folder with its own home, never in a real project: a non empty `--dir` is refused, `--demo-dir <folder>` picks a folder on purpose, and a folder that holds a real hivedesk log is always refused. A demo run in a folder no longer labels later real runs as Demo.
+* Extensions: each extension runs in its own sandbox process, and the engine knows which extension is calling from the process it started, not from what the process says.
+
 ## 0.2.0 (2026-10-17)
 
 Hive City: hivedesk becomes a small distributed system for AI agents on people's computers. The city is the new home view.

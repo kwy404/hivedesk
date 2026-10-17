@@ -30,10 +30,14 @@ describe('Code together roles', () => {
   });
 
   it('signs what guests say and marks their writes for approval', () => {
-    expect(checkCommand(viewer, 'chat.send', { channel: 'general', text: 'hi' }).data).toEqual({ channel: 'general', text: 'Ana: hi' });
+    const ana = { id: 'g1', name: 'Ana', role: 'viewer' };
+    const bo = { id: 'g2', name: 'Bo', role: 'collaborator' };
+    expect(checkCommand(viewer, 'chat.send', { channel: 'general', text: 'hi' }).data).toEqual({ channel: 'general', text: 'Ana: hi', as: ana });
     const w = checkCommand(collab, 'files.write', { path: 'index.html', content: '<p>', as: { id: 'host' } });
-    expect(w.data).toEqual({ path: 'index.html', content: '<p>', as: { id: 'g2', name: 'Bo' } });
-    expect(checkCommand(collab, 'approval.resolve', { approvalId: 'a_1', approved: 1 }).data).toEqual({ approvalId: 'a_1', approved: true, note: 'Bo' });
-    expect(checkCommand(collab, 'job.create', { request: 'a page', approval: false }).data).toEqual({ request: 'a page' });
+    expect(w.data).toEqual({ path: 'index.html', content: '<p>', as: bo });
+    expect(checkCommand(collab, 'approval.resolve', { approvalId: 'a_1', approved: 1 }).data).toEqual({ approvalId: 'a_1', approved: true, note: 'Bo', as: bo });
+    expect(checkCommand(collab, 'job.create', { request: 'a page', approval: false }).data).toEqual({ request: 'a page', as: bo });
+    // The role in `as` is the host's record, never what the guest claims.
+    expect(checkCommand(viewer, 'city.state', { as: { id: 'h', role: 'host' } }).data.as).toEqual(ana);
   });
 });

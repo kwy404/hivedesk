@@ -11,7 +11,7 @@ Clients must ignore fields, event types and live types they do not know.
 * `hello.state.city` and `GET /api/state` (field `city`) carry the whole `CityState` (section 3). `hello.city` is `1` when the engine has a city.
 * The pure reducer is served at `GET /lib/city.js` (the file `src/city/state.js`, no Node imports). `reduceCity(city, event)` applies one event and returns the same object; `initialCity()` gives an empty city. It also reads two crew events, `worker.status` (the agent status: queued is `waiting_model`, thinking is `thinking`, a tool is `working`, an approval is `waiting`) and `turn.started` (which machine's brain the agent thinks on), so feed it every event, not only `city.*`.
 * A host started with `startHive({ city: false })` has no city: no `hello.city`, no `state.city` changes, and `city.*` commands answer `unknown command`.
-* A friend's machine never writes the log. Its browser sends commands to the host through the Code together data channel (`cmd` frames), and the host's browser forwards them to the host engine with `as: { id, name }` added (`ui/lend/collab/roles.js`). The host engine relays every event back to every guest (the existing `engine` frames), so all screens reduce the same events in the same order.
+* A friend's machine never writes the log. Its browser sends commands to the host through the Code together data channel (`cmd` frames), and the host's browser forwards them to the host engine with `as: { id, name, role }` added (`ui/lend/collab/roles.js`); the engine checks the role again (`src/collab/policy.js`). The host engine relays every event back to every guest (the existing `engine` frames), so all screens reduce the same events in the same order.
 
 ## 2. Conflict rules
 
@@ -163,7 +163,7 @@ Every city event is a normal Event (`seq`, `ts`, `type`, `data`, `demo?`).
 
 ## 6. Commands (`kind: "command"`)
 
-All take an optional `as: { id, name }` (added by the host's browser for a guest; never sent by a guest itself).
+All take an optional `as: { id, name, role }` (added by the host's browser for a guest; never sent by a guest itself). A missing role counts as `viewer`. A viewer may only use `city.state`, `city.sync` and `city.presence`; a collaborator may also join with a building, use borrows and the task board.
 
 | type | data | result |
 | --- | --- | --- |
@@ -221,7 +221,9 @@ Error codes: the PROTOCOL.md ones plus `forbidden` (a conflict rule or a guest r
 
 ## 8. Safety
 
-* Guests never get a shell: a task created by a guest runs with approval mode on (every change of an existing file waits for the host) and without the `run` and `delete_file` tools, whatever room it is in. Guests cannot send tasks to `hostOnly` rooms (Ops).
+* Guests never get a shell: a task created by a guest runs with approval mode on and without the `run` and `delete_file` tools, whatever room it is in. Every write of a guest's task, of a guest's agent and of a turn that a friend's machine answered waits for the host, new files included, even with approval mode off; only the host can answer those approvals. Guests cannot send tasks to `hostOnly` rooms (Ops).
+* A guest's agent comes with `list_files`, `read_file`, `check` and `preview` only; only the host changes an agent's tools (`city.agent.update` with `tools`), and `city.agent.hire` is host only.
+* A building uses only a brain its owner lent itself: `brainId` in `city.machine.join` and `city.machine.update` must be a remote brain attached for that guest (`brain.attach` with `guest`), never the host's own models or another guest's brain.
 * Remote work runs under the host's approval rules, on the host's files. A friend's agent thinks on its own machine (its `brainId`) but its tools run on the host, with the host's approvals.
 * Borrowed GPU turns carry prompts only. The host engine logs counts, never prompt text.
 * Guest commands: 40 per 10 seconds per guest (`rate_limited`), text sizes capped (title 200, detail 4000, memory text 300, names 40).

@@ -72,13 +72,15 @@ export function rig({ respond = scripted(), dir = tmpDir('hivedesk-city-'), home
   return { dir, home, bus, scheduler, approvals, ws, toolbox, hive, city, run, commands, types, of, brain: local, get s() { return bus.state.city; } };
 }
 
-export function friendBrain(id = 'b_friend', respond = scripted()) {
+/** A friend's brain, lent by owner (brain.attach with that guest's id). */
+export function friendBrain(id = 'b_friend', respond = scripted(), owner = 'peer:g1') {
   const b = createFakeBrain({ id, label: 'Friend', respond });
   b.kind = 'remote';
+  b.owner = owner;
   return b;
 }
 
-export const RITA = { id: 'g1', name: 'Rita' };
+export const RITA = { id: 'g1', name: 'Rita', role: 'collaborator' };
 export const joinRita = (r, extra = {}) => r.run('city.machine.join', {
   as: RITA,
   machine: { id: 'm_rita0001', name: "Rita's PC", gpu: { name: 'RTX 3060', vramBytes: 12e9 }, model: 'Qwen 7B' },

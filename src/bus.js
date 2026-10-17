@@ -24,7 +24,8 @@ export class EventBus {
     this.state = replay(this.events, Infinity, this.meta);
     // Hive City (src/city/): the same log, its own pure reducer (CITY-PROTOCOL.md).
     this.state.city = replayCity(this.events);
-    this.state.demo = this.demo || this.state.demo;
+    // This run decides the Demo label, not an old demo run in the same log.
+    this.state.demo = this.demo;
     this.state.lend = this.meta.lend;
     if (opts.version) this.state.version = opts.version;
     this._snapTimer = null;
@@ -132,6 +133,19 @@ export function initHome(dir) {
   };
   for (const p of [root, paths.playbooks, paths.workspace]) fs.mkdirSync(p, { recursive: true });
   return paths;
+}
+
+/** True when this folder holds a hivedesk log written by a real (not demo) run. */
+export function hasRealLog(dir) {
+  let text;
+  try { text = fs.readFileSync(path.join(dir, '.hivedesk', 'events.jsonl'), 'utf8'); } catch { return false; }
+  // emit() writes seq, ts, type, jobId and demo before data, so the label sits before "data":.
+  for (const line of text.split('\n')) {
+    if (!line.trim()) continue;
+    const at = line.indexOf('"data":');
+    if (!(at === -1 ? line : line.slice(0, at)).includes('"demo":true')) return true;
+  }
+  return false;
 }
 
 export { initialState };

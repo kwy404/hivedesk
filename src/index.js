@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { EventBus, initHome } from './bus.js';
+import { EventBus, initHome, hasRealLog } from './bus.js';
 import { Scheduler } from './crew/scheduler.js';
 import { Hive } from './crew/engine.js';
 import { ToolBox, Workspace } from './tools/index.js';
@@ -36,6 +36,8 @@ export function cacheHome() {
  */
 export async function startHive(opts) {
   const dir = path.resolve(opts.dir);
+  // A demo never writes into the log of a real project (CHANGELOG 0.2.1).
+  if (opts.demo && hasRealLog(dir)) throw Object.assign(new Error(`the demo will not run in ${dir}: it holds a real hivedesk project`), { code: 'demo_dir' });
   const paths = initHome(dir);
   const home = opts.home || cacheHome();
   const log = opts.log || (() => {});

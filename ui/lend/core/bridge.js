@@ -15,11 +15,13 @@ import { FrameError, LEND_PROTOCOL, LIMITS, promptChars, readResult } from './fr
 import { RateLimiter, DEFAULT_RATE } from './ratelimit.js';
 
 export class HostBridge extends Emitter {
-  constructor({ hive, peer, label = 'host' }) {
+  /** guestId: the Code together guest who lends (its building in the city may then use this brain). */
+  constructor({ hive, peer, label = 'host', guestId = null }) {
     super();
     this.hive = hive;
     this.peer = peer;
     this.label = label;
+    this.guestId = guestId;
     this.brainId = null;
     this.pending = new Map(); // requestId -> { at, chars }
     this.offs = [];
@@ -41,7 +43,7 @@ export class HostBridge extends Emitter {
     this.attaching = true;
     const hello = this.peer.remoteHello || {};
     try {
-      const res = await this.hive.command('brain.attach', { label: `${hello.label || 'friend'} (lent PC)`, model: hello.model, ctx: hello.ctx });
+      const res = await this.hive.command('brain.attach', { label: `${hello.label || 'friend'} (lent PC)`, model: hello.model, ctx: hello.ctx, ...(this.guestId ? { guest: this.guestId } : {}) });
       this.brainId = res.brainId;
       this.offs.push(this.hive.on('brain.request', (m) => m.brainId === this.brainId && this._request(m)));
       this.offs.push(this.hive.on('brain.cancel', (m) => m.brainId === this.brainId && this._cancel(m.requestId)));
@@ -153,7 +155,10 @@ export class LenderBridge extends Emitter {
 
   async _frame(f) {
     if (f.t === 'cancel') {
-      if (this.busy?.id === f.id) this.busy.cancelled = true;
+      if (this.busy?.id === f.id) {
+        this.busy.cancelled = true;
+        this._abort(f.id);
+      }
       return;
     }
     if (f.t !== 'req') return;
@@ -169,7 +174,7 @@ export class LenderBridge extends Emitter {
     const entry = this._entry({ id: f.id, status: 'running', ...base, preview: f.messages[f.messages.length - 1].content.slice(0, 160) });
     const started = this.now();
     try {
-      const raw = await this.hive.command(this.chatCommand, { messages: f.messages, options: f.options });
+      const raw = await this.hive.command(this.chatCommand, { messages: f.messages, options: f.options, requestId: f.id });
       const result = readResult(raw, this.limits);
       if (job.cancelled || !this.lending) {
         this._entry({ id: f.id, status: 'cancelled', ...base });
@@ -192,10 +197,18 @@ export class LenderBridge extends Emitter {
     }
   }
 
+  /** Stops the model on this PC for a cancelled request (the engine aborts the running turn). */
+  _abort(id) {
+    this.hive.command('lend.cancel', { requestId: id }).catch(() => {});
+  }
+
   /** The friend stops lending: refuses anything new, tells the host and closes the link. */
   stop(reason = 'The friend stopped lending') {
     if (!this.lending) return;
-    if (this.busy) this.busy.cancelled = true;
+    if (this.busy) {
+      this.busy.cancelled = true;
+      this._abort(this.busy.id);
+    }
     this.peer.stop(reason);
     this._stopped(reason);
   }

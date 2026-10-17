@@ -8,12 +8,14 @@ function setup({ chat, rate, confirm = true } = {}) {
   const hostPeer = new LendPeer(hostLink);
   const friendPeer = new LendPeer(friendLink);
   const brainChat = [];
+  const cancels = [];
   const friendHive = new FakeHive({
     'lend.chat': async (data) => {
       brainChat.push(data);
       return chat ? chat(data) : { text: `echo: ${data.messages.at(-1).content}`, promptTokens: 5, completionTokens: 3, ms: 12, model: 'fake' };
     },
     'lend.log': () => ({}),
+    'lend.cancel': (data) => { cancels.push(data.requestId); return { cancelled: true }; },
   });
   const hostHive = new FakeHive({
     'brain.attach': () => ({ brainId: 'b_remote_1' }),
@@ -26,7 +28,7 @@ function setup({ chat, rate, confirm = true } = {}) {
     hostPeer.confirmLocal();
     friendPeer.confirmLocal();
   }
-  return { hostPeer, friendPeer, hostHive, friendHive, lender, host, brainChat };
+  return { hostPeer, friendPeer, hostHive, friendHive, lender, host, brainChat, cancels };
 }
 
 const request = (hive, requestId, content = 'hello', options = {}) => hive.emit('brain.request', { kind: 'brain.request', brainId: 'b_remote_1', requestId, messages: [{ role: 'user', content }], options });
@@ -39,7 +41,7 @@ describe('lend bridges', () => {
     request(s.hostHive, 'r_1', 'write a haiku', { maxTokens: 50, signal: 'x' });
     const res = await until(() => s.hostHive.callsOf('brain.respond')[0]);
     expect(res).toEqual({ requestId: 'r_1', ok: true, result: { text: 'echo: write a haiku', promptTokens: 5, completionTokens: 3, ms: 12, model: 'fake' } });
-    expect(s.brainChat[0]).toEqual({ messages: [{ role: 'user', content: 'write a haiku' }], options: { maxTokens: 50 } });
+    expect(s.brainChat[0]).toEqual({ messages: [{ role: 'user', content: 'write a haiku' }], options: { maxTokens: 50 }, requestId: 'r_1' });
     const done = s.lender.log.find((e) => e.status === 'done');
     expect(done).toMatchObject({ id: 'r_1', messages: 1, chars: 13, completionTokens: 3 });
   });
@@ -125,5 +127,8 @@ describe('lend bridges', () => {
     expect(s.hostHive.notes[0]).toEqual({ type: 'brain.token', data: { requestId: 'r_1', text: 'par' } });
     s.hostHive.emit('brain.cancel', { brainId: 'b_remote_1', requestId: 'r_1' });
     await until(() => s.lender.busy?.cancelled);
+    // The cancel reaches the friend's engine, which aborts the running turn (not only a flag).
+    await until(() => s.cancels.length);
+    expect(s.cancels).toEqual(['r_1']);
   });
 });

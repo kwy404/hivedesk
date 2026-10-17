@@ -13,7 +13,7 @@ export class Approvals {
   }
 
   /**
-   * @param {{ jobId?: string, taskId?: string, workerId?: string, tool: string, args: any, summary: string, diff?: string }} req
+   * @param {{ jobId?: string, taskId?: string, workerId?: string, tool: string, args: any, summary: string, diff?: string, origin?: any, strict?: boolean }} req
    * @param {AbortSignal} [signal]
    * @returns {Promise<{ approved: boolean, note?: string, by: string }>}
    */
@@ -25,6 +25,7 @@ export class Approvals {
       this.pending.set(id, { resolve, approval });
       this.bus.emit('approval.requested', { approval }, { jobId: req.jobId });
       if (req.workerId) this.bus.emit('worker.status', { workerId: req.workerId, status: 'waiting_approval', detail: approval.summary, taskId: req.taskId }, { jobId: req.jobId });
+      // Demo mode answers by itself; a strict approval outside the demo never does.
       if (this.autoApproveMs) {
         const t = setTimeout(() => this.resolve(id, true, 'approved automatically in the demo', 'auto'), this.autoApproveMs);
         t.unref?.();
@@ -43,6 +44,11 @@ export class Approvals {
     });
   }
 
+  /** The pending approval with this id, or null. */
+  get(approvalId) {
+    return this.pending.get(approvalId)?.approval || null;
+  }
+
   /** @returns {boolean} false when the id is unknown */
   resolve(approvalId, approved, note, by = 'user') {
     const p = this.pending.get(approvalId);
@@ -55,8 +61,11 @@ export class Approvals {
     return true;
   }
 
-  /** Approves everything that is pending (used when approval mode is switched off). */
+  /**
+   * Approves everything that is pending (used when approval mode is switched off), except strict
+   * approvals: actions from a guest or a friend's model always wait for the host's own answer.
+   */
   approveAll(by = 'auto') {
-    for (const id of [...this.pending.keys()]) this.resolve(id, true, 'approval mode turned off', by);
+    for (const [id, p] of [...this.pending]) if (!p.approval.strict) this.resolve(id, true, 'approval mode turned off', by);
   }
 }

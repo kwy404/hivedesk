@@ -161,6 +161,9 @@ export async function runTask(ctx) {
 
   /** Files this worker read or created in this task: changing any other existing file needs a read first. */
   const known = new Set();
+  // Untrusted origin: a worker brought by a guest, or any turn of this task that a friend's machine
+  // answered. Its writes and runs then always wait for the host (src/tools/index.js, STRICT_TOOLS).
+  let origin = worker.origin && typeof worker.origin === 'object' ? worker.origin : null;
   let hint = '';
   let nothingAsked = false;
   for (let n = 1; n <= maxTurns; n++) {
@@ -211,6 +214,7 @@ export async function runTask(ctx) {
       continue;
     }
     invalid = 0;
+    if (result?.remote && (!origin || origin.kind !== 'remote')) origin = { kind: 'remote', brainId: result.remote.brainId, label: result.remote.label };
     const action = result.json;
     const key = JSON.stringify(compactAction(action));
     repeats = key === lastKey ? repeats + 1 : 0;
@@ -271,7 +275,7 @@ export async function runTask(ctx) {
     bus.emit('worker.status', { workerId: worker.id, status: 'tool', detail: `${action.tool}${action.args?.path ? ' ' + action.args.path : ''}`, taskId: task.id }, jobOpt);
     const out = await toolbox.execute(action.tool, action.args, {
       jobId: job.id, taskId: task.id, workerId: worker.id, allowed: worker.tools,
-      preexisting: ctx.preexisting, approval: job.approval, signal
+      preexisting: ctx.preexisting, approval: job.approval, signal, ...(origin ? { origin } : {})
     });
     if (out.ok && (action.tool === 'write_file' || action.tool === 'edit_file')) wrote.add(String(action.args.path).replace(/^\.\//, ''));
     if (out.ok && target && ['read_file', 'write_file', 'edit_file'].includes(action.tool)) known.add(target);

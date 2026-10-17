@@ -48,11 +48,14 @@ export function wireCollab(getCity) {
   if (!collab || collab._cityWired) return false;
   collab._cityWired = true;
   let was = collab.mode;
+  // Only a collaborator brings a building (the host engine refuses a viewer); a promotion joins then.
+  const join = () => joinAsGuest().catch((err) => { if (err.code !== 'forbidden') console.warn('[hivedesk] could not join the city', err.message); });
   collab.on('change', (mode) => {
-    if (mode === 'guest' && was !== 'guest') joinAsGuest().catch((err) => console.warn('[hivedesk] could not join the city', err.message));
+    if (mode === 'guest' && was !== 'guest' && collab.guest?.role !== 'viewer') join();
     if (mode !== 'guest') mine = null;
     was = mode;
   });
+  collab.on('role', () => { if (collab.mode === 'guest' && !mine && collab.guest?.role === 'collaborator') join(); });
   // host: a guest left, its building goes dark
   collab.on('left', (g) => {
     const city = getCity();

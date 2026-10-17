@@ -272,7 +272,7 @@ class Collab extends Emitter {
       };
       peer.receive(raw);
       if (peer.remoteHello?.role !== 'lender') return;
-      const bridge = new HostBridge({ hive, peer, label: this.profile.name || 'host' });
+      const bridge = new HostBridge({ hive, peer, label: this.profile.name || 'host', guestId: g.id });
       l = { peer, bridge };
       this.lends.set(g.id, l);
       bridge.on('attached', () => this.emit('people'));

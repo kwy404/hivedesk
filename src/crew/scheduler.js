@@ -132,6 +132,8 @@ export class Scheduler {
   /** Can this brain take this turn? A brain with `only` serves just those workers; a preference wins. */
   _eligible(item, brainId, brain) {
     if (brain?.only && !brain.only.has(item.workerId)) return false;
+    // A turn may limit the brains it runs on (a lent turn: this machine's own local models only).
+    if (typeof item.accept === 'function' && !item.accept(brain, brainId)) return false;
     const pref = this.prefs.get(item.workerId);
     if (pref && pref !== brainId && this.brains.has(pref)) return false;
     return true;
@@ -171,6 +173,8 @@ export class Scheduler {
       this.bus.live('brain.stats', { brainId, tps, queue: this.waiting.length, loaded: true });
       const rec = this.prompts.get(item.turnId);
       if (rec) rec.response = String(result.text || '').slice(0, 20000);
+      // A turn a friend's machine answered is marked, so its tool calls wait for the host.
+      if (slot.brain.kind === 'remote' && result && typeof result === 'object') result.remote = { brainId, label: String(slot.brain.label || 'friend').slice(0, 80) };
       item.resolve(result);
     } catch (err) {
       const cancelled = item.signal?.aborted;

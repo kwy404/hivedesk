@@ -27,9 +27,9 @@ describe('editor saves through the engine tools', () => {
   it('a guest overwriting a file waits for the host approval', async () => {
     const e = engine();
     writeFileSync(join(e.dir, 'index.html'), 'old');
-    const saving = writeFile(e.toolbox, { path: 'index.html', content: 'new', as: { id: 'g1', name: 'Ana' } });
+    const saving = writeFile(e.toolbox, { path: 'index.html', content: 'new', as: { id: 'g1', name: 'Ana', role: 'collaborator' } });
     const req = await until(() => e.events.find((x) => x.type === 'approval.requested'));
-    expect(req.data.approval).toMatchObject({ workerId: 'guest:Ana', tool: 'write_file' });
+    expect(req.data.approval).toMatchObject({ workerId: 'guest:Ana', tool: 'write_file', strict: true, origin: { kind: 'guest', id: 'g1', label: 'Ana' } });
     expect(readFileSync(join(e.dir, 'index.html'), 'utf8')).toBe('old');
     e.approvals.resolve(req.data.approval.id, true);
     await saving;
@@ -39,7 +39,7 @@ describe('editor saves through the engine tools', () => {
   it('a rejected guest save changes nothing', async () => {
     const e = engine();
     writeFileSync(join(e.dir, 'a.js'), 'keep');
-    const saving = writeFile(e.toolbox, { path: 'a.js', content: 'x', as: { id: 'g1', name: 'Ana' } });
+    const saving = writeFile(e.toolbox, { path: 'a.js', content: 'x', as: { id: 'g1', name: 'Ana', role: 'collaborator' } });
     const req = await until(() => e.events.find((x) => x.type === 'approval.requested'));
     e.approvals.resolve(req.data.approval.id, false, 'no');
     await expect(saving).rejects.toMatchObject({ code: 'rejected' });

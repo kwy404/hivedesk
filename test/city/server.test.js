@@ -79,14 +79,14 @@ describe('the --demo city scenario', () => {
 });
 
 describe('Code together roles for the city', () => {
-  it('lets every guest see the city and bring a building, and collaborators use the task board', () => {
-    for (const t of ['city.sync', 'city.presence', 'city.machine.join', 'city.borrow.answer']) expect(canCommand('viewer', t)).toBe(true);
-    for (const t of ['city.task.create', 'city.task.approve', 'city.agent.move']) {
+  it('lets every guest see the city, and collaborators bring a building and use the task board', () => {
+    for (const t of ['city.state', 'city.sync', 'city.presence']) expect(canCommand('viewer', t)).toBe(true);
+    for (const t of ['city.machine.join', 'city.machine.update', 'city.agent.update', 'city.borrow.answer', 'city.task.create', 'city.task.approve', 'city.agent.move']) {
       expect(canCommand('viewer', t)).toBe(false);
       expect(canCommand('collaborator', t)).toBe(true);
     }
     for (const t of ['city.agent.hire', 'city.room.add', 'city.agents.local', 'city.agents.save']) expect(canCommand('collaborator', t)).toBe(false);
     const out = checkCommand({ id: 'g2', name: 'Kim', role: 'collaborator' }, 'city.task.create', { title: 'x', as: { id: 'h', name: 'Host' } });
-    expect(out.data).toEqual({ title: 'x', as: { id: 'g2', name: 'Kim' } });
+    expect(out.data).toEqual({ title: 'x', as: { id: 'g2', name: 'Kim', role: 'collaborator' } });
   });
 });

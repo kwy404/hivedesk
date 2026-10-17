@@ -174,11 +174,13 @@ describe('demo and lend modes', () => {
     await app.close();
   });
 
-  it('lend mode serves brain.chat through the scheduler', async () => {
+  it('lend mode serves brain.chat through the scheduler and the lend guard', async () => {
     const app = await startHive({ dir: tmpDir(), lend: true, brain: createFakeBrain({ respond: () => 'pong' }), home: tmpDir() });
-    const r = await app.server.runCommand('brain.chat', { messages: [{ role: 'user', content: 'ping' }, { role: 'evil', content: 'x' }], options: { maxTokens: 99999 } }, null);
+    const r = await app.server.runCommand('brain.chat', { messages: [{ role: 'user', content: 'ping' }], options: { maxTokens: 99999 } }, null);
     expect(r.text).toBe('pong');
-    expect(app.bus.events.find((e) => e.type === 'brain.served').data.promptChars).toBe(4);
+    expect(app.bus.events.find((e) => e.type === 'lend.served').data.chars).toBe(4);
+    // The guard checks brain.chat too: a malformed message is refused, not filtered.
+    await expect(app.server.runCommand('brain.chat', { messages: [{ role: 'evil', content: 'x' }] }, null)).rejects.toMatchObject({ code: 'bad_frame' });
     await app.close();
   });
 });

@@ -211,9 +211,10 @@ describe('machines and GPU borrowing', () => {
     expect(turn).toBeTruthy();
     expect(r.of('turn.ended').at(-1).data.brainId).toBe('local');
     // Owners win: nobody else can claim that machine, nobody can claim the host's.
-    await expect(r.run('city.machine.join', { as: { id: 'g2', name: 'Eve' }, machine: { id: 'm_rita0001', name: 'Fake' } })).rejects.toMatchObject({ code: 'forbidden' });
-    await expect(r.run('city.machine.join', { as: { id: 'g2', name: 'Eve' }, machine: { id: r.city.machineId } })).rejects.toMatchObject({ code: 'forbidden' });
-    await expect(r.run('city.machine.update', { as: { id: 'g2', name: 'Eve' }, machineId: 'm_rita0001', name: 'Mine' })).rejects.toMatchObject({ code: 'forbidden' });
+    const EVE = { id: 'g2', name: 'Eve', role: 'collaborator' };
+    await expect(r.run('city.machine.join', { as: EVE, machine: { id: 'm_rita0001', name: 'Fake' } })).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(r.run('city.machine.join', { as: EVE, machine: { id: r.city.machineId } })).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(r.run('city.machine.update', { as: EVE, machineId: 'm_rita0001', name: 'Mine' })).rejects.toMatchObject({ code: 'forbidden' });
     await r.run('city.machine.update', { as: RITA, machineId: 'm_rita0001', name: 'Rita laptop' });
     expect(r.s.machines.m_rita0001.name).toBe('Rita laptop');
     await r.run('city.machine.leave', { as: RITA, machineId: 'm_rita0001' });
@@ -223,7 +224,7 @@ describe('machines and GPU borrowing', () => {
     await joinRita(r);
     expect(r.s.agents['m_rita0001:pip']).toMatchObject({ status: 'idle', workerId: pip.workerId });
     // The host takes a building out when that guest's peer closes; another guest cannot.
-    await expect(r.run('city.machine.leave', { as: { id: 'g2', name: 'Eve' }, machineId: 'm_rita0001' })).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(r.run('city.machine.leave', { as: { id: 'g2', name: 'Eve', role: 'collaborator' }, machineId: 'm_rita0001' })).rejects.toMatchObject({ code: 'forbidden' });
     await r.run('city.machine.leave', { machineId: 'm_rita0001', reason: 'peer closed' });
     expect(r.s.machines.m_rita0001.online).toBe(false);
     expect(r.scheduler.paused.has(pip.workerId)).toBe(true);
@@ -304,9 +305,15 @@ describe('safety rules for guests', () => {
   it('runs a guest task with approval mode on and without a shell, whatever its room', async () => {
     const respond = scripted({ scripts: HELLO });
     const r = rig({ respond });
-    const { task } = await r.run('city.task.create', { as: { id: 'g3', name: 'Kim' }, title: 'Make a hello page', room: 'code' });
+    // Approval mode is off here, but a guest's writes still wait for the host, new files included.
+    const asked = [];
+    r.bus.on((e) => { if (e.type === 'approval.requested') { asked.push(e.data.approval); queueMicrotask(() => r.approvals.resolve(e.data.approval.id, true, '', 'user')); } });
+    const KIM = { id: 'g3', name: 'Kim', role: 'collaborator' };
+    const { task } = await r.run('city.task.create', { as: KIM, title: 'Make a hello page', room: 'code' });
     expect(task).toMatchObject({ guest: true, createdBy: { kind: 'guest', id: 'g3', name: 'Kim' } });
     await done(r, task.id);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked[0]).toMatchObject({ tool: 'write_file', strict: true, origin: { kind: 'guest', id: 'g3', label: 'Kim' } });
     const job = r.bus.state.jobs.find((j) => j.cityTaskId === task.id);
     expect(job.approval).toBe(true);
     const work = respond.seen.find((x) => userTask(x.messages) === 'Make a hello page');
@@ -315,8 +322,8 @@ describe('safety rules for guests', () => {
     expect(tools).not.toContain('run');
     expect(tools).not.toContain('delete_file');
     // The guest can approve or cancel its own task.
-    const own = (await r.run('city.task.create', { as: { id: 'g3', name: 'Kim' }, title: 'Again', room: 'review' })).task;
-    await r.run('city.task.cancel', { as: { id: 'g3', name: 'Kim' }, taskId: own.id });
+    const own = (await r.run('city.task.create', { as: KIM, title: 'Again', room: 'review' })).task;
+    await r.run('city.task.cancel', { as: KIM, taskId: own.id });
     expect(r.s.tasks[own.id].status).toBe('cancelled');
     await r.city.close();
   });

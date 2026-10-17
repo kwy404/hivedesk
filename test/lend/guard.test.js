@@ -31,7 +31,8 @@ describe('lend server guard', () => {
     register(e.ctx);
     const result = await e.commands.get('lend.chat')(msg('secret prompt'));
     expect(result).toEqual({ text: 'ok', promptTokens: 2, completionTokens: 1, ms: 5 });
-    expect(e.seen[0].options).toEqual({ maxTokens: 20 });
+    expect(e.seen[0].options).toMatchObject({ maxTokens: 20 });
+    expect(e.seen[0].options.tools).toBeUndefined();
     expect(e.events).toEqual([{ type: 'lend.served', data: { messages: 1, chars: 13, completionTokens: 1, ms: 5 } }]);
     expect(JSON.stringify(e.events)).not.toContain('secret');
   });

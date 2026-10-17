@@ -55,7 +55,8 @@ export function reduce(state, event) {
   switch (event.type) {
     case 'session.started':
       state.version = d.version || state.version;
-      state.demo = state.demo || !!d.demo;
+      // Each run says whether it is a demo; an older demo run in the same log does not stick.
+      state.demo = !!d.demo;
       state.lend = !!d.lend;
       break;
     case 'settings.changed': {

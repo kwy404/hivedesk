@@ -41,6 +41,7 @@ export async function runCityDemo({ city, scheduler, bus, stepMs = 1800, signal 
   // 1. A friend joins: her brain is attached first (as the lend relay would), then her building.
   const brain = createDemoBrain({ id: DEMO_FRIEND.brainId, label: "Rita's PC (demo)", delayMs: stepMs ? 300 : 0, tokenDelayMs: stepMs ? 15 : 0 });
   brain.kind = 'remote';
+  brain.owner = DEMO_FRIEND.owner; // lent by Rita, so her building may use it
   brain.only = new Set();
   scheduler.addBrain(brain);
   step('friend', 'Rita joined with the six words. Her building rises across the bridge, and she brings Pip, a reviewer.');

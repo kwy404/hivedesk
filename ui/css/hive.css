@@ -724,6 +724,8 @@ dialog.dlg::backdrop { background: rgb(8 7 6 / .6); backdrop-filter: blur(4px); 
 .appr-t { font-size: 13px; font-weight: 600; }
 .appr .udiff { max-height: 220px; overflow: auto; background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .appr-a { display: flex; gap: 8px; padding: 10px 12px; justify-content: flex-end; }
+.appr-origin { margin: 0 12px 10px; padding: 7px 10px; border-radius: 8px; border: 1px solid rgb(226 109 90 / .45); background: rgb(226 109 90 / .1); }
+.appr-script { margin: 0 12px 10px; padding: 7px 10px; border-radius: 8px; background: var(--bg-2); white-space: pre-wrap; word-break: break-word; max-height: 140px; overflow: auto; }
 
 /* ---------- ntoasts ---------- */
 .ntoasts { position: fixed; right: 16px; bottom: calc(var(--dock-h) + 10px); z-index: 9700; display: flex; flex-direction: column; gap: 8px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }

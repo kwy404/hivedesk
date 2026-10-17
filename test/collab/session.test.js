@@ -81,7 +81,7 @@ describe('Code together session', () => {
     await expect(guest.command('job.create', { request: 'a page' })).rejects.toMatchObject({ code: 'forbidden' });
     await expect(guest.command('settings.set', { approvalMode: false })).rejects.toMatchObject({ code: 'forbidden' });
     await guest.command('chat.send', { channel: 'general', text: 'hello' });
-    expect(engine.calls.filter((c) => c.type !== 'files.read')).toEqual([{ type: 'chat.send', data: { channel: 'general', text: 'Ana: hello' } }]);
+    expect(engine.calls.filter((c) => c.type !== 'files.read')).toEqual([{ type: 'chat.send', data: { channel: 'general', text: 'Ana: hello', as: { id: 'g1', name: 'Ana', role: 'viewer' } } }]);
   });
 
   it('a collaborator can ask the crew after the host promotes them', async () => {
@@ -112,7 +112,7 @@ describe('Code together session', () => {
     expect(hh.text()).toBe('<!-- Bo --><h1>Ana Hi</h1>\n<p>host</p>\n');
     await hb.save();
     expect(engine.files.get('index.html')).toBe(hh.text());
-    expect(engine.calls.find((c) => c.type === 'files.write').data.as).toEqual({ id: b.record.id, name: 'Bo' });
+    expect(engine.calls.find((c) => c.type === 'files.write').data.as).toEqual({ id: b.record.id, name: 'Bo', role: 'collaborator' });
   });
 
   it('drops edits from a viewer', async () => {

@@ -1,6 +1,9 @@
 // Lend your PC, server side (PROTOCOL.md section 6, "Server side plug-in").
 // The engine calls register() at start. On a hivedesk started with --lend it adds:
 //   lend.chat    the guarded way for the friend's browser to run one turn on the local brain
+//   lend.cancel  aborts the running lent turn (the host cancelled it)
+//   lend.grant   what one pairing lends: { minutes, turns, models, cloud } (guard.js)
+//   brain.chat   the engine's older entry, routed through the same guard
 //   lend.log     the friend's browser records what it did with a request (counts only)
 //   lend.stop    stop lending: every later lend.chat is refused
 //   lend.resume  lend again after a stop (a new pairing in the same run)
@@ -12,32 +15,46 @@
 // On the host nothing is needed here: the remote brain rides the engine's brain.attach,
 // brain.request and brain.respond frames.
 
-import { createLendGuard } from './guard.js';
+import { createLendGuard, lendable } from './guard.js';
 import registerCollab from '../collab/index.js';
 
 const LOG_STATUSES = new Set(['running', 'done', 'refused', 'failed', 'cancelled', 'stopped']);
 const num = (v) => (Number.isFinite(v) && v >= 0 ? Math.round(v) : undefined);
 
-/** Picks the local brain's chat function from whatever the engine hands the plug-in. */
+/**
+ * Picks the local brain's chat function from whatever the engine hands the plug-in.
+ * The chat takes (messages, options, { signal, accept }): signal aborts the turn, accept(brain)
+ * says which brains may run it (guard.js: local models of this PC, the allowlist, cloud only when granted).
+ */
 export function findLocalChat(ctx) {
   const candidates = [ctx.chatLocal, ctx.brain, ctx.localBrain, ctx.scheduler?.localBrain, ctx.scheduler?.local];
   for (const c of candidates) {
     if (typeof c === 'function') return c;
-    if (c && typeof c.chat === 'function') return (messages, options) => c.chat(messages, options);
+    if (c && typeof c.chat === 'function') {
+      const chat = (messages, options, run = {}) => c.chat(messages, run.signal ? { ...options, signal: run.signal } : options);
+      chat.brains = () => [c];
+      return chat;
+    }
   }
-  // The engine's own scheduler: a lent turn waits in the same fair queue as the friend's crew.
+  // The engine's own scheduler: a lent turn waits in the same fair queue as the friend's crew,
+  // and runs only on a brain the grant accepts.
   if (typeof ctx.scheduler?.turn === 'function') {
-    return (messages, options) => ctx.scheduler.turn({ workerId: 'lend:friend', messages, options });
+    const chat = (messages, options, run = {}) => ctx.scheduler.turn({ workerId: 'lend:friend', messages, options, signal: run.signal, accept: run.accept });
+    if (ctx.scheduler.brains instanceof Map) chat.brains = () => [...ctx.scheduler.brains.values()].map((slot) => slot.brain);
+    return chat;
   }
   if (typeof ctx.scheduler?.getLocalBrain === 'function') {
-    return async (messages, options) => {
+    return async (messages, options, run = {}) => {
       const brain = await ctx.scheduler.getLocalBrain();
       if (!brain) throw Object.assign(new Error('No local model is ready'), { code: 'busy' });
-      return brain.chat(messages, options);
+      if (run.accept && !run.accept(brain)) throw Object.assign(new Error('No local model on this PC is allowed for lending'), { code: 'no_model' });
+      return brain.chat(messages, run.signal ? { ...options, signal: run.signal } : options);
     };
   }
   return null;
 }
+
+export { lendable };
 
 /** Keeps only counts and short codes from a browser log entry. Prompt text never reaches the log. */
 export function cleanLogEntry(e) {
@@ -56,7 +73,7 @@ export default function register(ctx) {
   const { bus, server, config = {} } = ctx;
   const emit = (type, data) => bus?.emit?.(type, data);
   const chat = findLocalChat(ctx);
-  const guard = createLendGuard({ chat, emit });
+  const guard = createLendGuard({ chat, emit, grant: config.lendGrant });
   // guarded: lend.chat can reach the local brain. When false the browser uses the engine's brain.chat.
   let lending = !!config.lend;
   const status = () => ({ lend: lending, guarded: !!chat, ...guard.status() });
@@ -74,6 +91,19 @@ export default function register(ctx) {
   server?.command?.('lend.chat', (data) => {
     onlyLend();
     return guard.handle(data);
+  });
+  // The older entry the Lend screen used when it was not guarded: the same checks now.
+  server?.command?.('brain.chat', (data) => {
+    onlyLend();
+    return guard.handle(data);
+  });
+  server?.command?.('lend.cancel', (data) => {
+    onlyLend();
+    return { cancelled: guard.cancel(typeof data?.requestId === 'string' ? data.requestId.slice(0, 64) : null) };
+  });
+  server?.command?.('lend.grant', (data) => {
+    onlyLend();
+    return { grant: guard.setGrant(data) };
   });
   server?.command?.('lend.log', (data) => {
     onlyLend();

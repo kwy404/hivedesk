@@ -8,6 +8,7 @@ import { acceptUpgrade, rejectUpgrade } from './ws.js';
 import { createRelayBrain } from './brain/relay.js';
 import { PROTOCOL } from './replay/reduce.js';
 import { marks } from './replay/index.js';
+import { guestOf, checkGuest } from './collab/policy.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const PACKAGE_ROOT = path.resolve(HERE, '..');
@@ -152,7 +153,11 @@ export function createServer(opts) {
   async function runCommand(type, data, client) {
     const handler = commands.get(type);
     if (!handler) throw new CommandError('bad_request', `unknown command: ${type}`);
-    return handler(data && typeof data === 'object' ? data : {}, client);
+    const d = data && typeof data === 'object' ? data : {};
+    // A guest command (forwarded by the host's browser with `as`) is checked against its role here,
+    // whatever the browser decided (src/collab/policy.js).
+    checkGuest(guestOf(d), type, (code, message) => new CommandError(code, message));
+    return handler(d, client);
   }
 
   const need = (cond, msg) => { if (!cond) throw new CommandError('bad_request', msg); };
@@ -160,14 +165,21 @@ export function createServer(opts) {
   command('ping', () => ({ pong: true, ts: new Date().toISOString() }));
   command('job.create', (d) => {
     need(typeof d.request === 'string' && d.request.trim(), 'request is required');
-    const { jobId } = hive.createJob({ request: d.request, approval: typeof d.approval === 'boolean' ? d.approval : undefined, refine: typeof d.refine === 'boolean' ? d.refine : undefined, playbookId: d.playbookId });
+    const guest = guestOf(d);
+    // A guest's job runs with approval on, and every write or run in it waits for the host.
+    const approval = guest ? true : typeof d.approval === 'boolean' ? d.approval : undefined;
+    const { jobId } = hive.createJob({ request: d.request, approval, refine: typeof d.refine === 'boolean' ? d.refine : undefined, playbookId: d.playbookId });
+    if (guest) toolbox.markOrigin?.(jobId, { kind: 'guest', id: guest.id, label: guest.name });
     return { jobId };
   });
   command('job.cancel', (d) => { hive.cancelJob(d.jobId); return {}; });
   command('chat.send', (d) => ({ id: hive.userChat(d.channel, d.text) }));
   command('approval.resolve', (d) => {
     need(typeof d.approvalId === 'string', 'approvalId is required');
-    if (!approvals.resolve(d.approvalId, !!d.approved, d.note, 'user')) throw new CommandError('not_found', 'no pending approval with that id');
+    const guest = guestOf(d);
+    // Actions that come from a guest or a friend's model are answered by the host only.
+    if (guest && approvals.get?.(d.approvalId)?.strict) throw new CommandError('forbidden', 'only the host can answer this approval');
+    if (!approvals.resolve(d.approvalId, !!d.approved, d.note, guest ? 'guest' : 'user')) throw new CommandError('not_found', 'no pending approval with that id');
     return {};
   });
   command('crew.hire', (d) => ({ worker: hive.hire(d) }));
@@ -239,6 +251,9 @@ export function createServer(opts) {
       model: typeof d.model === 'string' ? d.model.slice(0, 120) : undefined,
       send: (frame) => { if (!client.conn.sendJson(frame)) throw new Error('the remote brain disconnected'); }
     });
+    // Who lends it: a Code together guest (its building may use it), or a friend outside the city.
+    const lender = typeof d.guest === 'string' ? d.guest.trim().slice(0, 24) : '';
+    brain.owner = lender ? `peer:${lender}` : null;
     client.brains.set(id, brain);
     scheduler.addBrain(brain);
     return { brainId: id };

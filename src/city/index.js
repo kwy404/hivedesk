@@ -6,6 +6,7 @@
 // (engine frames to every guest) replicates it, and a restart replays it.
 import os from 'node:os';
 import { ALL_TOOLS } from '../tools/index.js';
+import { guestOf, checkGuest } from '../collab/policy.js';
 import { acceptanceFrom } from '../crew/brief.js';
 import {
   CITY, ROOMS, ROOM_IDS, WORK_KINDS, SPECIALIZATION, MAX_LOOPS, roomForRole, levelFor, publicMemory, statusForKind, isCityEvent
@@ -30,6 +31,8 @@ const COLOR = /^#[0-9a-fA-F]{6}$/;
 const TERMINAL = new Set(['done', 'blocked', 'cancelled']);
 /** Tools a guest's task never gets: no shell, no deletes. */
 export const GUEST_DENY = new Set(['run', 'delete_file']);
+/** The tools a guest's agent comes with: it reads and checks; only the host can grant more. */
+export const GUEST_TOOLS = Object.freeze(['list_files', 'read_file', 'check', 'preview']);
 export const LIMITS = Object.freeze({
   title: 200, detail: 4000, criteria: 6, criterion: 200, memoryText: 300, memoryEntries: 40, name: 40,
   guestCommands: 40, guestWindowMs: 10_000, presencePerSecond: 15, agentsPerMachine: 4, pipeline: 8,
@@ -315,8 +318,18 @@ export class City {
     const room = this.state.rooms[this.fixFor.has(task?.id) ? 'code' : ct.room];
     let tools = room && room.tools?.length ? worker.tools.filter((t) => room.tools.includes(t)) : [...worker.tools];
     if (ct.guest) tools = tools.filter((t) => !GUEST_DENY.has(t));
-    if (tools.length === worker.tools.length) return worker;
-    return { ...worker, tools };
+    const origin = this._originFor(worker, ct);
+    if (tools.length === worker.tools.length && !origin) return worker;
+    return { ...worker, tools, ...(origin ? { origin } : {}) };
+  }
+
+  /** A guest's task, or an agent a guest brought: its writes always wait for the host. */
+  _originFor(worker, ct) {
+    const a = this._agentByWorker(worker?.id);
+    const m = a && a.home !== this.machineId ? this.state.machines[a.home] : null;
+    if (m) return { kind: 'guest', id: String(m.owner || '').replace(/^peer:/, ''), label: m.name || 'a guest' };
+    if (ct?.guest) return { kind: 'guest', id: ct.createdBy?.id, label: ct.createdBy?.name || 'a guest' };
+    return null;
   }
 
   /** What an agent remembers goes into its prompts: pinned entries and facts, preferences, decisions. */
@@ -518,6 +531,7 @@ export class City {
   async _plan(t, agent, ctrl, x) {
     const request = [t.title, t.detail].filter(Boolean).join('\n\n');
     const { jobId, done } = this.hive.createJob({ request, ...(t.guest ? { approval: true } : {}) });
+    if (t.guest) this.toolbox.markOrigin?.(jobId, this._originFor(null, t));
     x.jobId = jobId;
     this.jobOwners.set(jobId, { taskId: t.id, mode: 'plan' });
     this.emit('city.task.updated', { task: { id: t.id, jobId } });
@@ -547,6 +561,7 @@ export class City {
     ].filter(Boolean).join('\n\n');
     const approval = t.guest || room.requireApproval ? { approval: true } : {};
     const { jobId, done } = this.hive.createJob({ request: t.title, plan: [{ title: t.title, detail, assignee: agent.workerId, kind }], cityTaskId: t.id, ...approval });
+    if (t.guest) this.toolbox.markOrigin?.(jobId, this._originFor(null, t));
     x.jobId = jobId;
     this.jobOwners.set(jobId, { taskId: t.id, mode: 'hop' });
     this.emit('city.task.updated', { task: { id: t.id, jobId } });
@@ -827,7 +842,7 @@ export class City {
     if (id === this.machineId) fail('forbidden', 'that is the host machine');
     const old = this.state.machines[id];
     if (old && old.online && old.owner !== owner) fail('forbidden', 'another person is in the city with that machine');
-    const brainId = typeof data.brainId === 'string' && this.scheduler.brains.has(data.brainId) ? data.brainId : null;
+    const brainId = typeof data.brainId === 'string' && this._lentBy(data.brainId, owner) ? data.brainId : null;
     const machine = {
       id, name: str(m.name, LIMITS.name) || 'Friend', host: false, owner, online: true,
       gpu: m.gpu && typeof m.gpu === 'object' ? { name: str(m.gpu.name, 80) || undefined, vramBytes: num(m.gpu.vramBytes), backend: str(m.gpu.backend, 20) || undefined } : null,
@@ -847,6 +862,15 @@ export class City {
     return { machineId: id, agents: ids };
   }
 
+  /**
+   * True when brainId is a friend's brain that this owner lent itself (brain.attach with its guest id).
+   * The host's own models, cloud brains and other guests' brains never qualify.
+   */
+  _lentBy(brainId, owner) {
+    const slot = this.scheduler.brains.get(brainId);
+    return !!slot && slot.brain.kind === 'remote' && !!owner && owner !== 'host' && slot.brain.owner === owner;
+  }
+
   /** A friend's brain inside the city serves only that friend's agents and the borrows its owner accepts. */
   _restrictBrain(brainId, machineId) {
     const slot = this.scheduler.brains.get(brainId);
@@ -864,17 +888,24 @@ export class City {
     if (!local || !name) return null;
     const id = `${machineId}:${local}`;
     const role = str(a.role, 64) || 'Friend';
-    const tools = (Array.isArray(a.tools) ? a.tools : ['list_files', 'read_file', 'check']).filter((t) => ALL_TOOLS.includes(t) && !GUEST_DENY.has(t));
+    // A guest's agent reads and checks only; the host grants more with city.agent.update.
     const existing = this.state.agents[id];
+    const granted = existing?.tools && existing.grantedBy === 'host' ? existing.tools : null;
+    const asked = (Array.isArray(a.tools) ? a.tools : GUEST_TOOLS).filter((t) => GUEST_TOOLS.includes(t));
+    const tools = granted || (asked.length ? asked : [...GUEST_TOOLS]);
     let worker = existing ? this.bus.state.crew.find((w) => w.id === existing.workerId) : null;
     if (!worker) worker = this.hive.hire({ name, role, prompt: str(a.prompt, 2000) || undefined, tools, color: a.color, avatar: a.avatar });
-    else this.scheduler.setPaused(worker.id, false);
+    else {
+      // A worker hired by an older version may still hold write tools: it comes back with the safe set.
+      if (!granted && (worker.tools || []).some((t) => !tools.includes(t))) worker = this.hive.updateWorker(worker.id, { tools }) || worker;
+      this.scheduler.setPaused(worker.id, false);
+    }
     const xp = Math.min(Math.max(0, Number(a.xp) || 0), 1e6);
     const spec = cleanSpec(a.specialization, Object.keys(this.state.rooms)) || [roomForRole(role)];
     const m = this.state.machines[machineId];
     const agent = {
       id, workerId: worker.id, name, role, avatar: worker.avatar, color: worker.color, specialization: spec,
-      level: levelFor(xp), xp, tools, permissions: perms(tools),
+      level: levelFor(xp), xp, tools, permissions: perms(tools), ...(granted ? { grantedBy: 'host' } : {}),
       memory: a.memory && Array.isArray(a.memory.highlights) ? { count: num(a.memory.count) || 0, highlights: a.memory.highlights.slice(0, 4).map((h) => ({ id: str(h.id, 40), kind: str(h.kind, 20), text: str(h.text, LIMITS.memoryText) })) } : { count: 0, highlights: [] },
       room: spec[0], taskId: null, status: 'idle', brain: { kind: 'remote', machineId, label: m?.model || m?.name },
       home: machineId, builtin: false, retired: false, stats: { done: 0, reviews: 0, tests: 0, loops: 0, ...(existing?.stats || {}) }
@@ -1015,11 +1046,9 @@ export class City {
 
   // ---------------------------------------------------------------- who is asking
   _who(d) {
-    if (d && d.as && typeof d.as === 'object') {
-      const id = str(String(d.as.id ?? ''), 24) || 'guest';
-      return { guest: true, id, name: str(String(d.as.name ?? ''), LIMITS.name) || 'Guest', owner: `peer:${id}` };
-    }
-    return { guest: false, id: 'h', name: 'You', owner: 'host' };
+    const g = guestOf(d);
+    if (g) return { guest: true, id: g.id, name: str(g.name, LIMITS.name) || 'Guest', role: g.role, owner: g.owner };
+    return { guest: false, id: 'h', name: 'You', role: 'host', owner: 'host' };
   }
 
   _ownsAgent(who, a) {
@@ -1196,17 +1225,23 @@ export class City {
 
   updateAgent(d, who) {
     const a = this._agent(d);
-    if (!this._ownsAgent(who, a)) fail('forbidden', 'only the owner of an agent can change it');
+    const owns = this._ownsAgent(who, a);
+    // The host may grant tools to a guest's agent; nothing else of it changes then.
+    if (!owns && (who.guest || !Array.isArray(d.tools))) fail('forbidden', 'only the owner of an agent can change it');
     const patch = { id: a.id };
     const crewPatch = {};
-    for (const k of ['name', 'role', 'avatar']) if (str(d[k], k === 'role' ? 64 : LIMITS.name)) { patch[k] = str(d[k], k === 'role' ? 64 : LIMITS.name); crewPatch[k] = patch[k]; }
-    if (COLOR.test(d.color || '')) { patch.color = d.color; crewPatch.color = d.color; }
-    const spec = cleanSpec(d.specialization, Object.keys(this.state.rooms));
-    if (spec) patch.specialization = spec;
+    if (owns) {
+      for (const k of ['name', 'role', 'avatar']) if (str(d[k], k === 'role' ? 64 : LIMITS.name)) { patch[k] = str(d[k], k === 'role' ? 64 : LIMITS.name); crewPatch[k] = patch[k]; }
+      if (COLOR.test(d.color || '')) { patch.color = d.color; crewPatch.color = d.color; }
+      const spec = cleanSpec(d.specialization, Object.keys(this.state.rooms));
+      if (spec) patch.specialization = spec;
+    }
     if (Array.isArray(d.tools)) {
+      // Tools are what an agent may do on the host's disk: only the host grants them.
+      if (who.guest) fail('forbidden', 'only the host can change the tools of an agent');
       let tools = d.tools.filter((t) => ALL_TOOLS.includes(t));
       if (a.home !== this.machineId) tools = tools.filter((t) => !GUEST_DENY.has(t));
-      if (tools.length) { patch.tools = tools; patch.permissions = perms(tools); crewPatch.tools = tools; }
+      if (tools.length) { patch.tools = tools; patch.permissions = perms(tools); crewPatch.tools = tools; if (a.home !== this.machineId) patch.grantedBy = 'host'; }
     }
     const w = this.bus.state.crew.find((x) => x.id === a.workerId);
     if (w && Object.keys(crewPatch).length) {
@@ -1381,6 +1416,8 @@ export class City {
       const d = data && typeof data === 'object' ? data : {};
       const who = this._who(d);
       if (who.guest && !guest) fail('forbidden', 'only the host can do this');
+      // The role of a guest is checked here too, not only in the host's browser (src/collab/policy.js).
+      if (who.guest) checkGuest(who, type, (code, message) => new CityError(code, message));
       if (type !== 'city.presence') this._rate(who);
       return fn(d, who, client);
     });
@@ -1415,6 +1452,8 @@ export class City {
       if (COLOR.test(d.color || '')) patch.color = d.color;
       if (typeof d.brainId === 'string' && !m.host) {
         if (!this.scheduler.brains.has(d.brainId)) fail('not_found', 'no such brain');
+        // Only the machine's owner binds a model to it, and only a model that owner lent itself.
+        if (!this._lentBy(d.brainId, m.owner)) fail('forbidden', 'a building can use only the model its owner lends');
         patch.brainId = d.brainId;
       }
       if (m.host && patch.name) this.store.setMachineName(patch.name);

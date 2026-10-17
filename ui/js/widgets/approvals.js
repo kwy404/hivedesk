@@ -26,6 +26,9 @@ export function approvalCard(a, { compact = false } = {}) {
       h('div', { class: 'grow' }, h('div', { class: 'appr-t', text: approvalTitle(a) }),
         h('div', { class: 'small muted ellipsis', text: a.summary || target }))),
     target ? h('div', { class: 'row', style: 'padding:0 12px 10px' }, h('span', { class: 'hchip hchip-mono', text: a.tool }), h('span', { class: 'mono small ellipsis', text: target }), h('span', { class: 'grow' }), h('span', { class: 'tiny faint', text: ago(a.createdAt) })) : null,
+    // Where it comes from when it is not this PC's own crew: a guest or a friend's model (always waits for you).
+    a.origin ? h('div', { class: 'small appr-origin', role: 'note', text: t(a.origin.kind === 'remote' ? 'approvals.origin.remote' : 'approvals.origin.guest', { name: a.origin.label || '' }) }) : null,
+    a.script ? h('div', { class: 'mono small appr-script', text: a.script.body != null ? t('approvals.script', { name: a.script.name, body: a.script.body }) : t('approvals.scriptMissing', { name: a.script.name }) }) : null,
     a.diff && !compact ? diffView(a.diff) : null,
     h('div', { class: 'appr-a' },
       ui.replay ? h('span', { class: 'small muted', text: t('approvals.replayOff') }) : null,
