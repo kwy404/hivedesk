@@ -143,7 +143,7 @@ b, strong { font-weight: 600; color: var(--hd-text); }
 }
 .display .hl { background-image: linear-gradient(180deg, var(--hd-hl-1) 0%, var(--hd-honey) 95%); }
 .hd-js .display .w { animation: word .9s var(--hd-ease) both; animation-delay: calc(var(--i) * 70ms + 80ms); }
-@keyframes word { from { opacity: .01; transform: translateY(.3em); } to { opacity: 1; transform: none; } }
+@keyframes word { from { transform: translateY(.3em); } to { transform: none; } }
 .lede { max-width: 600px; margin: 24px auto 0; color: var(--hd-text-2); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.5; letter-spacing: -.01em; text-wrap: balance; }
 .hd-js .lede, .hd-js .cta-row, .hd-js .byline { animation: rise .8s var(--hd-ease) both .55s; }
 .hd-js .cta-row { animation-delay: .65s; }
