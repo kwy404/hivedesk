@@ -75,6 +75,8 @@ export function startTour({ at = 0 } = {}) {
   // windows animate and move: follow the target a few times per second
   state.timer = setInterval(() => place(), 250);
   go(at);
+  // the desktop may still move focus while it restores windows: bring it back to the tour once
+  setTimeout(() => { if (state && !state.bubble.contains(document.activeElement)) state.bubble.querySelector('[data-primary]')?.focus({ preventScroll: true }); }, 700);
 }
 
 function onDocKey(e) {
@@ -168,6 +170,16 @@ async function tryIt() {
 function place() {
   if (!state) return;
   const { spot, bubble, shade } = state;
+  // a window that opens late, or a better target that appears (the brief columns): follow it
+  const step = state.steps[state.i];
+  if (step) {
+    const fresh = step.find();
+    if (fresh && fresh !== state.target) {
+      const had = !!(state.target && state.target.isConnected);
+      state.target = fresh;
+      if (!had) render();
+    }
+  }
   const target = state.target && state.target.isConnected ? state.target : null;
   const vw = document.documentElement.clientWidth;
   const vh = document.documentElement.clientHeight;

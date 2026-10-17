@@ -188,7 +188,8 @@ export function init() {
   document.addEventListener('focusout', (e) => { if (e.target === target || !target) hide(); }, true);
   document.addEventListener('pointerdown', () => hide(), true);
   document.addEventListener('keydown', (e) => { if (target && (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ')) hide(); }, true);
-  document.addEventListener('scroll', () => { if (target && performance.now() - shownAt > 50) hide(); }, true);
+  // only a scroll that moves the target hides it (chat feeds scroll by themselves all the time)
+  document.addEventListener('scroll', (e) => { if (target && performance.now() - shownAt > 50 && (e.target === document || e.target.contains?.(target))) hide(); }, true);
   window.addEventListener('blur', hide);
   window.addEventListener('resize', hide);
   onLocale(() => { if (target) { fill(target); place(target); } });
