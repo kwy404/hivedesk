@@ -563,6 +563,9 @@ export class City {
     const checks = checkFiles(this.toolbox.ws, t.files || [], { links: false });
     const mode = room.mode || 'auto';
     if (mode === 'checks' || (mode === 'auto' && t.link)) return { passed: checks.passed, issues: checks.issues, by: 'checks' };
+    // A work hop before this review that changed nothing is not done (the user can still approve it).
+    const worked = t.pipeline.slice(0, t.stage).some((r) => WORK_KINDS.has(this.state.rooms[r]?.kind) && r !== 'design');
+    if (worked && !(t.files || []).length) return { passed: false, issues: ['Nothing changed: no file was written for this task.'], by: 'checks' };
     try {
       const r = await this.scheduler.turn({ workerId: agent.workerId, taskId: t.id, messages: reviewMessages(agent, t, this._diffs(t), checks), options: { schema: REVIEW_SCHEMA, maxTokens: 500, temperature: 0.2 }, signal: ctrl.signal });
       return { ...readReview(r.json ?? safeJson(r.text), checks), by: 'agent' };
@@ -1085,7 +1088,7 @@ export class City {
       wantAgent: want?.id, createdBy: who.guest ? { kind: 'guest', id: who.id, name: who.name } : { kind: 'user', id: 'user' }, guest: who.guest
     });
     this._kick();
-    return t;
+    return clone(t);
   }
 
   assignTask(d, who) {

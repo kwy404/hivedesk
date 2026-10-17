@@ -12,6 +12,16 @@ export const DEMO_FRIEND = Object.freeze({
   agents: [{ id: 'pip', name: 'Pip', role: 'Reviewer', avatar: 'P', color: '#9FD3C7', specialization: ['review', 'test'], tools: ['list_files', 'read_file', 'check'], xp: 30 }]
 });
 
+/** Resolves when no crew job is running (the demo task edits the page the bakery job builds). */
+function jobsIdle(bus, signal) {
+  const busy = () => bus.state.jobs.some((j) => ['refining', 'awaiting_brief', 'planning', 'running'].includes(j.status));
+  if (!busy()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const off = bus.on(() => { if (!busy()) { off(); resolve(); } });
+    signal?.addEventListener('abort', () => { off(); resolve(); }, { once: true });
+  });
+}
+
 const sleep = (ms, signal) => new Promise((resolve) => {
   if (!ms) return resolve();
   const t = setTimeout(resolve, ms);
@@ -51,7 +61,9 @@ export async function runCityDemo({ city, scheduler, bus, stepMs = 1800, signal 
   await sleep(stepMs, signal);
   if (signal?.aborted || city.closed) return null;
 
-  // 3. A task through every room.
+  // 3. A task through every room, once the bakery page it changes is built.
+  await jobsIdle(bus, signal);
+  if (signal?.aborted || city.closed) return null;
   step('task', 'A task note lands in the Design room. It goes Design, Code, Review, Test, then done.');
   const task = city.createTask({ title: DEMO_CITY_TASK.title, detail: DEMO_CITY_TASK.detail, room: 'design' }, host);
   city.onTaskDone = (id) => {

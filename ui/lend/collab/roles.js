@@ -12,8 +12,12 @@ export const ROLES = Object.freeze(['viewer', 'collaborator', 'host']);
 export const GUEST_ROLES = Object.freeze(['viewer', 'collaborator']);
 
 const READ = ['ping', 'events.since', 'replay.at', 'replay.marks', 'files.list', 'files.read', 'playbook.list'];
-const VIEWER = new Set([...READ, 'chat.send']);
-const COLLABORATOR = new Set([...VIEWER, 'job.create', 'job.cancel', 'approval.resolve', 'task.retry', 'task.reassign', 'task.cancel', 'files.write']);
+// Hive City (CITY-PROTOCOL.md): everyone can see the city, bring a building and its agents, and lend or
+// borrow a GPU; collaborators can also put tasks on the board. The host engine checks ownership again.
+const CITY_VIEWER = ['city.state', 'city.sync', 'city.presence', 'city.machine.join', 'city.machine.update', 'city.machine.leave', 'city.agent.update', 'city.borrow.request', 'city.borrow.answer', 'city.borrow.stop'];
+const CITY_COLLABORATOR = ['city.task.create', 'city.task.assign', 'city.task.move', 'city.task.approve', 'city.task.reject', 'city.task.retry', 'city.task.cancel', 'city.agent.move', 'city.agent.retire', 'city.agent.wake'];
+const VIEWER = new Set([...READ, 'chat.send', ...CITY_VIEWER]);
+const COLLABORATOR = new Set([...VIEWER, 'job.create', 'job.cancel', 'approval.resolve', 'task.retry', 'task.reassign', 'task.cancel', 'files.write', ...CITY_COLLABORATOR]);
 
 export class PermissionError extends Error {
   constructor(message) {
@@ -60,6 +64,8 @@ export function checkCommand(guest, type, data = {}) {
     case 'approval.resolve':
       return { type, data: { approvalId: short(d.approvalId, 80), approved: !!d.approved, note: `${guest.name}${d.note ? `: ${short(d.note, 300)}` : ''}` } };
     default:
+      // City commands carry who sent them, so the host engine can apply "the owner wins". Any as sent by the guest is replaced.
+      if (type.startsWith('city.')) return { type, data: { ...d, as: { id: guest.id, name: guest.name } } };
       return { type, data: d };
   }
 }
