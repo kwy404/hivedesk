@@ -178,7 +178,26 @@ export function createServer(opts) {
     if (!rec) throw new CommandError('not_found', 'that turn is no longer kept (the last 40 are)');
     return rec;
   });
-  command('brief.approve', (d) => hive.approveBrief(d.jobId, { use: d.use, text: d.text }));
+  const mem = () => { if (!opts.memory) throw new CommandError('conflict', 'memory is not available'); return opts.memory; };
+  command('memory.list', (d) => {
+    const m = mem();
+    const q = typeof d.q === 'string' ? d.q.trim() : '';
+    const entries = q ? m.search(q, { limit: 50, min: 0 }).map((r) => ({ ...r.entry, score: r.score })) : m.all();
+    return { entries, enabled: bus.state.settings.memory !== false };
+  });
+  const memEvent = () => bus.emit('memory.changed', { count: mem().all().length });
+  command('memory.add', (d) => { const entry = mem().add(d); memEvent(); return { entry }; });
+  command('memory.update', (d) => { const entry = mem().update(String(d.id), d); memEvent(); return { entry }; });
+  command('memory.delete', (d) => { if (!mem().remove(String(d.id))) throw new CommandError('not_found', 'no memory with that id'); memEvent(); return {}; });
+  command('memory.forget', (d) => { const gone = mem().forget(String(d.text || '')); if (!gone) throw new CommandError('not_found', 'nothing in memory matches that'); memEvent(); return { forgotten: gone }; });
+  command('session.list', () => ({ sessions: mem().listSessions() }));
+  command('session.get', (d) => {
+    const records = mem().readSession(String(d.id));
+    if (!records) throw new CommandError('not_found', 'no such session');
+    return { id: String(d.id), records };
+  });
+  command('session.continue', (d) => ({ jobId: hive.continueSession(String(d.id), d.request).jobId }));
+  command('brief.approve', (d) => hive.approveBrief(d.jobId, { use: d.use, text: d.text, answers: d.answers }));
   command('playbook.save', (d) => hive.savePlaybook(d.jobId));
   command('task.reassign', (d) => hive.reassignTask(d.taskId, d.workerId));
   command('task.cancel', (d) => hive.cancelTask(d.taskId));

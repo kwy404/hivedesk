@@ -8,10 +8,17 @@ export const BRIEF_SCHEMA = S({
   build: list('files and features to build, one per item'),
   constraints: list('stack, no network, style, sizes', 6),
   acceptance: list('a checklist: each item can be checked by reading or running the files'),
-  questions: { type: 'array', maxItems: 4, items: S({ question: { type: 'string' }, answer: { type: 'string', description: 'the sensible default used if nobody answers' } }) }
+  questions: { type: 'array', maxItems: 3, items: S({ question: { type: 'string' }, options: { type: 'array', maxItems: 4, items: { type: 'string' } }, answer: { type: 'string', description: 'the default, one of the options' } }) }
 });
 
+/** A request too short to build from: the refiner expands it and asks a few multiple choice questions. */
+export function isVague(request) {
+  const words = String(request || '').trim().split(/\s+/).filter(Boolean);
+  return words.length < 7;
+}
+
 export function briefMessages(request, files = []) {
+  const vague = isVague(request);
   return [
     {
       role: 'system',
@@ -22,7 +29,13 @@ export function briefMessages(request, files = []) {
         '- build: the files and features, concrete (for example "index.html: hero, menu, opening hours").',
         '- constraints: plain HTML, CSS and JavaScript unless the user asked for something else; no network access; no build step; keep it small.',
         '- acceptance: 3 to 6 checks that can be verified by reading or running the files.',
-        '- questions: things the request leaves open, each with the default you will use.',
+        '- questions: at most 3 things the request leaves open, each with 2 to 4 short options and the default you will use (one of the options).',
+        ...(vague ? [
+          'The request is short and vague. Expand it into a concrete small project: pick a sensible default app type',
+          '(for example a to-do list for "an app", a one page site for "a site"), list its features, and ask exactly 3',
+          'multiple choice questions: the type of app, the visual style, and where the data is saved (for example',
+          '"only in this browser (localStorage)", "a JSON file", "nowhere"), each with the default already chosen.'
+        ] : []),
         'Answer with one JSON object.'
       ].join('\n')
     },
@@ -38,8 +51,12 @@ export function normalizeBrief(raw, request) {
     build: clean(raw?.build),
     constraints: clean(raw?.constraints, 6),
     acceptance: clean(raw?.acceptance),
-    questions: (Array.isArray(raw?.questions) ? raw.questions : []).slice(0, 4)
-      .map((q) => ({ question: String(q?.question || '').trim(), answer: String(q?.answer || '').trim() })).filter((q) => q.question)
+    questions: (Array.isArray(raw?.questions) ? raw.questions : []).slice(0, 3)
+      .map((q) => {
+        const options = clean(q?.options, 4);
+        const answer = String(q?.answer || '').trim() || options[0] || '';
+        return { question: String(q?.question || '').trim(), options: options.length && !options.includes(answer) && answer ? [answer, ...options].slice(0, 4) : options, answer };
+      }).filter((q) => q.question)
   };
 }
 
@@ -50,8 +67,18 @@ export function briefText(brief) {
   section('Build', brief.build.map((x) => `- ${x}`));
   section('Constraints', brief.constraints.map((x) => `- ${x}`));
   section('Acceptance criteria', brief.acceptance.map((x) => `- [ ] ${x}`));
-  section('Open questions (with the defaults used)', brief.questions.map((q) => `- ${q.question} Default: ${q.answer || 'none'}`));
+  section('Open questions (with the answers used)', brief.questions.map((q) => `- ${q.question} Answer: ${q.answer || 'none'}${q.options?.length > 1 ? ` (options: ${q.options.join(', ')})` : ''}`));
   return out.join('\n');
+}
+
+/** Applies the answers the user picked (by question index) and rebuilds the text. */
+export function answerBrief(brief, answers = []) {
+  const next = { ...brief, questions: brief.questions.map((q, i) => {
+    const a = Array.isArray(answers) ? answers[i] : answers?.[i];
+    return typeof a === 'string' && a.trim() ? { ...q, answer: a.trim().slice(0, 200) } : q;
+  }) };
+  next.text = briefText(next);
+  return next;
 }
 
 /** Acceptance criteria from a brief text (the user may have edited it). */

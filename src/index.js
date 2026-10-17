@@ -14,6 +14,7 @@ import { BrainManager } from './brain/manager.js';
 import { createDemoBrain, DEMO_NOTICE, DEMO_REQUEST } from './demo.js';
 import { runDoctor } from './doctor.js';
 import { PROTOCOL } from './replay/reduce.js';
+import { MemoryStore, attachMemory } from './memory/index.js';
 
 export const VERSION = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8')).version;
 
@@ -44,14 +45,16 @@ export async function startHive(opts) {
   let server;
   const previewUrl = () => server?.previewUrl() || null;
   const toolbox = new ToolBox({ workspace, bus, approvals, previewUrl });
-  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns, previewUrl, autoApproveBriefMs: opts.demo ? (opts.demoApproveMs ?? 2500) : 0 });
+  const memory = new MemoryStore({ projectFile: path.join(paths.root, 'memory.json'), userFile: opts.memoryHome === null ? null : path.join(opts.memoryHome || home, 'memory.json'), sessionsDir: path.join(paths.root, 'sessions') });
+  attachMemory(bus, memory, { enabled: () => bus.state.settings.memory !== false });
+  const hive = new Hive({ bus, scheduler, toolbox, approvals, playbooks, maxTurns: opts.maxTurns, previewUrl, memoryStore: memory, autoApproveBriefMs: opts.demo ? (opts.demoApproveMs ?? 2500) : 0 });
   const brains = opts.demo || opts.brain ? null : new BrainManager({ bus, scheduler, home, flags: opts.flags, log, progress: opts.progress });
 
   bus.emit('session.started', { version: VERSION, protocol: PROTOCOL, dir, workspace: paths.workspace, demo: !!opts.demo, lend: !!opts.lend, pid: process.pid });
   hive.init();
 
   server = createServer({
-    bus, hive, scheduler, approvals, playbooks, toolbox, brains,
+    bus, hive, scheduler, approvals, playbooks, toolbox, brains, memory,
     doctor: () => runDoctor({ home, model: opts.flags?.model }),
     token: opts.token, port: opts.port, uiDir: opts.uiDir, demo: !!opts.demo, lend: !!opts.lend, version: VERSION, dir
   });
@@ -102,7 +105,7 @@ export async function startHive(opts) {
   }
 
   return {
-    bus, hive, scheduler, approvals, playbooks, toolbox, server, brains, paths, home,
+    bus, hive, scheduler, approvals, playbooks, toolbox, server, brains, paths, home, memory,
     url: server.url,
     async close() {
       if (demoTimer) clearInterval(demoTimer);

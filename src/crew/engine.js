@@ -6,7 +6,7 @@ import { makePlan } from './planner.js';
 import { runTask } from './worker.js';
 import { checkWorkspace } from '../tools/check.js';
 import { modelFamily } from './prompts/index.js';
-import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
+import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, answerBrief, isVague, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
 
 const MAX_FIX_ROUNDS = 3;
 /** Mel stops a job that uses more model turns than this (a loop that does not converge). */
@@ -42,6 +42,8 @@ export class Hive {
     this.maxTurns = opts.maxTurns;
     /** Demo and tests: approve the proposed brief by itself after this many ms (0: wait for the user). */
     this.autoApproveBriefMs = opts.autoApproveBriefMs || 0;
+    /** Long term memory (src/memory), optional. */
+    this.memoryStore = opts.memoryStore || null;
     this.previewUrl = opts.previewUrl || (() => null);
     this.memory = new Memory();
     /** @type {Map<string, { ctrl: AbortController, notes: Map<string, string[]>, promise: Promise<any> }>} */
@@ -119,6 +121,7 @@ export class Hive {
     if (typeof patch.sound === 'boolean') changed.sound = patch.sound;
     if (Array.isArray(patch.crew)) changed.crew = patch.crew.filter((id) => typeof id === 'string').slice(0, 32);
     if (typeof patch.refine === 'boolean') changed.refine = patch.refine;
+    if (typeof patch.memory === 'boolean') changed.memory = patch.memory;
     if (patch.workerBrains && typeof patch.workerBrains === 'object') {
       changed.workerBrains = Object.fromEntries(Object.entries(patch.workerBrains).filter(([k, v]) => typeof k === 'string' && typeof v === 'string').slice(0, 32));
     }
@@ -219,6 +222,13 @@ export class Hive {
       this.chat('mel', `On it: "${job.request}". Let me make a plan.`, undefined, 'general', jobId);
     }
     const work = job.brief || job.request;
+    // What we know: a few relevant memories (keyword and recency scoring), shown in the UI as "used".
+    run.memories = [];
+    if (this.memoryStore && this.state.settings.memory !== false) {
+      const used = this.memoryStore.forJob(`${job.request} ${work}`, 6);
+      run.memories = used.map((m) => m.text);
+      if (used.length) this.bus.emit('memory.used', { items: used.map((m) => ({ id: m.id, text: m.text, kind: m.kind, scope: m.scope })) }, ev);
+    }
     // Playbook retrieval.
     let playbook = null;
     let score = 0;
@@ -236,7 +246,7 @@ export class Hive {
       this.chat('mel', `This looks like an earlier job ("${playbook.title}"), so I am reusing its playbook.`, undefined, 'general', jobId);
     }
     const files = this.toolbox.ws.list().map((f) => f.path);
-    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, notes: this.memory.crew(4), jobId, signal });
+    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, notes: [...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal });
     if (signal.aborted) return;
     if (plan.error) this.chat('system', `The planner answer was not usable (${plan.error}). Using a ${plan.source === 'playbook' ? 'saved playbook' : 'simple default plan'}.`, undefined, 'general', jobId);
 
@@ -432,7 +442,7 @@ export class Hive {
       return;
     }
     brief.text = briefText(brief);
-    this.bus.emit('brief.proposed', { original: job.request, brief }, ev);
+    this.bus.emit('brief.proposed', { original: job.request, brief, vague: isVague(job.request) }, ev);
     this.chat('mel', 'Here is the brief. Use it, edit it, or keep your original request.', undefined, 'general', jobId);
     const decision = await new Promise((resolve, reject) => {
       run.briefWaiter = resolve;
@@ -444,6 +454,7 @@ export class Hive {
     }).catch(() => null);
     run.briefWaiter = null;
     if (!decision) return;
+    if (decision.answers && decision.use !== 'original') brief = answerBrief(brief, decision.answers);
     let text = brief.text;
     let source = 'refined';
     if (decision.use === 'original') { text = job.request; source = 'original'; }
@@ -454,11 +465,11 @@ export class Hive {
   }
 
   /** The command `brief.approve`. */
-  approveBrief(jobId, { use = 'refined', text } = {}) {
+  approveBrief(jobId, { use = 'refined', text, answers } = {}) {
     const run = this.active.get(jobId);
     if (!run || !run.briefWaiter) throw Object.assign(new Error('no brief is waiting for that job'), { code: 'conflict' });
     if (!['refined', 'edited', 'original'].includes(use)) throw Object.assign(new Error('use must be refined, edited or original'), { code: 'bad_request' });
-    run.briefWaiter({ use, text, by: 'user' });
+    run.briefWaiter({ use, text, answers, by: 'user' });
     return {};
   }
 
@@ -482,6 +493,25 @@ export class Hive {
     }
     this.bus.emit('job.report', { report, ...prompt }, { jobId });
     this.chat('mel', `Report: ${report.files.length} files changed, ${report.checks.filter((c) => c.ok).length} of ${report.checks.length} checks passed${report.missing.length ? `, ${report.missing.length} things still missing` : ''}. The improved prompt is in the Report window.`, undefined, 'general', jobId);
+  }
+
+  /** The command `session.continue`: a new job that picks up where a past session ended. */
+  continueSession(sessionId, request = '') {
+    if (!this.memoryStore) throw Object.assign(new Error('memory is not available'), { code: 'conflict' });
+    const rec = this.memoryStore.readSession(sessionId);
+    if (!rec) throw Object.assign(new Error(`no session ${sessionId}`), { code: 'not_found' });
+    const req = rec.find((r) => r.type === 'request')?.request || '';
+    const report = [...rec].reverse().find((r) => r.type === 'report');
+    const files = [...new Set(rec.filter((r) => r.type === 'files').flatMap((r) => r.files || []))];
+    const next = String(request || '').trim() || 'Continue where we stopped: finish what is still missing.';
+    const text = [
+      `Continue the session ${sessionId}.`,
+      report?.improvedPrompt ? `Last time the goal was:\n${report.improvedPrompt}` : `Last time the request was: ${req}`,
+      files.length ? `Files from that session: ${files.join(', ')}.` : '',
+      report?.report?.missing?.length ? `Still missing then: ${report.report.missing.join('; ')}` : '',
+      `Now: ${next}`
+    ].filter(Boolean).join('\n\n');
+    return this.createJob({ request: text.slice(0, 4000) });
   }
 
   /** The command `playbook.save`: keep a finished job (and its improved prompt) as a playbook. */

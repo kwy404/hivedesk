@@ -215,6 +215,14 @@ export function reduce(state, event) {
       u.turns += 1;
       break;
     }
+    case 'memory.used': {
+      const j = findJob(state, event.jobId);
+      if (j) j.memories = d.items || [];
+      break;
+    }
+    case 'memory.changed':
+      state.memoryCount = d.count;
+      break;
     case 'providers.changed':
       state.providers = d.providers || {};
       break;
