@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 (2026-10-17)
+
+* Node.js 20 or newer is required (Node 18 has reached end of life and lacks the global Web Crypto API that pairing uses). The doctor check, the launchers and the docs say so.
+* The website shows the real Office mode and the desktop downloads for Windows, macOS and Linux.
+* The README on npm matches the current requirements.
+
 ## 0.1.0 (2026-10-17)
 
 First release.
