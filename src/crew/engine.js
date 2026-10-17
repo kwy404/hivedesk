@@ -246,7 +246,7 @@ export class Hive {
       this.chat('mel', `This looks like an earlier job ("${playbook.title}"), so I am reusing its playbook.`, undefined, 'general', jobId);
     }
     const files = this.toolbox.ws.list().map((f) => f.path);
-    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, notes: [...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal });
+    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, merge: modelFamily(this.state.brain) === 'small', notes: [...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal });
     if (signal.aborted) return;
     if (plan.error) this.chat('system', `The planner answer was not usable (${plan.error}). Using a ${plan.source === 'playbook' ? 'saved playbook' : 'simple default plan'}.`, undefined, 'general', jobId);
 

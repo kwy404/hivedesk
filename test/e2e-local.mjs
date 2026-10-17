@@ -41,6 +41,12 @@ app.bus.on((e) => {
   else if (e.type === 'approval.requested') {
     console.log(`[${secs()}s] approval asked: ${d.approval.summary} (approving)`);
     setTimeout(() => app.approvals.resolve(d.approval.id, true, 'e2e'), 100);
+  } else if (e.type === 'brief.proposed') {
+    const text = d.brief.text.split('\n').map((l) => `    ${l}`).join('\n');
+    console.log(`[${secs()}s] brief proposed (using it):\n${text}`);
+    setTimeout(() => app.hive.approveBrief(e.jobId, { use: 'refined' }), 100);
+  } else if (e.type === 'job.report') {
+    console.log(`[${secs()}s] improved prompt: ${d.improvedPrompt}\n[${secs()}s] next prompts: ${d.nextPrompts.join(' | ')}`);
   } else if (e.type === 'brain.status') console.log(`[${secs()}s] brain ${d.state} ${d.model || ''} ${d.detail || ''}`);
   else if (e.type === 'qa.report') console.log(`[${secs()}s] QA ${d.passed ? 'passed' : 'failed'}: ${d.issues.join(' | ')}`);
 });

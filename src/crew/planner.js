@@ -117,7 +117,34 @@ export function defaultPlan(request, crewIds) {
  * Runs the planner turn.
  * @returns {Promise<{ tasks: any[], summary: string, source: 'model' | 'playbook' | 'fallback', error?: string }>}
  */
-export async function makePlan({ scheduler, request, crew, playbook, files, notes, jobId, signal }) {
+/**
+ * One task per worker: small models tend to split one file into many tasks ("add the header", "add the menu"),
+ * which costs turns and makes workers overwrite each other. Dependencies on later groups are dropped (no cycles).
+ */
+export function mergeByWorker(tasks) {
+  const order = [];
+  const groups = new Map();
+  tasks.forEach((t, i) => {
+    if (!groups.has(t.assignee)) { groups.set(t.assignee, { ...t, idx: [i], details: [] }); order.push(t.assignee); }
+    const g = groups.get(t.assignee);
+    if (g.idx[0] !== i) g.idx.push(i);
+    g.details.push(t.detail ? `${t.title}: ${t.detail}` : t.title);
+  });
+  const groupOf = (i) => order.indexOf(tasks[i].assignee);
+  return order.map((a, gi) => {
+    const g = groups.get(a);
+    const deps = new Set();
+    for (const i of g.idx) for (const d of tasks[i].dependsOn) { const dg = groupOf(d); if (dg < gi) deps.add(dg); }
+    const merged = g.idx.length > 1;
+    return {
+      title: merged ? g.details.map((d) => d.split(':')[0]).join('; ').slice(0, 120) : g.title,
+      detail: merged ? g.details.map((d) => `- ${d}`).join('\n').slice(0, 1200) : g.detail,
+      assignee: a, dependsOn: [...deps].sort((x, y) => x - y), kind: g.kind
+    };
+  });
+}
+
+export async function makePlan({ scheduler, request, crew, playbook, files, notes, jobId, signal, merge = false }) {
   const ids = crew.map((w) => w.id);
   const assignees = ids.filter((id) => id !== 'mel');
   try {
@@ -126,7 +153,8 @@ export async function makePlan({ scheduler, request, crew, playbook, files, note
       messages: planMessages({ request, crew, playbook, files, notes }),
       options: { schema: planSchema(assignees), maxTokens: 1200, temperature: 0.2 }
     });
-    const tasks = normalizePlan(result.json, ids, request);
+    let tasks = normalizePlan(result.json, ids, request);
+    if (merge) tasks = mergeByWorker(tasks);
     return { tasks, summary: String(result.json?.summary || '').slice(0, 400), source: 'model' };
   } catch (err) {
     if (signal?.aborted) throw err;

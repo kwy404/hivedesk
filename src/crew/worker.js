@@ -161,6 +161,7 @@ export async function runTask(ctx) {
 
   /** Files this worker read or created in this task: changing any other existing file needs a read first. */
   const known = new Set();
+  let hint = '';
   for (let n = 1; n <= maxTurns; n++) {
     if (signal?.aborted) throw new Error('cancelled');
     if (ctx.budget) {
@@ -196,12 +197,16 @@ export async function runTask(ctx) {
 
     let result;
     try {
-      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages, options: { schema, maxTokens: 3000, temperature: 0.2 }, budget: assembled.budget, signal });
+      if (hint) messages[messages.length - 1] = { ...messages[messages.length - 1], content: `${messages[messages.length - 1].content}\n\n${hint}` };
+      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages, options: { schema, maxTokens: ctx.family === 'cloud' ? 4096 : 2000, temperature: 0.2 }, budget: assembled.budget, signal });
+      hint = '';
     } catch (err) {
       if (signal?.aborted) throw err;
       invalid++;
       bus.emit('worker.status', { workerId: worker.id, status: 'error', detail: String(err.message).slice(0, 200), taskId: task.id }, jobOpt);
-      if (invalid >= 2) return { status: 'failed', summary: `stopped: ${err.message}`, wrote: [...wrote] };
+      if (invalid >= 3) return { status: 'failed', summary: `stopped: ${err.message}`, wrote: [...wrote] };
+      // Tell the model what went wrong: most often the answer ran too long (a whole file, or a loop).
+      hint = 'Your last answer was cut off before the JSON ended. Keep the thought to one sentence and make a smaller change: one edit_file patch, or a short file.';
       continue;
     }
     invalid = 0;

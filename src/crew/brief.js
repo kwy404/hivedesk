@@ -1,13 +1,13 @@
 // Mel's prompt refiner (request to a structured brief) and the end of job report with an improved prompt.
 
 const S = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
-const list = (description, maxItems = 8) => ({ type: 'array', maxItems, items: { type: 'string' }, description });
+const list = (description, maxItems = 8, minItems = 0) => ({ type: 'array', ...(minItems ? { minItems } : {}), maxItems, items: { type: 'string' }, description });
 
 export const BRIEF_SCHEMA = S({
   goal: { type: 'string', description: 'one sentence: what the user wants and why' },
-  build: list('files and features to build, one per item'),
+  build: list('files and features to build, one per item', 8, 1),
   constraints: list('stack, no network, style, sizes', 6),
-  acceptance: list('a checklist: each item can be checked by reading or running the files'),
+  acceptance: list('a checklist: each item can be checked by reading or running the files', 8, 2),
   questions: { type: 'array', maxItems: 3, items: S({ question: { type: 'string' }, options: { type: 'array', maxItems: 4, items: { type: 'string' } }, answer: { type: 'string', description: 'the default, one of the options' } }) }
 });
 
