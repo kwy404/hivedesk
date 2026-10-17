@@ -1429,7 +1429,7 @@ export class City {
     cmd('city.machine.leave', (d, w) => {
       const m = this.state.machines[str(d.machineId, 30)];
       if (!m) fail('not_found', 'no such machine');
-      if (m.owner !== w.owner) fail('forbidden', 'only the owner of a machine can take it out');
+      if (m.owner !== w.owner && w.guest) fail('forbidden', 'only the owner of a machine (or the host) can take it out');
       if (m.host) fail('bad_request', 'the host machine cannot leave its own city');
       this.leaveMachine(m.id, d.reason);
       return {};

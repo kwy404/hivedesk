@@ -222,6 +222,11 @@ describe('machines and GPU borrowing', () => {
     // Back again: the same agent and worker.
     await joinRita(r);
     expect(r.s.agents['m_rita0001:pip']).toMatchObject({ status: 'idle', workerId: pip.workerId });
+    // The host takes a building out when that guest's peer closes; another guest cannot.
+    await expect(r.run('city.machine.leave', { as: { id: 'g2', name: 'Eve' }, machineId: 'm_rita0001' })).rejects.toMatchObject({ code: 'forbidden' });
+    await r.run('city.machine.leave', { machineId: 'm_rita0001', reason: 'peer closed' });
+    expect(r.s.machines.m_rita0001.online).toBe(false);
+    expect(r.scheduler.paused.has(pip.workerId)).toBe(true);
     await r.city.close();
   });
 

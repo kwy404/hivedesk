@@ -189,7 +189,7 @@ All take an optional `as: { id, name }` (added by the host's browser for a guest
 | `city.agents.save` | `{ agents: [{ id, xp }] }` a guest's browser writes back to its own engine the xp its agents earned in a friend's city (only a higher xp is kept); not for guests | `{ saved: string[] }` |
 | `city.machine.join` | `{ machine: { id, name, gpu?, ramBytes?, cpus?, model?, color? }, agents?: Agent[], brainId?, via? }` a friend's building and the agents it contributes | `{ machineId, agents: string[] }` |
 | `city.machine.update` | `{ machineId, name?, model?, brainId?, color? }` | `{ machine }` |
-| `city.machine.leave` | `{ machineId, reason? }` | `{}` |
+| `city.machine.leave` | `{ machineId, reason? }` its owner, or the host (for example when that guest's peer closes) | `{}` |
 | `city.borrow.request` | `{ agentId, machineId, turns?: 1..50 (6), minutes?: 1..60 (10) }` | `{ borrow }` |
 | `city.borrow.answer` | `{ borrowId, accept: boolean, turns?, minutes? }` lender only; limits can only go down | `{ borrow }` |
 | `city.borrow.stop` | `{ borrowId }` either side | `{ borrow }` |
