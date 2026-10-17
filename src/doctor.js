@@ -14,9 +14,9 @@ export async function runDoctor(opts) {
   const checks = [];
   const add = (id, label, ok, detail, hint) => checks.push(hint ? { id, label, ok, detail, hint } : { id, label, ok, detail });
 
-  const [major, minor] = process.versions.node.split('.').map(Number);
-  const nodeOk = major > 18 || (major === 18 && minor >= 17);
-  add('node', 'Node.js', nodeOk, `${process.version}`, nodeOk ? undefined : 'Install Node 18.17 or newer.');
+  const [major] = process.versions.node.split('.').map(Number);
+  const nodeOk = major >= 20;
+  add('node', 'Node.js', nodeOk, `${process.version}`, nodeOk ? undefined : 'Install Node 20 or newer.');
   const perm = permissionFlag();
   add('sandbox', 'Node permission flags for "run"', true, perm ? `${perm} is used for "node <file>"` : 'not available in this Node; "run" still has the allow list, timeout and approvals', perm ? undefined : 'Node 22 or newer adds file system permission flags.');
 

@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. hivedesk is small on purpose: plain JavaScript (ESM, JSDoc), Node 18 or newer, almost no dependencies.
+Thanks for helping. hivedesk is small on purpose: plain JavaScript (ESM, JSDoc), Node 20 or newer, almost no dependencies.
 
 ## Setup
 

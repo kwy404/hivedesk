@@ -40,7 +40,7 @@
     "smoke:desktop": "node desktop/scripts/smoke.mjs"
   },
   "engines": {
-    "node": ">=18.17"
+    "node": ">=20"
   },
   "keywords": [
     "ai",
