@@ -19,7 +19,9 @@ for (const f of projectFiles()) {
   const lines = fs.readFileSync(f, 'utf8').split('\n');
   lines.forEach((line, i) => {
     const at = `${r}:${i + 1}`;
-    if (DASHES.test(line)) problems.push(`${at}: en or em dash`);
+    // A character class that lists the dashes (a check for them, like the one in this script) is fine.
+    const DASH_CLASS = new RegExp(`\[[${String.fromCharCode(0x2013)}${String.fromCharCode(0x2014)}]+\]`, 'g');
+    if (DASHES.test(line.replace(DASH_CLASS, ''))) problems.push(`${at}: en or em dash`);
     if (EMOJI.test(line)) problems.push(`${at}: emoji`);
     if (NAMES.test(line) && !PROVIDER_FILES.has(r)) problems.push(`${at}: names an AI assistant or its maker`);
     for (const p of PHRASES) if (p.test(line)) problems.push(`${at}: comparison phrase "${line.match(p)[0]}"`);
