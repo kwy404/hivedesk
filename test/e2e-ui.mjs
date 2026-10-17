@@ -37,7 +37,7 @@ page.on('pageerror', (e) => errors.push(String(e.message || e)));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('response', (r) => { if (r.status() >= 400) errors.push(`${r.status()} ${new URL(r.url()).pathname}`); });
 try {
-  await page.goto(app.url, { waitUntil: 'load' });
+  await page.goto(`${app.url}${app.url.includes('?') ? '&' : '?'}view=desktop`, { waitUntil: 'load' }); // the desktop windows, not the City home
   check(await page.title() !== '', `page has a title (${await page.title()})`);
   // The engine pushes hello over the WebSocket; the crew names should appear.
   await page.waitForFunction(() => /Mel/.test(document.body.innerText) && /QA/.test(document.body.innerText), null, { timeout: 15000 });

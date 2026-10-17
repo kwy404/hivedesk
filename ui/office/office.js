@@ -15,7 +15,7 @@ import { OfficeScene, levelOf, doneCount, dayPhase } from './scene.js';
 import * as audio from './audio.js';
 import { openWidget, openPip, pipSupported } from './popout.js';
 
-const VIEW_KEY = 'hivedesk.view';
+const VIEW_KEY = 'hivedesk.view.v2'; // v2: City became the default home in 0.2.0
 const MODE_LABEL = {
   idle: 'Idle', sleep: 'Napping (idle)', type: 'Typing', plan: 'Planning on the board', wait: 'In the queue for the model',
   stuck: 'Waiting for your approval', test: 'Running checks', read: 'Reading files', error: 'Error', celebrate: 'Celebrating',
@@ -123,12 +123,15 @@ export function initOffice({ desk, barRight, addDockItem }) {
     if (e.key === 'Escape' && drag) cancelDrag();
   });
 
-  let start = 'desktop';
-  try { start = localStorage.getItem(VIEW_KEY) || 'desktop'; } catch { /* ignore */ }
+  // City is the default home when it is registered (ui/city/); Office and Desktop stay one click away.
+  let start = 'city';
+  try { start = localStorage.getItem(VIEW_KEY) || 'city'; } catch { /* ignore */ }
   const q = new URLSearchParams(location.search).get('view');
-  if (q === 'office' || q === 'desktop') start = q;
+  if (q) start = q;
   // wait for the first layout of the windows before hiding them
-  if (start === 'office') net.on('hello', once(() => requestAnimationFrame(() => setMode('office', { quiet: true }))));
+  net.on('hello', once(() => requestAnimationFrame(() => {
+    if (start === 'office' || views.has(start)) setMode(start, { quiet: true });
+  })));
   paintSeg();
   setInterval(() => { if (mode === 'office') paintClock(); }, 20000);
 }
@@ -137,16 +140,45 @@ function once(fn) { let done = false; return (...a) => { if (!done) { done = tru
 
 export function getMode() { return mode; }
 
+/* Other full screen views next to Office and Desktop (the City registers here). */
+const views = new Map();
+
+/**
+ * Adds a view to the toggle. `enter({ quiet })` shows it; `leave({ quiet, done })` hides it and
+ * calls done when it is gone. `first` puts it at the start of the toggle.
+ * @param {{ id: string, labelKey: string, titleKey?: string, glyph: () => Node, enter: Function, leave: Function, first?: boolean }} v
+ */
+export function addView(v) {
+  views.set(v.id, v);
+  const b = h('button', { type: 'button', dataset: { v: v.id }, tip: v.titleKey, on: { click: () => setMode(v.id) } }, v.glyph(), h('span', { tx: v.labelKey }));
+  if (v.first) seg.prepend(b); else seg.append(b);
+  seg.dataset.tour = 'office';
+  paintSeg();
+}
+
+const isScene = (m) => m === 'office' || views.has(m);
+
 export function setMode(next, { quiet = false } = {}) {
-  if (next === mode) return;
+  if (next === mode || !(next === 'desktop' || isScene(next))) return;
+  const prev = mode;
   mode = next;
   try { localStorage.setItem(VIEW_KEY, mode); } catch { /* ignore */ }
   paintSeg();
-  if (mode === 'office') {
-    // tuck the open windows into the dock, and bring them back when leaving
+  if (isScene(next) && !isScene(prev)) {
+    // tuck the open windows into the dock, and bring them back on the desktop
     hiddenWins = wm.list().filter((w) => !w.min).map((w) => w.id);
     for (const id of hiddenWins) wm.minimize(id);
     deskEl.classList.add('of-on');
+  }
+  const toDesk = () => {
+    if (mode !== 'desktop') return;
+    deskEl.classList.remove('of-on');
+    for (const id of hiddenWins) if (wm.get(id)?.min) wm.restore(id);
+    hiddenWins = [];
+  };
+  if (views.has(prev)) views.get(prev).leave({ quiet: quiet || isScene(next), done: toDesk });
+  if (views.has(next)) { if (prev === 'office') leaveOffice(true, () => {}); views.get(next).enter({ quiet }); return; }
+  if (mode === 'office') {
     layer.hidden = false;
     scene.resize(layer.clientWidth, layer.clientHeight);
     scene.reset();
@@ -154,19 +186,17 @@ export function setMode(next, { quiet = false } = {}) {
     audio.setActive(true);
     paintHud();
     if (!quiet && !reducedMotion()) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' });
-  } else {
-    scene.stop();
-    audio.setActive(false);
-    hideTip();
-    const done = () => {
-      layer.hidden = true;
-      deskEl.classList.remove('of-on');
-      for (const id of hiddenWins) if (wm.get(id)?.min) wm.restore(id);
-      hiddenWins = [];
-    };
-    if (reducedMotion() || quiet) done();
-    else layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-in' }).onfinish = done;
-  }
+  } else if (prev === 'office') leaveOffice(quiet, toDesk);
+  else toDesk();
+}
+
+function leaveOffice(quiet, after) {
+  scene.stop();
+  audio.setActive(false);
+  hideTip();
+  const done = () => { layer.hidden = true; after(); };
+  if (reducedMotion() || quiet) done();
+  else layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-in' }).onfinish = done;
 }
 
 function paintSeg() {

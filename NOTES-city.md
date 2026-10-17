@@ -52,3 +52,17 @@ the City view works on an older engine too.
 * `city.presence { left: true }` sends `city.presence.left`. Up to 15 a second per person.
 * Demo timing with the default delays: Rita joins at about 2 s, the borrow at 4 s, the city task
   starts when the bakery job ends (about 25 s) and is done about 7 s later.
+
+### City UI status (ui/city/)
+
+* City is a view next to Office and Desktop (`addView` in `ui/office/office.js`) and the default
+  home (`hivedesk.view.v2`; `?view=desktop|office|city` still works). Dock item: Hive City.
+* `ui/city/city.js` holds the engine `CityState` and reduces it with `/lib/city.js`; `model.js`
+  turns it into the scene view; `?city=mock` plays `mock.js`, which speaks the same protocol.
+* Browser glue done in `ui/city/collab.js`: the guest joins with `city.agents.local` (over REST on
+  its own engine) then `city.machine.join`; the host sends `city.machine.leave` when a guest
+  leaves; the guest saves its agents' levels with `city.agents.save`; a dropped link catches up
+  with `city.sync { since }`.
+* Open point for the engine: the host knows the `brainId` a guest lends (`collab.lentBrains()`),
+  but `city.machine.update` is owner only, so the guest's building is not linked to that brain
+  yet. Either let the host set `brainId` on a guest machine, or send it to the guest.

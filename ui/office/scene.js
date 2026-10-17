@@ -1841,3 +1841,6 @@ function drawNoteIcon(ctx, x, y, s, fill, strip) {
   ctx.fillStyle = 'rgba(43,29,18,.45)'; ctx.fillRect(-s * 0.36, -s * 0.12, s * 0.7, s * 0.07); ctx.fillRect(-s * 0.36, s * 0.04, s * 0.5, s * 0.07);
   ctx.restore();
 }
+
+// Shared with the City scene (ui/city/scene.js), which reuses the Office art.
+export { roundRect, hexPath, hexScreen, wrap, drawNameTag, drawBubble, drawPill, iconClock, iconCheck, iconX, iconDots, iconMag, iconFlask, iconQuestion, iconPause, drawNoteIcon, drawParcel, mixHex, shade, alpha, rgb, goldenFactor };
