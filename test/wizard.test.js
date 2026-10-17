@@ -30,7 +30,7 @@ describe('wizard state machine', () => {
       if (q.id === 'brain') {
         expect(q.body[0]).toMatch(/GTX 1060 6GB 6\.4 GB, RAM 16 GB, 100 GB free disk/);
         expect(q.options.find((o) => o.recommended).value).toBe('local:qwen2.5-coder-3b');
-        expect(q.options.map((o) => o.value)).toEqual(expect.arrayContaining(['local:qwen2.5-coder-7b', 'local:qwen2.5-coder-0.5b', 'openai', 'demo']));
+        expect(q.options.map((o) => o.value)).toEqual(expect.arrayContaining(['local:qwen2.5-coder-7b', 'local:qwen2.5-coder-0.5b', 'anthropic', 'openai', 'xai', 'gemini', 'compatible', 'demo']));
       }
       if (q.id === 'download') expect(q.body.join('\n')).toMatch(/2\.1 GB[\s\S]*huggingface\.co\/Qwen\/Qwen2\.5-Coder-3B-Instruct-GGUF[\s\S]*qwen2\.5-coder-3b-instruct-q4_k_m\.gguf/);
       w.answer(undefined);
@@ -57,21 +57,29 @@ describe('wizard state machine', () => {
   });
 
   it('takes a key for an endpoint, a folder path, Portuguese and a smaller crew', () => {
-    const r = runScripted(facts(), [undefined, 'pt', 'other', 'work/site', 'openai', 'http://127.0.0.1:8080/v1/', 'my-model', 'sk-secret', 'auto', 'pick', ['dev', 'qa'], false]);
+    const r = runScripted(facts(), [undefined, 'pt', 'other', 'work/site', 'compatible', 'http://127.0.0.1:8080/v1/', 'my-model', 'sk-secret', 'auto', 'pick', ['dev', 'qa'], false]);
     expect(r).toEqual({
       lang: 'pt', dir: path.resolve(facts().cwd, 'work/site'),
-      brain: { backend: 'openai', url: 'http://127.0.0.1:8080/v1', model: 'my-model', key: 'sk-secret' },
+      brain: { backend: 'compatible', url: 'http://127.0.0.1:8080/v1', model: 'my-model', key: 'sk-secret' },
       approvalMode: false, crew: ['dev', 'qa'], open: false, app: true
     });
-    expect(toStartOptions(r)).toMatchObject({ demo: false, approvalMode: false, open: false, flags: { brain: 'openai', url: 'http://127.0.0.1:8080/v1', model: 'my-model', key: 'sk-secret' } });
+    const start = toStartOptions(r);
+    expect(start).toMatchObject({ demo: false, approvalMode: false, open: false, flags: { brain: 'compatible', model: 'my-model' } });
+    expect(JSON.stringify(start)).not.toContain('sk-secret');
+    const cloud = runScripted(facts(), [undefined, undefined, undefined, 'anthropic', undefined, 'sk-ant-xyz']);
+    expect(cloud.brain).toEqual({ backend: 'anthropic', url: undefined, model: 'claude-opus-5-5', key: 'sk-ant-xyz' });
   });
 
   it('refuses empty required answers', () => {
     const w = createWizard(facts());
-    for (const v of [undefined, undefined, undefined, 'openai', undefined]) w.answer(v);
+    for (const v of [undefined, undefined, undefined, 'compatible', undefined]) w.answer(v);
     expect(w.step).toBe('keyModel');
     expect(w.answer('')).toMatch(/needed/);
     expect(w.step).toBe('keyModel');
+    const g = createWizard(facts());
+    for (const v of [undefined, undefined, undefined, 'gemini', undefined]) g.answer(v);
+    expect(g.step).toBe('keySecret');
+    expect(g.answer('')).toMatch(/needed/);
   });
 
   it('asks only "use the same setup?" when a setup was saved', () => {
@@ -142,7 +150,7 @@ describe('wizard in a terminal (simulated keys)', () => {
     const p = runTty(createWizard(facts()), { input: io.input, output: io.output, color: false });
     await press(io, ['enter', 'enter', 'enter']); // welcome, English (preselected), this folder
     // Brain: move down to the OpenAI compatible option.
-    const order = ['local:qwen2.5-coder-3b', 'local:qwen2.5-coder-0.5b', 'local:qwen2.5-coder-1.5b', 'local:qwen2.5-coder-7b', 'local:qwen2.5-coder-14b', 'openai'];
+    const order = ['local:qwen2.5-coder-3b', 'local:qwen2.5-coder-0.5b', 'local:qwen2.5-coder-1.5b', 'local:qwen2.5-coder-7b', 'local:qwen2.5-coder-14b', 'anthropic', 'openai', 'xai', 'gemini', 'compatible'];
     await press(io, Array(order.length - 1).fill('down'));
     await press(io, ['enter', 'enter']); // endpoint URL default
     await press(io, [...'m1', 'enter', ...'secret', 'enter']);
@@ -150,7 +158,7 @@ describe('wizard in a terminal (simulated keys)', () => {
     await press(io, ['space', 'down', 'down', 'space', 'enter']); // untick dev and qa
     await press(io, ['n']);
     const r = await p;
-    expect(r).toMatchObject({ lang: 'en', brain: { backend: 'openai', model: 'm1', key: 'secret' }, approvalMode: false, crew: ['designer', 'writer'], open: false });
+    expect(r).toMatchObject({ lang: 'en', brain: { backend: 'compatible', model: 'm1', key: 'secret' }, approvalMode: false, crew: ['designer', 'writer'], open: false });
     expect(io.text).toContain('******');
     expect(io.text).not.toContain('secret');
   });

@@ -8,6 +8,8 @@ import { createWizard, defaults, toStartOptions } from './core.js';
 import { detectLang } from './i18n.js';
 import { loadConfig, saveConfig } from './config.js';
 import { runTty } from './tty.js';
+import { KeyStore } from '../brain/keys.js';
+import { PROVIDERS, testConnection } from '../brain/cloud.js';
 
 export async function gatherFacts({ home, cwd }) {
   const [hardware, ollama, lmstudio] = await Promise.all([
@@ -31,7 +33,17 @@ export async function wizardSetup(opts) {
   const facts = await gatherFacts(opts);
   const wizard = createWizard(facts, { saved });
   const answers = await runTty(wizard, opts.io);
-  const file = saveConfig(opts.home, answers);
+  const b = answers.brain || {};
+  if (PROVIDERS[b.backend]) {
+    // Keys live in the key store only; config.json keeps the provider and the model.
+    new KeyStore(opts.home).set(b.backend, { key: b.key, model: b.model, baseUrl: b.url });
+    process.stdout.write(`  testing ${PROVIDERS[b.backend].label}...\n`);
+    const r = await testConnection(b.backend, { key: b.key, model: b.model, baseUrl: b.url });
+    process.stdout.write(r.ok ? `  OK: ${r.model} answered in ${r.ms} ms\n` : `  The test call failed: ${r.error}. You can fix the key later in Settings, Providers.\n`);
+  }
+  const { key, ...brainNoKey } = b;
+  void key;
+  const file = saveConfig(opts.home, { ...answers, brain: brainNoKey });
   process.stdout.write(`  saved to ${file}\n`);
   return toStartOptions(answers);
 }

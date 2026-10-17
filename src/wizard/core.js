@@ -3,6 +3,9 @@
 import path from 'node:path';
 import { t } from './i18n.js';
 import { MODELS, chooseModel } from '../brain/models.js';
+import { PROVIDERS } from '../brain/cloud.js';
+
+const isCloud = (b) => !!PROVIDERS[b];
 import { formatBytes } from '../brain/hardware.js';
 
 export const ROLES = ['dev', 'designer', 'qa', 'writer'];
@@ -58,7 +61,9 @@ function brainOptions(facts, s) {
   if (facts.lmstudio?.length) opts.push({ value: 'lmstudio', label: s.lmstudio, hint: facts.lmstudio.slice(0, 3).join(', '), recommended: !facts.ollama?.length });
   opts.push(local(choice.model, !facts.ollama?.length && !facts.lmstudio?.length));
   for (const m of MODELS) if (m.id !== choice.model.id) opts.push(local(m, false));
-  opts.push({ value: 'openai', label: s.key, hint: '' });
+  for (const [id, p] of Object.entries(PROVIDERS)) {
+    opts.push({ value: id, label: id === 'compatible' ? s.key : `${p.label} (${s.cloud})`, hint: id === 'compatible' ? '' : s.cloudHint });
+  }
   opts.push({ value: 'demo', label: s.demo, hint: '' });
   return opts;
 }
@@ -93,7 +98,8 @@ export function createWizard(facts, opts = {}) {
       case 'folder': return a._folderOther ? 'folderPath' : 'brain';
       case 'folderPath': return 'brain';
       case 'brain':
-        if (a.brain.backend === 'openai') return 'keyUrl';
+        if (a.brain.backend === 'compatible') return 'keyUrl';
+        if (isCloud(a.brain.backend)) return 'keyModel';
         return needsDownload() ? 'download' : 'mode';
       case 'keyUrl': return 'keyModel';
       case 'keyModel': return 'keySecret';
@@ -132,11 +138,11 @@ export function createWizard(facts, opts = {}) {
         };
       }
       case 'keyUrl':
-        return { id: step, type: 'text', title: S.keyUrl, default: a.brain.url || 'https://api.openai.com/v1' };
+        return { id: step, type: 'text', title: S.keyUrl, default: a.brain.url || 'http://127.0.0.1:8080/v1' };
       case 'keyModel':
-        return { id: step, type: 'text', title: S.keyModel, default: a.brain.model || '', required: true };
+        return { id: step, type: 'text', title: S.keyModel, default: a.brain.model || PROVIDERS[a.brain.backend]?.models[0] || '', required: true };
       case 'keySecret':
-        return { id: step, type: 'secret', title: S.keySecret, default: a.brain.key || '', required: true };
+        return { id: step, type: 'secret', title: S.keySecret, body: [S.cloudNote], default: a.brain.key || '', required: a.brain.backend !== 'compatible' };
       case 'download': {
         const m = modelFor(a.brain.model);
         return {
@@ -163,7 +169,7 @@ export function createWizard(facts, opts = {}) {
     const S = s();
     const b = a.brain;
     const brain = b.backend === 'local' ? `${modelFor(b.model)?.name || b.model}${b.gpu === false ? ' (CPU)' : ''}`
-      : b.backend === 'openai' ? `${b.url} ${b.model} (key ${b.key ? 'set' : 'missing'})`
+      : isCloud(b.backend) ? `${PROVIDERS[b.backend].label} ${b.model}${b.url ? ` at ${b.url}` : ''} (key ${b.key ? 'set' : 'none'})`
       : b.backend === 'demo' ? S.demo : b.backend;
     return [
       `  ${S.lang}: ${a.lang === 'pt' ? 'Português' : 'English'}`,
@@ -201,8 +207,9 @@ export function createWizard(facts, opts = {}) {
           const choice = chooseModel(facts.hardware);
           const vram = facts.hardware.gpu?.vramBytes || 0;
           a.brain = { backend: 'local', model: id, gpu: id === choice.model.id ? choice.gpu : vram >= 3.8e9 };
-        } else if (v === 'openai') {
-          a.brain = { backend: 'openai', url: a.brain.url, model: a.brain.backend === 'openai' ? a.brain.model : '', key: a.brain.key };
+        } else if (isCloud(v)) {
+          const same = a.brain.backend === v;
+          a.brain = { backend: v, url: same ? a.brain.url : undefined, model: same ? a.brain.model : '', key: same ? a.brain.key : undefined };
         } else {
           a.brain = { backend: v };
         }
@@ -218,8 +225,8 @@ export function createWizard(facts, opts = {}) {
         a.brain.model = String(v).trim();
         break;
       case 'keySecret':
-        if (!String(v || '').trim()) return s().required;
-        a.brain.key = String(v).trim();
+        if (!String(v || '').trim() && a.brain.backend !== 'compatible') return s().required;
+        a.brain.key = String(v || '').trim() || undefined;
         break;
       case 'download': a._downloadOk = !!v; break;
       case 'mode': a.approvalMode = v !== 'auto'; break;
@@ -285,8 +292,9 @@ export function toStartOptions(ans) {
     if (b.gpu === false) flags.gpu = false;
   } else if (b.backend === 'ollama' || b.backend === 'lmstudio') {
     flags.brain = b.backend;
-  } else if (b.backend === 'openai') {
-    Object.assign(flags, { brain: 'openai', url: b.url, model: b.model, key: b.key });
+  } else if (isCloud(b.backend)) {
+    // The key itself goes to the key store (src/brain/keys.js), never into config.json.
+    Object.assign(flags, { brain: b.backend, model: b.model });
   }
   return { dir: ans.dir, demo: b.backend === 'demo', flags, approvalMode: ans.approvalMode !== false, crew: ans.crew, open: ans.open !== false, app: ans.app !== false };
 }
