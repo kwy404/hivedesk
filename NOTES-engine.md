@@ -271,3 +271,17 @@ hooks (about 8 lines), keeping your `openApp` as the fallback:
    falls back to `openApp` silently.
 4. Optional: `"smoke:desktop": "node desktop/scripts/smoke.mjs"` in scripts (a hidden native window
    with a `--demo` engine, about 9 s).
+
+## From themes and extensions (src/extensions/, ui/themes/, ui/extensions/)
+
+1. **Tool registration.** Extension tools are added to the engine through `src/extensions/engine-hook.js`. Today it
+   extends the shared `TOOLS` table and `ALL_TOOLS` list in place and wraps `toolbox.run`. A small official API would be
+   cleaner: `toolbox.registerTool(name, { description, parameters, destructive }, handler(args, ctx))` and
+   `toolbox.unregisterTool(name)`. The hook uses them as soon as they exist.
+2. **PROTOCOL.md.** Please list the new commands and events (the full tables are in docs/EXTENSIONS.md and docs/THEMES.md):
+   commands `themes.list|save|delete|generate`, `extensions.list|install|approve|enable|disable|revoke|uninstall|reload|addDev|create|call|cap|widget`,
+   route `GET /api/themes`; events `theme.generating|generated|failed`, `extension.installed|enabled|disabled|revoked|uninstalled|reloaded|denied`,
+   `extension.dev.started|ready`; live frames `extension.notify`, `extension.log`.
+3. **Top bar intents.** The plug-in wraps `hive.createJob`: "crie um tema ..." starts the theme flow (returns `{ jobId: null, flow: "theme" }`)
+   and "crie uma extensão ..." scaffolds an extension and starts a normal job with `refine: false`. A playbook id skips both.
+4. The plug-in is loaded in `src/index.js` right after the GitHub plug-in, and closed in `close()`.

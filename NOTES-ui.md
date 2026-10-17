@@ -66,3 +66,16 @@ Please keep them when you commit.
    `pickFile`, `openFolder`, `info`. Details in desktop/README.md.
 2. i18n: `desktop/i18n.json` has the `cli.desktop.*` keys in the 10 languages. Please merge them into
    `i18n/<locale>.json` (the shared file wins when it has the key).
+
+## From themes and extensions (ui/themes/, ui/extensions/)
+
+1. `ui/js/main.js` imports `../themes/index.js` and `../extensions/index.js` (two lines). They register the windows
+   `themes`, `theme-editor`, `extensions` and `ext-widget`, their dock buttons (`addDockItem`) and Ctrl K entries (`globalThis.hivedeskPalette`).
+2. `ui/js/sound.js`: `play` and `preview` read `globalThis.hivedeskSoundPack?.[name]` first, so a theme can bring its own sound pack.
+   `null` keeps the built-in sounds.
+3. A theme sets CSS custom properties inline on `<html>` plus `data-hd-theme` and `data-hd-scheme`. `ui/themes/themes.css` overrides the
+   parts of hive.css and polish.css drawn with fixed charcoal (top bar, dock, hex buttons, tooltips, menus, toasts, palette, dialogs,
+   tour bubble, hover tints) for the other themes. New fixed colors would look wrong in the light themes: please prefer
+   `var(--panel*)`, `var(--text*)` and `var(--hd-hover)` for new surfaces.
+4. Strings live under `themes.*` and `extensions.*` in all 10 `i18n/*.json` files; `ui/extensions/strings.js` keeps an English copy as fallback.
+5. Suggestion: a "Themes" entry in Settings (next to the motion and wallpaper choices) that opens the gallery.
