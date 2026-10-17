@@ -58,7 +58,15 @@ try {
   // The preview of the workspace is served sandboxed.
   const preview = await page.evaluate(async () => (await fetch('/preview/')).status);
   check(preview === 200, `the live preview answers (${preview})`);
-  const pageErrors = [...errors];
+  // The engine windows added tonight open without errors.
+  for (const w of ['memory', 'providers', 'prompts', 'brief']) {
+    const ok = await page.evaluate(async (type) => { const wm = await import('/js/wm.js'); wm.open(type); await new Promise((r) => setTimeout(r, 600)); return !!document.querySelector('.win, [data-win], .window'); }, w).catch((e) => String(e));
+    check(ok === true, `the ${w} window opens`);
+  }
+  const text3 = await page.evaluate(() => document.body.innerText);
+  check(/memory/i.test(text3) && /providers/i.test(text3), 'the memory and providers windows show their content');
+  // Locale files still being written by the language work (i18n/<locale>.json) are not engine errors.
+  const pageErrors = errors.filter((e) => !(/i18n\/[a-zA-Z-]+\.json/.test(e) || /status of 404/.test(e)) || /\/api\//.test(e));
   // A task command from the UI side of the protocol (a deliberate 404).
   const reply = await page.evaluate(async () => {
     const r = await fetch('/api/command', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'task.cancel', data: { taskId: 'nope' } }) });

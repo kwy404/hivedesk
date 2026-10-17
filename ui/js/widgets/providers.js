@@ -63,10 +63,13 @@ register('providers', {
     ctx.body.append(pane);
     const refresh = () => box.v++;
     track(() => [box.v, ui.replay], async () => {
-      const [list, state] = await Promise.all([send('provider.list', {}, 'Could not load the providers'), fetch('/api/state').then((r) => r.json()).catch(() => null)]);
+      const [list, state] = await Promise.all([command('provider.list', {}).catch((err) => ({ error: err })), fetch('/api/state').then((r) => r.json()).catch(() => null)]);
       clear(pane);
       pane.append(h('p', { class: 'small prov-note', text: 'Cloud providers receive the prompts and the file contents sent to them, and they bill your account. Keys stay in ~/.hivedesk/keys.json on this computer; this page only sees whether a key is set.' }));
-      if (!list) return;
+      if (list.error) {
+        pane.append(h('p', { class: 'small muted', text: list.error.code === 'conflict' ? 'Providers are not used in this mode (demo, or a brain chosen by the command line).' : `Could not load the providers: ${list.error.message}` }));
+        return;
+      }
       const providers = list.providers;
       for (const [id, p] of Object.entries(providers)) pane.append(card(id, p, refresh));
       // Per worker brain.
