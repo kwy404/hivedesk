@@ -458,6 +458,7 @@
     <header class="head head-center reveal">
       <p class="kicker" data-i18n="nav.download">Download</p>
       <h2 id="dl-h" class="h2" data-i18n-2="dl.h2">Get hivedesk.<br><span>Free, open source, on your machine.</span></h2>
+      <p class="head-sub">The desktop app for Windows, macOS and Linux. Each download carries its own Node.js, so there is nothing to install first.</p>
       <p class="first-release" data-first-release><span class="pulse-dot" aria-hidden="true"></span><span data-i18n="dl.first">First release coming out today.</span></p>
     </header>
 
@@ -477,13 +478,13 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-windows"/></svg></span>Windows</h3>
-        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 and 11, x64</span></p>
+        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 and 11, x64, about 42 MB</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">Download for Windows</span></a>
-        <p class="os-note">Not code signed yet: SmartScreen may say &ldquo;Windows protected your PC&rdquo;. Choose <b>More info</b>, then <b>Run anyway</b>.</p>
+        <p class="os-note">Unzip and double click <code>hivedesk.exe</code>. It is not code signed yet, so SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <b>More info</b>, then <b>Run anyway</b>.</p>
         <div class="os-thanks" role="status" hidden>
           <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
           <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
-          <ol class="thanks-steps"><li>Open the downloaded zip and extract it.</li><li>Run <b>hivedesk</b>.</li><li>If SmartScreen says &ldquo;Windows protected your PC&rdquo;, choose <b>More info</b>, then <b>Run anyway</b>.</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <ol class="thanks-steps"><li>Unzip the download. If Windows blocks the zip, right click it, <b>Properties</b>, tick <b>Unblock</b>.</li><li>Double click <code>hivedesk.exe</code>.</li><li>SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <b>More info</b>, then <b>Run anyway</b>.</li><li>On the first run it downloads a model for your machine and opens the Hive.</li></ol>
           <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
           <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
@@ -503,13 +504,13 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-macos"/></svg></span>macOS</h3>
-        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon and Intel</span></p>
+        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon and Intel, about 80 MB</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">Download for macOS</span></a>
-        <p class="os-note">Not notarized yet: the first time, right click the app and choose <b>Open</b>, or allow it in System Settings, Privacy and Security.</p>
+        <p class="os-note">Unzip and move <code>hivedesk.app</code> to Applications. It is not notarized yet: the first time, open <b>System Settings, Privacy and Security</b> and click <b>Open Anyway</b>.</p>
         <div class="os-thanks" role="status" hidden>
           <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
           <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
-          <ol class="thanks-steps"><li>Open the downloaded zip.</li><li>Move <b>hivedesk</b> to Applications.</li><li>The first time, right click it and choose <b>Open</b> (it is not notarized yet).</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <ol class="thanks-steps"><li>Unzip it and move <code>hivedesk.app</code> to Applications.</li><li>Open it. macOS says it cannot verify the app.</li><li>Open <b>System Settings, Privacy and Security</b> and click <b>Open Anyway</b> next to hivedesk.</li><li>On the first run it downloads a model for your machine and opens the Hive.</li></ol>
           <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
           <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
@@ -529,13 +530,13 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-linux"/></svg></span>Linux</h3>
-        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64</span></p>
+        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64, about 35 MB, also as an AppImage</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">Download for Linux</span></a>
-        <p class="os-note">Extract it and run <code>./hivedesk</code>. If your archive tool dropped the run permission, run <code>chmod +x hivedesk</code> once.</p>
+        <p class="os-note">Run <code>tar -xzf hivedesk-linux-x64.tar.gz</code>, then <code>./hivedesk/hivedesk</code>. The window needs WebKitGTK; without it, hivedesk opens in your browser.</p>
         <div class="os-thanks" role="status" hidden>
           <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
           <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>
-          <ol class="thanks-steps"><li>Extract it: <code>tar -xzf hivedesk-linux-x64.tar.gz</code></li><li>Run <code>./hivedesk</code> (if needed, <code>chmod +x hivedesk</code> first).</li><li>On the first run it sets up a model and opens the Hive.</li></ol>
+          <ol class="thanks-steps"><li>Run <code>tar -xzf hivedesk-linux-x64.tar.gz</code>.</li><li>Start <code>./hivedesk/hivedesk</code> (or <code>chmod +x</code> and run the AppImage).</li><li>On the first run it downloads a model for your machine and opens the Hive.</li></ol>
           <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Back</button>
           <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
@@ -550,7 +551,7 @@
       </div>
       <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">See all versions</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="caption caption-center">Prefer a tiny script? The <a href="download/hivedesk-windows.cmd" download>Windows</a>, <a href="download/hivedesk-macos.command" download>macOS</a> and <a href="download/hivedesk-linux.sh" download>Linux</a> launchers check for Node.js 18 or newer and run <code>npx hivedesk@latest</code>; if Node.js is missing, they open the official download page and say why.</p>
+    <p class="caption caption-center">The downloads are not signed yet and do not update themselves; the local model is downloaded on the first run. Prefer a tiny script? The <a href="download/hivedesk-windows.cmd" download>Windows</a>, <a href="download/hivedesk-macos.command" download>macOS</a> and <a href="download/hivedesk-linux.sh" download>Linux</a> launchers check for Node.js 18 or newer and run <code>npx hivedesk@latest</code>; if Node.js is missing, they open the official download page and say why.</p>
 
     <article class="hd-card dl-cmd reveal">
       <div class="dl-cmd-copy">

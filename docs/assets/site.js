@@ -252,7 +252,7 @@ addEventListener('load', () => {
         $('[data-first-release]')?.setAttribute('hidden', '');
         for (const el of $$('[data-size]')) {
           const a = rel.assets.find((x) => x.name === el.dataset.size);
-          if (a) el.textContent = `${el.textContent}, ${fmtSize(a.size)}, ${rel.tag_name}`;
+          if (a) el.textContent = `${el.textContent.replace(/, about .*$/, '')}, ${fmtSize(a.size)}, ${rel.tag_name}`;
         }
       })
       .catch(() => {});

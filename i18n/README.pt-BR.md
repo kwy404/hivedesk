@@ -33,7 +33,7 @@ npx hivedesk
 
 O assistente pergunta o idioma, a pasta do projeto, qual cérebro usar, como a equipe deve trabalhar e quem faz parte dela. Toda pergunta tem um padrão recomendado, então apertar Enter até o fim funciona. Na próxima vez ele oferece a mesma configuração; `--yes` pula as perguntas.
 
-Prefere dois cliques? A [página de download](https://kwy404.github.io/hivedesk/#download) tem os arquivos para Windows (`hivedesk-windows-x64.zip`), macOS (`hivedesk-macos-universal.zip`) e Linux (`hivedesk-linux-x64.tar.gz`), além de scripts pequenos que conferem o Node.js 18 ou mais novo e rodam `npx hivedesk@latest`. Nada disso é assinado ainda, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam antes da primeira execução.
+Prefere o app de desktop? A [página de download](https://kwy404.github.io/hivedesk/#download) tem `hivedesk-windows-x64.zip` (uns 42 MB), `hivedesk-macos-universal.zip` (uns 80 MB) e `hivedesk-linux-x64.tar.gz` (uns 35 MB, também como AppImage) da [última versão](https://github.com/kwy404/hivedesk/releases/latest). Cada um traz o próprio Node.js, então não há nada para instalar antes; o hivedesk abre na própria janela. Eles ainda não são assinados, então o SmartScreen do Windows e o Gatekeeper do macOS perguntam uma vez, e não se atualizam sozinhos. O modelo local continua sendo baixado na primeira execução. O [desktop/README.md](../desktop/README.md) (em inglês) lista o conteúdo de cada pacote e os passos exatos da primeira abertura. Também há scripts pequenos que conferem o Node.js 18 ou mais novo e rodam `npx hivedesk@latest`.
 
 ### O que a primeira execução faz
 
@@ -167,4 +167,4 @@ As palavras valem uma vez só e expiram em 10 minutos. O pareamento passa por re
 
 ## Licença
 
-[MIT](../LICENSE). Feito por Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a>, <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).
+[MIT](../LICENSE). A janela de desktop usa o [Neutralinojs](https://neutralino.js.org/) (MIT). Feito por Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a>, <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).

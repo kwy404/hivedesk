@@ -33,7 +33,7 @@ npx hivedesk
 
 The wizard asks for the language, the project folder, which brain to use, how the crew should work and who is on it. Every question has a recommended default, so pressing Enter all the way works. Run it again and it offers to reuse the same setup; `--yes` skips the questions.
 
-Prefer a download? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip`, `hivedesk-macos-universal.zip` and `hivedesk-linux-x64.tar.gz` from the [latest release](https://github.com/kwy404/hivedesk/releases/latest), plus tiny launcher scripts that check for Node.js 18 or newer and run `npx hivedesk@latest` (if Node.js is missing, they open the official download page and say why). None of them is code signed yet, so Windows SmartScreen and macOS Gatekeeper ask before the first run.
+Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (about 42 MB), `hivedesk-macos-universal.zip` (about 80 MB) and `hivedesk-linux-x64.tar.gz` (about 35 MB, also as an AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 18 or newer and run `npx hivedesk@latest`.
 
 ### What the first run does
 
@@ -171,4 +171,4 @@ The words work once and expire after 10 minutes. Pairing goes through public MQT
 
 ## License
 
-[MIT](LICENSE). Made by Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a>, <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).
+[MIT](LICENSE). The desktop window uses [Neutralinojs](https://neutralino.js.org/) (MIT). Made by Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a>, <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).
