@@ -1,0 +1,73 @@
+/* GitHub window and the confirmation card. Uses the Hive tokens from hive.css. */
+
+.gh-tabs { display: flex; gap: 2px; padding: 6px 10px 0; border-bottom: 1px solid var(--line); flex: none; overflow-x: auto; }
+.gh-tab { appearance: none; background: none; border: 0; color: var(--muted-t); font: inherit; font-size: 12.5px; font-weight: 560; padding: 7px 10px 8px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+.gh-tab:hover { color: var(--text-2); }
+.gh-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--honey); }
+.gh-tab:focus-visible { outline: 2px solid var(--honey); outline-offset: -2px; border-radius: 6px; }
+
+.gh-stack { display: flex; flex-direction: column; gap: 12px; }
+.gh-stack > p { margin: 0; line-height: 1.55; }
+.gh-card { border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; background: rgb(242 233 218 / .025); display: flex; flex-direction: column; gap: 8px; }
+.gh-card h3 { margin: 0; font-size: 13px; font-weight: 640; color: var(--text); }
+.gh-card p { margin: 0; line-height: 1.5; }
+.gh-card a, .gh-repos a, .cl-md a { color: var(--honey-2); text-underline-offset: 2px; word-break: break-all; }
+.gh-perms { margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-2); line-height: 1.6; }
+.gh-wrap { flex-wrap: wrap; }
+.gh-card .row .field-in { flex: 1; min-width: 160px; }
+.gh-banner { border-radius: 10px; padding: 9px 12px; font-size: 12.5px; border: 1px solid var(--line-2); }
+.gh-banner p { margin: 4px 0 0; line-height: 1.5; }
+.gh-banner.bad { background: var(--bad-a); border-color: rgb(229 123 110 / .3); color: #F2B3AA; }
+.gh-banner.warn { background: var(--warn-a); border-color: rgb(232 180 92 / .3); color: var(--warn); }
+.gh-warn-t { color: var(--warn); }
+.gh-account { display: flex; align-items: center; gap: 12px; }
+.gh-account img, .gh-av { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; background: var(--panel-3); }
+.gh-login { font-weight: 650; font-size: 14px; }
+.gh-code { font-family: var(--font-mono); font-size: 22px; letter-spacing: .12em; color: var(--honey-2); padding: 6px 0; }
+.gh-dl, .ghc-facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 12.5px; }
+.gh-dl dt, .ghc-facts dt { color: var(--muted-t); }
+.gh-dl dd, .ghc-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.gh-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.gh-repos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.gh-repos li { display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--line); }
+.gh-repos li:last-child { border-bottom: 0; }
+.gh-pr { align-items: flex-start !important; }
+.gh-pr-st { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.gh-checks { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; display: flex; flex-direction: column; gap: 3px; }
+.gh-checks .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--faint); }
+.gh-checks .dot.ok { background: var(--ok); }
+.gh-checks .dot.bad { background: var(--bad); }
+.gh-checks .dot.run { background: var(--honey); }
+.linkish { appearance: none; background: none; border: 0; padding: 0; color: var(--honey-2); font: inherit; text-decoration: underline; cursor: pointer; }
+
+/* confirmation card */
+.ghc-scrim { position: fixed; inset: 0; z-index: 9970; background: rgb(8 7 6 / .6); backdrop-filter: blur(3px); }
+.ghc {
+  position: fixed; z-index: 9971; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); display: flex; flex-direction: column;
+  background: #1E1A16; border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--shadow-pop); overflow: hidden;
+}
+.ghc-head { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+.ghc-head h2 { margin: 0 0 3px; font-size: 15.5px; font-weight: 660; color: var(--text); overflow-wrap: anywhere; }
+.ghc-head p { margin: 0; font-size: 12.5px; line-height: 1.5; }
+.ghc-body { padding: 12px 18px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.ghc-body h3 { margin: 4px 0 0; font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-t); font-weight: 650; }
+.ghc-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.45; }
+.ghc-steps li > span.grow { overflow-wrap: anywhere; }
+.ghc-steps li { padding-left: 2px; }
+.ghc-steps li .hchip { margin-left: 8px; vertical-align: 1px; }
+.ghc-v { font-family: var(--font-mono); font-size: 12px; color: var(--text-2); overflow-wrap: anywhere; }
+.ghc-ta { width: 100%; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; resize: vertical; box-sizing: border-box; }
+.ghc-facts .field-in { width: 100%; box-sizing: border-box; }
+.ghc-radio { display: inline-flex; align-items: center; gap: 5px; margin-right: 14px; cursor: pointer; }
+.ghc-files summary { cursor: pointer; color: var(--text-2); }
+.ghc-files ul { margin: 6px 0 0; padding-left: 16px; max-height: 160px; overflow: auto; font-size: 12px; }
+.ghc-warn { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 8px 10px; border-radius: 9px; background: var(--warn-a); color: var(--warn); font-size: 12.5px; line-height: 1.45; }
+.ghc-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid var(--line); }
+
+@media (max-width: 760px) {
+  .ghc { top: auto; bottom: 0; transform: translateX(-50%); width: 100vw; max-height: 92vh; border-radius: 16px 16px 0 0; }
+  .gh-dl, .ghc-facts { grid-template-columns: 1fr; gap: 2px; }
+  .gh-dl dd, .ghc-facts dd { margin-bottom: 8px; }
+  .ghc-foot .btn { flex: 1; }
+}
