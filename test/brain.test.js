@@ -397,3 +397,27 @@ describe('local brain guards', () => {
     await expect(createLocalBrain({ mod, modelPath: path.join(dir, 'm-00001-of-00002.gguf'), freeMem: () => 8e9 })).rejects.toThrow('only 5 of 29 layers');
   });
 });
+
+describe('VRAM fallback', () => {
+  it('steps down to a smaller model on the GPU when the model does not fit in VRAM', async () => {
+    const bus = new EventBus();
+    const loaded = [];
+    const cached = new Set(['qwen2.5-coder-7b', 'qwen2.5-coder-3b']);
+    const m = new BrainManager({
+      bus, scheduler: new Scheduler(bus), home: tmpDir(),
+      fetchImpl: async () => { throw new TypeError('no network in tests'); },
+      hardware: { os: 't', cpus: 4, ramBytes: 16e9, freeRamBytes: 8e9, gpu: { name: 'G', vramBytes: 8.6e9, backend: 'cuda' }, diskFreeBytes: 100e9 },
+      isCachedImpl: (h, model) => cached.has(model.id),
+      loadRuntimeImpl: async () => ({ mod: {}, version: 't', entry: 'x' }),
+      createLocalImpl: async (o) => {
+        loaded.push([o.name, o.gpu]);
+        if (/7B/.test(o.name)) throw new Error('A context size of 4096 is too large for the available VRAM');
+        return { id: 'local', label: 'L', kind: 'local', info: () => ({ gpu: 'cuda', gpuLayers: 37, totalLayers: 37 }), chat: async () => ({}) };
+      }
+    });
+    await m.start();
+    expect(loaded).toEqual([[MODELS[3].name, true], [MODELS[2].name, true]]);
+    expect(bus.events.find((e) => e.type === 'brain.fallback').data.to).toMatchObject({ gpu: true, model: MODELS[2].name });
+    expect(bus.state.brain.state).toBe('ready');
+  });
+});

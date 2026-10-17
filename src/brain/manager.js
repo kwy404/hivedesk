@@ -266,6 +266,23 @@ export class BrainManager {
         this.status('error', { backend: 'local', model: name, detail: `could not load the model: ${err.message}`, hint: err.hint || 'Try a smaller model, close other apps to free memory, or use Ollama or LM Studio.' });
         return false;
       }
+      // The GPU works but the model does not fit in its VRAM: the next smaller model, still on the GPU.
+      const vramFull = /VRAM|layers fit|too large/i.test(String(err.message));
+      if (vramFull) {
+        const known = model || MODELS.find((m) => /qwen2\.5-coder/i.test(String(file)) && String(file).toLowerCase().includes(`-${m.short}-`)) || null;
+        const smaller = known ? smallerModel(known) : null;
+        if (smaller && smaller.bytes >= 1e9) {
+          this.bus.emit('brain.fallback', {
+            from: { backend: 'local', model: name, gpu: true },
+            to: { backend: 'local', model: smaller.name, gpu: true },
+            reason: `the model does not fit in the GPU memory: ${String(err.message).slice(0, 200)}`
+          });
+          this.log(`${name} does not fit in the GPU memory (${err.message}); trying ${smaller.name} on the GPU`);
+          const f3 = await this._ensureModel(smaller);
+          if (!f3) return false;
+          return this._load(runtime, f3, smaller.name, true, smaller);
+        }
+      }
       // The GPU could not take the model: the 1.5B model on the CPU (small enough for most machines).
       const small = modelById('qwen2.5-coder-1.5b');
       const same = model && model.id === small.id;

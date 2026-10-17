@@ -54,7 +54,7 @@ If Ollama or LM Studio is running (and the wizard did not choose something else)
 1. **The local runtime** `node-llama-cpp` is installed into `~/.hivedesk/runtime/` the first time (it is not a dependency of the package, so `npx hivedesk` itself stays small). It uses prebuilt binaries (CUDA, Vulkan, Metal or CPU). If the user's npm cache is locked or broken, the install is retried once with a private cache.
 2. **The download** goes to `~/.hivedesk/models/` with a progress bar (speed and time left) in the terminal and in the UI. A cut download resumes where it stopped. The file is checked against its published SHA-256 before use.
 3. **Loading, GPU first:**
-   * as many layers as fit go to the GPU next to the context; the log and the model status say how many, for example "vulkan, 37 of 37 layers on the GPU". If less than half of the layers fit, it does not run the model half on the CPU: it falls back (see below);
+   * as many layers as fit go to the GPU next to the context; the log and the model status say how many, for example "vulkan, 37 of 37 layers on the GPU". If less than half of the layers fit, it does not run the model half on the CPU: it steps down to the next smaller model on the GPU (see below);
    * on the GPU the weights are read once and uploaded, so almost nothing stays in RAM (measured with the 3B on a GTX 1060: 0.45 GB resident, against 2.4 GB when the file is memory mapped); on the CPU they are memory mapped, not copied;
    * free RAM is checked before loading: 2.5 GB when the model goes to the GPU, the model size plus 1.5 GB (at least 4 GB) on the CPU. With less, it does not load, so the machine does not freeze; it says how much is free and what to do;
    * context size: 4096 tokens, or 8192 on a GPU with 8 GB of VRAM or more (`--ctx` overrides it).
@@ -94,7 +94,8 @@ Every failure prints a plain message and a suggestion, in the terminal and in th
 | --- | --- | --- |
 | Not enough free disk for the chosen model | tries the next smaller model that fits; if none fits, stops before downloading | free some space, or use `--model` with a file you already have, or run Ollama or LM Studio |
 | No network (runtime install or model download) | stops that step, keeps any partial download for later | check the connection and press Retry, or use `--model <file.gguf>`, or `--demo` to look around |
-| The GPU fails to initialize, or less than half of the layers fit in VRAM | loads the 1.5B model on the CPU instead (downloading it first if needed), and says so | update the GPU driver, or close other GPU apps, or keep the CPU mode (slower) |
+| The model does not fit in the GPU memory (less than half of the layers, or not the context) | loads the next smaller model on the GPU instead (downloading it first if needed), and says so | close other GPU apps, or keep the smaller model |
+| The GPU backend fails to initialize | loads the 1.5B model on the CPU instead (downloading it first if needed), and says so | update the GPU driver, or keep the CPU mode (slower) |
 | Not enough free RAM to load the model | does not load it | close some apps and press Retry, or use a smaller model, or Ollama or LM Studio |
 | The runtime install fails | retries once with a private npm cache, then stops and keeps the server up | run `hivedesk --doctor`, or use Ollama or LM Studio with `--brain` |
 | The model file is corrupt (checksum mismatch) | deletes it and downloads it again once | none unless it fails twice |
