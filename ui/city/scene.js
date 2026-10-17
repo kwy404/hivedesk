@@ -137,7 +137,7 @@ export class CityScene {
     this.raf = requestAnimationFrame(this.loop);
     const calm = this.isCalm();
     if (calm && ts - this.lastDraw < 1000 / 30 - 2) return;
-    const dt = Math.min(0.05, (ts - this.last) / 1000);
+    const dt = Math.min(0.1, (ts - this.last) / 1000);
     this.last = ts;
     this.lastDraw = ts;
     this.now += dt;
@@ -286,7 +286,9 @@ export class CityScene {
         a = this.addActor(ag, place, first);
       } else {
         a.ag = ag;
-        if (a.placeKey !== place.key) this.walk(a, place);
+        // a walk is never cut short: the newest place waits until the bee arrives and has stayed a moment
+        if (a.placeKey !== place.key) { if (a.path.length || this.now < (a.dwellUntil || 0)) a.next = place; else this.walk(a, place); }
+        else a.next = null;
         if (ag.level > a.level) { this.label(a, this.t('city.fx.level', { n: ag.level }), '#FFD072', 1.6); this.sparkle(a, 16); this.sound('level'); }
         else if (ag.xp > a.xp && ag.level === a.level) this.label(a, this.t('city.fx.xp', { n: ag.xp - a.xp }), '#BFE3C6', 1.1);
         if (a.status !== ag.status && ag.status === 'idle' && a.status !== 'idle') a.idleSince = this.now;
@@ -547,16 +549,17 @@ export class CityScene {
         const to = a.path[0];
         const dx = to.x - a.pos.x; const dy = to.y - a.pos.y; const dz = to.z - a.pos.z;
         const dist = Math.hypot(dx, dy, dz * 0.7);
-        const step = WALK_SPEED * (a.path.length > 14 ? 1.7 : a.path.length > 6 ? 1.25 : 1) * dt;
+        const step = WALK_SPEED * (a.path.length > 14 ? 2.6 : a.path.length > 6 ? 1.3 : 1) * dt;
         if (Math.abs(dx - dy) > 0.01) a.facing = dx - dy > 0 ? 1 : -1;
         if (dist <= step) {
           a.pos = { x: to.x, y: to.y, z: to.z };
           a.path.shift();
-          if (!a.path.length) { a.squashAt = this.now; a.onDone?.(); a.onDone = null; }
+          if (!a.path.length) { a.squashAt = this.now; a.onDone?.(); a.onDone = null; a.dwellUntil = this.now + (a.place.kind === 'room' && a.ag.taskId ? 2.5 : 0.6); }
         } else {
           a.pos.x += (dx / dist) * step; a.pos.y += (dy / dist) * step; a.pos.z += (dz / dist) * step;
         }
       }
+      if (a.next && !a.path.length && this.now >= (a.dwellUntil || 0)) { const nx = a.next; a.next = null; if (nx.key !== a.placeKey) this.walk(a, nx); }
       if (a.born > 0) a.alpha = clamp((this.now - a.born) / 0.6);
       if (a.leaving) a.alpha = 1 - clamp((this.now - a.leaving - 1.2) / 1.2);
       const st = a.ag.status;

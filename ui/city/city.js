@@ -134,7 +134,7 @@ export async function initCity({ desk, addDockItem, office: off }) {
     hour: hourNow,
     t: tr,
     onSound: (n) => audio.fx(n),
-    onFrame: (sc) => { syncHits(sc); syncCursors(sc); levels(sc); },
+    onFrame: (sc) => { syncHits(sc); syncCursors(sc); levels(sc); roomWatch(sc); },
   });
   new ResizeObserver(() => { if (active) scene.resize(layer.clientWidth, layer.clientHeight); }).observe(layer);
   wireCanvas();
@@ -215,6 +215,15 @@ function leave({ quiet, done } = {}) {
   const end = () => { layer.hidden = true; done?.(); };
   if (reducedMotion() || quiet) end();
   else layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-in' }).onfinish = end;
+}
+
+/** The room panel lists who is in the room on screen: repaint it when a bee arrives or leaves. */
+let roomSig = '';
+function roomWatch(sc) {
+  if (side?.kind !== 'room') return;
+  let sig = '';
+  for (const a of sc.actors.values()) if (a.place.kind === 'room' && a.place.room === side.id && !a.path.length) sig += `${a.id},`;
+  if (sig !== roomSig) { roomSig = sig; paintSide(); }
 }
 
 function levels(sc) {
@@ -815,7 +824,8 @@ function machinePanel(focusId) {
 function roomPanel(id) {
   const v = st.view;
   const r = v.rooms[id] || { id, tools: [], accepts: [] };
-  const agents = Object.values(v.agents).filter((a) => a.room === id && (a.home === v.selfId || a.taskId));
+  // who is in the room on screen: a friend's agent only once it has walked over the bridge
+  const agents = Object.values(v.agents).filter((a) => { const act = scene.actors.get(a.id); return act ? act.place.kind === 'room' && act.place.room === id : a.room === id; });
   const tasks = Object.values(v.tasks).filter((x) => x.room === id && x.status !== 'done');
   const box = h('div', { class: 'ct-roompanel', style: `--c:${ROOM_COLOR[id] || r.color || '#FFB531'}` });
   box.append(
@@ -881,7 +891,7 @@ function feed(ev) {
     case 'city.borrow.requested': line = tr('city.feed.borrowAsk', { agent: v.agents[d.borrow?.agentId]?.name || '', machine: machineName(d.borrow?.to) }); tone = 'info'; break;
     case 'city.borrow.answered': if (d.accepted) { const b = st.city.borrows?.[d.borrowId]; line = tr('city.feed.borrowStart', { agent: v.agents[b?.agentId]?.name || '', machine: machineName(b?.to) }); tone = 'info'; } break;
     case 'city.borrow.ended': { const b = st.city.borrows?.[d.borrowId]; line = tr('city.feed.borrowEnd', { agent: v.agents[b?.agentId]?.name || '' }); break; }
-    case 'city.agent.leveled': line = tr('city.feed.leveled', { agent: v.agents[d.agentId]?.name || '', n: d.level }); tone = 'honey'; break;
+    case 'city.agent.leveled': if ((d.level || 1) < 2) break; line = tr('city.feed.leveled', { agent: v.agents[d.agentId]?.name || '', n: d.level }); tone = 'honey'; break;
     default: break;
   }
   if (!line) return;
