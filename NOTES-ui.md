@@ -55,3 +55,14 @@ Please keep them when you commit.
    `<link rel="manifest" href="/manifest.webmanifest">` and `<script type="module" src="/pwa.js"></script>`.
    The CLI now opens an app style window (`--app`, own profile in `~/.hivedesk/browser-profile`), uses port 4174 when free,
    and keeps the token in `~/.hivedesk/token`, so the installed app reopens without a token in the URL.
+
+## From desktop (desktop/)
+
+1. In the desktop app the UI runs in an iframe of `desktop/shell.html` (same origin, the hive title
+   bar is above it). On load the shell posts `{ type: 'hivedesk:desktop:hello', platform, native, ops }`
+   to the UI. If you want native pickers (for example the GGUF file in Settings, or a project folder):
+   `parent.postMessage({ type: 'hivedesk:desktop', id, op: 'pickFile', data: { title, filters: [{ name: 'GGUF', extensions: ['gguf'] }] } }, location.origin)`
+   and listen for `{ type: 'hivedesk:desktop:reply', id, ok, result: { paths } }`. Ops: `pickFolder`,
+   `pickFile`, `openFolder`, `info`. Details in desktop/README.md.
+2. i18n: `desktop/i18n.json` has the `cli.desktop.*` keys in the 10 languages. Please merge them into
+   `i18n/<locale>.json` (the shared file wins when it has the key).

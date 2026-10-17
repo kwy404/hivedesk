@@ -1,0 +1,200 @@
+name: Desktop
+
+# On a version tag (v0.1.0, v0.2.0, ...): builds the downloadable desktop packages and attaches them,
+# with the runtime binaries that `npx hivedesk` downloads, to the GitHub release of that tag.
+# Run it by hand (workflow_dispatch) to build the packages as workflow artifacts only.
+# What each package contains: desktop/README.md.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # The Node.js runtime bundled in the packages (official build, checked against SHASUMS256.txt).
+  BUNDLED_NODE: v24.21.0
+  APPIMAGETOOL_URL: https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage
+  APPIMAGETOOL_SHA256: ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0
+
+jobs:
+  check:
+    name: Desktop tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          test "v$v" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} does not match package.json $v"; exit 1; }
+      - run: npx vitest run test/desktop
+
+  runtime:
+    name: Runtime binaries for npx
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node desktop/scripts/runtime-assets.mjs dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime
+          path: dist/*
+          if-no-files-found: error
+
+  windows:
+    name: Windows x64
+    needs: check
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bundled Node.js
+        id: node
+        shell: pwsh
+        run: |
+          $bin = node desktop/scripts/fetch-node.mjs --version $env:BUNDLED_NODE --platform win-x64 --out build/node | Select-Object -Last 1
+          "bin=$bin" >> $env:GITHUB_OUTPUT
+      - name: Launcher (hivedesk.exe)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build | Out-Null
+          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" -nologo -target:winexe -optimize+ `
+            -out:build\hivedesk.exe -win32icon:desktop\icons\hivedesk.ico -r:System.Windows.Forms.dll `
+            desktop\launcher\windows\Launcher.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Stage
+        shell: pwsh
+        run: node desktop/scripts/package.mjs --target windows-x64 --node "${{ steps.node.outputs.bin }}" --launcher build\hivedesk.exe --out stage
+      - name: Starts (version check with the bundled Node)
+        shell: pwsh
+        run: stage\hivedesk\node\node.exe stage\hivedesk\app\desktop\main.js --version
+      - name: Zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Path stage\hivedesk -DestinationPath dist\hivedesk-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+          if-no-files-found: error
+
+  macos:
+    name: macOS universal
+    needs: check
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bundled Node.js (universal, from the arm64 and x64 builds)
+        run: |
+          arm="$(node desktop/scripts/fetch-node.mjs --version "$BUNDLED_NODE" --platform darwin-arm64 --out build/node-arm64 | tail -n 1)"
+          x64="$(node desktop/scripts/fetch-node.mjs --version "$BUNDLED_NODE" --platform darwin-x64 --out build/node-x64 | tail -n 1)"
+          lipo -create "$arm" "$x64" -output build/node-universal
+          lipo -info build/node-universal
+          cp "$(dirname "$(dirname "$arm")")/LICENSE" build/LICENSE
+      - name: Stage
+        run: node desktop/scripts/package.mjs --target macos-universal --node build/node-universal --out stage
+      - name: Ad hoc signature (Apple Silicon needs one; this is not a Developer ID signature)
+        run: |
+          codesign --force --sign - stage/hivedesk.app/Contents/Resources/app/desktop/bin/hivedesk-runtime
+          codesign --force --sign - stage/hivedesk.app/Contents/Resources/node/bin/node
+          codesign --force --deep --sign - stage/hivedesk.app
+          codesign --verify --deep --verbose=2 stage/hivedesk.app
+      - name: Starts (version check with the bundled Node)
+        run: stage/hivedesk.app/Contents/Resources/node/bin/node stage/hivedesk.app/Contents/Resources/app/desktop/main.js --version
+      - name: Zip
+        run: |
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent stage/hivedesk.app dist/hivedesk-macos-universal.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*
+          if-no-files-found: error
+
+  linux:
+    name: Linux x64
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bundled Node.js
+        run: echo "NODE_BIN=$(node desktop/scripts/fetch-node.mjs --version "$BUNDLED_NODE" --platform linux-x64 --out build/node | tail -n 1)" >> "$GITHUB_ENV"
+      - name: Stage
+        run: node desktop/scripts/package.mjs --target linux-x64 --node "$NODE_BIN" --out stage
+      - name: Starts (version check with the bundled Node)
+        run: stage/hivedesk/node/bin/node stage/hivedesk/app/desktop/main.js --version
+      - name: Archive
+        run: |
+          mkdir -p dist
+          tar -czf dist/hivedesk-linux-x64.tar.gz -C stage hivedesk
+      - name: AppImage
+        continue-on-error: true
+        run: |
+          curl -fsSL -o build/appimagetool "$APPIMAGETOOL_URL"
+          echo "$APPIMAGETOOL_SHA256  build/appimagetool" | sha256sum -c -
+          chmod +x build/appimagetool
+          mkdir -p build/AppDir/usr/lib
+          cp -a stage/hivedesk build/AppDir/usr/lib/hivedesk
+          cp desktop/launcher/linux/AppRun build/AppDir/AppRun
+          chmod +x build/AppDir/AppRun
+          cp desktop/launcher/linux/hivedesk.desktop build/AppDir/hivedesk.desktop
+          cp desktop/icons/icon-512.png build/AppDir/hivedesk.png
+          APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 build/appimagetool --no-appstream build/AppDir dist/hivedesk-linux-x86_64.AppImage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: Attach to the release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [runtime, windows, macos, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --title "hivedesk ${tag#v}" --notes "Downloads for Windows, macOS and Linux. They are not signed: see desktop/README.md in the repository for the first launch prompts. Or run npx hivedesk with Node.js 18 or newer."
+          fi
+          gh release upload "$tag" dist/* --clobber

@@ -1,0 +1,23 @@
+#!/bin/sh
+# hivedesk.app launcher: runs the bundled Node (or the system Node) with the app, no terminal needed.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+NODE="$HERE/Resources/node/bin/node"
+if [ ! -x "$NODE" ]; then
+  for c in /opt/homebrew/bin/node /usr/local/bin/node "$(command -v node 2>/dev/null)"; do
+    if [ -n "$c" ] && [ -x "$c" ]; then NODE="$c"; break; fi
+  done
+fi
+HOME_DIR="${HIVEDESK_HOME:-$HOME/.hivedesk}"
+mkdir -p "$HOME_DIR/desktop"
+LOG="$HOME_DIR/desktop/launcher.log"
+if [ ! -x "$NODE" ]; then
+  osascript -e 'display alert "hivedesk could not find Node.js" message "Download the package again, or install Node.js 18 or newer from nodejs.org."' >/dev/null 2>&1
+  exit 1
+fi
+export HIVEDESK_DESKTOP=1
+"$NODE" "$HERE/Resources/app/desktop/main.js" "$@" >"$LOG" 2>&1
+code=$?
+if [ "$code" -ne 0 ] && [ "$code" -ne 130 ]; then
+  osascript -e "display alert \"hivedesk stopped with an error\" message \"The log is in $LOG\"" >/dev/null 2>&1
+fi
+exit "$code"

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="{{LANG}}" class="{{PLATFORM}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<title>hivedesk</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #0E0D0B; --bar: #141210; --bar-2: #191613; --line: rgb(242 233 218 / .07); --line-2: rgb(242 233 218 / .12);
+    --text: #F2E9DA; --text-2: #CFC4B3; --muted: #8C8172; --honey: #FFB531; --honey-a: rgb(255 181 49 / .12);
+    --hover: rgb(242 233 218 / .07); --press: rgb(242 233 218 / .12); --close: #C94F43; --bar-h: 36px;
+  }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+    font: 12.5px/1 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  #bar { position: fixed; inset: 0 0 auto 0; height: var(--bar-h); display: flex; align-items: center; z-index: 3;
+    background: linear-gradient(180deg, var(--bar-2), var(--bar)); border-bottom: 1px solid var(--line); user-select: none; -webkit-user-select: none; }
+  #bar::after { content: ""; position: absolute; inset: auto 0 -1px 0; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 181 49 / .35) 30%, rgb(255 181 49 / .35) 70%, transparent); opacity: .5; }
+  #drag { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; gap: 9px; padding: 0 10px 0 12px; cursor: default; }
+  #drag svg { flex: none; }
+  .name { font-weight: 600; letter-spacing: .01em; }
+  .dir { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .dir::before { content: "/"; margin-right: 8px; color: var(--line-2); }
+  .tag { color: var(--honey); background: var(--honey-a); border-radius: 5px; padding: 3px 6px; font-size: 11px; font-weight: 600; display: none; }
+  .paused .tag { display: inline-block; }
+  .ctl { display: flex; height: 100%; }
+  .ctl button { width: 46px; height: 100%; border: 0; background: transparent; color: var(--text-2); display: grid; place-items: center; cursor: default; }
+  .ctl button:hover { background: var(--hover); color: var(--text); }
+  .ctl button:active { background: var(--press); }
+  .ctl button.x:hover { background: var(--close); color: #fff; }
+  .ctl button:focus-visible, #menu button:focus-visible { outline: 2px solid var(--honey); outline-offset: -2px; }
+  .mac .ctl { order: -1; padding-left: 8px; gap: 8px; align-items: center; }
+  .mac .ctl button { width: 12px; height: 12px; border-radius: 50%; padding: 0; }
+  .mac .ctl button svg { display: none; }
+  .mac .ctl button.x { background: #FF5F57; } .mac .ctl button.min { background: #FEBC2E; } .mac .ctl button.max { background: #28C840; }
+  .mac .ctl button.menu { order: 9; width: 30px; height: 26px; border-radius: 6px; background: transparent; margin-left: 4px; }
+  .mac .ctl button.menu svg { display: block; }
+  #menu { position: fixed; top: calc(var(--bar-h) + 4px); right: 8px; z-index: 4; min-width: 280px; padding: 6px; display: none;
+    background: #1F1B17; border: 1px solid var(--line-2); border-radius: 10px; box-shadow: 0 18px 50px -10px rgb(0 0 0 / .7); }
+  .mac #menu { right: auto; left: 76px; }
+  #menu.open { display: block; }
+  #menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 7px;
+    background: transparent; color: var(--text); font: inherit; text-align: left; cursor: default; }
+  #menu button:hover { background: var(--hover); }
+  #menu .check { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--line-2); flex: none; display: grid; place-items: center; }
+  #menu [aria-checked="true"] .check { background: var(--honey); border-color: var(--honey); }
+  #menu [aria-checked="true"] .check::after { content: ""; width: 7px; height: 4px; border: 2px solid #1A1206; border-top: 0; border-right: 0; transform: translateY(-1px) rotate(-45deg); }
+  #menu hr { border: 0; border-top: 1px solid var(--line); margin: 6px 4px; }
+  iframe { position: fixed; top: var(--bar-h); left: 0; width: 100%; height: calc(100% - var(--bar-h)); border: 0; background: var(--bg); display: block; }
+  .edge { position: fixed; z-index: 5; }
+  .max .edge, .system .edge { display: none; }
+  .n { top: 0; left: 8px; right: 8px; height: 4px; cursor: ns-resize; } .s { bottom: 0; left: 8px; right: 8px; height: 5px; cursor: ns-resize; }
+  .e { right: 0; top: 8px; bottom: 8px; width: 5px; cursor: ew-resize; } .w { left: 0; top: 8px; bottom: 8px; width: 5px; cursor: ew-resize; }
+  .ne, .nw, .se, .sw { width: 9px; height: 9px; } .ne { top: 0; right: 0; cursor: nesw-resize; } .sw { bottom: 0; left: 0; cursor: nesw-resize; }
+  .nw { top: 0; left: 0; cursor: nwse-resize; } .se { bottom: 0; right: 0; cursor: nwse-resize; }
+  .system #bar { display: none; } .system iframe { top: 0; height: 100%; }
+  .dragging iframe { pointer-events: none; }
+</style>
+</head>
+<body>
+<header id="bar">
+  <div id="drag" title="hivedesk">
+    <svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD072"/><stop offset="1" stop-color="#F29A1F"/></linearGradient><clipPath id="c"><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z"/></clipPath></defs><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z" fill="url(#g)"/><g clip-path="url(#c)" fill="#24160C"><rect y="12.2" width="32" height="3"/><rect y="18.6" width="32" height="3"/></g></svg>
+    <span class="name">hivedesk</span>
+    <span class="dir" id="dir"></span>
+    <span class="tag" id="tag"></span>
+  </div>
+  <div class="ctl">
+    <button class="menu" id="bMenu" aria-haspopup="true" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 4h10M2 7h10M2 10h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+    <button class="min" id="bMin"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5h8" stroke="currentColor"/></svg></button>
+    <button class="max" id="bMax"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" fill="none" stroke="currentColor"/></svg></button>
+    <button class="x" id="bClose"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1l8 8M9 1 1 9" stroke="currentColor"/></svg></button>
+  </div>
+</header>
+<div id="menu" role="menu">
+  <button role="menuitem" id="mFolder"></button>
+  <button role="menuitem" id="mOpen"></button>
+  <hr>
+  <button role="menuitem" id="mPause"></button>
+  <hr>
+  <button role="menuitemcheckbox" id="mTray" aria-checked="false"><span class="check"></span><span></span></button>
+  <button role="menuitemcheckbox" id="mFrame" aria-checked="false"><span class="check"></span><span></span></button>
+</div>
+<div class="edge n" data-e="n"></div><div class="edge s" data-e="s"></div><div class="edge e" data-e="e"></div><div class="edge w" data-e="w"></div>
+<div class="edge ne" data-e="ne"></div><div class="edge nw" data-e="nw"></div><div class="edge se" data-e="se"></div><div class="edge sw" data-e="sw"></div>
+<iframe id="ui" title="hivedesk" allow="clipboard-read; clipboard-write; autoplay"></iframe>
+<script type="application/json" id="cfg">{{CONFIG}}</script>
+<script>
+(() => {
+  const C = JSON.parse(document.getElementById('cfg').textContent);
+  const L = C.strings;
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
+  const ui = $('ui');
+  // Windows positions windows in physical pixels; macOS and Linux in the same units as the page.
+  const scale = () => (C.platform === 'windows' ? window.devicePixelRatio || 1 : 1);
+  const api = (op, data) => fetch('/api/desktop/' + op, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data || {}), credentials: 'same-origin'
+  }).then((r) => r.json()).catch(() => ({}));
+
+  let state = C.state;
+  function render() {
+    root.classList.toggle('max', !!state.maximized);
+    root.classList.toggle('paused', !!state.paused);
+    root.classList.toggle('system', state.frame === 'system' && C.native);
+    $('dir').textContent = state.dirName || '';
+    $('dir').title = state.dir || '';
+    $('tag').textContent = L.paused;
+    $('bMax').title = state.maximized ? L.restore : L.maximize;
+    $('bMax').setAttribute('aria-label', $('bMax').title);
+    $('mPause').textContent = state.paused ? L.resume : L.pause;
+    $('mTray').setAttribute('aria-checked', String(!!state.closeToTray));
+    $('mFrame').setAttribute('aria-checked', String(state.frame === 'system'));
+  }
+  const refresh = () => fetch('/api/desktop/state', { credentials: 'same-origin' }).then((r) => r.json()).then((s) => { state = s; render(); }).catch(() => {});
+
+  for (const [id, key] of [['bMin', 'minimize'], ['bClose', 'close'], ['bMenu', 'menu']]) { $(id).title = L[key]; $(id).setAttribute('aria-label', L[key]); }
+  $('mFolder').textContent = L.chooseFolder;
+  $('mOpen').textContent = L.openFolder;
+  $('mTray').lastElementChild.textContent = L.closeToTray;
+  $('mFrame').lastElementChild.textContent = L.systemFrame;
+  if (!C.native) { $('bMin').hidden = true; $('bMax').hidden = true; $('bClose').hidden = true; $('mFrame').hidden = true; $('mTray').hidden = true; }
+
+  const win = (op, extra) => api('window', Object.assign({ op }, extra || {}));
+  $('bMin').onclick = () => win('minimize');
+  $('bMax').onclick = () => win('toggleMaximize').then(refresh);
+  $('bClose').onclick = () => win('close');
+
+  const menu = $('menu');
+  const closeMenu = () => { menu.classList.remove('open'); $('bMenu').setAttribute('aria-expanded', 'false'); };
+  $('bMenu').onclick = (e) => { e.stopPropagation(); const open = !menu.classList.contains('open'); menu.classList.toggle('open', open); $('bMenu').setAttribute('aria-expanded', String(open)); if (open) menu.querySelector('button:not([hidden])').focus(); };
+  document.addEventListener('pointerdown', (e) => { if (!menu.contains(e.target) && e.target !== $('bMenu')) closeMenu(); });
+  window.addEventListener('blur', closeMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  $('mFolder').onclick = () => { closeMenu(); api('project', { choose: true }); };
+  $('mOpen').onclick = () => { closeMenu(); api('openFolder', {}); };
+  $('mPause').onclick = () => { closeMenu(); api('crew', { paused: !state.paused }).then(refresh); };
+  $('mTray').onclick = () => api('settings', { closeToTray: !state.closeToTray }).then(refresh);
+  $('mFrame').onclick = () => api('settings', { frame: state.frame === 'system' ? 'custom' : 'system' }).then(refresh);
+
+  // Moving the frameless window: the runtime moves it, the page follows the pointer.
+  let busy = false;
+  let next = null;
+  function pump() {
+    if (busy || !next) return;
+    const body = next; next = null; busy = true;
+    api('window', body).finally(() => { busy = false; pump(); });
+  }
+  const queue = (body) => { next = body; requestAnimationFrame(pump); };
+  const drag = $('drag');
+  drag.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || !C.native) return;
+    if (e.detail === 2) { win('toggleMaximize').then(refresh); return; }
+    if (state.maximized) return;
+    const ox = e.clientX; const oy = e.clientY;
+    drag.setPointerCapture(e.pointerId);
+    root.classList.add('dragging');
+    const move = (ev) => queue({ op: 'move', x: Math.round((ev.screenX - ox) * scale()), y: Math.round((ev.screenY - oy) * scale()) });
+    const up = () => { drag.removeEventListener('pointermove', move); root.classList.remove('dragging'); api('window', { op: 'saveState' }); };
+    drag.addEventListener('pointermove', move);
+    drag.addEventListener('pointerup', up, { once: true });
+    drag.addEventListener('pointercancel', up, { once: true });
+  });
+  // Resizing from the edges.
+  for (const el of document.querySelectorAll('.edge')) {
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || !C.native || state.maximized) return;
+      const dir = el.dataset.e;
+      const start = { x: e.screenX - e.clientX, y: e.screenY - e.clientY, w: window.innerWidth, h: window.innerHeight, px: e.screenX, py: e.screenY };
+      el.setPointerCapture(e.pointerId);
+      root.classList.add('dragging');
+      const move = (ev) => {
+        const dx = ev.screenX - start.px; const dy = ev.screenY - start.py;
+        let { x, y, w, h } = start;
+        if (dir.includes('e')) w = Math.max(C.min.width, start.w + dx);
+        if (dir.includes('s')) h = Math.max(C.min.height, start.h + dy);
+        if (dir.includes('w')) { w = Math.max(C.min.width, start.w - dx); x = start.x + start.w - w; }
+        if (dir.includes('n')) { h = Math.max(C.min.height, start.h - dy); y = start.y + start.h - h; }
+        const k = scale();
+        queue({ op: 'bounds', x: Math.round(x * k), y: Math.round(y * k), width: Math.round(w * k), height: Math.round(h * k) });
+      };
+      const up = () => { el.removeEventListener('pointermove', move); root.classList.remove('dragging'); api('window', { op: 'saveState' }); };
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerup', up, { once: true });
+      el.addEventListener('pointercancel', up, { once: true });
+    });
+  }
+  let rt = 0;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(refresh, 250); });
+  window.addEventListener('focus', refresh);
+
+  // A small bridge for the desktop UI inside the frame: pickers and the project folder.
+  const BRIDGE = ['pickFolder', 'pickFile', 'openFolder', 'info'];
+  window.addEventListener('message', (e) => {
+    if (e.source !== ui.contentWindow || e.origin !== location.origin) return;
+    const m = e.data;
+    if (!m || m.type !== 'hivedesk:desktop' || !BRIDGE.includes(m.op)) return;
+    api('bridge', { op: m.op, data: m.data || {} }).then((res) => {
+      ui.contentWindow.postMessage({ type: 'hivedesk:desktop:reply', id: m.id, ok: !res.error, result: res.result, error: res.error }, location.origin);
+    });
+  });
+
+  ui.addEventListener('load', () => {
+    let detail = {};
+    try {
+      const d = ui.contentDocument;
+      detail = { title: d.title, scripts: d.scripts.length, body: d.body ? d.body.children.length : 0 };
+    } catch (err) { detail = { error: String(err) }; }
+    ui.contentWindow.postMessage({ type: 'hivedesk:desktop:hello', platform: C.platform, native: C.native, ops: BRIDGE }, location.origin);
+    api('ready', { frame: true, detail });
+  });
+  render();
+  ui.src = C.start;
+  api('ready', { shell: true });
+})();
+</script>
+</body>
+</html>

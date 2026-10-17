@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="hivedesk">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#27221D"/><stop offset="1" stop-color="#110F0D"/></linearGradient>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD072"/><stop offset="1" stop-color="#F09A1E"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".46" r=".5"><stop offset="0" stop-color="#FFB531" stop-opacity=".26"/><stop offset="1" stop-color="#FFB531" stop-opacity="0"/></radialGradient>
+    <pattern id="comb" width="72" height="124.7" patternUnits="userSpaceOnUse" patternTransform="translate(8 0)">
+      <path d="M36 0 72 20.8v41.6L36 83.1 0 62.4V20.8zM0 62.4v41.6l36 20.7M72 62.4v41.6l-36 20.7" fill="none" stroke="#F2E9DA" stroke-opacity=".05" stroke-width="3"/>
+    </pattern>
+    <clipPath id="sq"><rect x="64" y="64" width="896" height="896" rx="204"/></clipPath>
+    <clipPath id="hx"><path d="M872 653 Q872 720 814 754 L570 894 Q512 928 454 894 L210 754 Q152 720 152 653 L152 371 Q152 304 210 270 L454 130 Q512 96 570 130 L814 270 Q872 304 872 371 Z"/></clipPath>
+  </defs>
+  <g clip-path="url(#sq)">
+    <rect x="64" y="64" width="896" height="896" fill="url(#bg)"/>
+    <rect x="64" y="64" width="896" height="896" fill="url(#comb)"/>
+    <rect x="64" y="64" width="896" height="896" fill="url(#glow)"/>
+  </g>
+  <rect x="65.5" y="65.5" width="893" height="893" rx="203" fill="none" stroke="#F2E9DA" stroke-opacity=".12" stroke-width="3"/>
+  <g transform="translate(512 512) scale(.74) translate(-512 -512)">
+    <path d="M872 653 Q872 720 814 754 L570 894 Q512 928 454 894 L210 754 Q152 720 152 653 L152 371 Q152 304 210 270 L454 130 Q512 96 570 130 L814 270 Q872 304 872 371 Z" fill="url(#lg)"/>
+    <g clip-path="url(#hx)">
+      <rect x="0" y="400" width="1024" height="120" fill="#1B1714" opacity=".9"/>
+      <rect x="0" y="640" width="1024" height="120" fill="#1B1714" opacity=".9"/>
+      <path d="M0 0H608L0 672Z" fill="#FFFFFF" opacity=".18"/>
+    </g>
+    <path d="M872 653 Q872 720 814 754 L570 894 Q512 928 454 894 L210 754 Q152 720 152 653 L152 371 Q152 304 210 270 L454 130 Q512 96 570 130 L814 270 Q872 304 872 371 Z" fill="none" stroke="#FFE3A3" stroke-opacity=".45" stroke-width="10"/>
+  </g>
+</svg>

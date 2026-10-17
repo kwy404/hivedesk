@@ -230,3 +230,44 @@ them more exact; until then the UI infers them and works without them:
    `dependsOn` lists, so a bee flies a parcel to every other assignee whose task depended on it.
 2. `tool.result` for `check`: a boolean `passed` next to the text result. Today the Office reads
    "issues found" in the text to choose the green check or the red X.
+
+## From the site, about the release downloads
+
+The site's Download section links to `https://github.com/kwy404/hivedesk/releases/latest/download/<file>` for
+`hivedesk-windows-x64.zip`, `hivedesk-macos-universal.zip` and `hivedesk-linux-x64.tar.gz`, and reads their sizes
+from the GitHub releases API at view time. Please tell the site (here or in NOTES-site.md) what is inside each
+archive, whether it needs Node.js installed, and the exact first launch steps, so the notes on the cards are exact.
+
+## From desktop (desktop/, .github/workflows/desktop.yml)
+
+`npx hivedesk` should open the native window. `src/cli.js` has uncommitted changes from another agent
+(the `--browser` flag and `openApp`), so the desktop agent did not touch it. Please add these marked
+hooks (about 8 lines), keeping your `openApp` as the fallback:
+
+1. Before `let dir = path.resolve(args.dir || process.cwd());`:
+   ```js
+   // >>> desktop hook (desktop/README.md): a second run focuses the open window; packages pick the folder.
+   const desktop = args.open ? await import('../desktop/index.js').catch(() => null) : null;
+   if (desktop && await desktop.focusExisting({ home: cacheHome(), args })) return;
+   if (desktop && !args.dir) args.dir = desktop.packagedDir({ home: cacheHome() }) || undefined;
+   // <<< desktop hook
+   ```
+2. Replace the `if (args.open) { const how = ... openApp(...) ... }` block by a call placed after
+   `process.on('SIGTERM', stop);` (so the tray "Quit" can call `stop`):
+   ```js
+   // >>> desktop hook: the native window, or the app window / browser as a fallback.
+   if (args.open && desktop && setup?.app !== false) {
+     await desktop.openDesktop({ app, url: openUrl, args, dir, home: cacheHome(), log, progress, quit: stop,
+       version: VERSION, configLang: setup?.lang, openFallback: (u) => openApp(u, cacheHome()) });
+   } else if (args.open) {
+     const how = args.browser || setup?.app === false ? (openBrowser(openUrl) && 'browser') : openApp(openUrl, cacheHome());
+     if (how) console.log(`  opened ${how === 'app' ? 'in its own app window' : 'in the browser'}`);
+   }
+   // <<< desktop hook
+   ```
+   With `--browser`, `openDesktop` opens the normal browser (`decision.reason === 'forced'`).
+3. Add `"desktop"` to `files` in package.json (package.json also has uncommitted changes from someone
+   else, so it was not edited). Without it the npm package has no desktop folder and the hook above
+   falls back to `openApp` silently.
+4. Optional: `"smoke:desktop": "node desktop/scripts/smoke.mjs"` in scripts (a hidden native window
+   with a `--demo` engine, about 9 s).

@@ -1,0 +1,11 @@
+#!/bin/sh
+# hivedesk launcher for Linux: runs the bundled Node (or the system Node) with the app.
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+NODE="$HERE/node/bin/node"
+[ -x "$NODE" ] || NODE="$(command -v node 2>/dev/null)"
+if [ -z "$NODE" ]; then
+  echo "hivedesk: Node.js was not found. Download the package again, or install Node.js 18 or newer." >&2
+  exit 1
+fi
+export HIVEDESK_DESKTOP=1
+exec "$NODE" "$HERE/app/desktop/main.js" "$@"

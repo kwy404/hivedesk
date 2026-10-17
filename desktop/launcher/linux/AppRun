@@ -1,0 +1,5 @@
+#!/bin/sh
+# AppImage entry point.
+HERE="$(dirname "$(readlink -f "$0")")"
+export HIVEDESK_DESKTOP=1
+exec "$HERE/usr/lib/hivedesk/node/bin/node" "$HERE/usr/lib/hivedesk/app/desktop/main.js" "$@"

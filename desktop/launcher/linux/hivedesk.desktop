@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=hivedesk
+Comment=A crew of AI workers that build real files on your machine with a local model
+Exec=hivedesk
+Icon=hivedesk
+Terminal=false
+Categories=Development;
+StartupWMClass=hivedesk
