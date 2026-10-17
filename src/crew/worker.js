@@ -162,6 +162,7 @@ export async function runTask(ctx) {
   /** Files this worker read or created in this task: changing any other existing file needs a read first. */
   const known = new Set();
   let hint = '';
+  let nothingAsked = false;
   for (let n = 1; n <= maxTurns; n++) {
     if (signal?.aborted) throw new Error('cancelled');
     if (ctx.budget) {
@@ -218,6 +219,12 @@ export async function runTask(ctx) {
     if (action.tool === 'done') {
       // Do not take "done" at face value when the static checks still fail on this task's files.
       const remaining = ctx.verify ? ctx.verify([...wrote]) : [];
+      // "Done" without a single file written is asked about once: often the model just forgot to write.
+      if (!wrote.size && !nothingAsked && task.kind !== 'qa') {
+        nothingAsked = true;
+        steps.push({ action, result: 'You have not written or changed any file in this task. If the task needs a file, write it now with write_file (or edit_file). If nothing needs to change, answer with done again and say why.' });
+        continue;
+      }
       if (remaining.length && rejected < 2) {
         rejected++;
         const list = remaining.map((i) => `- ${i}`).join('\n');
