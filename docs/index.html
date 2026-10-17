@@ -148,6 +148,29 @@
   </div>
 </section>
 
+<!-- ================= FILM ================= -->
+<section id="film" class="film" aria-labelledby="film-h">
+  <div class="wrap film-in">
+    <div class="film-copy reveal">
+      <p class="kicker" data-i18n="film.kicker">The film</p>
+      <h2 id="film-h" class="h2" data-i18n-2="film.h2">hivedesk in 75 seconds.<br><span>From one sentence to a finished page.</span></h2>
+      <p class="head-sub">A short film of the real app: the wizard picks a model for the GPU, Mel writes a brief, the crew builds, you approve, and the job ends with a better prompt and a pull request. The narration is on screen, in Portuguese, with English captions.</p>
+    </div>
+    <figure class="film-frame reveal" data-film>
+      <video class="film-video" width="1080" height="1350" preload="none" muted playsinline loop poster="media/hivedesk-poster.webp" aria-label="The hivedesk film, 75 seconds, with music and on screen text">
+        <source src="media/hivedesk.mp4" type="video/mp4">
+        <track kind="captions" src="media/hivedesk.en.vtt" srclang="en" label="English" default>
+        <track kind="captions" src="media/hivedesk.pt-BR.vtt" srclang="pt-BR" label="Português">
+      </video>
+      <button class="film-play" type="button" data-film-play aria-label="Play the film with sound">
+        <span class="film-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+        <span class="film-label"><b data-i18n="film.play">Play with sound</b><span>1:15</span></span>
+      </button>
+      <figcaption class="sr">The film shows the wizard, the brief, the crew at work, approvals, a pull request, themes, the 10 languages and the downloads.</figcaption>
+    </figure>
+  </div>
+</section>
+
 <!-- ================= NUMBERS ================= -->
 <section class="numbers" aria-label="hivedesk in numbers">
   <div class="wrap">
@@ -328,7 +351,7 @@
       </article>
 
       <article class="tile tilt t-github reveal" aria-labelledby="t-github">
-        <div class="tile-copy"><h3 id="t-github">Ship to GitHub</h3><p>A branch per job, commit, push, pull request and CI status. Every step is a plan you confirm.</p></div>
+        <div class="tile-copy"><h3 id="t-github">Ship to GitHub</h3><p>A branch per job, commit, push, pull request and CI status. Every step is a plan you confirm. Mel drafts the changelog entry; nothing is written until you approve it.</p></div>
         <div class="viz gh-viz" aria-hidden="true">
           <ol class="gh-steps">
             <li><span class="dot"></span><code>git commit</code><span class="gh-msg">Add the Crumb landing page</span></li>
@@ -340,7 +363,7 @@
       </article>
 
       <article class="tile tilt t-voice reveal" aria-labelledby="t-voice">
-        <div class="tile-copy"><h3 id="t-voice">Talk to Mel</h3><p>Hold <kbd>Ctrl</kbd> <kbd>Space</kbd> and speak. Mel answers out loud in your language.</p></div>
+        <div class="tile-copy"><h3 id="t-voice">Talk to Mel</h3><p>Hold <kbd>Ctrl</kbd> <kbd>Space</kbd> and speak. Before anything that acts, like a commit or a push, Mel reads the plan out loud and waits for a clear yes.</p></div>
         <div class="viz voice" aria-hidden="true">
           <div class="orb"><span class="orb-core"></span><span class="hd-ring r1"></span><span class="hd-ring r2"></span></div>
           <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -350,7 +373,7 @@
       </article>
 
       <article class="tile tilt t-theme reveal" aria-labelledby="t-theme">
-        <div class="tile-copy"><h3 id="t-theme">Eight themes, or make one</h3><p>Switch live, edit with a contrast report, or ask the crew to design a theme.</p></div>
+        <div class="tile-copy"><h3 id="t-theme">Eight themes, or the crew makes one</h3><p>Switch live, edit with a contrast report, or describe one (&ldquo;a sunset on the beach&rdquo;) and the crew designs it.</p></div>
         <div class="viz themes" aria-hidden="true">
           <div class="mini">
             <div class="mini-top"><i></i><i></i><i></i></div>
@@ -361,7 +384,7 @@
       </article>
 
       <article class="tile tilt t-ext reveal" aria-labelledby="t-ext">
-        <div class="tile-copy"><h3 id="t-ext">Extensions</h3><p>Install from a folder, a zip or a URL. Each one asks for its permissions and runs in a sandbox.</p></div>
+        <div class="tile-copy"><h3 id="t-ext">Extensions, also made by the crew</h3><p>Install from a folder, a zip or a URL, or ask the crew to create one. Each asks for its permissions and runs in a sandbox.</p></div>
         <div class="viz ext" aria-hidden="true">
           <div class="ext-card">
             <span class="ext-ic"><svg class="i"><use href="assets/icons.svg#i-playbook"/></svg></span>
@@ -398,6 +421,25 @@
           <code class="pv-host">127.0.0.1:51734/?t=<span class="pv-tok">a7f3c0e9</span></code>
         </div>
       </article>
+
+      <article class="tile tilt t-mem reveal" aria-labelledby="t-mem">
+        <div class="tile-copy"><h3 id="t-mem">Session memory</h3><p>Small, capped notes per project and per person, plus one session file per job. A few relevant entries go into the next prompt. Pin, edit or forget any of them.</p></div>
+        <div class="viz mem" aria-hidden="true">
+          <div class="mem-row"><span class="mem-tag">project</span><span>The bakery is called Crumb; colors are warm crust tones.</span></div>
+          <div class="mem-row"><span class="mem-tag">you</span><span>Prefer plain HTML and CSS, no build step.</span></div>
+          <div class="mem-row mem-session"><span class="mem-tag">session</span><span>Job done: 5 files, 6 of 6 checks passed.</span></div>
+        </div>
+      </article>
+
+      <article class="tile tilt t-prov reveal" aria-labelledby="t-prov">
+        <div class="tile-copy"><h3 id="t-prov">Cloud brains, if you want them</h3><p>Local by default. Add a cloud provider or any OpenAI compatible endpoint with your own key, per worker if you like. Keys stay in a key store on this machine; the prompts and file contents sent to that provider leave your machine, and the window says so.</p></div>
+        <div class="viz prov" aria-hidden="true">
+          <div class="prov-row on"><span class="prov-dot"></span><b>Local model</b><span>Qwen2.5-Coder 3B</span></div>
+          <div class="prov-row"><span class="prov-dot"></span><b>Ollama or LM Studio</b><span>on this machine</span></div>
+          <div class="prov-row"><span class="prov-dot"></span><b>Cloud provider</b><span>your key</span></div>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>
@@ -428,6 +470,27 @@
   </div>
 </section>
 
+<!-- ================= HIVE CITY ================= -->
+<section id="city" class="sec city" aria-labelledby="city-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker"><span class="soon" data-i18n="city.soon">Coming in 0.2.0</span></p>
+      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City.<br><span>Your crew becomes a little town.</span></h2>
+      <p class="head-sub">The next release turns the Hive into a small city where agents live. This is the plan we are building now, not something you can download today.</p>
+    </header>
+    <figure class="city-art reveal">
+      <img src="assets/art/illustrations/hive-city.svg" width="1200" height="620" loading="lazy" decoding="async" alt="A sketch of Hive City: your building with rooms for Design, Code, Review, Test, Ops, Library and the Lobby, a friend's building that joined with six words, and a glowing bridge where a bee carries model turns between the two machines.">
+    </figure>
+    <div class="city-grid reveal">
+      <div class="hd-card"><h3>Agents that stay</h3><p>Each agent keeps a name, a specialization, a level earned from finished work, its tools and a private memory you can edit. Close the city today, open it tomorrow: the same agents, and unfinished tasks resume.</p></div>
+      <div class="hd-card"><h3>Rooms with rules</h3><p>Design, Code, Review, Test, Ops, Library and the Lobby. A room decides which tools are allowed inside and which tasks it takes; agents walk between rooms as their task moves.</p></div>
+      <div class="hd-card"><h3>A task pipeline</h3><p>Every task flows from Code to Review to Test, with another agent checking the diff and running the checks, and loops back when something fails. You can approve at any hop.</p></div>
+      <div class="hd-card"><h3>Friends as buildings</h3><p>A friend joins with six words and their machine appears as a building next to yours. An agent on a busy machine can borrow GPU turns from a friend, who sees each request and can refuse or stop.</p></div>
+    </div>
+    <p class="caption caption-center">Screenshots of the real city will replace this sketch when 0.2.0 ships.</p>
+  </div>
+</section>
+
 <!-- ================= SCREENS ================= -->
 <section id="screens" class="sec sec-tight" aria-labelledby="scr-h">
   <div class="wrap">
@@ -438,19 +501,31 @@
     </header>
     <div class="screens reveal" v-tabs>
       <div class="seg" role="tablist" aria-label="Screens">
-        <button type="button" v-tab="job">A job running</button>
-        <button type="button" v-tab="palette">Command palette</button>
-        <button type="button" v-tab="hire">Hire a worker</button>
+        <button type="button" v-tab="tour">Guided tour</button>
+        <button type="button" v-tab="brief">Brief and report</button>
+        <button type="button" v-tab="code">Code together</button>
+        <button type="button" v-tab="github">GitHub</button>
+        <button type="button" v-tab="changelog">Changelog</button>
+        <button type="button" v-tab="themes">Themes</button>
+        <button type="button" v-tab="ext">Extensions</button>
+        <button type="button" v-tab="memory">Memory</button>
+        <button type="button" v-tab="lang">10 languages</button>
+        <button type="button" v-tab="palette">Palette</button>
         <button type="button" v-tab="replay">Replay</button>
-        <button type="button" v-tab="model">Model download</button>
       </div>
-      <div class="shot" v-tab-panel="job"><img src="assets/shots/hive.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="A demo job running: timeline, crew chat, live preview, files with a diff, and the dock."></div>
+      <div class="shot" v-tab-panel="tour"><img src="assets/shots/tour.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Step 1 of 11 of the guided tour: Mel points at the request box, with a Try it button that runs the demo job."></div>
+      <div class="shot" v-tab-panel="brief"><img src="assets/shots/brief.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Brief and report window: your request, the improved brief by Mel with goal, build, constraints and acceptance criteria, and the job report."></div>
+      <div class="shot" v-tab-panel="code"><img src="assets/shots/code-together.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Code together: the Code window with index.html, two people editing at the same time, and the guest's cursor labeled Ana."></div>
+      <div class="shot" v-tab-panel="github"><img src="assets/shots/github.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The GitHub window: sign in with the gh command line, a fine grained token or a device code; nothing runs on a hivedesk server."></div>
+      <div class="shot" v-tab-panel="changelog"><img src="assets/shots/changelog.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Changelog window: a proposed entry drafted from the job report, with Dismiss and Approve and write."></div>
+      <div class="shot" v-tab-panel="themes"><img src="assets/shots/themes.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Theme gallery: eight built in themes, a box to ask Mel for a new theme, import and new theme."></div>
+      <div class="shot" v-tab-panel="ext"><img src="assets/shots/extensions.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Extensions window: installed extensions with their permissions, each waiting for your approval, and a tab to create one with the crew."></div>
+      <div class="shot" v-tab-panel="memory"><img src="assets/shots/memory.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Memory window: a project memory with Pin, Edit and Delete, the switch to use memory in new jobs, and the session list."></div>
+      <div class="shot" v-tab-panel="lang"><img src="assets/shots/lang-ja.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The Hive in Japanese."></div>
       <div class="shot" v-tab-panel="palette"><img src="assets/shots/palette.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="The Ctrl K command palette over the Hive."></div>
-      <div class="shot" v-tab-panel="hire"><img src="assets/shots/hire.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="The Hire dialog: a new worker with a role, an avatar color and allowed tools."></div>
       <div class="shot" v-tab-panel="replay"><img src="assets/shots/replay.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="The replay scrubber rebuilding an earlier moment of the job."></div>
-      <div class="shot" v-tab-panel="model"><img src="assets/shots/model-download.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Settings with the model download: the size, the source on Hugging Face and the progress."></div>
     </div>
-    <p class="caption">Real screenshots of <code>npx hivedesk --demo</code>, which replays a scripted job and labels every event as a demo.</p>
+    <p class="caption">Real screenshots of <code>npx hivedesk --demo</code>, which replays a scripted job and labels every event as a demo. Code together comes from the two browser end to end test.</p>
   </div>
 </section>
 
@@ -480,7 +555,7 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-windows"/></svg></span>Windows</h3>
-        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 and 11, x64, about 42 MB</span></p>
+        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 and 11, x64, about 47 MB</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">Download for Windows</span></a>
         <p class="os-note">Unzip and double click <code>hivedesk.exe</code>. It is not code signed yet, so SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <b>More info</b>, then <b>Run anyway</b>.</p>
         <div class="os-thanks" role="status" hidden>
@@ -506,7 +581,7 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-macos"/></svg></span>macOS</h3>
-        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon and Intel, about 80 MB</span></p>
+        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon and Intel, about 89 MB</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">Download for macOS</span></a>
         <p class="os-note">Unzip and move <code>hivedesk.app</code> to Applications. It is not notarized yet: the first time, open <b>System Settings, Privacy and Security</b> and click <b>Open Anyway</b>.</p>
         <div class="os-thanks" role="status" hidden>
@@ -532,9 +607,9 @@
           <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
         </div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-linux"/></svg></span>Linux</h3>
-        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64, about 35 MB, also as an AppImage</span></p>
+        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64, about 55 MB, or the AppImage, about 52 MB</span></p>
         <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">Download for Linux</span></a>
-        <p class="os-note">Run <code>tar -xzf hivedesk-linux-x64.tar.gz</code>, then <code>./hivedesk/hivedesk</code>. The window needs WebKitGTK; without it, hivedesk opens in your browser.</p>
+        <p class="os-note">Run <code>tar -xzf hivedesk-linux-x64.tar.gz</code>, then <code>./hivedesk/hivedesk</code>. Or the <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener">AppImage</a>: <code>chmod +x</code>, then run it. The window needs WebKitGTK; without it, hivedesk opens in your browser.</p>
         <div class="os-thanks" role="status" hidden>
           <img src="assets/art/mel-wave.svg" width="96" height="96" alt="Mel, waving" loading="lazy" decoding="async">
           <p class="thanks-h" data-i18n="dl.thanks">Thanks! Follow these steps.</p>

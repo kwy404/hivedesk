@@ -69,7 +69,7 @@ const io = new IntersectionObserver((entries) => {
     shown.set(e.target, e.isIntersecting);
   }
 }, { rootMargin: '0px 0px -6% 0px' });
-$$('.reveal, .tile, .stage, .office-live, .download, [data-term]').forEach((el) => io.observe(el));
+$$('.reveal, .tile, .stage, .office-live, .download, .film, [data-term]').forEach((el) => io.observe(el));
 const onScreen = (el) => shown.get(el) === true && !document.hidden;
 
 function every(el, ms, fn) {
@@ -370,4 +370,40 @@ for (const fx of $$('.fx, .office-fx')) {
     fx.style.setProperty('--fw', `${Math.round(e.contentRect.width)}px`);
     fx.style.setProperty('--fh', `${Math.round(e.contentRect.height)}px`);
   }).observe(fx);
+}
+
+// ---------- the film: a muted preview while it is on screen, sound on a click ----------
+const film = $('[data-film]');
+if (film) {
+  const video = $('video', film);
+  const btn = $('[data-film-play]', film);
+  let chosen = false;
+  const showCaptions = () => {
+    const want = document.documentElement.lang.startsWith('pt') ? 'pt-BR' : 'en';
+    for (const t of video.textTracks) t.mode = t.language === want ? 'showing' : 'disabled';
+  };
+  const preview = () => {
+    if (chosen || reduced) return;
+    video.muted = true;
+    showCaptions();
+    film.classList.add('is-preview');
+    video.play().catch(() => {});
+  };
+  new IntersectionObserver(([e]) => {
+    if (e.intersectionRatio >= 0.5) preview();
+    else if (!video.paused) video.pause();
+  }, { threshold: [0, 0.5] }).observe(film);
+  btn.addEventListener('click', () => {
+    chosen = true;
+    film.classList.remove('is-preview');
+    film.classList.add('is-playing');
+    video.muted = false;
+    video.loop = false;
+    video.controls = true;
+    showCaptions();
+    video.currentTime = 0;
+    video.play().catch(() => {});
+    video.focus({ preventScroll: true });
+  });
+  video.addEventListener('ended', () => { film.classList.remove('is-playing'); video.controls = false; chosen = false; });
 }

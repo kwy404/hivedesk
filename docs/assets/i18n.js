@@ -2,6 +2,7 @@
 // and the download section. Longer explanations stay in English.
 export const STRINGS = {
   en: {
+    'film.kicker': "The film", 'film.h2': ["hivedesk in 75 seconds.", "From one sentence to a finished page."], 'film.play': "Play with sound", 'city.soon': "Coming in 0.2.0", 'city.h2': ["Hive City.", "Your crew becomes a little town."],
     'dl.thanks': 'Thanks! Follow these steps.', 'dl.back': 'Back',
     'nav.try': 'Try it', 'nav.how': 'How it works', 'nav.features': 'Features', 'nav.download': 'Download', 'nav.limits': 'Limits',
     'hero.eyebrow': 'Mel writes a brief before the crew starts', 'hero.h1': ['Your own AI crew.', 'One command away.'],
@@ -16,6 +17,7 @@ export const STRINGS = {
     'dl.win': 'Download for Windows', 'dl.mac': 'Download for macOS', 'dl.linux': 'Download for Linux', 'dl.or': 'or run', 'dl.all': 'See all versions',
   },
   'pt-BR': {
+    'film.kicker': "O filme", 'film.h2': ["hivedesk em 75 segundos.", "De uma frase a uma página pronta."], 'film.play': "Assistir com som", 'city.soon': "Chega na 0.2.0", 'city.h2': ["Hive City.", "Sua equipe vira uma pequena cidade."],
     'dl.thanks': 'Obrigado! Siga os passos.', 'dl.back': 'Voltar',
     'nav.try': 'Experimente', 'nav.how': 'Como funciona', 'nav.features': 'Recursos', 'nav.download': 'Baixar', 'nav.limits': 'Limites',
     'hero.eyebrow': 'A Mel escreve um briefing antes da equipe começar', 'hero.h1': ['Sua própria equipe de IA.', 'A um comando de distância.'],
@@ -30,6 +32,7 @@ export const STRINGS = {
     'dl.win': 'Baixar para Windows', 'dl.mac': 'Baixar para macOS', 'dl.linux': 'Baixar para Linux', 'dl.or': 'ou rode', 'dl.all': 'Ver todas as versões',
   },
   es: {
+    'film.kicker': "La película", 'film.h2': ["hivedesk en 75 segundos.", "De una frase a una página terminada."], 'film.play': "Ver con sonido", 'city.soon': "Llega en la 0.2.0", 'city.h2': ["Hive City.", "Tu equipo se convierte en un pequeño pueblo."],
     'dl.thanks': '¡Gracias! Sigue estos pasos.', 'dl.back': 'Volver',
     'nav.try': 'Pruébalo', 'nav.how': 'Cómo funciona', 'nav.features': 'Funciones', 'nav.download': 'Descargar', 'nav.limits': 'Límites',
     'hero.eyebrow': 'Mel escribe un brief antes de que el equipo empiece', 'hero.h1': ['Tu propio equipo de IA.', 'A un comando de distancia.'],
@@ -44,6 +47,7 @@ export const STRINGS = {
     'dl.win': 'Descargar para Windows', 'dl.mac': 'Descargar para macOS', 'dl.linux': 'Descargar para Linux', 'dl.or': 'o ejecuta', 'dl.all': 'Ver todas las versiones',
   },
   fr: {
+    'film.kicker': "Le film", 'film.h2': ["hivedesk en 75 secondes.", "D’une phrase à une page finie."], 'film.play': "Lire avec le son", 'city.soon': "Arrive dans la 0.2.0", 'city.h2': ["Hive City.", "Votre équipe devient une petite ville."],
     'dl.thanks': 'Merci ! Suivez ces étapes.', 'dl.back': 'Retour',
     'nav.try': 'Essayer', 'nav.how': 'Fonctionnement', 'nav.features': 'Fonctions', 'nav.download': 'Télécharger', 'nav.limits': 'Limites',
     'hero.eyebrow': 'Mel rédige un brief avant que l’équipe commence', 'hero.h1': ['Votre propre équipe IA.', 'À une commande.'],
@@ -58,6 +62,7 @@ export const STRINGS = {
     'dl.win': 'Télécharger pour Windows', 'dl.mac': 'Télécharger pour macOS', 'dl.linux': 'Télécharger pour Linux', 'dl.or': 'ou lancez', 'dl.all': 'Toutes les versions',
   },
   de: {
+    'film.kicker': "Der Film", 'film.h2': ["hivedesk in 75 Sekunden.", "Von einem Satz zur fertigen Seite."], 'film.play': "Mit Ton abspielen", 'city.soon': "Kommt mit 0.2.0", 'city.h2': ["Hive City.", "Deine Crew wird eine kleine Stadt."],
     'dl.thanks': 'Danke! Folge diesen Schritten.', 'dl.back': 'Zurück',
     'nav.try': 'Ausprobieren', 'nav.how': 'So funktioniert es', 'nav.features': 'Funktionen', 'nav.download': 'Download', 'nav.limits': 'Grenzen',
     'hero.eyebrow': 'Mel schreibt ein Briefing, bevor die Crew startet', 'hero.h1': ['Deine eigene KI-Crew.', 'Ein Befehl entfernt.'],
@@ -72,6 +77,7 @@ export const STRINGS = {
     'dl.win': 'Für Windows herunterladen', 'dl.mac': 'Für macOS herunterladen', 'dl.linux': 'Für Linux herunterladen', 'dl.or': 'oder starte', 'dl.all': 'Alle Versionen',
   },
   it: {
+    'film.kicker': "Il film", 'film.h2': ["hivedesk in 75 secondi.", "Da una frase a una pagina finita."], 'film.play': "Guarda con audio", 'city.soon': "Arriva con la 0.2.0", 'city.h2': ["Hive City.", "La tua squadra diventa una piccola città."],
     'dl.thanks': 'Grazie! Segui questi passi.', 'dl.back': 'Indietro',
     'nav.try': 'Provalo', 'nav.how': 'Come funziona', 'nav.features': 'Funzioni', 'nav.download': 'Scarica', 'nav.limits': 'Limiti',
     'hero.eyebrow': 'Mel scrive un brief prima che la squadra inizi', 'hero.h1': ['La tua squadra di IA.', 'A un comando di distanza.'],
@@ -86,6 +92,7 @@ export const STRINGS = {
     'dl.win': 'Scarica per Windows', 'dl.mac': 'Scarica per macOS', 'dl.linux': 'Scarica per Linux', 'dl.or': 'oppure esegui', 'dl.all': 'Tutte le versioni',
   },
   ja: {
+    'film.kicker': "動画", 'film.h2': ["75 秒でわかる hivedesk。", "ひと言から、完成したページまで。"], 'film.play': "音声付きで再生", 'city.soon': "0.2.0 で登場", 'city.h2': ["Hive City。", "クルーが小さな街になります。"],
     'dl.thanks': 'ありがとう！次の手順に従ってください。', 'dl.back': '戻る',
     'nav.try': '試す', 'nav.how': '仕組み', 'nav.features': '機能', 'nav.download': 'ダウンロード', 'nav.limits': '限界',
     'hero.eyebrow': 'クルーが始める前に Mel がブリーフを書きます', 'hero.h1': ['あなた専用の AI クルー。', 'コマンドひとつで。'],
@@ -100,6 +107,7 @@ export const STRINGS = {
     'dl.win': 'Windows 版をダウンロード', 'dl.mac': 'macOS 版をダウンロード', 'dl.linux': 'Linux 版をダウンロード', 'dl.or': 'または実行', 'dl.all': 'すべてのバージョン',
   },
   ko: {
+    'film.kicker': "영상", 'film.h2': ["75초로 보는 hivedesk.", "한 문장에서 완성된 페이지까지."], 'film.play': "소리와 함께 재생", 'city.soon': "0.2.0에서 공개", 'city.h2': ["Hive City.", "크루가 작은 도시가 됩니다."],
     'dl.thanks': '고마워요! 다음 단계를 따라 하세요.', 'dl.back': '뒤로',
     'nav.try': '체험하기', 'nav.how': '작동 방식', 'nav.features': '기능', 'nav.download': '다운로드', 'nav.limits': '한계',
     'hero.eyebrow': '크루가 시작하기 전에 Mel이 브리프를 씁니다', 'hero.h1': ['나만의 AI 크루.', '명령어 하나면 충분해요.'],
@@ -114,6 +122,7 @@ export const STRINGS = {
     'dl.win': 'Windows용 다운로드', 'dl.mac': 'macOS용 다운로드', 'dl.linux': 'Linux용 다운로드', 'dl.or': '또는 실행', 'dl.all': '모든 버전 보기',
   },
   'zh-Hans': {
+    'film.kicker': "短片", 'film.h2': ["75 秒了解 hivedesk。", "从一句话到一个完成的页面。"], 'film.play': "有声播放", 'city.soon': "0.2.0 版推出", 'city.h2': ["Hive City。", "你的团队变成一座小城。"],
     'dl.thanks': '谢谢！请按以下步骤操作。', 'dl.back': '返回',
     'nav.try': '试一试', 'nav.how': '工作方式', 'nav.features': '功能', 'nav.download': '下载', 'nav.limits': '局限',
     'hero.eyebrow': '团队开工前，Mel 会先写一份需求简报', 'hero.h1': ['你自己的 AI 团队。', '只需一条命令。'],
@@ -128,6 +137,7 @@ export const STRINGS = {
     'dl.win': '下载 Windows 版', 'dl.mac': '下载 macOS 版', 'dl.linux': '下载 Linux 版', 'dl.or': '或运行', 'dl.all': '查看所有版本',
   },
   ru: {
+    'film.kicker': "Видео", 'film.h2': ["hivedesk за 75 секунд.", "От одной фразы до готовой страницы."], 'film.play': "Смотреть со звуком", 'city.soon': "В версии 0.2.0", 'city.h2': ["Hive City.", "Ваша команда становится маленьким городом."],
     'dl.thanks': 'Спасибо! Следуйте этим шагам.', 'dl.back': 'Назад',
     'nav.try': 'Попробовать', 'nav.how': 'Как это работает', 'nav.features': 'Возможности', 'nav.download': 'Скачать', 'nav.limits': 'Ограничения',
     'hero.eyebrow': 'Мел пишет бриф до того, как команда начнёт', 'hero.h1': ['Своя команда ИИ.', 'В одной команде.'],
