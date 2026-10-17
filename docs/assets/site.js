@@ -69,7 +69,7 @@ const io = new IntersectionObserver((entries) => {
     shown.set(e.target, e.isIntersecting);
   }
 }, { rootMargin: '0px 0px -6% 0px' });
-$$('.reveal, .tile, .stage, .office-live, .download, .film, [data-term]').forEach((el) => io.observe(el));
+$$('.reveal, .tile, .stage, .office-live, .download, .film, .city-show, [data-term]').forEach((el) => io.observe(el));
 const onScreen = (el) => shown.get(el) === true && !document.hidden;
 
 function every(el, ms, fn) {
@@ -406,4 +406,34 @@ if (film) {
     video.focus({ preventScroll: true });
   });
   video.addEventListener('ended', () => { film.classList.remove('is-playing'); video.controls = false; chosen = false; });
+}
+
+// ---------- Hive City: tabs that also advance by themselves while on screen ----------
+const city = $('[data-city]');
+if (city) {
+  const tabs = $$('[role=tab]', city);
+  const slides = $$('.city-slide', city);
+  const bar = $('.city-progress span', city);
+  let cur = 0, timer = 0, manual = false;
+  const show = (k, focus) => {
+    cur = (k + slides.length) % slides.length;
+    tabs.forEach((t, j) => { t.setAttribute('aria-selected', String(j === cur)); t.tabIndex = j === cur ? 0 : -1; });
+    slides.forEach((sl, j) => { sl.hidden = j !== cur; sl.classList.toggle('is-on', j === cur); });
+    if (focus) tabs[cur].focus();
+    if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+  };
+  const tick = () => {
+    clearTimeout(timer);
+    if (manual || reduced) { city.classList.remove('is-auto'); return; }
+    city.classList.add('is-auto');
+    timer = setTimeout(() => { if (onScreen(city) && city.classList.contains('is-in')) show(cur + 1); tick(); }, 7000);
+  };
+  tabs.forEach((t, j) => t.addEventListener('click', () => { manual = true; show(j); tick(); }));
+  city.addEventListener('keydown', (e) => {
+    if (!e.target.matches('[role=tab]')) return;
+    const d = { ArrowRight: 1, ArrowLeft: -1, Home: -cur, End: slides.length - 1 - cur }[e.key];
+    if (d === undefined) return;
+    e.preventDefault(); manual = true; show(cur + d, true); tick();
+  });
+  tick();
 }

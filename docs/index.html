@@ -55,6 +55,7 @@
       <span>hivedesk</span>
     </a>
     <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="Main">
+      <a href="#city" @click="open = false">Hive City</a>
       <a href="#try" @click="open = false" data-i18n="nav.try">Try it</a>
       <a href="#how" @click="open = false" data-i18n="nav.how">How it works</a>
       <a href="#features" @click="open = false" data-i18n="nav.features">Features</a>
@@ -100,7 +101,7 @@
 <section class="hd-hero" aria-labelledby="hero-h">
   <div class="hero-bg" aria-hidden="true"><div class="comb"></div><div class="cursor-glow"></div></div>
   <div class="wrap hero-in">
-    <a class="eyebrow" href="#how"><span class="eb-tag">New</span><span data-i18n="hero.eyebrow">Mel writes a brief before the crew starts</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
+    <a class="eyebrow" href="#city"><span class="eb-tag">0.2.0</span><span data-i18n="hero.eyebrow">Hive City: your crew becomes a little town</span><svg class="i" aria-hidden="true"><use href="assets/icons.svg#i-arrow"/></svg></a>
     <h1 id="hero-h" class="display" aria-label="Your own AI crew. One command away." data-i18n-h1>
       <span class="w" style="--i:0" aria-hidden="true">Your</span> <span class="w" style="--i:1" aria-hidden="true">own</span> <span class="w" style="--i:2" aria-hidden="true">AI</span> <span class="w" style="--i:3" aria-hidden="true">crew.</span><br>
       <span class="w hl" style="--i:4" aria-hidden="true">One</span> <span class="w hl" style="--i:5" aria-hidden="true">command</span> <span class="w hl" style="--i:6" aria-hidden="true">away.</span>
@@ -145,6 +146,58 @@
         </div>
       </div>
     </figure>
+  </div>
+</section>
+
+<!-- ================= HIVE CITY ================= -->
+<section id="city" class="sec city" aria-labelledby="city-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker"><span class="soon" data-i18n="city.soon">New in 0.2.0</span></p>
+      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City.<br><span>Your crew becomes a little town.</span></h2>
+      <p class="head-sub">hivedesk now opens on a small city: your PC is a building with rooms, the agents live in it, and every task walks through the rooms on its way to done. Friends can join with six words and bring their machine along.</p>
+    </header>
+
+    <div class="city-show reveal" data-city>
+      <div class="seg city-tabs" role="tablist" aria-label="Hive City">
+        <button type="button" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">The city</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">A friend joins</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">Borrowing a GPU</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">The review room</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">An agent card</button>
+      </div>
+      <div class="city-stage">
+        <figure class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
+          <img src="assets/shots/city-overview.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Hive City in demo mode: your building on a floating island with the Design, Code, Review, Test, Ops, Library and Lobby rooms, a friend's tower across a bridge, the task board with three tasks and the event feed.">
+          <figcaption><b>The city is the state of the system.</b> Each room is a real space with its own allowed tools. The task board shows every task and the loop it is on.</figcaption>
+        </figure>
+        <figure class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
+          <img src="assets/shots/city-friend-rising.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="A friend's building rising next to yours after they joined with six words.">
+          <figcaption><b>Friends are buildings.</b> A friend joins with the six words of Code together and their machine rises next to yours, with its GPU, model and the agents that live on it.</figcaption>
+        </figure>
+        <figure class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
+          <img src="assets/shots/city-bridge-gpu-borrow.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="The bridge lit up while Dev borrows the friend's GPU, and the Machines panel with 2 of 3 turns used and a Stop the borrow button.">
+          <figcaption><b>Borrow a GPU, with limits.</b> An agent asks a friend's machine for a number of turns and minutes. The lender accepts, lowers the limits or refuses; every turn is counted, either side can stop, and only prompts and answers travel.</figcaption>
+        </figure>
+        <figure class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
+          <img src="assets/shots/city-review-room.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Inside the Review room: an agent reads the diff of a task against its criteria.">
+          <figcaption><b>Design, Code, Review, Test.</b> Another agent reviews the diff against the criteria, then the checks run. A failure goes back to the author with the issues, at most 3 times, then the task is blocked. You can approve or send back at any hop.</figcaption>
+        </figure>
+        <figure class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
+          <img src="assets/shots/city-agent-card.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="An agent card: name, home room, level and XP, stats, tools and the agent's private memory.">
+          <figcaption><b>Agents that stay.</b> Each agent has a level and XP from finished work, its tools and a private memory you can edit and pin. They are saved on your machine, so tomorrow the same agents come back and unfinished tasks open again.</figcaption>
+        </figure>
+        <div class="city-progress" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+
+    <div class="city-grid reveal">
+      <div class="hd-card"><h3>Agents that stay</h3><p>Every crew worker is an agent with a home room, a level and XP (10 for work, 4 for a review, 3 for a test, 5 more when a task needs no loop), tools and a memory of at most 40 short entries.</p></div>
+      <div class="hd-card"><h3>Rooms with rules</h3><p>Lobby, Design, Code, Review, Test, Ops and Library. While an agent works in a room its tools are cut to the room's. Ops is for the host only, and extensions can add rooms.</p></div>
+      <div class="hd-card"><h3>A task bus</h3><p>Tasks come from you, from Mel's plan or from agents sending work back. Idle agents bid by skill, level and machine load; every claim, hop and verdict is an event you can replay.</p></div>
+      <div class="hd-card"><h3>Safe with guests</h3><p>The owner of a machine, agent or task wins. A guest's tasks run with approval mode on, without commands or deletes, and never in Ops. Prefer the old desktop? Start with <code>--no-city</code>.</p></div>
+    </div>
+    <p class="caption caption-center">Real screenshots of <code>npx hivedesk --demo</code>, which plays a city scenario: a friend joins with six words, Dev borrows her GPU for three turns, and a task goes Design, Code, Review, Test, done. Every demo event is labeled. Not yet: Test runs the static checks (HTML, links, JS syntax, CSS, JSON), not your own test suite, and borrowing has limits per request, not a standing share.</p>
   </div>
 </section>
 
@@ -470,27 +523,6 @@
   </div>
 </section>
 
-<!-- ================= HIVE CITY ================= -->
-<section id="city" class="sec city" aria-labelledby="city-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker"><span class="soon" data-i18n="city.soon">Coming in 0.2.0</span></p>
-      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City.<br><span>Your crew becomes a little town.</span></h2>
-      <p class="head-sub">The next release turns the Hive into a small city where agents live. This is the plan we are building now, not something you can download today.</p>
-    </header>
-    <figure class="city-art reveal">
-      <img src="assets/art/illustrations/hive-city.svg" width="1200" height="620" loading="lazy" decoding="async" alt="A sketch of Hive City: your building with rooms for Design, Code, Review, Test, Ops, Library and the Lobby, a friend's building that joined with six words, and a glowing bridge where a bee carries model turns between the two machines.">
-    </figure>
-    <div class="city-grid reveal">
-      <div class="hd-card"><h3>Agents that stay</h3><p>Each agent keeps a name, a specialization, a level earned from finished work, its tools and a private memory you can edit. Close the city today, open it tomorrow: the same agents, and unfinished tasks resume.</p></div>
-      <div class="hd-card"><h3>Rooms with rules</h3><p>Design, Code, Review, Test, Ops, Library and the Lobby. A room decides which tools are allowed inside and which tasks it takes; agents walk between rooms as their task moves.</p></div>
-      <div class="hd-card"><h3>A task pipeline</h3><p>Every task flows from Code to Review to Test, with another agent checking the diff and running the checks, and loops back when something fails. You can approve at any hop.</p></div>
-      <div class="hd-card"><h3>Friends as buildings</h3><p>A friend joins with six words and their machine appears as a building next to yours. An agent on a busy machine can borrow GPU turns from a friend, who sees each request and can refuse or stop.</p></div>
-    </div>
-    <p class="caption caption-center">Screenshots of the real city will replace this sketch when 0.2.0 ships.</p>
-  </div>
-</section>
-
 <!-- ================= SCREENS ================= -->
 <section id="screens" class="sec sec-tight" aria-labelledby="scr-h">
   <div class="wrap">
@@ -803,7 +835,7 @@
     </div>
     <div>
       <h2 class="foot-h">Product</h2>
-      <ul class="foot-list"><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#office">Office mode</a></li><li><a href="#download">Download</a></li><li><a href="#limits">Limits</a></li><li><a href="#faq">FAQ</a></li></ul>
+      <ul class="foot-list"><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#city">Hive City</a></li><li><a href="#office">Office mode</a></li><li><a href="#download">Download</a></li><li><a href="#limits">Limits</a></li><li><a href="#faq">FAQ</a></li></ul>
     </div>
     <div>
       <h2 class="foot-h">Project</h2>

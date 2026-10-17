@@ -2,7 +2,7 @@
   <img src="../assets/banner.svg" width="900" alt="hivedesk: uma equipe inteira de agentes de IA rodando na sua própria máquina. Uma área de trabalho em favo de mel com linha do tempo, chat da equipe, janela de código e prévia ao vivo, com Mel, a abelha mestre de obras.">
 </p>
 
-<p align="center"><b>Sua própria equipe de IA. A um comando de distância.</b></p>
+<p align="center"><b>Sua própria equipe de IA. A um comando de distância.</b><br>Novo na 0.2.0: a <a href="#hive-city-novo-na-020">Hive City</a>, onde os seus agentes vivem, passam por salas e pegam emprestada a GPU de um amigo.</p>
 
 <p align="center">
   <a href="https://kwy404.github.io/hivedesk/">Site</a> &middot;
@@ -29,6 +29,28 @@ Rode `npx hivedesk` e um assistente curto prepara tudo: lê o seu hardware, inst
 <p align="center">
   <img src="../docs/assets/shots/hive.webp" width="900" alt="A Colmeia em modo demo: a linha do tempo de uma landing page para uma padaria, o chat da equipe, a prévia ao vivo, a janela de arquivos com diff e o Dev depois de um turno, com o dock da equipe embaixo.">
 </p>
+
+## Hive City (novo na 0.2.0)
+
+<p align="center">
+  <img src="../docs/assets/shots/city-overview.webp" width="900" alt="A Hive City em modo demo: o seu prédio numa ilha flutuante com as salas Design, Code, Review, Test, Ops, Library e Lobby, a torre de um amigo do outro lado da ponte, o quadro de tarefas e o feed de eventos.">
+</p>
+
+<p align="center">
+  <img src="../docs/assets/shots/city-bridge-gpu-borrow.webp" width="440" alt="O Dev pega emprestada a GPU da amiga pela ponte acesa; o painel Machines mostra 2 de 3 turnos e o botão para parar o empréstimo.">
+  <img src="../docs/assets/shots/city-agent-card.webp" width="440" alt="O cartão de um agente com nível, XP, ferramentas e memória própria.">
+</p>
+
+O hivedesk agora abre numa pequena cidade, e a cidade é o estado do sistema: cada prédio, sala, agente e tarefa que você vê é um evento no mesmo log que a equipe escreve ([CITY-PROTOCOL.md](../CITY-PROTOCOL.md), em inglês). `npx hivedesk --demo` mostra o cenário: uma amiga entra, o prédio dela sobe, o Dev pega a GPU dela emprestada pela ponte e uma tarefa passa por todas as salas até o fim.
+
+- **Agentes que ficam.** Cada membro da equipe é um agente com sala de origem, nível e XP ganhos com trabalho concluído, ferramentas e uma memória própria (até 40 entradas curtas) que você lê, edita e fixa. Eles ficam salvos por máquina em `~/.hivedesk/city/agents/`, então o mesmo Dev mantém o nível em todos os projetos.
+- **Salas com regras.** Lobby, Design, Code, Review, Test, Ops e Library. Enquanto um agente trabalha numa sala, as ferramentas dele se limitam às da sala (Review só lê e confere, Ops espera a sua aprovação e é fechada para convidados). Extensões podem criar salas.
+- **Um barramento de tarefas.** Você coloca uma tarefa numa sala ou num agente; agentes livres disputam por especialidade, nível e carga da máquina, e cada passo vira um evento. Uma tarefa no Lobby vai para a Mel, que a divide em tarefas da equipe.
+- **Code, Review, Test, com voltas.** Design escreve a especificação, Code roda a equipe, outro agente revisa o diff contra os critérios e Test roda as verificações. Uma revisão ou teste que falha devolve a tarefa ao autor com os problemas, no máximo 3 vezes; depois ela fica bloqueada. Você pode aprovar ou devolver em qualquer etapa.
+- **Máquinas e amigos.** O seu PC é um prédio com GPU, modelo e carga. Um amigo que entra pelo Code together (seis palavras, QR ou link) ganha um prédio e pode trazer agentes que pensam na máquina dele. Um agente pode pegar a GPU de um amigo emprestada por alguns turnos; o amigo aceita, define os limites, vê cada turno e pode parar. Só prompts e respostas viajam.
+- **Tudo volta.** Feche o hivedesk e abra amanhã: os mesmos agentes, níveis e memórias, e as tarefas em andamento reabrem na sala delas.
+
+O que ainda não faz: o Test roda as verificações estáticas (HTML, links, sintaxe de JS, CSS, JSON), não a sua suíte de testes; o agente de um amigo precisa do modelo desse amigo emprestado; o empréstimo não tem uma porcentagem fixa, só limites por pedido. `--no-city` desliga a cidade e mantém a área de trabalho da 0.1.
 
 ## Baixar
 
@@ -95,6 +117,7 @@ A escolha e o motivo aparecem numa linha. Mude em Settings ou com `--model 14b|7
 | `--dir <pasta>` | A pasta do projeto. Os arquivos vão para `<pasta>/.hivedesk/`. |
 | `--port <n>`, `--no-open` | Escolhe a porta; não abre o navegador. |
 | `--lend`, `--join <link ou palavras>` | Empresta o seu modelo a um amigo, ou usa o de um amigo. |
+| `--no-city` | Roda sem a Hive City: sem agentes, salas ou barramento de tarefas; o resto funciona igual. |
 | `--doctor` | Confere Node, GPU, RAM, disco e modelos, e sai. |
 
 ## Sincero sobre os limites
@@ -155,19 +178,6 @@ A equipe padrão é **Mel** (mestre de obras), **Dev**, **Designer**, **QA** e *
 - **10 idiomas.** English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文 e Русский. A Colmeia segue o seu navegador e troca na hora.
 - **Um tour guiado** com a Mel na primeira abertura; repita pelo Help ou pela paleta de comandos.
 - **Replay** de qualquer momento a partir do log de eventos, paleta de comandos com <kbd>Ctrl</kbd> <kbd>K</kbd>, janelas que se encaixam e um layout de celular com cartões empilhados.
-
-## Chega na 0.2.0: Hive City
-
-<p align="center">
-  <img src="../assets/illustrations/hive-city.svg" width="900" alt="Um esboço da Hive City: o seu prédio com salas de Design, Code, Review, Test, Ops, Library e o Lobby, o prédio de um amigo que entrou com seis palavras, e uma ponte onde uma abelha leva turnos do modelo entre as máquinas.">
-</p>
-
-A próxima versão transforma a Colmeia numa pequena cidade onde os agentes vivem. Isto é o plano em construção, não algo que dá para baixar hoje:
-
-- **Agentes que ficam:** nome, especialidade, nível ganho com trabalho concluído, ferramentas e uma memória própria que você edita. Amanhã eles continuam lá, e as tarefas inacabadas retomam.
-- **Salas com regras:** Design, Code, Review, Test, Ops, Library e o Lobby decidem quais ferramentas valem ali e que tarefas aceitam.
-- **Uma esteira de tarefas:** Code, depois Review por outro agente, depois Test, voltando quando algo falha, com a sua aprovação em qualquer etapa.
-- **Amigos viram prédios:** um amigo entra com seis palavras e a máquina dele aparece ao lado da sua; um agente pode pegar turnos de GPU emprestados de um amigo, que vê cada pedido e pode recusar ou parar.
 
 ## Empreste seu PC
 

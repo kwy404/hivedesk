@@ -215,7 +215,7 @@ b, strong { font-weight: 600; color: var(--hd-text); }
 /* ---------- sections ---------- */
 .sec { padding: 128px 0; }
 /* sections far below the fold are laid out and painted only when they come close */
-#try, .numbers, #how, #features, #office, #city, #screens, #download, #limits, #faq, .band, .foot { content-visibility: auto; contain-intrinsic-size: auto 1200px; }
+#try, .numbers, #how, #features, #office, #screens, #download, #limits, #faq, .band, .foot { content-visibility: auto; contain-intrinsic-size: auto 1200px; }
 .sec-tight { padding-top: 0; }
 .sec-line { border-top: 1px solid var(--hd-line); }
 .head { max-width: 760px; margin-bottom: 64px; }
@@ -908,6 +908,32 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.015em; line-height: 1.
 @media (prefers-reduced-motion: reduce) {
   .mem-row { opacity: 1; transform: none; filter: none; }
 }
+
+/* ---------- Hive City show ---------- */
+.city { padding-top: 112px; }
+.city-show { max-width: 1184px; margin: 0 auto; }
+.city-tabs { display: flex; flex-wrap: wrap; justify-content: center; width: max-content; max-width: 100%; margin: 0 auto 24px; }
+.city-stage { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--hd-line-2); background: #0E0D0B; box-shadow: 0 60px 140px -60px color-mix(in srgb, var(--hd-honey) 60%, transparent); }
+.city-slide { margin: 0; }
+.city-slide[hidden] { display: none; }
+.city-slide img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.city-slide.is-on img { animation: cityin .7s var(--hd-ease) both; }
+@keyframes cityin { from { opacity: .4; transform: scale(1.015); } to { opacity: 1; transform: none; } }
+.city-slide figcaption { padding: 16px 24px 20px; border-top: 1px solid var(--hd-line); color: var(--hd-text-2); font-size: 15px; background: var(--hd-bg-1); min-height: 88px; }
+.city-slide figcaption b { color: var(--hd-text); }
+.city-progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: color-mix(in srgb, var(--hd-text) 8%, transparent); }
+.city-progress span { display: block; height: 100%; background: var(--hd-honey); transform-origin: left; transform: scaleX(0); }
+.city-show.is-auto .city-progress span { animation: cityprog 7s linear both; }
+@keyframes cityprog { to { transform: scaleX(1); } }
+.city-show.is-off, .city-show:not(.is-in) { --play: paused; }
+.city-show * { animation-play-state: var(--play, running); }
+@media (max-width: 640px) {
+  .city { padding-top: 72px; }
+  .city-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; width: auto; border-radius: 12px; scrollbar-width: none; }
+  .city-tabs button { flex: none; }
+  .city-slide figcaption { padding: 12px 16px 16px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .city-progress { display: none; } }
 
 /* ---------- site themes (generated from themes/*.json) ---------- */
 html[data-site-theme="alto-contraste"] {

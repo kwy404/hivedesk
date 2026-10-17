@@ -2,7 +2,7 @@
   <img src="assets/banner.svg" width="900" alt="hivedesk: a whole crew of AI workers, running on your own machine. A honeycomb desktop with a timeline, a crew chat, a code window and a live preview, with Mel the bee foreman.">
 </p>
 
-<p align="center"><b>Your own AI crew. One command away.</b></p>
+<p align="center"><b>Your own AI crew. One command away.</b><br>New in 0.2.0: <a href="#hive-city-new-in-020">Hive City</a>, where your agents live, work through rooms and borrow a friend's GPU.</p>
 
 <p align="center">
   <a href="https://kwy404.github.io/hivedesk/">Website</a> &middot;
@@ -29,6 +29,28 @@ Run `npx hivedesk` and a short wizard sets everything up: it reads your hardware
 <p align="center">
   <img src="docs/assets/shots/hive.webp" width="900" alt="The Hive in demo mode: the timeline of a bakery landing page job, the crew chat, a live preview of the page, the Files window with a diff and the Dev worker after a turn, with the worker dock at the bottom.">
 </p>
+
+## Hive City (new in 0.2.0)
+
+<p align="center">
+  <img src="docs/assets/shots/city-overview.webp" width="900" alt="Hive City in demo mode: your building on a floating island with the Design, Code, Review, Test, Ops, Library and Lobby rooms, a friend's tower across a bridge, the task board and the event feed.">
+</p>
+
+<p align="center">
+  <img src="docs/assets/shots/city-bridge-gpu-borrow.webp" width="440" alt="Dev borrows the friend's GPU across the lit bridge; the Machines panel shows 2 of 3 turns and a Stop the borrow button.">
+  <img src="docs/assets/shots/city-agent-card.webp" width="440" alt="An agent card with the level, XP, tools and private memory.">
+</p>
+
+hivedesk now opens on a small city, and the city is the state of the system: every building, room, agent and task you see is an event in the same log the crew writes ([CITY-PROTOCOL.md](CITY-PROTOCOL.md)). `npx hivedesk --demo` plays the city scenario: a friend joins, her building rises, Dev borrows her GPU across the bridge, and a task goes through every room to done.
+
+- **Agents that stay.** Each crew worker is an agent with a home room, a level and XP from finished work, tools, and a private memory you can read, edit and pin. Agents are saved per machine in `~/.hivedesk/city/agents/`, so the same Dev keeps its level in every project, and pinned facts, preferences and decisions go into its prompts.
+- **Rooms with rules.** Lobby, Design, Code, Review, Test, Ops and Library. A room decides which tools an agent has while it works there (Review only reads and checks, Ops waits for your approval and is closed to guests). Extensions can add rooms.
+- **A task bus.** You put a task in a room or on an agent; idle agents in that room bid for it by skill, level and machine load, and every claim and hop is an event. A task in the Lobby goes to Mel, who plans it into crew tasks. The jobs you type in the top bar work as before, and Mel's planned tasks show up on the board too.
+- **Code, Review, Test, with loops.** Design writes a spec, Code runs the crew on it, another agent reviews the diff against the criteria, Test runs the checks. A failed review or test sends the task back to its author with the issues, at most 3 times, then it is blocked. You can approve or send back a task at any hop, and a room can wait for you.
+- **Machines and friends.** Your PC is a building with its GPU, model and load. A friend who joins through Code together (six words, QR or link) gets a building of their own and can bring agents that think on their machine. An agent can borrow a friend's GPU for a few turns; the friend accepts, sets the limits, sees every turn and can stop it. Only prompts and answers travel, through the existing lend relay and its limits.
+- **It comes back.** Close hivedesk and open it tomorrow: the same agents, levels and memories, and the tasks that were in progress open again in their room.
+
+What it does not do yet: Test runs the static checks (HTML, links, JS syntax, CSS, JSON), not your test suite; for tasks planned by Mel the review is those checks and the crew QA report is the test, so no extra model turns are spent; a friend's agent needs that friend's model to be lent; borrowing has no standing "lend 30 percent" setting, only limits per request; the crew job can finish a moment before the city hops of its last task. `--no-city` turns the city off and keeps the 0.1 desktop.
 
 ## Download
 
@@ -96,7 +118,7 @@ The choice and the reason are shown in one line, for example "NVIDIA GeForce GTX
 | `--port <n>`, `--no-open` | Pick the port; do not open the browser. |
 | `--lend`, `--join <link or words>` | Lend your model to a friend, or join one (see below). |
 | `--doctor` | Check Node, the GPU, RAM, disk and the models, then exit. |
-| `--no-city` | Run without Hive City (0.2.0, unreleased): no agents, rooms or task bus; the rest works the same. |
+| `--no-city` | Run without Hive City: no agents, rooms or task bus; the rest works the same. |
 
 `HIVEDESK_HOME` moves the cache folder `~/.hivedesk/`.
 
@@ -160,23 +182,6 @@ The default crew is **Mel** (foreman and planner), **Dev**, **Designer**, **QA**
 - **10 languages.** English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文 and Русский. The Hive follows your browser and switches live.
 - **A guided tour** with Mel on the first open; replay it from Help or the command palette.
 - **Replay** any moment from the append-only event log, a <kbd>Ctrl</kbd> <kbd>K</kbd> command palette, windows that snap, and a phone layout with stacked cards.
-
-## Hive City (0.2.0, not released yet)
-
-<p align="center">
-  <img src="assets/illustrations/hive-city.svg" width="900" alt="A sketch of Hive City: your building with rooms for Design, Code, Review, Test, Ops, Library and the Lobby, a friend's building that joined with six words, and a bridge where a bee carries model turns between the machines.">
-</p>
-
-In the next release the Hive becomes a small city, and the city is the state of the system: every building, room, agent and task you see is an event in the same log the crew writes. The engine side is in the repository now ([CITY-PROTOCOL.md](CITY-PROTOCOL.md)); the City view in the desktop is being built on top of it. From a clone, `node src/cli.js --demo` plays the city scenario: a friend joins, her building rises, Dev borrows her GPU across the bridge, and a task goes through every room to done.
-
-- **Agents that stay.** Each crew worker is an agent with a home room, a level and XP from finished work, tools, and a private memory you can read, edit and pin. Agents are saved per machine in `~/.hivedesk/city/agents/`, so the same Dev keeps its level in every project, and pinned facts, preferences and decisions go into its prompts.
-- **Rooms with rules.** Lobby, Design, Code, Review, Test, Ops and Library. A room decides which tools an agent has while it works there (Review only reads and checks, Ops waits for your approval and is closed to guests). Extensions can add rooms.
-- **A task bus.** You put a task in a room or on an agent; idle agents in that room bid for it by skill, level and machine load, and every claim and hop is an event. A task in the Lobby goes to Mel, who plans it into crew tasks. The jobs you type in the top bar work as before, and Mel's planned tasks show up on the board too.
-- **Code, Review, Test, with loops.** Design writes a spec, Code runs the crew on it, another agent reviews the diff against the criteria, Test runs the checks. A failed review or test sends the task back to its author with the issues, at most 3 times, then it is blocked. You can approve or send back a task at any hop, and a room can wait for you.
-- **Machines and friends.** Your PC is a building with its GPU, model and load. A friend who joins through Code together (six words, QR or link) gets a building of their own and can bring agents that think on their machine. An agent can borrow a friend's GPU for a few turns; the friend accepts, sets the limits, sees every turn and can stop it. Only prompts and answers travel, through the existing lend relay and its limits.
-- **It comes back.** Close hivedesk and open it tomorrow: the same agents, levels and memories, and the tasks that were in progress open again in their room.
-
-What it does not do yet: Test runs the static checks (HTML, links, JS syntax, CSS, JSON), not your test suite; for tasks planned by Mel the review is those checks and the crew QA report is the test, so no extra model turns are spent; a friend's agent needs that friend's model to be lent; borrowing has no standing "lend 30 percent" setting, only limits per request; the crew job can finish a moment before the city hops of its last task. `--no-city` turns the city off.
 
 ## Lend your PC
 
