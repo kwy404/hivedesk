@@ -48,6 +48,9 @@ export class Hive {
     this.memory = new Memory();
     /** @type {Map<string, { ctrl: AbortController, notes: Map<string, string[]>, promise: Promise<any> }>} */
     this.active = new Map();
+    /** Hive City hooks (src/city/), optional: the worker a task runs with (room tools) and extra memories for its prompt. */
+    this.adaptWorker = null;
+    this.extraMemories = null;
   }
 
   get state() {
@@ -165,11 +168,14 @@ export class Hive {
       refine: spec.refine === undefined ? this.state.settings.refine !== false : !!spec.refine,
       createdAt: new Date().toISOString(), taskIds: []
     };
+    // A city hop (src/city/): one given task, no brief, no planner, no report.
+    const plan = Array.isArray(spec.plan) && spec.plan.length ? spec.plan : null;
+    if (plan) { job.refine = false; job.cityTaskId = String(spec.cityTaskId || '').slice(0, 40) || undefined; }
     const ctrl = new AbortController();
     const run = { ctrl, notes: new Map(), promise: null };
     this.active.set(jobId, run);
     this.bus.emit('job.created', { job }, { jobId });
-    run.promise = this._runJob(job, run, spec.playbookId).catch((err) => {
+    run.promise = (plan ? this._runPlanned(job, run, plan) : this._runJob(job, run, spec.playbookId)).catch((err) => {
       if (ctrl.signal.aborted) return;
       this.bus.emit('job.failed', { error: String(err?.message || err) }, { jobId });
     }).finally(() => {
@@ -265,6 +271,34 @@ export class Hive {
     });
   }
 
+  /** A job with a given plan (a Hive City hop): the tasks run as they are, without the planner, QA rounds or the report. */
+  async _runPlanned(job, run, plan) {
+    const jobNum = job.id.slice(2);
+    const graph = new TaskGraph();
+    const known = this.crewById();
+    const tasks = plan.slice(0, 8).map((t, i) => graph.add({
+      id: `t_${jobNum}_${i + 1}`, jobId: job.id, title: String(t.title || 'Task').slice(0, 200), detail: String(t.detail || '').slice(0, 8000),
+      assignee: known.has(t.assignee) ? t.assignee : 'dev', dependsOn: (t.dependsOn || []).map((d) => `t_${jobNum}_${d + 1}`), status: 'pending', attempts: 0,
+      kind: ['build', 'fix', 'docs'].includes(t.kind) ? t.kind : 'build'
+    }));
+    run.memories = [];
+    this.bus.emit('job.planned', { tasks: tasks.map((t) => ({ ...t })) }, { jobId: job.id });
+    await this._drive(job, run, {
+      graph, tasks: null, preexisting: new Set(this.toolbox.ws.list().map((f) => f.path)), fixRounds: MAX_FIX_ROUNDS, nextIdx: tasks.length + 1,
+      qaPassed: true, openIssues: [], playbook: null, score: 0, quiet: true
+    });
+  }
+
+  /** Adds a note for one worker of a running job, as if the user had written it (Hive City review notes). */
+  addNote(jobId, workerId, text) {
+    const run = this.active.get(jobId);
+    if (!run) return false;
+    const list = run.notes.get(workerId) || [];
+    list.push(String(text).slice(0, 2000));
+    run.notes.set(workerId, list.slice(-5));
+    return true;
+  }
+
   /** Runs the task graph of a job to the end: workers take turns, QA adds fix rounds, then done. */
   async _drive(job, run, st) {
     const jobId = job.id;
@@ -285,7 +319,8 @@ export class Hive {
 
     const startTask = (task) => {
       const crewById = this.crewById();
-      const worker = crewById.get(task.assignee) || crewById.get('dev');
+      const base = crewById.get(task.assignee) || crewById.get('dev');
+      const worker = (this.adaptWorker && this.adaptWorker(base, task, job)) || base;
       graph.setStatus(task.id, 'running');
       this.bus.emit('task.status', { taskId: task.id, status: 'running' }, ev);
       const userNotes = () => [...(run.notes.get('*') || []), ...(run.notes.get(worker.id) || [])];
@@ -314,7 +349,7 @@ export class Hive {
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
         signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting, budget: run.budget,
         family: modelFamily(this.state.brain), contextTokens: this.state.brain?.ctx || undefined,
-        recent: () => this._recentFiles(jobId), memories: run.memories || [],
+        recent: () => this._recentFiles(jobId), memories: [...(run.memories || []), ...((this.extraMemories && this.extraMemories(worker.id, task)) || [])],
         verify: task.kind === 'qa' ? undefined : (wrote) => {
           // Fix tasks must clear every static issue; build tasks only the ones in their own files
           // (a link to a file another worker has not written yet is not their problem).
@@ -398,6 +433,7 @@ export class Hive {
     const buildTasks = all.filter((t) => t.kind !== 'qa' && t.status !== 'skipped');
     if (buildTasks.length && buildTasks.every((t) => t.status === 'failed' || t.status === 'blocked')) {
       this.bus.emit('job.failed', { error: `${failed.length} tasks failed` }, ev);
+      if (st.quiet) return;
       this.chat('mel', 'This job did not work out. You can retry a task from its menu, try a smaller request, or use a bigger model.', undefined, 'general', jobId);
       await this._report(job, run);
       return;
@@ -406,6 +442,7 @@ export class Hive {
       ? `Finished with ${failed.length} failed tasks.`
       : st.qaPassed ? `Finished, and QA passed.${skipped ? ` ${skipped} tasks were cancelled.` : ''}` : `Finished, but QA still reports ${st.openIssues.length} issues.`;
     this.bus.emit('job.done', { summary, files: outFiles }, ev);
+    if (st.quiet) return;
     const url = this.previewUrl();
     this.chat('mel', `${summary} Files: ${outFiles.join(', ') || 'none'}.${url ? ' Open the Live preview to see it.' : ''}`, undefined, 'general', jobId);
     if (st.tasks && !failed.length && !skipped && st.qaPassed && !(st.playbook && st.score >= 0.6)) {

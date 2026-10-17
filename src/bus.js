@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { initialState, reduce, replay } from './replay/reduce.js';
+import { reduceCity, replayCity } from './city/state.js';
 
 export class EventBus {
   /**
@@ -21,6 +22,8 @@ export class EventBus {
     if (this.file && fs.existsSync(this.file)) this.events = readEventsFile(this.file);
     this.seq = this.events.length ? this.events[this.events.length - 1].seq : 0;
     this.state = replay(this.events, Infinity, this.meta);
+    // Hive City (src/city/): the same log, its own pure reducer (CITY-PROTOCOL.md).
+    this.state.city = replayCity(this.events);
     this.state.demo = this.demo || this.state.demo;
     this.state.lend = this.meta.lend;
     if (opts.version) this.state.version = opts.version;
@@ -41,6 +44,7 @@ export class EventBus {
     this.events.push(event);
     if (this.file) fs.appendFileSync(this.file, JSON.stringify(event) + '\n');
     reduce(this.state, event);
+    reduceCity(this.state.city, event);
     this._scheduleSnapshot();
     for (const fn of this.listeners) {
       try { fn(event); } catch (err) { /* a listener must never break the log */ }
@@ -71,6 +75,7 @@ export class EventBus {
 
   stateAt(seq) {
     const s = replay(this.events, seq, this.meta);
+    s.city = replayCity(this.events, seq);
     s.demo = this.demo || s.demo;
     return s;
   }
@@ -122,7 +127,8 @@ export function initHome(dir) {
     events: path.join(root, 'events.jsonl'),
     state: path.join(root, 'state.json'),
     playbooks: path.join(root, 'playbooks'),
-    workspace: path.join(root, 'workspace')
+    workspace: path.join(root, 'workspace'),
+    city: path.join(root, 'city')
   };
   for (const p of [root, paths.playbooks, paths.workspace]) fs.mkdirSync(p, { recursive: true });
   return paths;

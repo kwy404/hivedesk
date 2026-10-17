@@ -76,7 +76,7 @@ export function createServer(opts) {
   let port = 0;
   let clientSeq = 0;
 
-  const meta = () => ({ protocol: PROTOCOL, version, demo: !!opts.demo, lend: !!opts.lend });
+  const meta = () => ({ protocol: PROTOCOL, version, demo: !!opts.demo, lend: !!opts.lend, ...(opts.city ? { city: 1 } : {}) });
 
   function allowedHost(req) {
     const h = String(req.headers.host || '');
@@ -367,6 +367,8 @@ export function createServer(opts) {
       }
       if (req.method !== 'GET' && req.method !== 'HEAD') return sendError(res, 405, 'bad_request', 'method not allowed');
       if (url.pathname === '/lib/reduce.js') return serveFile(res, path.join(HERE, 'replay', 'reduce.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
+      // The Hive City reducer (CITY-PROTOCOL.md section 1), pure and import free like reduce.js.
+      if (url.pathname === '/lib/city.js') return serveFile(res, path.join(HERE, 'city', 'state.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
       if (url.pathname.startsWith('/i18n/')) {
         // Shared UI strings and the message formatter (i18n/<locale>.json, i18n/index.js).
         const rel = url.pathname.slice('/i18n/'.length);
@@ -483,6 +485,7 @@ function statusFor(err) {
     case 'not_lending': return 409;
     case 'busy': return 429;
     case 'unauthorized': return 401;
+    case 'forbidden': return 403;
     case 'internal': return 500;
     case 'rate_limited': return 429;
     default: return 400;

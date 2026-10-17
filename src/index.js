@@ -15,6 +15,8 @@ import { createDemoBrain, DEMO_NOTICE, DEMO_REQUEST } from './demo.js';
 import { runDoctor } from './doctor.js';
 import { PROTOCOL } from './replay/reduce.js';
 import { MemoryStore, attachMemory } from './memory/index.js';
+import { City } from './city/index.js';
+import { runCityDemo } from './city/demo.js';
 
 export const VERSION = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8')).version;
 
@@ -56,8 +58,20 @@ export async function startHive(opts) {
   server = createServer({
     bus, hive, scheduler, approvals, playbooks, toolbox, brains, memory,
     doctor: () => runDoctor({ home, model: opts.flags?.model }),
-    token: opts.token, port: opts.port, uiDir: opts.uiDir, demo: !!opts.demo, lend: !!opts.lend, version: VERSION, dir
+    token: opts.token, port: opts.port, uiDir: opts.uiDir, demo: !!opts.demo, lend: !!opts.lend, version: VERSION, dir, city: opts.city !== false
   });
+
+  // Hive City (src/city/, CITY-PROTOCOL.md): agents, rooms, the task bus and machines on the same log.
+  let city = null;
+  if (opts.city !== false) {
+    try {
+      city = new City({ bus, hive, scheduler, toolbox, home, projectDir: paths.city, version: VERSION });
+      city.start();
+      city.register(server);
+    } catch (err) {
+      log(`city failed to start: ${err.message}`);
+    }
+  }
 
   // Optional lend plug-in (PROTOCOL.md section 6). The engine works without it.
   const lendEntry = path.join(PACKAGE_ROOT, 'src', 'lend', 'index.js');
@@ -81,6 +95,7 @@ export async function startHive(opts) {
 
   let demoTimer = null;
   let demoFallback = null;
+  const demoCtrl = new AbortController();
   if (opts.demo) {
     scheduler.addBrain(createDemoBrain({ delayMs: opts.demoDelayMs, tokenDelayMs: opts.demoDelayMs === 0 ? 0 : undefined }));
     bus.emit('brain.status', { state: 'ready', backend: 'fake', model: 'demo script', detail: 'demo: no model is running' });
@@ -94,6 +109,10 @@ export async function startHive(opts) {
         clearInterval(demoTimer);
         clearTimeout(demoFallback);
         hive.createJob({ request: DEMO_REQUEST });
+        if (city) {
+          const stepMs = opts.demoDelayMs === 0 ? 0 : (opts.demoCityStepMs ?? 1800);
+          setTimeout(() => { runCityDemo({ city, scheduler, bus, stepMs, signal: demoCtrl.signal }).catch((err) => log(`city demo stopped: ${err.message}`)); }, stepMs ? 1500 : 0).unref?.();
+        }
       };
       demoTimer = setInterval(() => { if (server.clients.size) { clearInterval(demoTimer); setTimeout(go, 1500).unref?.(); } }, 300);
       demoFallback = setTimeout(go, 8000);
@@ -108,11 +127,13 @@ export async function startHive(opts) {
   }
 
   return {
-    bus, hive, scheduler, approvals, playbooks, toolbox, server, brains, paths, home, memory,
+    bus, hive, scheduler, approvals, playbooks, toolbox, server, brains, paths, home, memory, city,
     url: server.url,
     async close() {
       if (demoTimer) clearInterval(demoTimer);
       if (demoFallback) clearTimeout(demoFallback);
+      demoCtrl.abort();
+      await city?.close();
       extensions?.close();
       await hive.close();
       await brains?.close();

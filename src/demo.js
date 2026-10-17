@@ -146,7 +146,33 @@ const PLAN = {
   ]
 };
 
+/** The Hive City demo task (src/city/demo.js): Design, Code, Review, Test, done. */
+export const DEMO_CITY_TASK = {
+  title: 'Add a weekly specials section',
+  detail: 'Show the three specials of this week on the bakery page, between the breads and the opening hours.'
+};
+
+const SPECIALS = `    <section class="specials">
+      <h2>This week</h2>
+      <ul>
+        <li>Pumpkin loaf, on Tuesday</li>
+        <li>Fig and walnut rye, on Thursday</li>
+        <li>Cardamom buns, on Saturday</li>
+      </ul>
+    </section>
+    <section class="hours">`;
+
+const DESIGN = {
+  spec: 'In index.html, add a section with class "specials" right before the opening hours: an h2 "This week" and a list of three specials, each with its day. Reuse the existing card look; no new files.',
+  criteria: ['index.html has a "This week" section before the opening hours', 'The section lists three specials, each with a day', 'The page still passes the static checks']
+};
+
 const SCRIPTS = {
+  [DEMO_CITY_TASK.title]: [
+    { tool: 'read_file', args: { path: 'index.html' } },
+    { tool: 'edit_file', args: { path: 'index.html', search: '    <section class="hours">', replace: SPECIALS } },
+    { tool: 'done', args: { summary: 'Added the weekly specials section before the opening hours.' } }
+  ],
   'Set the look': [
     { tool: 'say', args: { text: 'Going for warm crust colors and a lot of air around the text.' } },
     { tool: 'write_file', args: { path: 'style.css', content: STYLE } },
@@ -201,6 +227,8 @@ const REPORT = {
 
 /** The demo responder: the brief and the plan for Mel, a fixed list of actions per task, then the report. */
 export function demoRespond(messages, options) {
+  if (options.schema?.properties?.spec) return DESIGN;
+  if (options.schema?.properties?.approved) return { approved: true, issues: [] };
   if (options.schema?.properties?.goal) return BRIEF;
   if (options.schema?.properties?.improvedPrompt) return REPORT;
   if (options.schema?.properties?.tasks) return PLAN;
@@ -214,8 +242,8 @@ export function demoRespond(messages, options) {
 
 export function createDemoBrain(opts = {}) {
   return createFakeBrain({
-    id: 'demo',
-    label: 'Demo script (no model)',
+    id: opts.id || 'demo',
+    label: opts.label || 'Demo script (no model)',
     model: 'demo script',
     respond: demoRespond,
     delayMs: opts.delayMs ?? 400,
