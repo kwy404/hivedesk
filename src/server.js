@@ -172,6 +172,12 @@ export function createServer(opts) {
   command('crew.update', (d) => ({ worker: hive.updateWorker(d.workerId, d) }));
   command('crew.fire', (d) => { hive.fire(d.workerId); return {}; });
   command('task.retry', (d) => hive.retryTask(d.taskId));
+  command('turn.recent', () => ({ turns: [...scheduler.prompts.values()].map(({ messages, response, ...rest }) => ({ ...rest, chars: messages.reduce((n, m) => n + m.content.length, 0) })).reverse() }));
+  command('turn.prompt', (d) => {
+    const rec = scheduler.prompts.get(String(d.turnId));
+    if (!rec) throw new CommandError('not_found', 'that turn is no longer kept (the last 40 are)');
+    return rec;
+  });
   command('brief.approve', (d) => hive.approveBrief(d.jobId, { use: d.use, text: d.text }));
   command('playbook.save', (d) => hive.savePlaybook(d.jobId));
   command('task.reassign', (d) => hive.reassignTask(d.taskId, d.workerId));

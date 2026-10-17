@@ -1,6 +1,7 @@
 // One worker doing one task: a loop of model turns, each producing exactly one JSON action.
 import { TOOLS, actionSchema } from '../tools/index.js';
 import { checkWorkspace } from '../tools/check.js';
+import { assembleTaskPrompt } from './prompts/index.js';
 
 export const MAX_TURNS = 10;
 const HISTORY_PAIRS = 6;
@@ -16,9 +17,18 @@ function reportAction() {
         type: 'object',
         properties: {
           passed: { type: 'boolean' },
-          issues: { type: 'array', maxItems: 8, items: { type: 'string' } }
+          findings: {
+            type: 'array',
+            maxItems: 8,
+            items: {
+              type: 'object',
+              properties: { severity: { enum: ['high', 'medium', 'low'] }, file: { type: 'string' }, problem: { type: 'string' }, fix: { type: 'string' } },
+              required: ['severity', 'file', 'problem', 'fix'],
+              additionalProperties: false
+            }
+          }
         },
-        required: ['passed', 'issues'],
+        required: ['passed', 'findings'],
         additionalProperties: false
       }
     },
@@ -42,7 +52,25 @@ export function workerSchema(worker, task) {
     schema.oneOf = schema.oneOf.filter((o) => o.properties.tool.const !== 'done');
     schema.oneOf.push(reportAction());
   }
+  // A short scratch plan before the call ("thought"), first in every action. Grammar engines make it
+  // mandatory (they require every property); the validator accepts actions without it.
+  for (const o of schema.oneOf) o.properties = { thought: { type: 'string', maxLength: 300 }, ...o.properties };
   return schema;
+}
+
+/** QA findings to issue lines; only high and medium findings fail the review. */
+export function findingsToReport(args = {}) {
+  const findings = Array.isArray(args.findings) ? args.findings : [];
+  const legacy = Array.isArray(args.issues) ? args.issues.map((i) => ({ severity: 'high', file: '', problem: String(i), fix: '' })) : [];
+  const all = [...findings, ...legacy].filter((f) => f && String(f.problem || '').trim() && !/^(none|no issues?\.?)$/i.test(String(f.problem).trim()));
+  const blocking = all.filter((f) => f.severity !== 'low');
+  const line = (f) => `${f.file ? f.file + ': ' : ''}${f.problem}${f.fix ? ` Fix: ${f.fix}` : ''}`;
+  return {
+    passed: !!args.passed && blocking.length === 0 ? true : blocking.length === 0 && !!args.passed,
+    issues: blocking.map(line).slice(0, 8),
+    notes: all.filter((f) => f.severity === 'low').map(line).slice(0, 8),
+    findings: all.slice(0, 8)
+  };
 }
 
 export function systemPrompt(worker, task) {
@@ -120,7 +148,7 @@ export async function runTask(ctx) {
   const { job, task, worker, scheduler, toolbox, memory, bus, signal } = ctx;
   const maxTurns = ctx.maxTurns || MAX_TURNS;
   const schema = workerSchema(worker, task);
-  const system = systemPrompt(worker, task);
+  const legacySystem = systemPrompt(worker, task);
   /** @type {Array<{ action: any, result: string }>} */
   const steps = [];
   const wrote = new Set();
@@ -139,12 +167,22 @@ export async function runTask(ctx) {
       if (ctx.budget.turns >= ctx.budget.max) return { status: 'failed', summary: `stopped by Mel: the job used its ${ctx.budget.max} model turns`, wrote: [...wrote] };
       ctx.budget.turns++;
     }
-    // Rebuilt every turn: the file list and the user's messages change while the task runs.
-    const first = firstMessage({
-      job, task, graph: ctx.graph, crewById: ctx.crewById, files: toolbox.ws.list().map((f) => f.path),
+    // Rebuilt every turn: the files, the notes and the user's messages change while the task runs.
+    const listed = toolbox.ws.list();
+    const assembled = assembleTaskPrompt({
+      worker, task, job, family: ctx.family || 'small', contextTokens: ctx.contextTokens,
+      files: listed, readFile: (p) => { try { return toolbox.ws.read(p); } catch { return ''; } },
+      recent: [...wrote, ...(ctx.recent ? ctx.recent() : [])], memories: ctx.memories || [],
+      previous: memory.crew(6), scratchpad: memory.get(`pad:${worker.id}`),
+      userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra,
+      plan: ctx.graph ? planLines(job, ctx.graph, task, ctx.crewById) : ''
+    });
+    const system = ctx.legacyPrompts ? legacySystem : assembled.system;
+    const first = ctx.legacyPrompts ? firstMessage({
+      job, task, graph: ctx.graph, crewById: ctx.crewById, files: listed.map((f) => f.path),
       notes: memory.crew(6), userNotes: ctx.userNotes ? ctx.userNotes() : [], extra: ctx.extra,
       scratchpad: memory.get(`pad:${worker.id}`)
-    });
+    }) : assembled.user;
     const messages = [{ role: 'system', content: system }, { role: 'user', content: first }];
     const older = steps.slice(0, Math.max(0, steps.length - HISTORY_PAIRS));
     if (older.length) {
@@ -158,7 +196,7 @@ export async function runTask(ctx) {
 
     let result;
     try {
-      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages, options: { schema, maxTokens: 3000, temperature: 0.2 }, signal });
+      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages, options: { schema, maxTokens: 3000, temperature: 0.2 }, budget: assembled.budget, signal });
     } catch (err) {
       if (signal?.aborted) throw err;
       invalid++;
@@ -186,8 +224,10 @@ export async function runTask(ctx) {
       return { status: 'done', summary, wrote: [...wrote] };
     }
     if (action.tool === 'report') {
-      const report = { passed: !!action.args?.passed, issues: (action.args?.issues || []).map(String).filter(Boolean).slice(0, 8) };
-      if (report.passed) report.issues = report.issues.filter((i) => !/^(none|no issues?\.?)$/i.test(i.trim()));
+      const report = findingsToReport(action.args);
+      // A model that says "not passed" with no blocking finding is taken at its word, with a generic finding.
+      if (!action.args?.passed && !report.issues.length) report.issues.push('QA did not pass the work but gave no finding');
+      report.passed = !!action.args?.passed && report.issues.length === 0;
       memory.add(worker.id, `${task.title}: ${report.passed ? 'passed' : 'found ' + report.issues.length + ' issues'}`);
       return { status: 'done', summary: report.passed ? 'all checks passed' : `${report.issues.length} issues`, report, wrote: [...wrote] };
     }

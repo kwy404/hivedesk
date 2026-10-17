@@ -12,7 +12,8 @@ export function projectFiles(dir = ROOT) {
   const walk = (d) => {
     for (const e of fs.readdirSync(d, { withFileTypes: true })) {
       if (e.isDirectory()) {
-        if (!SKIP_DIRS.has(e.name)) walk(path.join(d, e.name));
+        // ui/editor/vs is a vendored copy of the Monaco editor.
+        if (!SKIP_DIRS.has(e.name) && !(e.name === 'vs' && d.endsWith('editor'))) walk(path.join(d, e.name));
       } else if (TEXT.test(e.name) && e.name !== 'package-lock.json') {
         out.push(path.join(d, e.name));
       }

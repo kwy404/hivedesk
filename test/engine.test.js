@@ -222,7 +222,8 @@ describe('planner and worker helpers', () => {
     expect(c.args.content).toBe('[1000 chars written]');
     const qa = BUILTIN.find((w) => w.id === 'qa');
     const s = workerSchema(qa, { kind: 'qa' });
-    expect(validate(s, { tool: 'report', args: { passed: true, issues: [] } })).toEqual([]);
+    expect(validate(s, { tool: 'report', args: { passed: true, findings: [] } })).toEqual([]);
+    expect(validate(s, { thought: 'ok', tool: 'report', args: { passed: false, findings: [{ severity: 'high', file: 'a', problem: 'b', fix: 'c' }] } })).toEqual([]);
     expect(validate(s, { tool: 'done', args: { summary: 'x' } }).length).toBeGreaterThan(0);
     expect(validate(s, { tool: 'write_file', args: { path: 'a', content: 'b' } }).length).toBeGreaterThan(0);
   });
@@ -318,7 +319,7 @@ describe('task commands', () => {
     const t = setup((messages, options) => {
       if (options.schema?.properties?.tasks) return { summary: 's', tasks: [{ title: 'Copy', detail: '', assignee: 'dev', dependsOn: [] }] };
       if (userTask(messages) === 'Copy') {
-        const writer = messages[0].content.startsWith('You are Writer');
+        const writer = messages[0].content.includes('You are Writer');
         if (!writer) return { tool: 'list_files', args: {} };
         return step(messages) === 0 ? { tool: 'write_file', args: { path: 'copy.md', content: 'hi' } } : { tool: 'done', args: { summary: 'written by Writer' } };
       }
@@ -382,7 +383,7 @@ describe('prompt refiner and report', () => {
     await done;
     expect(t.bus.events.find((e) => e.type === 'brief.approved').data).toMatchObject({ source: 'edited', text: edited });
     expect(seen.plan).toContain('four drinks');
-    expect(seen.worker).toContain('Job brief:');
+    expect(seen.worker).toContain('Approved brief:');
     expect(seen.qa).toContain('- [ ] index.html lists four drinks');
     expect(() => t.hive.approveBrief(jobId, {})).toThrow('no brief');
   });
@@ -395,7 +396,7 @@ describe('prompt refiner and report', () => {
     t.hive.approveBrief(jobId, { use: 'original' });
     await done;
     expect(seen.plan).toContain('Request: coffee page');
-    expect(seen.worker).toContain('Job: coffee page');
+    expect(seen.worker).toContain('Request: coffee page');
   });
 
   it('ends with a report, an improved prompt and next prompts, and saves it as a playbook', async () => {

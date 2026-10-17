@@ -5,6 +5,7 @@ import { Memory } from './memory.js';
 import { makePlan } from './planner.js';
 import { runTask } from './worker.js';
 import { checkWorkspace } from '../tools/check.js';
+import { modelFamily } from './prompts/index.js';
 import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
 
 const MAX_FIX_ROUNDS = 3;
@@ -302,6 +303,8 @@ export class Hive {
       const p = runTask({
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
         signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting, budget: run.budget,
+        family: modelFamily(this.state.brain), contextTokens: this.state.brain?.ctx || undefined,
+        recent: () => this._recentFiles(jobId), memories: run.memories || [],
         verify: task.kind === 'qa' ? undefined : (wrote) => {
           // Fix tasks must clear every static issue; build tasks only the ones in their own files
           // (a link to a file another worker has not written yet is not their problem).
@@ -495,6 +498,16 @@ export class Hive {
     });
     this.bus.emit('playbook.saved', { playbook }, { jobId });
     return { playbook };
+  }
+
+  /** Files changed in this job, most recent first. */
+  _recentFiles(jobId) {
+    const out = [];
+    for (let i = this.bus.events.length - 1; i >= 0 && out.length < 8; i--) {
+      const e = this.bus.events[i];
+      if (e.jobId === jobId && e.type === 'file.changed' && !out.includes(e.data.path)) out.push(e.data.path);
+    }
+    return out;
   }
 
   // ---- task commands (PROTOCOL.md: task.retry, task.reassign, task.cancel) ----

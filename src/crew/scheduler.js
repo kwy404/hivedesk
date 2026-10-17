@@ -16,6 +16,8 @@ export class Scheduler {
     this.tick = 0;
     /** @type {Set<string>} */
     this.paused = new Set();
+    /** @type {Map<string, any>} the last prompts and answers, for the "show prompt" debug view */
+    this.prompts = new Map();
     /** @type {Map<string, string>} workerId -> preferred brainId */
     this.prefs = new Map();
     this.maxRetries = opts.maxRetries ?? 1;
@@ -52,7 +54,7 @@ export class Scheduler {
 
   /**
    * Queues one model turn and resolves with the brain's ChatResult.
-   * @param {{ workerId: string, taskId?: string, jobId?: string, messages: any[], options?: any, signal?: AbortSignal }} req
+   * @param {{ workerId: string, taskId?: string, jobId?: string, messages: any[], options?: any, signal?: AbortSignal, budget?: any }} req
    */
   turn(req) {
     return new Promise((resolve, reject) => {
@@ -75,6 +77,15 @@ export class Scheduler {
   }
 
   /** Picks the next turn: the worker served longest ago, then the oldest turn. */
+  _remember(item, brainId) {
+    this.prompts.set(item.turnId, {
+      turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, jobId: item.jobId, brainId,
+      messages: item.messages.map((m) => ({ role: m.role, content: String(m.content).slice(0, 40000) })),
+      budget: item.budget || null, response: null, ts: new Date().toISOString()
+    });
+    while (this.prompts.size > 40) this.prompts.delete(this.prompts.keys().next().value);
+  }
+
   /** A paused worker keeps its place in the queue but gets no turns until it is resumed. */
   setPaused(workerId, paused) {
     if (paused) this.paused.add(workerId);
@@ -136,7 +147,8 @@ export class Scheduler {
     this.lastServed.set(item.workerId, ++this.tick);
     item.attempts++;
     this._status(item.workerId, 'thinking', item);
-    this.bus.emit('turn.started', { turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, brainId, n: item.n ?? item.attempts }, { jobId: item.jobId });
+    this.bus.emit('turn.started', { turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, brainId, n: item.n ?? item.attempts, ...(item.budget ? { budget: item.budget } : {}) }, { jobId: item.jobId });
+    this._remember(item, brainId);
     this._emitQueue();
     const timer = setTimeout(() => ctrl.abort(), this.turnTimeoutMs);
     timer.unref?.();
@@ -157,6 +169,8 @@ export class Scheduler {
         promptTokens: result.promptTokens || 0, completionTokens: result.completionTokens || 0, ms, tps
       }, { jobId: item.jobId });
       this.bus.live('brain.stats', { brainId, tps, queue: this.waiting.length, loaded: true });
+      const rec = this.prompts.get(item.turnId);
+      if (rec) rec.response = String(result.text || '').slice(0, 20000);
       item.resolve(result);
     } catch (err) {
       const cancelled = item.signal?.aborted;
