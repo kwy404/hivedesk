@@ -316,3 +316,17 @@ hooks (about 8 lines), keeping your `openApp` as the fallback:
 5. **Job end.** On `job.done`, Mel drafts a changelog entry (rules only, no model turn) and says so in #general. Engine tests that count
    Mel's messages after `job.done` should expect one more.
 6. **Activity log.** Guests are named from `workerId: "guest:<name>"` (as `src/collab/` does), `from: "guest:<name>"` or `guest: { name }`.
+
+## From Code together and the Code editor (src/collab/, src/lend/)
+
+1. `src/index.js` passes `toolbox` and `approvals` to the lend plug-in (one line, already in place). `files.write`
+   (src/collab/index.js) saves through `toolbox.execute('write_file')`: the person at this PC as `workerId: "user"`
+   with no approval; a guest's save (forwarded by the host's browser with `as: { id, name }`) as
+   `workerId: "guest:<name>"` with the approval rules of an existing file write.
+2. Please document `files.write { path, content }` in PROTOCOL.md section 4 (result `{ path, bytes }`).
+3. Dev dependency `monaco-editor` 0.52.2 (exact). `node scripts/vendor-monaco.mjs` copies the needed 5.8 MB into
+   `ui/editor/vs/` (committed, served by the existing static route, nothing from a CDN); `--check` verifies it.
+   Suggested scripts: `"e2e:collab": "node test/collab/e2e-collab.mjs"`, `"e2e:editor": "node test/collab/e2e-editor.mjs"`,
+   and `node scripts/vendor-monaco.mjs --check` in CI.
+4. Please add `'.ttf': 'font/ttf'` to TYPES in src/server.js (the editor icon font is served as octet-stream today; it works,
+   but the right type is better).

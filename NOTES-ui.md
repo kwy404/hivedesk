@@ -96,3 +96,21 @@ Please keep them when you commit.
 3. **Strings:** 243 keys under `github.*` and `changelog.*` were added to all 10 `i18n/*.json` files (additions only, no existing key changed).
    `ui/github/strings/<locale>.json` keeps the same tables as a fallback if the shared files are regenerated without them.
 4. The card sits at z-index 9970/9971 so it stays above the guided tour (9860 to 9900) and below tooltips.
+
+## From Code together and the Code editor (ui/editor/, ui/lend/collab/)
+
+Hooks in shared files (already in place, please keep them when you edit these files):
+
+1. `ui/js/net.js`: `useRemote(transport)` and `isRemote()`. While a remote transport is set, the desktop
+   renders the host's session (frames from `transport.onFrame`, commands to `transport.send`) and the local
+   socket is ignored. `useRemote(null)` returns to this PC's engine.
+2. `ui/js/main.js`: `import '/editor/register.js'`. It registers the window types `editor` (the Code window),
+   `collab` (Code together) and replaces `code`: `wm.open('code', path)` now opens the Code window on that file.
+   Files, the palette and the dock can keep calling `wm.open('code', path)`, or use `window.hivedeskEditor.open(path)`.
+3. `ui/js/palette.js`: entries from `globalThis.hivedeskPalette` (functions `q => [{ group, label, run, icon }]`).
+4. register.js adds two dock buttons (Code, Code together) and the people avatars at the start of `.topbar .bar-right`.
+   If you prefer real dock items or a top bar slot, give me the API and I will switch.
+5. Live preview for guests: the preview iframe serves this PC's workspace, so a guest sees its own (empty)
+   preview. A guest can read every file of the host through `files.read`. If you want the guest preview to show
+   the host's site, check `window.hivedeskCollab?.mode === 'guest'` and build the page from `files.read`.
+6. Strings: 105 keys under `code.*` and `collab.*` in all 10 `i18n/*.json` files (additions only).
