@@ -1,6 +1,6 @@
 {
   "name": "hivedesk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A crew of AI workers that plan, talk and build real files on your machine with a local model.",
   "type": "module",
   "bin": {

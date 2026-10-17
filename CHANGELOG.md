@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-10-17)
+
+Hive City: hivedesk becomes a small distributed system for AI agents on people's computers. The city is the new home view.
 
 ### Hive City, engine side (CITY-PROTOCOL.md)
 
