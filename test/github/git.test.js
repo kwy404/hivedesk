@@ -52,7 +52,8 @@ describe('git in the workspace (local bare remote, no network)', () => {
     const cloneDir = path.join(base, 'clone');
     const g2 = createGit({ cwd: cloneDir });
     await g2.clone(remote);
-    expect(fs.readFileSync(path.join(cloneDir, 'index.html'), 'utf8')).toBe('<p>hi</p>\n');
+    // The user's own core.autocrlf setting applies to the checkout.
+    expect(fs.readFileSync(path.join(cloneDir, 'index.html'), 'utf8').replace(/\r\n/g, '\n')).toBe('<p>hi</p>\n');
     expect(await g2.isRepo()).toBe(true);
   });
 
