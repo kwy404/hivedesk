@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>hivedesk: 自分のパソコンでAIエージェントを動かす、無料のオープンソース</title>
+<meta name="description" content="hivedesk は無料のマルチエージェント作業環境。AIエージェントのクルーが、オープンソースのモデルであなたのパソコンに本物のファイルを作ります。友だちとP2PでGPUを共有。アカウント不要。">
+<meta name="author" content="Alexandre Kohler">
+<meta name="theme-color" content="#0B0A09">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="hivedesk">
+<meta property="og:title" content="hivedesk: 自分のパソコンでAIエージェントを動かす、無料のオープンソース">
+<meta property="og:description" content="オープンソースのモデルを使い、あなたのパソコンで計画して本物のファイルを作るAIエージェントのクルー。友だちをP2Pで招待してGPUを共有できます。">
+<meta property="og:image" content="https://kwy404.github.io/hivedesk/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="hivedesk: ハチの親方 Mel と、コマンド1つでAIクルーがまるごとあなたのマシンに、という言葉">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="hivedesk: 自分のパソコンでAIエージェントを動かす、無料のオープンソース">
+<meta name="twitter:description" content="オープンソースのモデルを使い、あなたのパソコンで計画して本物のファイルを作るAIエージェントのクルー。友だちをP2Pで招待してGPUを共有できます。">
+<meta name="twitter:image" content="https://kwy404.github.io/hivedesk/og.png">
+<!-- seo:start -->
+<link rel="canonical" href="https://kwy404.github.io/hivedesk/ja/">
+<link rel="alternate" hreflang="en" href="https://kwy404.github.io/hivedesk/">
+<link rel="alternate" hreflang="pt-BR" href="https://kwy404.github.io/hivedesk/pt-BR/">
+<link rel="alternate" hreflang="es" href="https://kwy404.github.io/hivedesk/es/">
+<link rel="alternate" hreflang="fr" href="https://kwy404.github.io/hivedesk/fr/">
+<link rel="alternate" hreflang="de" href="https://kwy404.github.io/hivedesk/de/">
+<link rel="alternate" hreflang="it" href="https://kwy404.github.io/hivedesk/it/">
+<link rel="alternate" hreflang="ja" href="https://kwy404.github.io/hivedesk/ja/">
+<link rel="alternate" hreflang="ko" href="https://kwy404.github.io/hivedesk/ko/">
+<link rel="alternate" hreflang="zh-Hans" href="https://kwy404.github.io/hivedesk/zh-Hans/">
+<link rel="alternate" hreflang="ru" href="https://kwy404.github.io/hivedesk/ru/">
+<link rel="alternate" hreflang="x-default" href="https://kwy404.github.io/hivedesk/">
+<meta property="og:url" content="https://kwy404.github.io/hivedesk/ja/">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="it_IT">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="ru_RU">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "SoftwareApplication",
+   "@id": "https://kwy404.github.io/hivedesk/#app",
+   "name": "hivedesk",
+   "url": "https://kwy404.github.io/hivedesk/ja/",
+   "description": "hivedesk は無料のマルチエージェント作業環境。AIエージェントのクルーが、オープンソースのモデルであなたのパソコンに本物のファイルを作ります。友だちとP2PでGPUを共有。アカウント不要。",
+   "inLanguage": "ja",
+   "applicationCategory": "DeveloperApplication",
+   "operatingSystem": "Windows, macOS, Linux",
+   "softwareVersion": "0.2.1",
+   "license": "https://opensource.org/licenses/MIT",
+   "isAccessibleForFree": true,
+   "downloadUrl": "https://github.com/kwy404/hivedesk/releases/latest",
+   "installUrl": "https://www.npmjs.com/package/hivedesk",
+   "image": "https://kwy404.github.io/hivedesk/og.png",
+   "screenshot": "https://kwy404.github.io/hivedesk/assets/shots/city-overview.webp",
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+   },
+   "author": {
+    "@id": "https://kwy404.github.io/hivedesk/#author"
+   }
+  },
+  {
+   "@type": "Person",
+   "@id": "https://kwy404.github.io/hivedesk/#author",
+   "name": "Alexandre Kohler",
+   "url": "https://github.com/kwy404",
+   "sameAs": [
+    "https://github.com/kwy404",
+    "https://www.linkedin.com/in/alexandre-silva-173687256/"
+   ]
+  },
+  {
+   "@type": "WebPage",
+   "@id": "https://kwy404.github.io/hivedesk/ja/#page",
+   "url": "https://kwy404.github.io/hivedesk/ja/",
+   "name": "hivedesk: 自分のパソコンでAIエージェントを動かす、無料のオープンソース",
+   "description": "hivedesk は無料のマルチエージェント作業環境。AIエージェントのクルーが、オープンソースのモデルであなたのパソコンに本物のファイルを作ります。友だちとP2PでGPUを共有。アカウント不要。",
+   "inLanguage": "ja",
+   "isPartOf": {
+    "@type": "WebSite",
+    "name": "hivedesk",
+    "url": "https://kwy404.github.io/hivedesk/"
+   },
+   "about": {
+    "@id": "https://kwy404.github.io/hivedesk/#app"
+   }
+  },
+  {
+   "@type": "FAQPage",
+   "@id": "https://kwy404.github.io/hivedesk/ja/#faq",
+   "inLanguage": "ja",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "アカウントやAPIキーは必要ですか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "いいえ。標準では、あなたのマシンで動くモデルを使います。キーは任意で、クラウドモデル用に自分のAPIキーを使うときだけ必要です。キーはこのマシンのキーストアに保存されます。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "ダウンロードの大きさと、初回起動にかかる時間は?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "モデルはハードウェアに応じて0.5 GBから9.0 GB、加えてランタイムに数百MBです。100 Mbit/s なら3Bのモデルで約3分、7Bで約6分。これは一度だけで、その後はモデルを読み込む時間で起動できます。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "GPUのないノートパソコンでも動きますか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "はい、小さなモデルでCPUで動きます: RAM 16 GBなら3B、8から16 GBなら1.5B、それ未満なら0.5B。速度は遅く、1秒あたり数トークンです。小さなタスクならこなせますが、待つ覚悟が必要です。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "プロンプトの整え役は何を変えるのですか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "計画の前に、Mel があなたのリクエストをブリーフにします: 目標、作るもの、制約、チェック、未解決の質問。あなたがブリーフを使うか、編集するか、元の文のままにするまで、仕事は待ちます。設定でオフにもできます。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "音声モードは音声をどこかに送りますか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "音声はブラウザの音声認識を使うため、音声がブラウザ提供元のサービスに送られることがあります。Mel の読み上げは、ローカルの音声がある場合はあなたのコンピューターで作られます。完全にローカルな音声認識はまだ提供していません。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "ワーカーがコンピューターを壊すことはありますか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "ワーカーが使えるのはワークスペースのフォルダーに限られたツールだけで、外に出ようとするパスは拒否されます。コマンドは標準でタイムアウトと出力の上限つき、ネットワークなしで実行され、承認モードではリスクのあるステップがあなたを待ちます。拡張機能は、あなたが許可した権限でサンドボックス内で動きます。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "ランチャーでセキュリティの警告が出るのはなぜ?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "コード署名のないシンプルなスクリプトなので、初回は Windows SmartScreen と macOS Gatekeeper が確認を求めます。どれも Node.js を確認して npx hivedesk@latest を実行するだけです。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "モデルをダウンロードせずに中を見られますか?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "はい: npx hivedesk --demo が台本どおりの仕事を再生します。表示されるものにはすべてデモのラベルがついています。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "削除するには?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "~/.hivedesk/ (ランタイム、モデル、設定)と、プロジェクト内の .hivedesk/ フォルダーを削除します。npm でインストールした場合は npm rm -g hivedesk も実行してください。"
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<!-- seo:end -->
+<script>
+/* First visit to the English root: people whose browser prefers another language go to that
+   language's page, once. A saved choice wins. Crawlers and test tools are never redirected. */
+(function () {
+  try {
+    if (document.documentElement.lang !== 'en' || /bot|crawl|spider|slurp|lighthouse|headless|preview/i.test(navigator.userAgent)) return;
+    var L = ['pt-BR', 'es', 'fr', 'de', 'it', 'ja', 'ko', 'zh-Hans', 'ru'], code = null, saved = null;
+    try { saved = localStorage.getItem('hivedesk.site.lang'); } catch (e) {}
+    if (saved) code = saved;
+    else {
+      var prefs = (navigator.languages || []).concat(navigator.language || []);
+      for (var i = 0; i < prefs.length && !code; i++) {
+        var b = String(prefs[i]).toLowerCase().split('-')[0];
+        code = b === 'en' ? 'en' : b === 'pt' ? 'pt-BR' : b === 'zh' ? 'zh-Hans' : L.indexOf(b) >= 0 ? b : null;
+      }
+    }
+    if (code && code !== 'en' && L.indexOf(code) >= 0) location.replace(code + '/' + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/shots/hive.webp" as="image" type="image/webp" fetchpriority="high">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="../assets/monsoon.css">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.classList.add('hd-js')</script>
+<script type="module" src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+
+<header class="top" v-data="{ open: false }" @keydown.escape="open = false">
+  <div class="top-in">
+    <a class="brand" href="../" aria-label="hivedesk ホーム">
+      <img src="../assets/art/logo.svg" width="24" height="24" alt="">
+      <span>hivedesk</span>
+    </a>
+    <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="メイン">
+      <a href="#city" @click="open = false">Hive City</a>
+      <a href="#try" @click="open = false" data-i18n="nav.try">試してみる</a>
+      <a href="#how" @click="open = false" data-i18n="nav.how">しくみ</a>
+      <a href="#features" @click="open = false" data-i18n="nav.features">機能</a>
+      <a href="#download" @click="open = false" data-i18n="nav.download">ダウンロード</a>
+      <a href="#limits" @click="open = false" data-i18n="nav.limits">制限</a>
+      <a href="#faq" @click="open = false">FAQ</a>
+    </nav>
+    <div class="top-act">
+      <span class="tooltip tooltip-bottom" data-tip="セクションへ移動 (Ctrl K)">
+        <button class="icon-btn search-btn" type="button" v-hotkey="mod+k" @click="PAL.show()" aria-label="ページ内を検索 (Ctrl K)" aria-haspopup="dialog" aria-controls="palette">
+          <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><kbd class="kbd-hint">Ctrl K</kbd>
+        </button>
+      </span>
+      <div class="lang" v-data="{ }" v-click-outside="LANGSEL.close(false)">
+        <span class="tooltip tooltip-bottom" data-tip="言語">
+          <button id="lang-btn" class="lang-btn" type="button" aria-label="言語: 日本語" aria-haspopup="listbox" aria-controls="lang-list" :aria-expanded="LANGSEL.open ? 'true' : 'false'" @click="LANGSEL.toggle()" @keydown="LANGSEL.btnKey($event)">
+            <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-globe"/></svg><span class="lang-cur" data-lang-label>日本語</span><svg class="i chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </span>
+        <ul id="lang-list" class="menu lang-menu" role="listbox" tabindex="-1" aria-label="言語" style="display:none" v-show="LANGSEL.open" v-transition="pop" :aria-activedescendant="'lang-opt-' + LANGSEL.active" @keydown="LANGSEL.key($event)">
+          <li v-for="(l, i) in LANGSEL.list" :key="l.code" class="menu-item lang-opt" role="option" :id="'lang-opt-' + i" :lang="l.code" :aria-selected="l.code === LANGSEL.current ? 'true' : 'false'" :class="i === LANGSEL.active ? 'is-active' : ''" @click="LANGSEL.choose(i)" @pointermove="LANGSEL.active = i">
+            <span class="lang-badge" v-text="l.badge"></span><span class="lang-name" v-text="l.name"></span><svg class="i lang-check" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>
+          </li>
+        </ul>
+      </div>
+      <span class="tooltip tooltip-bottom" data-tip="テーマ">
+        <button class="icon-btn" type="button" popovertarget="theme-pop" aria-label="テーマ"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-design"/></svg></button>
+      </span>
+      <div id="theme-pop" popover class="popover popover-end theme-pop">
+        <p class="popover-title">アプリのテーマ</p>
+        <div class="segmented theme-seg" role="radiogroup" aria-label="テーマ" data-theme-seg>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="mel" checked><i class="sw" style="--a:#FFB531;--b:#0E0D0B" aria-hidden="true"></i>Mel</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="meia-noite"><i class="sw" style="--a:#8FA8FF;--b:#0A0D14" aria-hidden="true"></i>Meia-noite</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="floresta"><i class="sw" style="--a:#8BCF7A;--b:#0C120E" aria-hidden="true"></i>Floresta</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="neon"><i class="sw" style="--a:#FF3DC8;--b:#07060D" aria-hidden="true"></i>Neon</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="pixel"><i class="sw" style="--a:#FFCC00;--b:#1B1B2F" aria-hidden="true"></i>Pixel</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="alto-contraste"><i class="sw" style="--a:#FFD400;--b:#000000" aria-hidden="true"></i>Alto contraste</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="colmeia-clara"><i class="sw" style="--a:#BD7F0A;--b:#F6F1E7" aria-hidden="true"></i>Colmeia Clara</label>
+            <label class="segmented-item"><input type="radio" name="site-theme" value="papel"><i class="sw" style="--a:#9A5B00;--b:#EFE6D2" aria-hidden="true"></i>Papel</label>
+        </div>
+      </div>
+      <span class="tooltip tooltip-bottom" data-tip="GitHub のソースコード">
+        <a class="icon-btn" href="https://github.com/kwy404/hivedesk" rel="noopener" aria-label="GitHub の hivedesk"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
+      </span>
+      <a class="b b-light b-sm magnetic top-dl" href="#download" data-i18n="nav.download">ダウンロード</a>
+      <button class="menu-btn" type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'" aria-controls="nav" aria-label="メニュー">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================= HERO ================= -->
+<section class="hd-hero" aria-labelledby="hero-h">
+  <div class="hero-bg" aria-hidden="true"><div class="comb"></div><div class="cursor-glow"></div></div>
+  <div class="wrap hero-in">
+    <a class="eyebrow" href="#city"><span class="eb-tag">0.2.0</span><span data-i18n="hero.eyebrow">Hive City: あなたのクルーが小さな街になる</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+    <h1 id="hero-h" class="display" aria-label="あなただけのAIクルー。コマンド1つで。" data-i18n-h1>
+      <span class="w" style="--i:0" aria-hidden="true">あなただけのAIクルー。</span><br><span class="w hl" style="--i:1" aria-hidden="true">コマンド1つで。</span>
+    </h1>
+    <p class="lede" data-i18n="hero.lede">計画し、話し合い、あなたのマシンで本物のファイルを作るAIワーカーのクルー。ローカルモデルで動きます。</p>
+    <div class="cta-row">
+      <div class="pill pill-hero" role="group" aria-label="インストールコマンド">
+        <span class="pill-p" aria-hidden="true">$</span>
+        <code class="typed">npx hivedesk</code><span class="caret" aria-hidden="true"></span>
+        <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="コピーしました" aria-label="コマンド npx hivedesk をコピー">
+          <svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>
+          <span class="copied-tip" aria-hidden="true">コピーしました</span>
+        </button>
+      </div>
+      <a class="b b-light b-lg magnetic" href="#download">
+        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="nav.download">ダウンロード</span>
+      </a>
+    </div>
+    <p class="byline">
+      <span><span data-i18n="hero.madeby">制作</span> <b>Alexandre Kohler</b></span>
+      <a href="https://github.com/kwy404" rel="me noopener" aria-label="GitHub の Alexandre Kohler"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
+      <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener" aria-label="LinkedIn の Alexandre Kohler"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linkedin"/></svg></a>
+      <span class="dot-sep" aria-hidden="true"></span><span>MIT</span><span class="dot-sep" aria-hidden="true"></span><span>Windows, macOS, Linux</span>
+    </p>
+  </div>
+
+  <div class="stage" data-parallax>
+    <figure class="window">
+      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>127.0.0.1 &middot; hivedesk</span></div>
+      <div class="window-body live">
+        <img src="../assets/shots/hive.webp" width="1920" height="1080" alt="デモモードの Hive: パン屋のランディングページの仕事のタイムライン、クルーのチャット、ページのライブプレビュー、差分を表示したファイルウィンドウ、1ターン後のワーカー Dev、下部にワーカーのドック。" fetchpriority="high" decoding="async">
+        <div class="fx" aria-hidden="true">
+          <span class="fx-progress"></span>
+          <span class="fx-done d1">完了</span><span class="fx-done d2">完了</span><span class="fx-done d3">完了</span><span class="fx-done d4">完了</span>
+          <span class="fx-diff"></span>
+          <div class="fx-chat c1"><img src="../assets/crew/dev.svg" width="24" height="24" alt=""><span><b>Dev</b> index.html と app.js を書きました。</span></div>
+          <div class="fx-chat c2"><img src="../assets/crew/qa.svg" width="24" height="24" alt=""><span><b>QA</b> 問題を1件発見: 代替テキストのない画像があります。</span></div>
+          <div class="fx-chat c3"><img src="../assets/crew/mel.svg" width="24" height="24" alt=""><span><b>Mel</b> 完了しました。QAも合格です。</span></div>
+          <span class="fx-bee b1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
+          <span class="fx-bee b2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
+          <span class="fx-bee b3"><img src="../assets/art/bee.svg" width="24" height="18" alt=""></span>
+        </div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= HIVE CITY ================= -->
+<section id="city" class="sec city" aria-labelledby="city-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker"><span class="soon" data-i18n="city.soon">0.2.0 の新機能</span></p>
+      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City。<br><span>クルーが小さな街になります。</span></h2>
+      <p class="head-sub">hivedesk は小さな街から始まるようになりました。あなたのPCは部屋のある建物で、エージェントはそこに住み、すべてのタスクは部屋を通って完了へ向かいます。友だちは6つの単語で参加し、自分のマシンも連れてきます。</p>
+    </header>
+
+    <div class="city-show reveal" data-city>
+      <div class="tabs tabs-boxed city-tabs" role="tablist" aria-label="Hive City">
+        <button type="button" class="tab" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">街</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">友だちが参加</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">GPUを借りる</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">Review の部屋</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">エージェントカード</button>
+      </div>
+      <div class="city-stage">
+        <div class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
+          <img src="../assets/shots/city-overview.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="デモモードの Hive City: 浮かぶ島の上のあなたの建物と Design、Code、Review、Test、Ops、Library、Lobby の部屋、橋の向こうの友だちの塔、3つのタスクが並ぶタスクボード、イベントのフィード。">
+          <p class="city-cap"><b>街がそのままシステムの状態です。</b> それぞれの部屋は、使えるツールが決まった本物の作業場所です。タスクボードには、すべてのタスクと今いるループが表示されます。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
+          <img src="../assets/shots/city-friend-rising.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="6つの単語で参加した友だちの建物が、あなたの隣に建ち上がるところ。">
+          <p class="city-cap"><b>友だちは建物です。</b> 友だちが Code together の6つの単語で参加すると、そのマシンがあなたの隣に建ち上がります。GPU、モデル、そこに住むエージェントも一緒です。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
+          <img src="../assets/shots/city-bridge-gpu-borrow.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Dev が友だちのGPUを借りている間に光る橋と、3ターン中2ターン使用済みで貸し借りを止めるボタンがある Machines パネル。">
+          <p class="city-cap"><b>GPUを借りる、制限つきで。</b> エージェントは友だちのマシンにターン数と分数を指定して頼みます。貸す側は承諾するか、制限を下げるか、断れます。ターンはすべて数えられ、どちらからでも止められ、やり取りされるのはプロンプトと回答だけです。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
+          <img src="../assets/shots/city-review-room.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Review の部屋の中: エージェントがタスクの差分を基準と照らし合わせて読んでいます。">
+          <p class="city-cap"><b>Design、Code、Review、Test。</b> 別のエージェントが基準に照らして差分をレビューし、そのあとチェックが走ります。失敗すると問題点とともに作成者へ戻り、最大3回まで繰り返したあとタスクはブロックされます。どの段階でも承認または差し戻しができます。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
+          <img src="../assets/shots/city-agent-card.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="エージェントカード: 名前、ホームの部屋、レベルとXP、ステータス、ツール、エージェント専用のメモリ。">
+          <p class="city-cap"><b>ずっといるエージェント。</b> 各エージェントには、仕事で得たレベルとXP、ツール、編集やピン留めができる自分だけのメモリがあります。すべてあなたのマシンに保存されるので、明日も同じエージェントが戻ってきて、終わっていないタスクがまた開きます。</p>
+        </div>
+        <div class="city-progress" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+
+    <div class="city-grid reveal">
+      <div class="hd-card"><h3>ずっといるエージェント</h3><p>クルーのワーカーはそれぞれエージェントで、ホームの部屋、レベルとXP(作業で10、レビューで4、テストで3、ループなしで終わったタスクはさらに5)、ツール、最大40件の短い記録を持つメモリがあります。</p></div>
+      <div class="hd-card"><h3>ルールのある部屋</h3><p>Lobby、Design、Code、Review、Test、Ops、Library。エージェントが部屋で作業している間、使えるツールはその部屋のものに絞られます。Ops はホスト専用で、拡張機能で部屋を追加することもできます。</p></div>
+      <div class="hd-card"><h3>タスクバス</h3><p>タスクはあなたから、Mel の計画から、または作業を差し戻すエージェントから届きます。手の空いたエージェントはスキル、レベル、マシンの負荷で入札します。担当、受け渡し、判定はすべてイベントとして再生できます。</p></div>
+      <div class="hd-card"><h3>ゲストがいても安全</h3><p>マシン、エージェント、タスクの持ち主の判断が優先されます。ゲストのタスクは承認モードがオンの状態で動き、コマンドも削除もできず、Ops では決して実行されません。以前のデスクトップがいい場合は <code>--no-city</code> で起動してください。</p></div>
+    </div>
+    <p class="caption caption-center"><code>npx hivedesk --demo</code> の実際のスクリーンショットです。街のシナリオを再生します: 友だちが6つの単語で参加し、Dev が彼女のGPUを3ターン借り、タスクが Design、Code、Review、Test を経て完了します。デモのイベントにはすべてラベルがついています。まだできないこと: Test が実行するのは静的チェック(HTML、リンク、JSの構文、CSS、JSON)で、あなた自身のテストスイートではありません。また貸し借りはリクエストごとの制限つきで、常時の共有ではありません。</p>
+  </div>
+</section>
+
+<!-- ================= FILM ================= -->
+<section id="film" class="film" aria-labelledby="film-h">
+  <div class="wrap film-in">
+    <div class="film-copy reveal">
+      <p class="kicker" data-i18n="film.kicker">映像</p>
+      <h2 id="film-h" class="h2" data-i18n-2="film.h2">75秒でわかる hivedesk。<br><span>ひとことから完成したページまで。</span></h2>
+      <p class="head-sub">実際のアプリの短い映像です。ウィザードがGPUに合うモデルを選び、Mel がブリーフを書き、クルーが作り、あなたが承認し、最後はより良いプロンプトとプルリクエストで仕事が終わります。ナレーションは画面上のポルトガル語で、英語字幕つきです。</p>
+    </div>
+    <figure class="film-frame reveal" data-film>
+      <video class="film-video" width="1080" height="1350" preload="none" muted playsinline loop poster="../media/hivedesk-poster.webp" aria-label="hivedesk の映像、75秒、音楽と画面上のテキストつき">
+        <source src="../media/hivedesk.mp4" type="video/mp4">
+        <track kind="captions" src="../media/hivedesk.en.vtt" srclang="en" label="English" default>
+        <track kind="captions" src="../media/hivedesk.pt-BR.vtt" srclang="pt-BR" label="Português">
+      </video>
+      <button class="film-play" type="button" data-film-play>
+        <span class="film-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+        <span class="film-label"><b data-i18n="film.play">音声つきで再生</b><span>1:15</span></span>
+      </button>
+      <figcaption class="sr">映像では、ウィザード、ブリーフ、作業中のクルー、承認、プルリクエスト、テーマ、10の言語、ダウンロードを紹介しています。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= NUMBERS ================= -->
+<section class="numbers" aria-label="数字で見る hivedesk">
+  <div class="wrap">
+    <dl class="num-grid">
+      <div><dt>起動に必要なコマンド</dt><dd>1</dd></div>
+      <div><dt>内蔵のワーカー、雇えばさらに追加</dt><dd>5</dd></div>
+      <div><dt>Hive の対応言語</dt><dd>10</dd></div>
+      <div><dt>内蔵テーマ</dt><dd>8</dd></div>
+      <div><dt>必要なアカウントやAPIキー</dt><dd>0</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section id="try" class="sec try" aria-labelledby="try-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker" data-i18n="try.kicker">ここで試す</p>
+      <h2 id="try-h" class="h2" data-i18n-2="try.h2">小さなことを頼んでみてください。<br><span>クルーの動きを見てみましょう。</span></h2>
+    </header>
+    <div class="try-box reveal" data-try>
+      <form class="try-form" data-try-form>
+        <label class="sr" for="try-in" data-i18n="try.label">クルーに何を作ってもらいますか?</label>
+        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-hive"/></svg>
+        <input id="try-in" name="q" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="今日はクルーに何を作ってもらいますか?" data-i18n-ph="try.ph">
+        <button class="b b-honey" type="submit"><span data-i18n="try.run">クルーを動かす</span></button>
+      </form>
+      <div class="try-chips" data-try-chips>
+        <button type="button">パン屋のランディングページ</button>
+        <button type="button">localStorage に保存するToDoアプリ</button>
+        <button type="button">スネークゲーム</button>
+        <button type="button">自分のスクリプトのREADME</button>
+      </div>
+      <div class="try-stage" aria-live="polite">
+        <div class="try-col">
+          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-sparkle"/></svg><span data-i18n="try.brief">Mel のブリーフ</span></p>
+          <div class="try-brief" data-try-brief><p class="try-empty" data-i18n="try.empty">リクエストを入力するか、上から選んでください。</p></div>
+        </div>
+        <div class="try-col">
+          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg><span data-i18n="try.tasks">タスク、1ターンずつ</span></p>
+          <ol class="try-tasks" data-try-tasks></ol>
+          <p class="try-done" data-try-done hidden></p>
+        </div>
+        <div class="try-bees" aria-hidden="true" data-try-bees></div>
+      </div>
+      <p class="try-fine"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span data-i18n="try.fine">このページ内で動く、台本どおりのプレビューです。入力した内容がブラウザの外に出ることはありません。本物のクルーは、あなたのマシンでローカルモデルを使って動きます。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STORY ================= -->
+<section id="how" class="sec story" aria-labelledby="how-h">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="kicker" data-i18n="nav.how">しくみ</p>
+      <h2 id="how-h" class="h2" data-i18n-2="how.h2">ひとことからリリースまで。<br><span>6つのステップ、すべてあなたのマシンで。</span></h2>
+    </header>
+    <div class="story-grid" data-story>
+      <div class="story-visual" aria-hidden="true">
+        <div class="sv-frame">
+          <div class="sv" data-v="0">
+            <div class="sv-ask"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span class="sv-typing">メニューと問い合わせフォームのある、パン屋のランディングページ</span><span class="sv-build">作る</span></div>
+          </div>
+          <div class="sv" data-v="1">
+            <div class="sv-brief">
+              <span class="sv-label"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>Mel のブリーフ</span>
+              <p><b>目標</b>街のパン屋 Crumb の1ページのサイト。</p>
+              <p><b>作るもの</b>ヒーロー、3種類のパンのメニュー、営業時間、問い合わせフォーム。</p>
+              <p><b>制約</b>素のHTMLとCSS、スマホで動くこと。</p>
+              <p><b>チェック</b>画像に代替テキスト、フォームにラベル。</p>
+              <div class="sv-acts"><span class="on">これを使う</span><span>編集</span><span>自分の文のまま</span></div>
+            </div>
+          </div>
+          <div class="sv" data-v="2">
+            <div class="sv-plan">
+              <div class="node n1"><img src="../assets/crew/designer.svg" width="28" height="28" alt=""><span>見た目を決める</span></div>
+              <div class="node n2"><img src="../assets/crew/dev.svg" width="28" height="28" alt=""><span>ページを作る</span></div>
+              <div class="node n3"><img src="../assets/crew/writer.svg" width="28" height="28" alt=""><span>README を書く</span></div>
+              <div class="node n4"><img src="../assets/crew/qa.svg" width="28" height="28" alt=""><span>ページをチェック</span></div>
+              <svg class="edges" viewBox="0 0 400 240" preserveAspectRatio="none"><path d="M120 50 C 190 50, 190 120, 260 120"/><path d="M120 190 C 190 190, 190 120, 260 120"/><path d="M120 50 L 120 190"/></svg>
+            </div>
+          </div>
+          <div class="sv" data-v="3">
+            <div class="sv-code">
+              <div class="code-top"><span>index.html</span><span class="who-chip"><img src="../assets/crew/dev.svg" width="18" height="18" alt="">Dev が書いています</span></div>
+              <pre><span class="ln">1</span><span class="cl add">&lt;header class="hero"&gt;</span>
+<span class="ln">2</span><span class="cl add">  &lt;h1&gt;Bread worth waking up for.&lt;/h1&gt;</span>
+<span class="ln">3</span><span class="cl add">  &lt;a href="#order"&gt;Order for tomorrow&lt;/a&gt;</span>
+<span class="ln">4</span><span class="cl add">&lt;/header&gt;</span>
+<span class="ln">5</span><span class="cl add">&lt;section id="menu"&gt;&hellip;&lt;/section&gt;</span></pre>
+            </div>
+          </div>
+          <div class="sv" data-v="4">
+            <ul class="sv-checks">
+              <li class="ok">HTMLは有効</li>
+              <li class="bad">代替テキストのない画像があります<em>修正タスクを Dev に送信</em></li>
+              <li class="ok">フォームにラベルあり</li>
+              <li class="ok">375 px で動作</li>
+              <li class="ok final">すべてのチェックに合格</li>
+            </ul>
+          </div>
+          <div class="sv" data-v="5">
+            <div class="sv-ship">
+              <div class="gh-row"><svg class="i"><use href="../assets/icons.svg#i-github"/></svg><b>GitHub に出す</b><span class="muted">各ステップをあなたが確認</span></div>
+              <ol>
+                <li><span class="tick"></span>ブランチ <code>hivedesk/crumb-landing</code></li>
+                <li><span class="tick"></span>5ファイルをコミット</li>
+                <li><span class="tick"></span>origin にプッシュ</li>
+                <li><span class="tick"></span>プルリクエストを作成</li>
+                <li><span class="tick"></span>チェック合格</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <ol class="sv-dots"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+      </div>
+      <ol class="story-steps">
+        <li class="st-step" data-step="0"><span class="step-n">01</span><h3>頼む</h3><p>やりたいことを、思いついたままリクエスト欄に入力します。声でもOK: <kbd>Ctrl</kbd> <kbd>Space</kbd> を押している間、音声モードが聞き取ります。</p></li>
+        <li class="st-step" data-step="1"><span class="step-n">02</span><h3>整える</h3><p>Mel がそれをブリーフにします: 目標、作るもの、制約、チェック、未解決の質問。あなたが使うか、編集するか、自分の言葉のままにするまで、仕事は待ちます。</p></li>
+        <li class="st-step" data-step="2"><span class="step-n">03</span><h3>計画</h3><p>Mel はブリーフをタスクのグラフに分け、各タスクをワーカーに渡します。うまくいった仕事は、Mel が再利用するプレイブックになります。</p></li>
+        <li class="st-step" data-step="3"><span class="step-n">04</span><h3>作る</h3><p>ワーカーは1つのローカルモデルを順番に使い、あなたのワークスペースに本物のファイルを書きます。書き込みはすべて差分で、コマンドと削除はあなたの承認を待ちます。</p></li>
+        <li class="st-step" data-step="4"><span class="step-n">05</span><h3>チェック</h3><p>QA がチェックを実行し、失敗したものは修正タスクとして戻します。ページが合格するまで続きます。</p></li>
+        <li class="st-step" data-step="5"><span class="step-n">06</span><h3>リリース</h3><p>GitHub を接続すると、クルーは仕事ごとにブランチを作り、コミットし、プッシュし、CIの状態つきでプルリクエストを開けます。どの操作もまず計画として表示され、あなたが確認したときだけ実行されます。</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BENTO ================= -->
+<section id="features" class="sec" aria-labelledby="feat-h">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="kicker" data-i18n="nav.features">機能</p>
+      <h2 id="feat-h" class="h2" data-i18n-2="feat.h2">クルーに必要なものはすべて。<br><span>触れてはいけないものには触れません。</span></h2>
+    </header>
+
+    <div class="bento">
+      <article class="tile tilt t-refine reveal" aria-labelledby="t-refine">
+        <div class="tile-copy"><h3 id="t-refine">プロンプトの整え役</h3><p>大まかなリクエストは、作業が始まる前に整理されたブリーフになります。最後に、仕事のレポートが次回のためのより良いプロンプトを提案します。</p></div>
+        <div class="viz refine" aria-hidden="true">
+          <div class="rf-raw"><span class="rf-who">あなた</span><span class="rf-text">パン屋crumbのサイト、メニューと問い合わせよろしく</span></div>
+          <div class="rf-arrow"><svg class="i"><use href="../assets/icons.svg#i-wand"/></svg></div>
+          <div class="rf-brief">
+            <span class="rf-who rf-hl"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>ブリーフ</span>
+            <p class="rf-l"><b>目標</b>街のパン屋 Crumb の1ページのサイト。</p>
+            <p class="rf-l"><b>作るもの</b>ヒーロー、3種類のパンと価格のメニュー、営業時間、問い合わせフォーム。</p>
+            <p class="rf-l"><b>制約</b>素のHTMLとCSS、スマホで動くこと。</p>
+            <p class="rf-l"><b>チェック</b>すべての画像に代替テキスト、フォームにラベル。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="tile tilt t-model reveal" aria-labelledby="t-model">
+        <div class="tile-copy"><h3 id="t-model">モデルを選んでくれる</h3><p>VRAMとRAMを読み取り、理由を1行で伝えます。</p></div>
+        <div class="viz picker" aria-hidden="true">
+          <div class="vram"><span class="vram-label">VRAM</span><div class="vram-bar"><span class="vram-fill"></span><i style="left:40%">4</i><i style="left:70%">7</i><i style="left:100%">10 GB</i></div></div>
+          <ul class="pk-list">
+            <li><span>14B</span><span>9.0 GB</span></li>
+            <li><span>7B</span><span>4.7 GB</span></li>
+            <li class="pick"><span>3B<em>おすすめ</em></span><span>2.1 GB</span></li>
+            <li><span>1.5B</span><span>1.1 GB</span></li>
+          </ul>
+          <p class="pk-why">6 GBのグラフィックカードを検出: 3Bのコーディングモデルを、すべてGPUで。</p>
+        </div>
+      </article>
+
+      <article class="tile tilt t-collab reveal" aria-labelledby="t-collab">
+        <div class="tile-copy"><h3 id="t-collab">Code together</h3><p>友だちを Code ウィンドウに招待: 同じファイルを編集し、お互いのカーソルが見えます。友だちの保存は差分として、あなたの承認を待ちます。</p></div>
+        <div class="viz collab" aria-hidden="true">
+          <div class="ed">
+            <div class="ed-top"><span>style.css</span><span class="peers"><i class="p-you">あなた</i><i class="p-ana">Ana</i></span></div>
+<pre class="ed-code"><span class="ln">1</span>.hero {
+<span class="ln">2</span>  padding: 64px 24px;<span class="cur c-you"><b>You</b></span>
+<span class="ln">3</span>  background: <span class="typing-ana">#FFF8EC</span>;<span class="cur c-ana"><b>Ana</b></span>
+<span class="ln">4</span>}</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="tile tilt t-github reveal" aria-labelledby="t-github">
+        <div class="tile-copy"><h3 id="t-github">GitHub に出す</h3><p>仕事ごとのブランチ、コミット、プッシュ、プルリクエスト、CIの状態。どのステップもあなたが確認する計画です。Mel が変更履歴の項目を下書きし、あなたが承認するまで何も書き込まれません。</p></div>
+        <div class="viz gh-viz" aria-hidden="true">
+          <ol class="gh-steps">
+            <li><span class="dot"></span><code>git commit</code><span class="gh-msg">Crumb のランディングページを追加</span></li>
+            <li><span class="dot"></span><code>git push</code><span class="gh-msg">hivedesk/crumb-landing</span></li>
+            <li><span class="dot"></span><span class="pr">PR #12</span><span class="gh-msg">Crumb のランディングページ</span></li>
+            <li><span class="dot"></span><span class="ci">チェック</span><span class="gh-msg">3件中3件合格</span></li>
+          </ol>
+        </div>
+      </article>
+
+      <article class="tile tilt t-voice reveal" aria-labelledby="t-voice">
+        <div class="tile-copy"><h3 id="t-voice">Mel と話す</h3><p><kbd>Ctrl</kbd> <kbd>Space</kbd> を押しながら話します。コミットやプッシュなど何かを実行する前に、Mel は計画を読み上げ、はっきりした「はい」を待ちます。</p></div>
+        <div class="viz voice" aria-hidden="true">
+          <div class="orb"><span class="orb-core"></span><span class="hd-ring r1"></span><span class="hd-ring r2"></span></div>
+          <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="said">&ldquo;Mel、ページに営業時間を追加して&rdquo;</p>
+          <p class="tile-note">音声認識はブラウザのものを使うため、音声がブラウザ提供元のサービスに送られることがあります。</p>
+        </div>
+      </article>
+
+      <article class="tile tilt t-theme reveal" aria-labelledby="t-theme">
+        <div class="tile-copy"><h3 id="t-theme">8つのテーマ、またはクルーが作る</h3><p>その場で切り替え、コントラストのレポートを見ながら編集、または言葉で説明すれば(&ldquo;海辺の夕焼け&rdquo;)クルーがデザインします。</p></div>
+        <div class="viz themes" aria-hidden="true">
+          <div class="mini">
+            <div class="mini-top"><i></i><i></i><i></i></div>
+            <div class="mini-body"><span class="mb-side"></span><span class="mb-main"><i></i><i></i><i class="acc"></i></span></div>
+          </div>
+          <span class="theme-name"><span>Mel</span><span>Meia-noite</span><span>Floresta</span><span>Neon</span></span>
+        </div>
+      </article>
+
+      <article class="tile tilt t-ext reveal" aria-labelledby="t-ext">
+        <div class="tile-copy"><h3 id="t-ext">拡張機能も、クルーが作る</h3><p>フォルダー、zip、URLからインストールするか、クルーに作ってもらえます。どれも必要な権限を確認し、サンドボックスで動きます。</p></div>
+        <div class="viz ext" aria-hidden="true">
+          <div class="ext-card">
+            <span class="ext-ic"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg></span>
+            <span class="ext-name"><b>文字数カウント</b><span>ウィジェットのウィンドウ</span></span>
+            <svg class="hd-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><circle class="ring-p" cx="18" cy="18" r="15"/></svg>
+            <span class="ext-ok"><svg class="i"><use href="../assets/icons.svg#i-check"/></svg></span>
+          </div>
+          <div class="perms"><span>ワークスペースの読み取り</span><span>ウィジェットのウィンドウ</span></div>
+        </div>
+      </article>
+
+      <article id="lend" class="tile tilt t-lend reveal" aria-labelledby="t-lend">
+        <div class="tile-copy"><h3 id="t-lend">PCを貸す</h3><p>大きなGPUを持つ友だちと6つの単語でペアリング。やり取りされるのはプロンプトと回答だけです。</p></div>
+        <div class="viz lend" aria-hidden="true">
+          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span>あなた</span></div>
+          <div class="ln-wire"><span class="pk k1"></span><span class="pk k2"></span></div>
+          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-gpu"/></svg><span>友だち</span></div>
+          <div class="ln-words"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></div>
+        </div>
+      </article>
+
+      <article class="tile tilt t-lang reveal" aria-labelledby="t-lang">
+        <div class="tile-copy"><h3 id="t-lang">10の言語</h3><p>Hive はブラウザの言語に合わせます。設定で選ぶこともでき、その場で切り替わります。</p></div>
+        <div class="viz langs" aria-hidden="true">
+          <span class="hello" data-hello>こんにちは、クルー!</span>
+          <ul class="lang-list"><li>English</li><li>Português</li><li>Español</li><li>Français</li><li>Deutsch</li><li>Italiano</li><li lang="ja">日本語</li><li lang="ko">한국어</li><li lang="zh-Hans">简体中文</li><li lang="ru">Русский</li></ul>
+        </div>
+      </article>
+
+      <article class="tile tilt t-priv reveal" aria-labelledby="t-priv">
+        <div class="tile-copy"><h3 id="t-priv">あなたのマシンの中だけで</h3><p>サーバーは 127.0.0.1 で待ち受け、起動ごとに秘密のトークンを使います。アカウントも分析もありません。</p></div>
+        <div class="viz priv" aria-hidden="true">
+          <div class="pv-lock"><svg class="i"><use href="../assets/icons.svg#i-lock"/></svg></div>
+          <code class="pv-host">127.0.0.1:51734/?t=<span class="pv-tok">a7f3c0e9</span></code>
+        </div>
+      </article>
+
+      <article class="tile tilt t-mem reveal" aria-labelledby="t-mem">
+        <div class="tile-copy"><h3 id="t-mem">セッションのメモリ</h3><p>プロジェクトごと、人ごとの小さく上限のあるメモと、仕事ごとのセッションファイル。関係のある数件が次のプロンプトに入ります。どれもピン留め、編集、削除ができます。</p></div>
+        <div class="viz mem" aria-hidden="true">
+          <div class="mem-row"><span class="mem-tag">プロジェクト</span><span>パン屋の名前は Crumb。色はパンの皮のような温かい色合い。</span></div>
+          <div class="mem-row"><span class="mem-tag">あなた</span><span>素のHTMLとCSSが好み、ビルド工程なし。</span></div>
+          <div class="mem-row mem-session"><span class="mem-tag">セッション</span><span>仕事完了: 5ファイル、チェック6件中6件合格。</span></div>
+        </div>
+      </article>
+
+      <article class="tile tilt t-prov reveal" aria-labelledby="t-prov">
+        <div class="tile-copy"><h3 id="t-prov">クラウドの頭脳も、お好みで</h3><p>標準はローカルです。クラウドモデル用に自分のAPIキーを追加でき、ワーカーごとに設定もできます。キーはこのマシンのキーストアに保存されます。そのプロバイダーに送るプロンプトとファイルの内容はマシンの外に出ますが、ウィンドウにそのことが表示されます。</p></div>
+        <div class="viz prov" aria-hidden="true">
+          <div class="prov-row on"><span class="prov-dot"></span><b>ローカルモデル</b><span>3Bのコーディングモデル</span></div>
+          <div class="prov-row"><span class="prov-dot"></span><b>すでに使っているローカルのランタイム</b><span>このマシンで</span></div>
+          <div class="prov-row"><span class="prov-dot"></span><b>クラウドのプロバイダー</b><span>あなたのキー</span></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= NEXT ================= -->
+<section id="next" class="sec next" aria-labelledby="next-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker"><span class="soon soon-ghost">次のバージョンで</span></p>
+      <h2 id="next-h" class="h2">ただいま開発中。<br><span>0.2.0 にはまだ入っていません。</span></h2>
+      <p class="head-sub">クルーが次のリリースに向けて取り組んでいる2つのこと。目指している動きを紹介しますが、細かい点はリリースまでに変わるかもしれません。</p>
+    </header>
+    <div class="next-grid">
+      <article class="hd-card next-card reveal" aria-labelledby="pb-h">
+        <h3 id="pb-h">プレイブックのライブラリ</h3>
+        <p>いまは、うまく終わった仕事がプレイブックとして保存され、Mel が似たリクエストで再利用します。次は、Mel に約500のエキスパート向けプレイブック(ランディングページ、入力チェックつきフォーム、README、テスト計画など多数)のライブラリが加わり、クルーが始める前に各タスクに最も近いものを選びます。</p>
+        <div class="pb-demo" aria-hidden="true">
+          <div class="pb-task"><span class="pb-k">タスク</span>3つのプランがある料金ページ</div>
+          <ul class="pb-list">
+            <li><span>ランディングページ、ヒーローとセクション</span><b>0.62</b></li>
+            <li class="pb-hit"><span>プランつきの料金表</span><b>0.91</b></li>
+            <li><span>入力チェックつきの問い合わせフォーム</span><b>0.38</b></li>
+            <li><span>見やすい色のコントラスト</span><b>0.55</b></li>
+            <li><span>静的サイトのREADME</span><b>0.21</b></li>
+          </ul>
+          <div class="pb-pick"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg>Mel の選択: プランつきの料金表</div>
+        </div>
+      </article>
+      <article class="hd-card next-card reveal" aria-labelledby="any-h">
+        <h3 id="any-h">どのハチとも話せる</h3>
+        <p>いまは、リクエスト欄のリクエストで仕事が始まり、ダイレクトメッセージでワーカーに指示できます。次は、どのチャットでも、#general でも Dev、Designer、QA へのダイレクトメッセージでも、仕事を頼めば本当の作業が始まります。ブリーフ、計画、承認、レポートも同じです。</p>
+        <div class="any-demo" aria-hidden="true">
+          <div class="any-msg any-you"><span class="any-who">あなたから Designer へ</span>ボタンをもっと丸くできる?</div>
+          <div class="any-msg any-bee"><img src="../assets/crew/designer.svg" width="24" height="24" alt=""><span><b>Designer</b> 了解: タスク1件、style.css。</span></div>
+          <div class="any-task"><span class="dot"></span>タスクを作成: ボタンを丸くする <em>Design</em></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OFFICE ================= -->
+<section id="office" class="sec office" aria-labelledby="office-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">オフィスモード</p>
+      <h2 id="office-h" class="h2" data-i18n="office.h2">クルーの仕事ぶりを眺めよう。</h2>
+      <p class="head-sub">上のバーでオフィスモードを切り替えると、デスクトップが小さなハチの巣のオフィスに変わります。どのポーズもエンジンの実際のイベントから来ています: 考え中の人、モデルの順番待ちの人、渡されたタスク、合格したテスト。Mel のボードから付箋をハチにドラッグすると、そのタスクを任せられます。</p>
+    </header>
+    <figure class="office-live reveal" aria-label="デモの仕事中の、Hive のオフィスモード">
+      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>hivedesk &middot; オフィス</span></div>
+      <ol class="office-steps" aria-hidden="true"><li>作業中</li><li>あなたを待っています</li><li>完了</li></ol>
+      <div class="office-frames">
+        <img class="of of1" src="../assets/shots/office-working.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="クルーが働いているときのオフィスモード: デスクのハチたち、タスクボードの前の Mel、35パーセントまで進んだ現在の仕事、モデルの順番。">
+        <img class="of of2" src="../assets/shots/office-approval.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="ワーカーがあなたの承認を待っているときのオフィスモード。">
+        <img class="of of3" src="../assets/shots/office-celebrate.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="仕事が終わってクルーがお祝いしているときのオフィスモード。">
+        <div class="office-fx" aria-hidden="true">
+          <span class="fx-bee ob1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
+          <span class="fx-bee ob2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
+          <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </figure>
+    <p class="caption"><code>npx hivedesk --demo</code> によるオフィスモードの実際のスクリーンショットです。デモのイベントにはすべてデモのラベルがついています。</p>
+  </div>
+</section>
+
+<!-- ================= SCREENS ================= -->
+<section id="screens" class="sec sec-tight" aria-labelledby="scr-h">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="kicker">Hive の中</p>
+      <h2 id="scr-h" class="h2">クルーのためのデスクトップ。<br><span>初回はガイドツアーつき。</span></h2>
+      <p class="head-sub">Mel が各部分をスポットライトで照らしながらデスクトップを案内します。ヘルプやコマンドパレットからもう一度見られます。</p>
+    </header>
+    <div class="screens reveal" v-tabs>
+      <div class="tabs tabs-boxed shot-tabs" role="tablist" aria-label="画面">
+        <button type="button" class="tab" role="tab" aria-selected="true" v-tab="tour">ガイドツアー</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="brief">ブリーフとレポート</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="code">Code together</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="github">GitHub</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="changelog">変更履歴</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="themes">テーマ</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="ext">拡張機能</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="memory">メモリ</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="lang">10の言語</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="palette">パレット</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="replay">リプレイ</button>
+      </div>
+      <div class="shot" v-tab-panel="tour"><img src="../assets/shots/tour.webp" width="1440" height="900" loading="lazy" decoding="async" alt="ガイドツアーの11ステップ中1: Mel がリクエスト欄を指し、デモの仕事を始める「試してみる」ボタンがあります。"></div>
+      <div class="shot" v-tab-panel="brief"><img src="../assets/shots/brief.webp" width="1440" height="900" loading="lazy" decoding="async" alt="ブリーフとレポートのウィンドウ: あなたのリクエスト、Mel が改善したブリーフ(目標、作るもの、制約、受け入れ基準)、仕事のレポート。"></div>
+      <div class="shot" v-tab-panel="code"><img src="../assets/shots/code-together.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Code together: index.html を開いた Code ウィンドウで、2人が同時に編集し、ゲストのカーソルには Ana のラベル。"></div>
+      <div class="shot" v-tab-panel="github"><img src="../assets/shots/github.webp" width="1440" height="900" loading="lazy" decoding="async" alt="GitHub ウィンドウ: gh コマンドライン、細かい権限のトークン、またはデバイスコードでサインイン。hivedesk のサーバーでは何も実行されません。"></div>
+      <div class="shot" v-tab-panel="changelog"><img src="../assets/shots/changelog.webp" width="1440" height="900" loading="lazy" decoding="async" alt="変更履歴のウィンドウ: 仕事のレポートから下書きされた項目の提案と、却下、承認して書き込むのボタン。"></div>
+      <div class="shot" v-tab-panel="themes"><img src="../assets/shots/themes.webp" width="1440" height="900" loading="lazy" decoding="async" alt="テーマギャラリー: 8つの内蔵テーマ、Mel に新しいテーマを頼む入力欄、インポートと新規テーマ。"></div>
+      <div class="shot" v-tab-panel="ext"><img src="../assets/shots/extensions.webp" width="1440" height="900" loading="lazy" decoding="async" alt="拡張機能のウィンドウ: インストール済みの拡張機能とその権限、どれもあなたの承認待ち、そしてクルーと一緒に作るためのタブ。"></div>
+      <div class="shot" v-tab-panel="memory"><img src="../assets/shots/memory.webp" width="1440" height="900" loading="lazy" decoding="async" alt="メモリのウィンドウ: ピン留め、編集、削除ができるプロジェクトのメモリ、新しい仕事でメモリを使うスイッチ、セッションの一覧。"></div>
+      <div class="shot" v-tab-panel="lang"><img src="../assets/shots/lang-ja.webp" width="1440" height="900" loading="lazy" decoding="async" alt="日本語の Hive。"></div>
+      <div class="shot" v-tab-panel="palette"><img src="../assets/shots/palette.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Hive の上に開いた Ctrl K のコマンドパレット。"></div>
+      <div class="shot" v-tab-panel="replay"><img src="../assets/shots/replay.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="リプレイのスクラバーが、仕事の以前の瞬間を再現しているところ。"></div>
+    </div>
+    <p class="caption"><code>npx hivedesk --demo</code> の実際のスクリーンショットです。台本どおりの仕事を再生し、すべてのイベントにデモのラベルをつけます。Code together は、2つのブラウザで行うエンドツーエンドテストからの画像です。</p>
+  </div>
+</section>
+
+<!-- ================= DOWNLOAD ================= -->
+<section id="download" class="sec download" aria-labelledby="dl-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker" data-i18n="nav.download">ダウンロード</p>
+      <h2 id="dl-h" class="h2" data-i18n-2="dl.h2">hivedesk を手に入れよう。<br><span>無料、オープンソース、あなたのマシンで。</span></h2>
+      <p class="head-sub">Windows、macOS、Linux 向けのデスクトップアプリ。どのダウンロードにも Node.js が入っているので、事前のインストールは不要です。</p>
+      <p class="first-release" data-first-release><span class="pulse-dot" aria-hidden="true"></span><span data-i18n="dl.first">最初のリリースは本日公開。</span></p>
+    </header>
+
+    <div class="os-grid">
+      <article class="os-card tilt reveal" data-os="win">
+        <span class="hd-chip chip-you" data-i18n="dl.you">あなたのシステム</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-windows"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-windows"/></svg></span>Windows</h3>
+        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 と 11、x64、約47 MB</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">Windows 版をダウンロード</span></a>
+        <p class="os-note">展開して <code>hivedesk.exe</code> をダブルクリック。まだコード署名がないため、SmartScreen が&ldquo;WindowsによってPCが保護されました&rdquo;と表示します: <b>詳細情報</b> を選び、<b>実行</b> を押してください。</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="手を振る Mel" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">ありがとうございます! 次の手順に進んでください。</p>
+          <ol class="thanks-steps"><li>ダウンロードしたファイルを展開します。Windows が zip をブロックしたら、右クリックして <b>プロパティ</b>、<b>許可する</b> にチェック。</li><li><code>hivedesk.exe</code> をダブルクリック。</li><li>SmartScreen が&ldquo;WindowsによってPCが保護されました&rdquo;と表示します: <b>詳細情報</b> を選び、<b>実行</b> を押してください。</li><li>初回起動時に、あなたのマシンに合うモデルをダウンロードして Hive を開きます。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">戻る</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+      <article class="os-card tilt reveal" data-os="mac">
+        <span class="hd-chip chip-you" data-i18n="dl.you">あなたのシステム</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-macos"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-macos"/></svg></span>macOS</h3>
+        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon と Intel、約89 MB</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">macOS 版をダウンロード</span></a>
+        <p class="os-note">展開して <code>hivedesk.app</code> をアプリケーションに移動。まだ公証されていないため、初回は <b>システム設定、プライバシーとセキュリティ</b> を開き、<b>このまま開く</b> をクリックしてください。</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="手を振る Mel" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">ありがとうございます! 次の手順に進んでください。</p>
+          <ol class="thanks-steps"><li>展開して <code>hivedesk.app</code> をアプリケーションに移動します。</li><li>開きます。macOS がアプリを検証できないと表示します。</li><li><b>システム設定、プライバシーとセキュリティ</b> を開き、hivedesk の横の <b>このまま開く</b> をクリックします。</li><li>初回起動時に、あなたのマシンに合うモデルをダウンロードして Hive を開きます。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">戻る</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+      <article class="os-card tilt reveal" data-os="linux">
+        <span class="hd-chip chip-you" data-i18n="dl.you">あなたのシステム</span>
+        <div class="os-art" aria-hidden="true">
+          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
+          <svg class="box" viewBox="0 0 120 100">
+            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
+            <path class="box-back" d="M14 40h92v8H14z"/>
+            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
+            <path class="box-tape" d="M54 44h12v50H54z"/>
+            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
+            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-linux"/></svg>
+          </svg>
+          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+        </div>
+        <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linux"/></svg></span>Linux</h3>
+        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64、約55 MB、または AppImage、約52 MB</span></p>
+        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">Linux 版をダウンロード</span></a>
+        <p class="os-note"><code>tar -xzf hivedesk-linux-x64.tar.gz</code> を実行し、次に <code>./hivedesk/hivedesk</code>。または <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener">AppImage</a>: <code>chmod +x</code> してから実行します。ウィンドウには WebKitGTK が必要で、ない場合 hivedesk はブラウザで開きます。</p>
+        <div class="os-thanks" role="status" hidden>
+          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="手を振る Mel" loading="lazy" decoding="async">
+          <p class="thanks-h" data-i18n="dl.thanks">ありがとうございます! 次の手順に進んでください。</p>
+          <ol class="thanks-steps"><li><code>tar -xzf hivedesk-linux-x64.tar.gz</code> を実行。</li><li><code>./hivedesk/hivedesk</code> を起動(または <code>chmod +x</code> して AppImage を実行)。</li><li>初回起動時に、あなたのマシンに合うモデルをダウンロードして Hive を開きます。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">戻る</button>
+          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="dl-alt reveal">
+      <span data-i18n="dl.or">または実行</span>
+      <div class="pill pill-sm" role="group" aria-label="インストールコマンド">
+        <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
+        <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="コピーしました" aria-label="コマンド npx hivedesk をコピー"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">コピーしました</span></button>
+      </div>
+      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">すべてのバージョンを見る</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+    </div>
+    <p class="caption caption-center">ダウンロードはまだ署名がなく、自動更新もしません。ローカルモデルは初回起動時にダウンロードされます。小さなスクリプトのほうがいい場合は、<a href="../download/hivedesk-windows.cmd" download>Windows</a>、<a href="../download/hivedesk-macos.command" download>macOS</a>、<a href="../download/hivedesk-linux.sh" download>Linux</a> 用のランチャーが Node.js 20 以降を確認して <code>npx hivedesk@latest</code> を実行します。Node.js がなければ公式のダウンロードページを開き、理由を説明します。</p>
+
+    <article class="hd-card dl-cmd reveal">
+      <div class="dl-cmd-copy">
+        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg></span><h3>コマンド</h3><span class="hd-chip">おすすめ</span></div>
+        <p>Node.js 20 以降があればどのシステムでも。ウィザードはいくつか質問しますが、どれにもおすすめの初期値があるので、Enter を押し続けるだけで進めます。</p>
+        <div class="pill pill-block" role="group" aria-label="インストールコマンド">
+          <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
+          <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="コピーしました" aria-label="コマンド npx hivedesk をコピー"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">コピーしました</span></button>
+        </div>
+      </div>
+      <div class="term" data-term role="img" aria-label="ターミナルのウィザード: 言語は日本語、このフォルダー、3Bのコーディングモデル、リスクのあるステップごとに承認、そして Hive が開きます。">
+        <p class="tl"><span class="c-a">$</span> npx hivedesk</p>
+        <p class="tl"><span class="c-q">?</span> 言語 <span class="c-v">日本語</span></p>
+        <p class="tl"><span class="c-q">?</span> プロジェクトのフォルダー <span class="c-v">このフォルダー</span></p>
+        <p class="tl c-dim">あなたのマシン: GPU 6 GB、RAM 16 GB、空きディスク 212 GB</p>
+        <p class="tl"><span class="c-q">?</span> クルーにどの頭脳を使わせますか? <span class="c-v">コーディングモデル 3B、2.1 GB</span> <span class="c-tag">おすすめ</span></p>
+        <p class="tl"><span class="c-q">?</span> 今すぐダウンロードしますか? <span class="c-v">はい</span></p>
+        <p class="tl"><span class="c-q">?</span> クルーの働き方は? <span class="c-v">リスクのあるステップごとに承認</span></p>
+        <p class="tl"><span class="c-q">?</span> クルー <span class="c-v">Mel, Dev, Designer, QA, Writer</span></p>
+        <p class="tl c-ok">Hive を開いています<span class="tcaret"></span></p>
+      </div>
+    </article>
+
+    <div class="grid-2">
+      <article class="hd-card reveal">
+        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg></span><h3>npm</h3></div>
+        <p>パッケージのページとバージョン一覧。グローバルにインストールすれば、シンプルな <code>hivedesk</code> コマンドで使えます。</p>
+        <div class="pill pill-block pill-sm" role="group" aria-label="グローバルインストールのコマンド"><span class="pill-p" aria-hidden="true">$</span><code>npm i -g hivedesk</code><button class="pill-copy" type="button" data-copy v-copy="npm i -g hivedesk" v-copy-label="コピーしました" aria-label="コマンド npm i -g hivedesk をコピー"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">コピーしました</span></button></div>
+        <a class="b b-ghost" href="https://www.npmjs.com/package/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg>npm の hivedesk</a>
+      </article>
+      <article class="hd-card reveal">
+        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></span><h3>ソースコード</h3></div>
+        <p>すべての行を読み、issue を立て、プルリクエストを送ってください。スターは、ほかの人が見つける助けになります。</p>
+        <div class="b-row">
+          <a class="b b-light magnetic" href="https://github.com/kwy404/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg>GitHub でスター</a>
+          <a class="b b-ghost" href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-tag"/></svg>最新リリース</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="req reveal">
+      <article class="hd-card">
+        <h3>動作環境</h3>
+        <ul class="ticks">
+          <li>Windows、macOS、Linux 上の <b>Node.js 20 以降</b>。</li>
+          <li><b>ディスク:</b> モデル用に0.5から9.0 GB、加えてランタイム用に最大約0.7 GB、初回のみ。</li>
+          <li><b>読み込みに必要な空きRAM:</b> モデルをGPUに載せる場合は2.5 GB、CPUの場合はモデルのサイズに1.5 GBを足した量(最低4 GB)。足りない場合は読み込まないので、マシンが固まることはありません。</li>
+          <li><b>GPUはなくても大丈夫:</b> 最近のグラフィックカードの多くで動き、Apple Silicon でも動きます。</li>
+          <li>初回起動時は <b>ネットワーク</b> が必要です。モデルの入ったローカルのランタイムがすでに動いていれば、それを使ってダウンロードを省きます。</li>
+        </ul>
+      </article>
+      <article class="hd-card">
+        <h3>どのモデルになるか</h3>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th scope="col">あなたのハードウェア</th><th scope="col">モデル</th><th scope="col" class="num">ダウンロード</th><th scope="col">実行場所</th></tr></thead>
+            <tbody>
+              <tr><td>VRAM 10 GB以上のGPU</td><td>14B</td><td class="num">9.0 GB</td><td>GPU</td></tr>
+              <tr><td>VRAM 7から10 GBのGPU</td><td>7B</td><td class="num">4.7 GB</td><td>GPU</td></tr>
+              <tr><td>VRAM 4から7 GBのGPU(例: 6 GBのカード)</td><td>3B</td><td class="num">2.1 GB</td><td>GPU、全レイヤー</td></tr>
+              <tr><td>使えるGPUなし、RAM 16 GB以上</td><td>3B</td><td class="num">2.1 GB</td><td>CPU</td></tr>
+              <tr><td>使えるGPUなし、RAM 8から16 GB</td><td>1.5B</td><td class="num">1.1 GB</td><td>CPU</td></tr>
+              <tr><td>RAM 8 GB未満</td><td>0.5B</td><td class="num">0.5 GB</td><td>CPU、結果は簡素になるという警告つき</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="fine">コンパクトに量子化されたオープンソースのコーディングモデルを公式リポジトリからダウンロードし、公開されている SHA-256 で検証します。設定または <code>--model 14b|7b|3b|1.5b|0.5b</code> で変更できます。出典: <a href="https://github.com/kwy404/hivedesk/blob/main/FIRST-RUN.md" rel="noopener">FIRST-RUN.md</a>。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIMITS ================= -->
+<section id="limits" class="sec sec-line" aria-labelledby="limits-h">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="kicker kicker-warn" data-i18n="limits.kicker">制限についても正直に</p>
+      <h2 id="limits-h" class="h2" data-i18n-2="limits.h2">得意なこと。<br><span>そして苦手なこと。</span></h2>
+      <p class="head-sub">自分のマシンで動く小さなモデルは、プライベートで、使うのにお金がかかりません。その一方で、データセンターの最大級のモデルより遅く、できることも少なくなります。目安は次のとおりです。</p>
+    </header>
+
+    <div class="grid-3 reveal">
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-model"/></svg><h3>モデルが必要です</h3><p>モデルがなければ何も生成されません。初回起動で0.5から9.0 GBのモデルをダウンロードします。すでに使っているローカルのランタイムが動いている場合や、自分のAPIキーを追加した場合は不要です。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-queue"/></svg><h3>ここで見るより時間がかかります</h3><p>ワーカーは1つのモデルを順番に使うので、仕事には数秒ではなく数分かかります。CPUだけの場合、モデルが書けるのは1秒あたり数トークンです。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><h3>あなたが舵を取るといちばんうまくいきます</h3><p>一度に1つずつ頼み、差分を読み、ステップを承認してください。大きなアプリを一気に作るのは、小さなモデルには無理です。</p></div>
+    </div>
+
+    <h3 class="h3 reveal">あなたのハードウェアでできること</h3>
+    <div class="tbl-wrap reveal">
+      <table class="tbl tbl-hw">
+        <thead><tr><th scope="col">ハードウェア</th><th scope="col">動くモデル</th><th scope="col">速度</th><th scope="col">向いていること</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">GPUなし</th><td>0.5Bまたは1.5Bのコーディングモデル、RAM 16 GBなら3B</td><td><span class="lvl l1" aria-hidden="true"></span>遅い、1秒あたり数トークン</td><td>1ファイルの小さなタスク。待つ覚悟で。</td></tr>
+          <tr><th scope="row">4から7 GBのGPU</th><td>3Bのコーディングモデル、すべてGPUで</td><td><span class="lvl l2" aria-hidden="true"></span>実用的</td><td>小さなタスク、コンポーネント、スクリプト、文章。</td></tr>
+          <tr><th scope="row">7から10 GBのGPU</th><td>7Bのコーディングモデル</td><td><span class="lvl l3" aria-hidden="true"></span>良好</td><td>小から中規模のタスク、あなたが舵を取れば。</td></tr>
+          <tr><th scope="row">10 GB以上、またはキー</th><td>14Bのコーディングモデル、すでに使っているローカルのランタイムでもっと大きなモデル、または自分のAPIキーでクラウドモデル</td><td><span class="lvl l4" aria-hidden="true"></span>より速い</td><td>大きめの仕事や長い計画。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div class="hd-card card-good">
+        <h3>得意なこと</h3>
+        <ul class="ticks"><li>ランディングページ</li><li>小さなCRUDアプリ</li><li>スクリプトとコマンドラインツール</li><li>UIコンポーネント</li><li>既存コードのテスト</li><li>ドキュメント、README、文章</li><li>説明されたバグの修正</li></ul>
+      </div>
+      <div class="hd-card">
+        <h3>苦手なこと</h3>
+        <ul class="crosses"><li>大きく複雑なアプリを一気に作ること</li><li>あなたがステップを読まず承認もしない長い仕事</li><li>GPUのないマシンでの速度</li><li>モデルなしでは何もできません: モデルがなければ出力もありません</li></ul>
+        <p class="fine">仕事を分け、舵を取り、承認するときにいちばんうまくいきます。タイムラインと承認モードはそのためにあります。</p>
+      </div>
+    </div>
+
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>ファイルはあなたのマシンから出ません。</b> ネットワークを使うのは初回起動時のダウンロードと、その後はあなたがオンにしたものだけです: 貸し出しモードと Code together(ペアリングした友だちと)、GitHub、自分のキーを使うクラウドのプロバイダー、URLからの拡張機能、音声モードでのブラウザの音声認識。貸し出しモードが送るのはモデルのプロンプトと回答だけです: 一度に1リクエスト、1分あたり最大20件、プロンプトは最大120,000文字で、友だちはいつでも止められます。TURNリレーは内蔵していないため、とても厳しいネットワーク同士ではつながらないことがあります。</span></p>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq" class="sec sec-line" aria-labelledby="faq-h">
+  <div class="wrap faq-wrap">
+    <header class="head reveal">
+      <p class="kicker">FAQ</p>
+      <h2 id="faq-h" class="h2">よくある質問に、<br><span>わかりやすく。</span></h2>
+    </header>
+    <div class="faq accordion accordion-flush collapse-arrow reveal">
+      <details class="collapse" name="faq" open><summary class="collapse-title">アカウントやAPIキーは必要ですか?</summary><div class="collapse-content"><p>いいえ。標準では、あなたのマシンで動くモデルを使います。キーは任意で、クラウドモデル用に自分のAPIキーを使うときだけ必要です。キーはこのマシンのキーストアに保存されます。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">ダウンロードの大きさと、初回起動にかかる時間は?</summary><div class="collapse-content"><p>モデルはハードウェアに応じて0.5 GBから9.0 GB、加えてランタイムに数百MBです。100 Mbit/s なら3Bのモデルで約3分、7Bで約6分。これは一度だけで、その後はモデルを読み込む時間で起動できます。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">GPUのないノートパソコンでも動きますか?</summary><div class="collapse-content"><p>はい、小さなモデルでCPUで動きます: RAM 16 GBなら3B、8から16 GBなら1.5B、それ未満なら0.5B。速度は遅く、1秒あたり数トークンです。小さなタスクならこなせますが、待つ覚悟が必要です。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">プロンプトの整え役は何を変えるのですか?</summary><div class="collapse-content"><p>計画の前に、Mel があなたのリクエストをブリーフにします: 目標、作るもの、制約、チェック、未解決の質問。あなたがブリーフを使うか、編集するか、元の文のままにするまで、仕事は待ちます。設定でオフにもできます。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">音声モードは音声をどこかに送りますか?</summary><div class="collapse-content"><p>音声はブラウザの音声認識を使うため、音声がブラウザ提供元のサービスに送られることがあります。Mel の読み上げは、ローカルの音声がある場合はあなたのコンピューターで作られます。完全にローカルな音声認識はまだ提供していません。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">ワーカーがコンピューターを壊すことはありますか?</summary><div class="collapse-content"><p>ワーカーが使えるのはワークスペースのフォルダーに限られたツールだけで、外に出ようとするパスは拒否されます。コマンドは標準でタイムアウトと出力の上限つき、ネットワークなしで実行され、承認モードではリスクのあるステップがあなたを待ちます。拡張機能は、あなたが許可した権限でサンドボックス内で動きます。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">ランチャーでセキュリティの警告が出るのはなぜ?</summary><div class="collapse-content"><p>コード署名のないシンプルなスクリプトなので、初回は Windows SmartScreen と macOS Gatekeeper が確認を求めます。どれも Node.js を確認して <code>npx hivedesk@latest</code> を実行するだけです。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">モデルをダウンロードせずに中を見られますか?</summary><div class="collapse-content"><p>はい: <code>npx hivedesk --demo</code> が台本どおりの仕事を再生します。表示されるものにはすべてデモのラベルがついています。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">削除するには?</summary><div class="collapse-content"><p><code>~/.hivedesk/</code>(ランタイム、モデル、設定)と、プロジェクト内の <code>.hivedesk/</code> フォルダーを削除します。npm でインストールした場合は <code>npm rm -g hivedesk</code> も実行してください。</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA BAND ================= -->
+<section class="band" aria-labelledby="band-h">
+  <div class="wrap">
+    <div class="band-in reveal">
+      <div class="band-copy">
+        <h2 id="band-h" class="h2" data-i18n="band.h2">あなたの準備ができたら、Mel はいつでも。</h2>
+        <p data-i18n="band.p">コマンド1つで、クルーがあなたのデスクに。</p>
+      </div>
+      <div class="band-act">
+        <div class="pill" role="group" aria-label="インストールコマンド">
+          <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
+          <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="コピーしました" aria-label="コマンド npx hivedesk をコピー"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">コピーしました</span></button>
+        </div>
+        <a class="b b-light b-lg magnetic" href="#download" data-i18n="nav.download">ダウンロード</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<dialog id="palette" class="modal modal-top" aria-label="セクションへ移動" v-data="{ }" @close="PAL.closed()" @click="PAL.backdrop($event)">
+  <div class="command-palette">
+    <label class="command-palette-search"><span class="sr">ページ内を検索</span><input class="command-palette-input" type="search" placeholder="セクションへ移動" autocomplete="off" spellcheck="false" :value="PAL.q" @input="PAL.setQ($event.target.value)" @keydown="PAL.key($event)" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list"></label>
+    <div id="pal-list" class="command-palette-list" role="listbox" aria-label="セクション">
+      <p class="command-palette-heading">セクション</p>
+        <a class="command-palette-item" href="#city" data-keywords="エージェント 部屋 友だち gpu 街 0.2.0" role="option" v-show="PAL.match('#city')" :aria-selected="PAL.sel === '#city' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#city'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Hive City</a>
+        <a class="command-palette-item" href="#film" data-keywords="動画 映像 75秒" role="option" v-show="PAL.match('#film')" :aria-selected="PAL.sel === '#film' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#film'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>映像</a>
+        <a class="command-palette-item" href="#try" data-keywords="デモ リクエスト 試す" role="option" v-show="PAL.match('#try')" :aria-selected="PAL.sel === '#try' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#try'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>試してみる</a>
+        <a class="command-palette-item" href="#how" data-keywords="ステップ 頼む 整える 計画 作る チェック リリース" role="option" v-show="PAL.match('#how')" :aria-selected="PAL.sel === '#how' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#how'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>しくみ</a>
+        <a class="command-palette-item" href="#features" data-keywords="整え役 音声 テーマ 拡張機能 メモリ" role="option" v-show="PAL.match('#features')" :aria-selected="PAL.sel === '#features' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#features'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>機能</a>
+        <a class="command-palette-item" href="#next" data-keywords="プレイブック ライブラリ チャット ハチ 次のバージョン" role="option" v-show="PAL.match('#next')" :aria-selected="PAL.sel === '#next' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#next'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>次のバージョンで</a>
+        <a class="command-palette-item" href="#office" data-keywords="オフィス ハチ" role="option" v-show="PAL.match('#office')" :aria-selected="PAL.sel === '#office' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#office'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>オフィスモード</a>
+        <a class="command-palette-item" href="#screens" data-keywords="スクリーンショット ツアー code together github 変更履歴" role="option" v-show="PAL.match('#screens')" :aria-selected="PAL.sel === '#screens' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#screens'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Hive の中</a>
+        <a class="command-palette-item" href="#download" data-keywords="windows macos linux npx インストール ダウンロード" role="option" v-show="PAL.match('#download')" :aria-selected="PAL.sel === '#download' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#download'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>ダウンロード</a>
+        <a class="command-palette-item" href="#limits" data-keywords="ハードウェア gpu モデル 速度 制限" role="option" v-show="PAL.match('#limits')" :aria-selected="PAL.sel === '#limits' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#limits'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>制限についても正直に</a>
+        <a class="command-palette-item" href="#lend" data-keywords="友だち 6つの単語 貸す" role="option" v-show="PAL.match('#lend')" :aria-selected="PAL.sel === '#lend' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#lend'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>PCを貸す</a>
+        <a class="command-palette-item" href="#faq" data-keywords="質問 faq" role="option" v-show="PAL.match('#faq')" :aria-selected="PAL.sel === '#faq' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#faq'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>FAQ</a>
+      <p class="command-palette-empty" v-show="PAL.none()">一致するものはありません。</p>
+    </div>
+    <div class="command-palette-footer"><span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> で移動</span><span><kbd>Enter</kbd> でジャンプ</span><span><kbd>Esc</kbd> で閉じる</span></div>
+  </div>
+</dialog>
+
+<div class="toast toast-bottom toast-center" aria-live="polite" role="status" v-data="{ }">
+  <div class="toast-item hd-toast" v-for="t in TOAST.list" :key="t.id" v-transition="pop">
+    <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>
+    <div><p class="toast-title" v-text="t.title"></p><p class="toast-description" v-text="t.text"></p></div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <img class="foot-mel" src="../assets/art/mel-wave.svg" width="96" height="96" alt="手を振る、ハチの親方 Mel" loading="lazy" decoding="async">
+      <a class="brand" href="../"><img src="../assets/art/logo.svg" width="24" height="24" alt=""><span>hivedesk</span></a>
+      <p>あなただけのAIクルーを、あなたのマシンで。</p>
+      <div class="author">
+        <span>制作: <b>Alexandre Kohler</b></span>
+        <span class="author-links">
+          <a href="https://github.com/kwy404" rel="me noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg>GitHub</a>
+          <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linkedin"/></svg>LinkedIn</a>
+        </span>
+      </div>
+    </div>
+    <div>
+      <h2 class="foot-h">プロダクト</h2>
+      <ul class="foot-list"><li><a href="#how">しくみ</a></li><li><a href="#features">機能</a></li><li><a href="#city">Hive City</a></li><li><a href="#office">オフィスモード</a></li><li><a href="#download">ダウンロード</a></li><li><a href="#limits">制限</a></li><li><a href="#faq">FAQ</a></li></ul>
+    </div>
+    <div>
+      <h2 class="foot-h">プロジェクト</h2>
+      <ul class="foot-list"><li><a href="https://github.com/kwy404/hivedesk" rel="noopener">GitHub</a></li><li><a href="https://www.npmjs.com/package/hivedesk" rel="noopener">npm</a></li><li><a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">リリース</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">変更履歴</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">セキュリティ</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener" lang="pt-BR">Português</a></li></ul>
+    </div>
+    <div>
+      <h2 class="foot-h">kwy404 のほかのプロジェクト</h2>
+      <ul class="foot-list foot-more"><li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a></li><li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a></li><li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a></li><li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a></li><li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a></li><li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a></li><li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a></li><li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a></li><li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a></li></ul>
+    </div>
+  </div>
+  <div class="wrap foot-legal">
+    <p>MITライセンス。トラッキングなし。<a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a> で構築。インタラクティブな部分は <a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a> で構築。</p>
+    <p class="mono" translate="no">hivedesk 0.2.1</p>
+  </div>
+</footer>
+<script type="application/json" id="hd-t">{"toast.copied": "クリップボードにコピーしました", "toast.paste": "ターミナルに貼り付けてください", "try.plan.game.build": "canvas のゲームループ、キーボードとタッチの操作、スコア、リスタートボタン。", "try.plan.game.checks": "ゲームが始まり、スコアが数えられ、リスタートが動くこと。", "try.plan.look": "見た目を決める", "try.plan.game.loop": "ゲームループを書く", "try.plan.game.howto": "遊び方を書く", "try.plan.game.test": "操作をプレイテスト", "try.plan.list.build": "追加、編集、完了、削除ができるリストを localStorage に保存。", "try.plan.list.checks": "再読み込みしても項目が残り、空の入力は拒否されること。", "try.plan.list.style": "リストの見た目を整える", "try.plan.list.crud": "追加、編集、削除を作る", "try.plan.list.save": "localStorage に保存する", "try.plan.list.edge": "境界ケースをチェック", "try.plan.docs.build": "何をするか、インストール方法、使い方、そして例。", "try.plan.docs.checks": "README のコマンドがすべて書いてあるとおりに動くこと。", "try.plan.docs.outline": "README の構成を考える", "try.plan.docs.write": "インストールと使い方を書く", "try.plan.docs.cmds": "コマンドを確認する", "try.plan.docs.read": "初めての人の目で読む", "try.plan.page.build": "ヒーロー、主なセクション、問い合わせフォーム、フッター。", "try.plan.page.checks": "画像に代替テキスト、フォームにラベル、375 px で動くこと。", "try.plan.page.build2": "ページを作る", "try.plan.page.copy": "文章を書く", "try.plan.page.check": "ページをチェック", "try.writing": "Mel がブリーフを書いています", "try.goal": "目標", "try.build": "作るもの", "try.constraints": "制約", "try.constraintsV": "素のHTML、CSS、JavaScript、スマホで動くこと。", "try.checks": "チェック", "try.queued": "待機中", "try.running": "実行中", "try.done": "完了", "try.finished": "このプレビューでは完了です。Hive では、あなたのフォルダーに本物のファイルが書き込まれます。"}</script>
+</body>
+</html>

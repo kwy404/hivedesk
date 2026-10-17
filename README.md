@@ -2,44 +2,58 @@
   <img src="assets/banner.svg" width="900" alt="hivedesk: a whole crew of AI workers, running on your own machine. A honeycomb desktop with a timeline, a crew chat, a code window and a live preview, with Mel the bee foreman.">
 </p>
 
-<p align="center"><b>Your own AI crew. One command away.</b><br>New in 0.2.0: <a href="#hive-city-new-in-020">Hive City</a>, where your agents live, work through rooms and borrow a friend's GPU.</p>
+<h3 align="center">Your own AI crew, on your own machine. One command away.</h3>
 
 <p align="center">
-  <a href="https://kwy404.github.io/hivedesk/">Website</a> &middot;
-  <a href="#install">Install</a> &middot;
-  <a href="#honest-about-the-limits">Limits</a> &middot;
+  <a href="https://kwy404.github.io/hivedesk/"><b>Website</b></a> &middot;
+  <a href="#download">Download</a> &middot;
+  <a href="https://kwy404.github.io/hivedesk/#film">75 second film</a> &middot;
+  <a href="#honest-limits">Limits</a> &middot;
   <a href="https://www.npmjs.com/package/hivedesk">npm</a> &middot;
-  <a href="https://github.com/kwy404/hivedesk/releases/latest">Latest release</a> &middot;
   <a href="i18n/README.pt-BR.md">Português</a>
 </p>
 
 <p align="center">
-  Made by <b>Alexandre Kohler</b>
-  &nbsp;<a href="https://github.com/kwy404" rel="me noopener"><img src="assets/icons/github-honey.svg" width="16" height="16" alt=""> GitHub</a>
-  &nbsp;<a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener"><img src="assets/icons/linkedin-honey.svg" width="16" height="16" alt=""> LinkedIn</a>
+  <a href="https://www.npmjs.com/package/hivedesk"><img src="https://img.shields.io/npm/v/hivedesk?color=FFB531&label=npm" alt="npm version"></a>
+  <a href="https://github.com/kwy404/hivedesk/releases/latest"><img src="https://img.shields.io/github/v/release/kwy404/hivedesk?color=FFB531&label=release" alt="latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-FFB531" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/node-%3E%3D20-FFB531" alt="Node.js 20 or newer">
 </p>
 
-Run `npx hivedesk` and a short wizard sets everything up: it reads your hardware, installs the local runtime, downloads the right model with a progress bar and opens the Hive in your browser. The Hive is a desktop where a crew of AI workers plans, talks and builds real files in a folder on your computer, with a model that runs on your own machine. No account, no API key.
+```bash
+npx hivedesk
+```
+
+A crew of AI workers (Mel the foreman, Dev, Designer, QA and Writer) that plans, talks and builds real files in a folder on your computer, with a model that runs on your own machine. No account, no API key. New in 0.2.0: **Hive City**, where your agents live, keep their memory and level, work room by room, and can borrow a friend's GPU.
 
 <p align="center">
-  <a href="https://kwy404.github.io/hivedesk/#film"><img src="assets/video-poster.webp" width="320" alt="Watch the 75 second hivedesk film: Mel the bee foreman and the words Um comando so."></a><br>
-  <a href="https://kwy404.github.io/hivedesk/#film"><b>Watch the 75 second film</b></a> (or <a href="docs/media/hivedesk.mp4">the MP4</a>, with captions in <a href="docs/media/hivedesk.en.vtt">English</a> and <a href="docs/media/hivedesk.pt-BR.vtt">Portuguese</a>)
+  <img src="assets/illustrations/steps.svg" width="900" alt="Three steps: run npx hivedesk and it picks a model for your machine; Mel turns a rough request into a clear brief; the crew builds it room by room through Design, Code, Review and Test, with your approval.">
 </p>
 
-<p align="center">
-  <img src="docs/assets/shots/hive.webp" width="900" alt="The Hive in demo mode: the timeline of a bakery landing page job, the crew chat, a live preview of the page, the Files window with a diff and the Dev worker after a turn, with the worker dock at the bottom.">
-</p>
+<table>
+  <tr>
+    <td width="50%" valign="top"><a href="https://kwy404.github.io/hivedesk/#film"><img src="assets/video-poster.webp" width="100%" alt="Watch the 75 second hivedesk film."></a></td>
+    <td width="50%" valign="top">
+      <h3>Watch the 75 second film</h3>
+      <p>The real app, start to finish: the wizard picks a model for the GPU, Mel writes a brief, the crew builds, you approve, and the job ends with a better prompt and a pull request.</p>
+      <p><a href="https://kwy404.github.io/hivedesk/#film"><b>Play it on the website</b></a>, or get <a href="docs/media/hivedesk.mp4">the MP4</a> with captions in <a href="docs/media/hivedesk.en.vtt">English</a> and <a href="docs/media/hivedesk.pt-BR.vtt">Portuguese</a>.</p>
+    </td>
+  </tr>
+</table>
 
-## Hive City (new in 0.2.0)
+## Hive City
 
 <p align="center">
   <img src="docs/assets/shots/city-overview.webp" width="900" alt="Hive City in demo mode: your building on a floating island with the Design, Code, Review, Test, Ops, Library and Lobby rooms, a friend's tower across a bridge, the task board and the event feed.">
 </p>
 
-<p align="center">
-  <img src="docs/assets/shots/city-bridge-gpu-borrow.webp" width="440" alt="Dev borrows the friend's GPU across the lit bridge; the Machines panel shows 2 of 3 turns and a Stop the borrow button.">
-  <img src="docs/assets/shots/city-agent-card.webp" width="440" alt="An agent card with the level, XP, tools and private memory.">
-</p>
+<table>
+  <tr>
+    <td width="33%"><img src="docs/assets/shots/city-friend-rising.webp" alt="A friend's building rising next to yours after they joined with six words."><br><sub><b>A friend joins</b> with six words and their machine rises next to yours.</sub></td>
+    <td width="33%"><img src="docs/assets/shots/city-bridge-gpu-borrow.webp" alt="Dev borrows the friend's GPU across the lit bridge; the Machines panel shows 2 of 3 turns and a Stop the borrow button."><br><sub><b>Borrow a GPU</b> for a set number of turns; either side can stop.</sub></td>
+    <td width="33%"><img src="docs/assets/shots/city-agent-card.webp" alt="An agent card with the level, XP, tools and private memory."><br><sub><b>Agents that stay,</b> with a level, XP, tools and a memory you edit.</sub></td>
+  </tr>
+</table>
 
 hivedesk now opens on a small city, and the city is the state of the system: every building, room, agent and task you see is an event in the same log the crew writes ([CITY-PROTOCOL.md](CITY-PROTOCOL.md)). `npx hivedesk --demo` plays the city scenario: a friend joins, her building rises, Dev borrows her GPU across the bridge, and a task goes through every room to done.
 
@@ -52,6 +66,43 @@ hivedesk now opens on a small city, and the city is the state of the system: eve
 
 What it does not do yet: Test runs the static checks (HTML, links, JS syntax, CSS, JSON), not your test suite; for tasks planned by Mel the review is those checks and the crew QA report is the test, so no extra model turns are spent; a friend's agent needs that friend's model to be lent; borrowing has no standing "lend 30 percent" setting, only limits per request; the crew job can finish a moment before the city hops of its last task. `--no-city` turns the city off and keeps the 0.1 desktop.
 
+## What you get
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><img src="assets/icons/honey/sparkle.svg" width="40" height="40" alt=""><br><b>Prompt refiner</b><br>Mel turns a rough request into a brief (goal, build, constraints, checks). You use it, edit it or keep your words. The report ends with an improved prompt.</td>
+    <td width="33%" valign="top"><img src="assets/icons/honey/approval.svg" width="40" height="40" alt=""><br><b>You approve the risky steps</b><br>Commands, deletes and changes to files you already had wait for your yes, with the diff in front of you.</td>
+    <td width="33%" valign="top"><img src="assets/icons/honey/model.svg" width="40" height="40" alt=""><br><b>Picks the model for you</b><br>Reads your GPU and RAM and downloads the right open source coding model, 0.5B to 14B, or uses a local runtime you already run, or your own key.</td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="assets/icons/honey/code.svg" width="40" height="40" alt=""><br><b>Code together</b><br>A friend joins with six words: same files, both cursors. Their saves wait for your approval as a diff.</td>
+    <td valign="top"><img src="assets/icons/honey/github.svg" width="40" height="40" alt=""><br><b>Ship to GitHub</b><br>Branch, commit, push, pull request and CI status, each shown as a plan you confirm. Mel drafts the changelog entry.</td>
+    <td valign="top"><img src="assets/icons/honey/chat.svg" width="40" height="40" alt=""><br><b>Talk to Mel</b><br>Hold <kbd>Ctrl</kbd> <kbd>Space</kbd>. Before anything that acts, Mel reads the plan and waits for a clear yes.</td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="assets/icons/honey/design.svg" width="40" height="40" alt=""><br><b>Themes and extensions</b><br>Eight themes, a contrast checked editor, or ask the crew to design a theme or build an extension (sandboxed, with permissions).</td>
+    <td valign="top"><img src="assets/icons/honey/playbook.svg" width="40" height="40" alt=""><br><b>Memory and playbooks</b><br>Small, editable notes per project and per person; jobs that went well become playbooks Mel reuses.</td>
+    <td valign="top"><img src="assets/icons/honey/globe.svg" width="40" height="40" alt=""><br><b>10 languages</b><br>English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文, Русский. Switches live.</td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="assets/icons/honey/office.svg" width="40" height="40" alt=""><br><b>Office mode and replay</b><br>Watch the crew at their desks, or scrub back to any moment from the append only event log.</td>
+    <td valign="top"><img src="assets/icons/honey/hive.svg" width="40" height="40" alt=""><br><b>Desktop app</b><br>Downloads for Windows, macOS and Linux with their own Node.js, a tray icon and notifications.</td>
+    <td valign="top"><img src="assets/icons/honey/lock.svg" width="40" height="40" alt=""><br><b>Stays on your machine</b><br>Bound to 127.0.0.1 with a secret token per run. No account, no analytics.</td>
+  </tr>
+</table>
+
+<details>
+<summary><b>Screenshots</b>: the guided tour, the brief, Code together, GitHub, themes, extensions, memory</summary>
+
+| | |
+| --- | --- |
+| <img src="docs/assets/shots/tour.webp" alt="Step 1 of the guided tour with Mel."> | <img src="docs/assets/shots/brief.webp" alt="The Brief and report window."> |
+| <img src="docs/assets/shots/code-together.webp" alt="Code together: two people editing index.html."> | <img src="docs/assets/shots/github.webp" alt="The GitHub window."> |
+| <img src="docs/assets/shots/themes.webp" alt="The Theme gallery."> | <img src="docs/assets/shots/extensions.webp" alt="The Extensions window."> |
+| <img src="docs/assets/shots/memory.webp" alt="The Memory window."> | <img src="docs/assets/shots/office-working.webp" alt="Office mode."> |
+
+</details>
+
 ## Download
 
 | | File | Size | Start |
@@ -62,56 +113,49 @@ What it does not do yet: Test runs the static checks (HTML, links, JS syntax, CS
 | Linux x64, one file | [hivedesk-linux-x86_64.AppImage](https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage) | 52 MB | `chmod +x`, then run it |
 | Any system with Node.js 20+ | `npx hivedesk` | small | the wizard does the rest |
 
-The desktop app opens hivedesk in its own window and carries its own Node.js. It is not signed yet, so Windows SmartScreen ("More info", then "Run anyway") and macOS Gatekeeper (System Settings, Privacy and Security, "Open Anyway") ask once, and it does not update itself. The local model is still downloaded on the first run. All files, with `SHA256SUMS.txt`, are on the [releases page](https://github.com/kwy404/hivedesk/releases); [desktop/README.md](desktop/README.md) lists what each package contains.
+The desktop app is not signed yet: Windows SmartScreen ("More info", then "Run anyway") and macOS Gatekeeper (System Settings, Privacy and Security, "Open Anyway") ask once, and it does not update itself. The local model is downloaded on the first run. All files, with `SHA256SUMS.txt`, are on the [releases page](https://github.com/kwy404/hivedesk/releases); [desktop/README.md](desktop/README.md) lists what each package contains.
 
-## Install
-
-```bash
-npx hivedesk
-```
-
-The wizard asks for the language, the project folder, which brain to use, how the crew should work and who is on it. Every question has a recommended default, so pressing Enter all the way works. Run it again and it offers to reuse the same setup; `--yes` skips the questions.
-
-Prefer the desktop app? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip` (47 MB), `hivedesk-macos-universal.zip` (89 MB) and `hivedesk-linux-x64.tar.gz` (55 MB, or the 52 MB AppImage) from the [latest release](https://github.com/kwy404/hivedesk/releases/latest). Each one carries its own Node.js, so there is nothing to install first; it opens hivedesk in its own window. They are not signed yet, so Windows SmartScreen and macOS Gatekeeper ask once, and they do not update themselves. The local model is still downloaded on the first run. [desktop/README.md](desktop/README.md) lists what each package contains and the exact first launch steps. There are also tiny launcher scripts that check for Node.js 20 or newer and run `npx hivedesk@latest`.
-
-### What the first run does
+<details>
+<summary><b>What the first run does</b>, the model you get and how long it takes</summary>
 
 1. Starts a server on `127.0.0.1` with a secret token in the URL and opens your browser, which shows a progress bar while the rest runs.
-2. Uses Ollama or LM Studio if one of them is already running with a model, and skips the download.
+2. Uses a local runtime you already use if it is running with a model, and skips the download.
 3. Detects the hardware: OS, CPU cores, RAM, free disk and the GPU with its VRAM.
-4. Installs the local runtime `node-llama-cpp` into `~/.hivedesk/runtime/`, once. It is not a dependency of the package, so `npx hivedesk` itself stays small.
+4. Installs its local runtime into `~/.hivedesk/runtime/`, once. It is not a dependency of the package, so `npx hivedesk` itself stays small.
 5. Picks a model and downloads it into `~/.hivedesk/models/`, showing its name, size and source. A cut download resumes, and the file is checked against its published SHA-256.
 6. Loads the model, GPU first. If less than half of the layers fit, or free RAM is short, it does not load half a model and freeze your machine: it falls back and says why.
 
-| Your hardware | Model (Qwen2.5-Coder Instruct, Q4_K_M) | Download | Runs on |
+| Your hardware | Model (an open source coding model, 4 bit quantized) | Download | Runs on |
 | --- | --- | --- | --- |
 | GPU with 10 GB of VRAM or more | 14B | 9.0 GB | GPU |
 | GPU with 7 to 10 GB of VRAM | 7B | 4.7 GB | GPU |
-| GPU with 4 to 7 GB of VRAM (for example a GTX 1060 6 GB) | 3B | 2.1 GB | GPU, every layer |
+| GPU with 4 to 7 GB of VRAM (for example a 6 GB card) | 3B | 2.1 GB | GPU, every layer |
 | No usable GPU, 16 GB of RAM or more | 3B | 2.1 GB | CPU |
 | No usable GPU, 8 to 16 GB of RAM | 1.5B | 1.1 GB | CPU |
 | Under 8 GB of RAM | 0.5B | 0.5 GB | CPU, with a warning that results will be basic |
 
-The choice and the reason are shown in one line, for example "NVIDIA GeForce GTX 1060 6GB (6.4 GB VRAM) found: using Qwen2.5-Coder 3B (2.1 GB), fully on the GPU." Change it in Settings or with `--model 14b|7b|3b|1.5b|0.5b|<path>`. The exact behavior, including what happens when the disk is short, the network drops or the GPU fails, is in [FIRST-RUN.md](FIRST-RUN.md).
+The choice and the reason are shown in one line, for example "A 6 GB graphics card found: the 3B coding model (2.1 GB), fully on the GPU." Change it in Settings or with `--model 14b|7b|3b|1.5b|0.5b|<path>`. The exact behavior, including what happens when the disk is short, the network drops or the GPU fails, is in [FIRST-RUN.md](FIRST-RUN.md).
 
 **How long the first run takes.** Mostly the model download, plus a few hundred MB for the runtime. At 100 Mbit/s the 3B model takes about 3 minutes and the 7B about 6. After that a run is ready in the time it takes to load the model.
 
-### Requirements
+**Requirements**
 
 - Node.js 20 or newer, on Windows, macOS or Linux.
 - Disk: 0.5 to 9.0 GB for the model, plus up to about 0.7 GB for the runtime.
 - Free RAM to load it: 2.5 GB when the model goes to the GPU; on the CPU, the model size plus 1.5 GB (at least 4 GB).
-- A GPU is optional: NVIDIA, Apple Silicon and others through the runtime.
+- A GPU is optional: most modern graphics cards work, and so does Apple Silicon.
 - A network connection on the first run.
+</details>
 
-### Options
+<details>
+<summary><b>Command line options</b></summary>
 
 | Flag | What it does |
 | --- | --- |
 | `--yes` | Skip the setup questions (the saved setup, or the recommended defaults). |
 | `--demo` | No model at all: a scripted job replays so you can look around. Every event is labeled as a demo. |
 | `--model <name or path>` | `14b`, `7b`, `3b`, `1.5b`, `0.5b` or a GGUF file, instead of the automatic choice. |
-| `--brain ollama`, `--brain lmstudio`, `--brain openai` | Use that brain. `openai` takes `--url`, `--model` and the key in `HIVEDESK_API_KEY`. |
+| `--brain <name>` | Use a local runtime you already run, or a cloud endpoint with `--url`, `--model` and your key in `HIVEDESK_API_KEY`. `hivedesk --help` lists the names. |
 | `--no-download` | Never download a model; the Hive offers the download instead. |
 | `--cpu`, `--ctx <n>` | Do not use the GPU; set the context size. |
 | `--dir <folder>` | The project folder. Files go to `<folder>/.hivedesk/`. |
@@ -121,14 +165,18 @@ The choice and the reason are shown in one line, for example "NVIDIA GeForce GTX
 | `--no-city` | Run without Hive City: no agents, rooms or task bus; the rest works the same. |
 
 `HIVEDESK_HOME` moves the cache folder `~/.hivedesk/`.
+</details>
 
+<a id="honest-limits"></a>
 ## Honest about the limits
 
-A small model on your own machine is private and free to run. It is also slower and less capable than the biggest models in a data center. Please read this before you start.
+- **It needs a model.** Without one, nothing is generated. The first run downloads one (0.5 to 9.0 GB) unless a local runtime you already use is running or you add a key.
+- **It is slower than it looks in videos.** Workers take turns on one model, so a job takes minutes. On the CPU only, the model writes a few tokens per second.
+- **It works best with you steering.** Great at landing pages, small CRUD apps, scripts, components, tests, docs and fixing a bug you describe. Not great at large apps in one go.
+- **Privacy has switches.** Your files stay on your machine. The network is used for the first download, then only for what you turn on: Lend mode and Code together, GitHub, cloud providers with your key, extensions from a URL, and the browser's speech recognition in voice mode.
 
-- **It needs a model.** Without one, nothing is generated. The first run downloads one, 0.5 to 9.0 GB, unless Ollama or LM Studio is already running or you add a key.
-- **It is slower than it looks in videos.** Workers take turns on one model, so a job takes minutes, not seconds. On the CPU only, the model writes a few tokens per second.
-- **It works best with you steering.** Ask for one thing at a time, read the diffs and approve the steps. Large apps in one go are out of reach for a small model.
+<details>
+<summary><b>Hardware, measured speed and the details</b></summary>
 
 <p align="center">
   <img src="assets/illustrations/hardware.svg" width="900" alt="Three hardware tiers shown as honey jars: no GPU runs a small model slowly, a mid range GPU runs a bigger model for small and medium tasks, a bigger GPU or a key handles bigger jobs.">
@@ -136,66 +184,22 @@ A small model on your own machine is private and free to run. It is also slower 
 
 | Hardware | Model it runs | Speed | Good for |
 | --- | --- | --- | --- |
-| No GPU | Qwen2.5-Coder 0.5B or 1.5B, or 3B with 16 GB of RAM | Slow, a few tokens per second | Small, single file tasks. Expect to wait. |
-| GPU with 4 to 7 GB | Qwen2.5-Coder 3B, fully on the GPU | Usable | Small tasks, components, scripts, copy. |
-| GPU with 7 to 10 GB | Qwen2.5-Coder 7B | Good | Small and medium tasks, with you steering. |
-| 10 GB or more, or a key | Qwen2.5-Coder 14B, or a bigger model through Ollama, LM Studio or a cloud provider with your own key | Faster | Bigger jobs and longer plans. |
+| No GPU | A 0.5B or 1.5B coding model, or 3B with 16 GB of RAM | Slow, a few tokens per second | Small, single file tasks. Expect to wait. |
+| GPU with 4 to 7 GB | A 3B coding model, fully on the GPU | Usable | Small tasks, components, scripts, copy. |
+| GPU with 7 to 10 GB | A 7B coding model | Good | Small and medium tasks, with you steering. |
+| 10 GB or more, or a key | A 14B coding model, a bigger one in a local runtime you already use, or a cloud model with your own key | Faster | Bigger jobs and longer plans. |
 
-**Measured** on a GTX 1060 6 GB (Vulkan, 16 GB of RAM) with the 3B fully on the GPU: ready in 8 to 15 seconds from the cache (about 70 seconds on the very first run, including the 2.1 GB download), 17 to 39 tokens per second while writing (4 to 10 on turns that read a long prompt), and a tiny static page (brief, plan, write, QA, report) in about 1.5 to 2.5 minutes after the model was loaded. Results vary between runs: in some runs a worker left a mistake that QA found and the fix rounds could not repair, and the report listed it as missing. The 7B did not fit that card with a 4096 token context, so hivedesk steps down to the 3B on the GPU.
+**Measured** on a 6 GB graphics card from 2016 (Vulkan, 16 GB of RAM) with the 3B fully on the GPU: ready in 8 to 15 seconds from the cache (about 70 seconds on the very first run, including the 2.1 GB download), 17 to 39 tokens per second while writing (4 to 10 on turns that read a long prompt), and a tiny static page (brief, plan, write, QA, report) in about 1.5 to 2.5 minutes after the model was loaded. Results vary between runs: in some runs a worker left a mistake that QA found and the fix rounds could not repair, and the report listed it as missing. The 7B did not fit that card with a 4096 token context, so hivedesk steps down to the 3B on the GPU.
+</details>
 
-**Great at:** landing pages, small CRUD apps, scripts, UI components, tests, docs and copy, fixing a bug you describe.
+## Code together and borrowing a GPU
 
-**Not great at:** large or complex apps in one go, long jobs without you reading and approving the steps, speed on a machine without a GPU, and anything at all without a model.
+**Code together.** Open the Code window, share six words, and a friend edits the same files with you, cursors and all. Their saves go through your approval mode as a diff, and they never get a shell on your machine.
 
-**Privacy:** your files stay on your machine. The network is used for the first run download, and then only for what you turn on: Lend mode and Code together (with a friend you paired with), GitHub, cloud providers with your own key, extensions from a URL, and the browser's speech recognition in voice mode, which may send audio to the browser maker's service. A fully local speech recognizer is not shipped yet. Lend mode sends only model prompts and answers: one request at a time, at most 20 per minute, prompts up to 120,000 characters, and the friend can stop at any time. There is no TURN relay built in, so two very strict networks may not connect.
+**Borrow a GPU.** An agent on a busy or small machine asks a friend's machine for a number of turns and minutes. The friend accepts, lowers the limits or refuses, sees every turn and can stop at any time; only prompts and answers travel. A friend can also lend their whole model with `npx hivedesk --lend`.
 
-## How it works
-
-<p align="center">
-  <img src="assets/illustrations/crew.svg" width="900" alt="You ask for a bakery landing page. Mel the foreman plans it: the Writer writes the copy, the Designer does layout and styles, Dev builds the page and QA runs the checks and sends a fix back. Below, one local model with a queue of workers taking turns.">
-</p>
-
-1. **Ask.** Type what you want, or hold <kbd>Ctrl</kbd> <kbd>Space</kbd> and say it.
-2. **Refine.** Mel turns the request into a brief: the goal, what to build, the constraints, the checks and any open question. The job waits until you use the brief, edit it or keep your own words. You can turn it off in Settings.
-3. **Plan.** Mel splits the brief into a task graph and assigns it. Jobs that went well become playbooks Mel reuses.
-4. **Build.** Workers take turns on one model and write real files in your workspace. Every write is a diff; commands, deletes and changes to files you already had wait for your approval.
-5. **Check.** QA runs the checks and sends what fails back as fix tasks.
-6. **Ship.** At the end, a report suggests an improved prompt for next time. Connect GitHub and the crew can make a branch per job, commit, push and open a pull request with its CI status; each action is shown as a plan and runs only when you confirm it.
-
-The default crew is **Mel** (foreman and planner), **Dev**, **Designer**, **QA** and **Writer**. Hire your own with a role, an avatar color and a list of allowed tools. Tools only reach the workspace folder; commands run with a timeout, an output cap and no network by default.
-
-## Inside the Hive
-
-<p align="center">
-  <img src="docs/assets/shots/office-working.webp" width="900" alt="Office mode: the crew at their desks in an isometric honeycomb office, Mel at the task board, the current job at 35 percent and the turn on the model.">
-</p>
-
-- **Office mode.** Toggle it in the top bar and the desktop becomes a small honeycomb office drawn from real engine events. Drag a sticky note from Mel's board onto a bee to hand it a task.
-- **Code together.** Invite a friend into the Code window with six words: you edit the same files and see each other's cursors. Their saves go through approval mode, as a diff.
-- **Voice.** Push to talk with <kbd>Ctrl</kbd> <kbd>Space</kbd>; Mel answers out loud in the UI language. Before anything that acts, like a commit or a push, Mel reads the plan and waits for a clear yes. Recognition is the browser's, which may send audio to the browser maker's service.
-- **Themes.** Eight built in, a visual editor with a contrast report, import and export, or describe one and the crew designs it.
-- **Extensions.** Install from a folder, a zip or a URL, or ask the crew to create one. Each one asks for its permissions and runs in a sandbox.
-- **Session memory.** Small, capped notes per project and per person, plus one session file per job. A few relevant entries go into the next prompt; pin, edit or forget any of them in the Memory window, or turn memory off.
-- **Brief and report.** The refined brief before the job, and at the end a report with what was built and an improved prompt for next time.
-- **Cloud brains, optional.** Local by default. Add a cloud provider or any OpenAI compatible endpoint with your own key, per worker if you like. Keys stay in `~/.hivedesk/keys.json`; prompts and file contents sent to that provider leave your machine.
-- **Desktop app.** The downloads open hivedesk in its own window, with a tray icon, notifications and a single instance; `npx hivedesk` can open the same window.
-- **10 languages.** English, Português, Español, Français, Deutsch, Italiano, 日本語, 한국어, 简体中文 and Русский. The Hive follows your browser and switches live.
-- **A guided tour** with Mel on the first open; replay it from Help or the command palette.
-- **Replay** any moment from the append-only event log, a <kbd>Ctrl</kbd> <kbd>K</kbd> command palette, windows that snap, and a phone layout with stacked cards.
-
-## Lend your PC
-
-<p align="center">
-  <img src="assets/illustrations/lend.svg" width="900" alt="Your PC runs the Hive and keeps the files. A friend's PC runs npx hivedesk --lend and shows six words, a request log and a Stop lending button. Between them an encrypted peer link carries only model prompts and replies.">
-</p>
-
-1. The friend runs `npx hivedesk --lend` and gets six words, a QR code and a share link.
-2. You enter the words in **Use a friend's PC**, open the link, or start with `npx hivedesk --join "<link>"`. The two browsers pair over WebRTC and show the same confirmation words.
-3. Your crew sends model turns to the friend's machine. The friend sees every request and can stop lending at any time.
-
-The words work once and expire after 10 minutes. Pairing goes through public MQTT relays that only see a random topic and ciphertext.
-
-## GitHub and the changelog
+<details>
+<summary><b>GitHub and the changelog</b>, step by step</summary>
 
 Open the **GitHub** window from the dock, or just ask: "connect my GitHub", "create a private repository called shop", "commit and push", "open a pull request", "show the changelog" (Portuguese works too). Mel turns the request into a plan and shows a card with exactly what will happen: repository name, visibility, branch, files, commit message and remote URL. Nothing runs until you press Yes, and you can edit the message, the name and the pull request text on the card.
 
@@ -209,30 +213,29 @@ Open the **GitHub** window from the dock, or just ask: "connect my GitHub", "cre
 1. On GitHub, open Settings, Developer settings, OAuth Apps, New OAuth App. Any name works; for the homepage and callback URL use `http://127.0.0.1` (the device flow does not call it).
 2. In the app settings, tick **Enable Device Flow** and save.
 3. Copy the **Client ID** (not a secret) into `~/.hivedesk/config.json`: `{ "github": { "clientId": "<your client id>" } }`, then restart hivedesk.
+</details>
 
 ## FAQ
 
-**Do I need an account or an API key?** No. Keys are optional, only to add a cloud provider or an OpenAI compatible endpoint; they stay in a key store on your machine.
-
-**Can I look around without downloading a model?** Yes: `npx hivedesk --demo` replays a scripted job, labeled as a demo.
-
-**Can I use a model I already have?** Yes: Ollama or LM Studio are picked up when they run, or pass `--model` with a GGUF file.
-
-**Why does a job take minutes?** All workers share one model and take turns. The queue is on screen.
-
-**How do I remove it?** Delete `~/.hivedesk/` and the `.hivedesk/` folder in your project; if you installed it with npm, run `npm rm -g hivedesk`.
+<details><summary><b>Do I need an account or an API key?</b></summary>No. Keys are optional, only to add a cloud provider or a compatible endpoint with your own key; they stay in a key store on your machine.</details>
+<details><summary><b>Can I look around without downloading a model?</b></summary>Yes: <code>npx hivedesk --demo</code> plays a scripted job and a city scenario, every event labeled as a demo.</details>
+<details><summary><b>Can I use a model I already have?</b></summary>Yes: a local runtime you already use is picked up when it runs, or pass <code>--model</code> with a GGUF file.</details>
+<details><summary><b>Why does a job take minutes?</b></summary>All workers share one model and take turns. The queue is on screen.</details>
+<details><summary><b>I prefer the old desktop.</b></summary>Start with <code>--no-city</code>: no agents, rooms or task bus; the rest works the same.</details>
+<details><summary><b>How do I remove it?</b></summary>Delete <code>~/.hivedesk/</code> and the <code>.hivedesk/</code> folder in your project; if you installed it with npm, run <code>npm rm -g hivedesk</code>.</details>
 
 ## Docs
 
-- [FIRST-RUN.md](FIRST-RUN.md): what the first run does, step by step, and what happens when something fails.
-- [PROTOCOL.md](PROTOCOL.md): the contract between the engine, the UI and the plug-ins.
-- [CITY-PROTOCOL.md](CITY-PROTOCOL.md): Hive City, its events, commands, ownership rules and safety rules.
-- [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+[FIRST-RUN.md](FIRST-RUN.md) (the first run, step by step) &middot; [PROTOCOL.md](PROTOCOL.md) (engine, UI and plug-ins) &middot; [CITY-PROTOCOL.md](CITY-PROTOCOL.md) (Hive City) &middot; [CHANGELOG.md](CHANGELOG.md) &middot; [SECURITY.md](SECURITY.md)
 
-## More from kwy404
+## Contributing
 
-[Monsoon](https://kwy404.github.io/monsoon/) (the CSS of the site), [Voodoo.js](https://kwy404.github.io/Voodoo.js/) (the interactive parts), [kastor](https://kwy404.github.io/kastor/), [fontsketch](https://kwy404.github.io/fontsketch/), [filefinch](https://kwy404.github.io/filefinch/), [howlden](https://kwy404.github.io/howlden/), [installkite](https://kwy404.github.io/installkite/), [a11ymedic](https://kwy404.github.io/a11ymedic/) and [cookieowl](https://kwy404.github.io/cookieowl/).
+Issues and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to run the engine with `--demo`, the tests and the checks. Please keep changes small and honest about what they do; the site and this README describe only what the code does.
 
-## License
+## Author
 
-[MIT](LICENSE). The desktop window uses [Neutralinojs](https://neutralino.js.org/) (MIT). Made by Alexandre Kohler (<a href="https://github.com/kwy404" rel="me noopener">GitHub</a>, <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener">LinkedIn</a>).
+Made by **Alexandre Kohler** &middot; <a href="https://github.com/kwy404" rel="me noopener"><img src="assets/icons/github-honey.svg" width="16" height="16" alt=""> GitHub</a> &middot; <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener"><img src="assets/icons/linkedin-honey.svg" width="16" height="16" alt=""> LinkedIn</a>
+
+More from kwy404: [Monsoon](https://kwy404.github.io/monsoon/) (the site's CSS), [Voodoo.js](https://kwy404.github.io/Voodoo.js/) (its interactive parts), [kastor](https://kwy404.github.io/kastor/), [fontsketch](https://kwy404.github.io/fontsketch/), [filefinch](https://kwy404.github.io/filefinch/), [howlden](https://kwy404.github.io/howlden/), [installkite](https://kwy404.github.io/installkite/), [a11ymedic](https://kwy404.github.io/a11ymedic/) and [cookieowl](https://kwy404.github.io/cookieowl/).
+
+[MIT](LICENSE). The desktop window uses [Neutralinojs](https://neutralino.js.org/) (MIT).

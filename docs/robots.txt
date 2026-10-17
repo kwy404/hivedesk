@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /_i18n/
 Sitemap: https://kwy404.github.io/hivedesk/sitemap.xml

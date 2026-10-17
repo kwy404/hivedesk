@@ -6,6 +6,13 @@
 // prefers-reduced-motion, nothing moves. Nothing here talks to a server.
 
 const VOODOO = 'https://cdn.jsdelivr.net/npm/voodoojs@1.1.0/dist/voodoo.min.js';
+// The site root (pages in /pt-BR/ and the other language folders load this same file).
+const ROOT = new URL('../', import.meta.url).href;
+// Strings for the parts this script writes. Each language page carries its own in #hd-t
+// (written by docs/_i18n/build.py); English is the fallback.
+let T = {};
+try { T = JSON.parse(document.getElementById('hd-t')?.textContent || '{}'); } catch { T = {}; }
+const t = (k, fallback) => (typeof T[k] === 'string' ? T[k] : fallback);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const $ = (s, el = document) => el.querySelector(s);
@@ -20,15 +27,10 @@ function osGuess() {
 }
 
 // ---------- Voodoo, after the first paint ----------
-const MONSOON = 'https://cdn.jsdelivr.net/npm/monsooncss@0.2.0/dist/monsoon.min.css';
+// The language dropdown, the command palette and the toasts are Monsoon components
+// (menu, command-palette, toast) driven by Voodoo directives. Their state lives in the
+// plain objects below; when Voodoo arrives they become reactive and the page wires up.
 function startVoodoo() {
-  // Monsoon's reset and tokens: site.css already stands on its own, so this changes nothing on screen.
-  const css = document.createElement('link');
-  css.rel = 'stylesheet';
-  css.href = MONSOON;
-  css.crossOrigin = 'anonymous';
-  document.head.append(css);
-
   const s = document.createElement('script');
   s.src = VOODOO;
   s.crossOrigin = 'anonymous';
@@ -36,14 +38,34 @@ function startVoodoo() {
   s.onload = () => {
     const V = window.V;
     if (!V) return;
-    Object.assign(V.config.globals, { osGuess });
+    LANGSEL = V.reactive(LANGSEL);
+    PAL = V.reactive(PAL);
+    TOAST = V.reactive(TOAST);
+    Object.assign(V.config.globals, { osGuess, LANGSEL, PAL, TOAST });
     V.start();
+    voodooReady = true;
+    if (pendingClick) { const b = pendingClick; pendingClick = null; setTimeout(() => b.click(), 0); }
   };
   document.head.append(s);
 }
-const later = () => setTimeout(startVoodoo, 600);
-if (document.readyState === 'complete') later();
-else addEventListener('load', later, { once: true });
+// Voodoo starts on the first sign of a person (a pointer move, a touch, a key, a scroll) or when
+// the page has been idle for a while, so the first load stays light. A click on the language or
+// search button before that is replayed once Voodoo is ready.
+let voodooAsked = false, voodooReady = false, pendingClick = null;
+function wakeVoodoo() {
+  if (voodooAsked) return;
+  voodooAsked = true;
+  for (const ev of WAKE) removeEventListener(ev, wakeVoodoo, true);
+  startVoodoo();
+}
+const WAKE = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll', 'focusin'];
+for (const ev of WAKE) addEventListener(ev, wakeVoodoo, { capture: true, passive: true });
+document.addEventListener('click', (e) => {
+  if (voodooReady) return;
+  const b = e.target.closest?.('#lang-btn, .search-btn');
+  if (b) { pendingClick = b; wakeVoodoo(); }
+}, true);
+addEventListener('load', () => setTimeout(() => (window.requestIdleCallback || setTimeout)(wakeVoodoo), 9000), { once: true });
 
 // ---------- the download card for this OS ----------
 const os = osGuess();
@@ -57,6 +79,8 @@ for (const btn of $$('[data-copy]')) {
     btn.classList.add('is-copied');
     clearTimeout(btn._t);
     btn._t = setTimeout(() => btn.classList.remove('is-copied'), 1400);
+    const cmd = btn.closest('[role=group]')?.querySelector('code')?.textContent || '';
+    toast(t('toast.copied', 'Copied to the clipboard'), cmd ? `${cmd}: ${t('toast.paste', 'paste it in a terminal')}` : '');
   });
 }
 
@@ -69,7 +93,7 @@ const io = new IntersectionObserver((entries) => {
     shown.set(e.target, e.isIntersecting);
   }
 }, { rootMargin: '0px 0px -6% 0px' });
-$$('.reveal, .tile, .stage, .office-live, .download, .film, .city-show, [data-term]').forEach((el) => io.observe(el));
+$$('.reveal, .tile, .stage, .office-live, .download, .film, .city-show, .next, [data-term]').forEach((el) => io.observe(el));
 const onScreen = (el) => shown.get(el) === true && !document.hidden;
 
 function every(el, ms, fn) {
@@ -191,62 +215,131 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
 };
 
-// ---------- theme switcher: the app's eight themes recolor the page ----------
-const themePick = $('[data-theme-pick]');
+// ---------- theme switcher: a Monsoon segmented control in a popover ----------
 function setTheme(id) {
-  if (!id || id === 'mel') document.documentElement.removeAttribute('data-site-theme');
+  id = id || 'mel';
+  if (id === 'mel') document.documentElement.removeAttribute('data-site-theme');
   else document.documentElement.setAttribute('data-site-theme', id);
-  $$('[data-theme-id]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeId === (id || 'mel'))));
+  for (const r of $$('[data-theme-seg] input')) r.checked = r.value === id;
 }
 setTheme(store.get('hivedesk.site.theme') || 'mel');
-$$('[data-theme-id]').forEach((b) => b.addEventListener('click', () => {
-  setTheme(b.dataset.themeId);
-  store.set('hivedesk.site.theme', b.dataset.themeId);
-}));
-document.addEventListener('click', (e) => { if (themePick?.open && !themePick.contains(e.target)) themePick.open = false; });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && themePick?.open) { themePick.open = false; themePick.querySelector('summary').focus(); } });
+$('[data-theme-seg]')?.addEventListener('change', (e) => {
+  if (e.target.name !== 'site-theme') return;
+  setTheme(e.target.value);
+  store.set('hivedesk.site.theme', e.target.value);
+});
 
-// ---------- language switcher: headlines, buttons, the try panel and downloads ----------
-let STR = null;
-const langSelect = $('[data-lang-select]');
-const h1 = $('[data-i18n-h1]');
-function setH1(lines) {
-  let i = 0;
-  h1.textContent = '';
-  lines.forEach((line, n) => {
-    if (n) h1.append(document.createElement('br'));
-    line.split(' ').forEach((w, k) => {
-      if (k) h1.append(' ');
-      const sp = document.createElement('span');
-      sp.className = n ? 'w hl' : 'w';
-      sp.style.setProperty('--i', String(i++));
-      sp.setAttribute('aria-hidden', 'true');
-      sp.textContent = w;
-      h1.append(sp);
-    });
-  });
-  h1.setAttribute('aria-label', lines.join(' '));
-  h1.classList.toggle('display-long', Math.max(...lines.map((l) => l.length)) > 20);
+// ---------- language: detected from the browser, or the visitor's own choice ----------
+const LANGS = [
+  { code: 'en', name: 'English', badge: 'EN' }, { code: 'pt-BR', name: 'Português', badge: 'PT' },
+  { code: 'es', name: 'Español', badge: 'ES' }, { code: 'fr', name: 'Français', badge: 'FR' },
+  { code: 'de', name: 'Deutsch', badge: 'DE' }, { code: 'it', name: 'Italiano', badge: 'IT' },
+  { code: 'ja', name: '日本語', badge: 'JA' }, { code: 'ko', name: '한국어', badge: 'KO' },
+  { code: 'zh-Hans', name: '简体中文', badge: 'ZH' }, { code: 'ru', name: 'Русский', badge: 'RU' },
+];
+const PAGE_LANG = document.documentElement.lang || 'en';
+/** The URL of a language page: the root for English, a folder for the others. */
+const langURL = (code) => `${ROOT}${code === 'en' ? '' : `${code}/`}`;
+
+// The dropdown: a Monsoon menu with the WAI-ARIA listbox pattern (the list holds focus and
+// points at the active option with aria-activedescendant).
+let typed = '', typedAt = 0;
+let LANGSEL = {
+  open: false, active: 0, current: PAGE_LANG, list: LANGS,
+  toggle() { if (LANGSEL.open) LANGSEL.close(true); else LANGSEL.show(); },
+  show() {
+    LANGSEL.active = Math.max(0, LANGS.findIndex((l) => l.code === LANGSEL.current));
+    LANGSEL.open = true;
+    requestAnimationFrame(() => requestAnimationFrame(() => $('#lang-list')?.focus({ preventScroll: true })));
+  },
+  close(focusButton) {
+    if (!LANGSEL.open) return;
+    LANGSEL.open = false;
+    if (focusButton) $('#lang-btn')?.focus({ preventScroll: true });
+  },
+  choose(i) {
+    const l = LANGS[i];
+    if (!l) return;
+    store.set('hivedesk.site.lang', l.code);
+    LANGSEL.close(false);
+    if (l.code !== PAGE_LANG) location.href = langURL(l.code) + location.hash;
+  },
+  btnKey(e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); LANGSEL.show(); }
+  },
+  key(e) {
+    const n = LANGS.length;
+    const go = (i) => { e.preventDefault(); LANGSEL.active = (i + n) % n; $(`#lang-opt-${LANGSEL.active}`)?.scrollIntoView({ block: 'nearest' }); };
+    switch (e.key) {
+      case 'ArrowDown': return go(LANGSEL.active + 1);
+      case 'ArrowUp': return go(LANGSEL.active - 1);
+      case 'Home': return go(0);
+      case 'End': return go(n - 1);
+      case 'Enter': case ' ': e.preventDefault(); return LANGSEL.choose(LANGSEL.active);
+      case 'Escape': e.preventDefault(); e.stopPropagation(); return LANGSEL.close(true);
+      case 'Tab': return LANGSEL.close(false);
+      default:
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const now = Date.now();
+          typed = (now - typedAt > 600 ? '' : typed) + e.key.toLowerCase();
+          typedAt = now;
+          const order = [...LANGS.keys()].map((k) => (LANGSEL.active + (typed.length === 1 ? 1 : 0) + k) % n);
+          const hit = order.find((k) => LANGS[k].name.toLowerCase().startsWith(typed) || LANGS[k].badge.toLowerCase().startsWith(typed));
+          if (hit !== undefined) go(hit);
+        }
+    }
+  },
+};
+
+// ---------- toasts: Monsoon's toast stack, filled by Voodoo ----------
+let TOAST = { list: [] };
+let toastId = 0;
+function toast(title, text = '') {
+  const id = ++toastId;
+  TOAST.list.push({ id, title, text });
+  if (TOAST.list.length > 3) TOAST.list.shift();
+  setTimeout(() => { const k = TOAST.list.findIndex((x) => x.id === id); if (k >= 0) TOAST.list.splice(k, 1); }, 2600);
 }
-async function setLang(code) {
-  if (!STR) STR = (await import('./i18n.js')).STRINGS;
-  const t = STR[code] || STR.en;
-  document.documentElement.lang = code;
-  for (const el of $$('[data-i18n]')) { const v = t[el.dataset.i18n]; if (typeof v === 'string') el.textContent = v; }
-  for (const el of $$('[data-i18n-2]')) {
-    const v = t[el.dataset.i18n2];
-    if (!Array.isArray(v)) continue;
-    const sp = document.createElement('span');
-    sp.textContent = v[1];
-    el.replaceChildren(v[0], document.createElement('br'), sp);
-  }
-  for (const el of $$('[data-i18n-ph]')) { const v = t[el.dataset.i18nPh]; if (v) el.placeholder = v; }
-  if (h1 && t['hero.h1']) setH1(t['hero.h1']);
-  if (langSelect) langSelect.value = code;
-}
-const savedLang = store.get('hivedesk.site.lang');
-if (savedLang && savedLang !== 'en') setLang(savedLang);
-langSelect?.addEventListener('change', () => { setLang(langSelect.value); store.set('hivedesk.site.lang', langSelect.value); });
+
+// ---------- Ctrl K: a Monsoon command palette that jumps to a section ----------
+const fold = (x) => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+let PAL = {
+  q: '', sel: '',
+  dialog: () => $('#palette'),
+  items: () => $$('#palette .command-palette-item').filter((a) => PAL.match(a.getAttribute('href'))),
+  show() {
+    const d = PAL.dialog();
+    if (!d || d.open) return;
+    PAL.q = '';
+    d.showModal();
+    PAL.sel = PAL.items()[0]?.getAttribute('href') || '';
+    requestAnimationFrame(() => $('#palette .command-palette-input')?.focus());
+  },
+  hide() { PAL.dialog()?.close(); },
+  closed() { PAL.q = ''; },
+  backdrop(e) { if (e.target === PAL.dialog()) PAL.hide(); },
+  setQ(v) { PAL.q = v; PAL.sel = PAL.items()[0]?.getAttribute('href') || ''; },
+  match(href) {
+    const q = fold(PAL.q).trim();
+    if (!q) return true;
+    const a = document.querySelector(`#palette .command-palette-item[href="${href}"]`);
+    return !!a && fold(`${a.textContent} ${a.dataset.keywords || ''}`).includes(q);
+  },
+  none() { return PAL.items().length === 0; },
+  key(e) {
+    const list = PAL.items();
+    const k = list.findIndex((a) => a.getAttribute('href') === PAL.sel);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const next = list[(k + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length];
+      if (next) { PAL.sel = next.getAttribute('href'); next.scrollIntoView({ block: 'nearest' }); }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const a = list[k] || list[0];
+      if (a) { PAL.hide(); location.hash = a.getAttribute('href'); }
+    }
+  },
+};
 
 // ---------- release sizes from GitHub, and the "first release today" note ----------
 function fmtSize(b) { return b > 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`; }
@@ -279,15 +372,16 @@ if (tryBox) {
   const bees = $('[data-try-bees]', tryBox);
   const AV = { dev: 'dev', des: 'designer', qa: 'qa', wri: 'writer' };
   const NAME = { dev: 'Dev', des: 'Designer', qa: 'QA', wri: 'Writer' };
+  const P = (k, en) => t(`try.plan.${k}`, en);
   const PLANS = [
-    { re: /game|snake|pong|tetris|jogo|juego|spiel|gioco/i, build: 'A canvas game loop, keyboard and touch controls, a score and a restart button.', checks: 'The game starts, the score counts, restart works.',
-      tasks: [['des', 'Set the look'], ['dev', 'Write the game loop'], ['wri', 'Write how to play'], ['qa', 'Play test the controls']] },
-    { re: /todo|to-do|list|crud|notes|tarefa|lista|notas/i, build: 'A list with add, edit, done and delete, saved in localStorage.', checks: 'Items survive a reload, empty input is refused.',
-      tasks: [['des', 'Style the list'], ['dev', 'Build add, edit and delete'], ['dev', 'Save to localStorage'], ['qa', 'Check the edge cases']] },
-    { re: /readme|docs|documentation|documenta/i, build: 'What it does, how to install it, how to use it, and an example.', checks: 'Every command in the README runs as written.',
-      tasks: [['wri', 'Outline the README'], ['wri', 'Write install and usage'], ['dev', 'Check the commands'], ['qa', 'Read it like a newcomer']] },
-    { re: /.*/, build: 'A hero, the main sections, a contact form and a footer.', checks: 'Images have alt text, the form has labels, it works at 375 px.',
-      tasks: [['des', 'Set the look'], ['dev', 'Build the page'], ['wri', 'Write the copy'], ['qa', 'Check the page']] },
+    { re: /game|snake|pong|tetris|jogo|juego|spiel|gioco/i, build: P('game.build', 'A canvas game loop, keyboard and touch controls, a score and a restart button.'), checks: P('game.checks', 'The game starts, the score counts, restart works.'),
+      tasks: [['des', P('look', 'Set the look')], ['dev', P('game.loop', 'Write the game loop')], ['wri', P('game.howto', 'Write how to play')], ['qa', P('game.test', 'Play test the controls')]] },
+    { re: /todo|to-do|list|crud|notes|tarefa|lista|notas/i, build: P('list.build', 'A list with add, edit, done and delete, saved in localStorage.'), checks: P('list.checks', 'Items survive a reload, empty input is refused.'),
+      tasks: [['des', P('list.style', 'Style the list')], ['dev', P('list.crud', 'Build add, edit and delete')], ['dev', P('list.save', 'Save to localStorage')], ['qa', P('list.edge', 'Check the edge cases')]] },
+    { re: /readme|docs|documentation|documenta/i, build: P('docs.build', 'What it does, how to install it, how to use it, and an example.'), checks: P('docs.checks', 'Every command in the README runs as written.'),
+      tasks: [['wri', P('docs.outline', 'Outline the README')], ['wri', P('docs.write', 'Write install and usage')], ['dev', P('docs.cmds', 'Check the commands')], ['qa', P('docs.read', 'Read it like a newcomer')]] },
+    { re: /.*/, build: P('page.build', 'A hero, the main sections, a contact form and a footer.'), checks: P('page.checks', 'Images have alt text, the form has labels, it works at 375 px.'),
+      tasks: [['des', P('look', 'Set the look')], ['dev', P('page.build2', 'Build the page')], ['wri', P('page.copy', 'Write the copy')], ['qa', P('page.check', 'Check the page')]] },
   ];
   let run = 0;
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
@@ -296,7 +390,7 @@ if (tryBox) {
     if (reduced) return;
     const w = bees.clientWidth, h = bees.clientHeight;
     const img = el('img', 'try-bee');
-    img.src = 'assets/art/bee.svg'; img.alt = ''; img.width = 30; img.height = 23;
+    img.src = `${ROOT}assets/art/bee.svg`; img.alt = ''; img.width = 30; img.height = 23;
     const ltr = Math.random() > 0.5;
     img.style.setProperty('--x0', `${ltr ? -40 : w + 10}px`); img.style.setProperty('--y0', `${20 + Math.random() * (h - 60)}px`);
     img.style.setProperty('--x1', `${ltr ? w + 10 : -40}px`); img.style.setProperty('--y1', `${20 + Math.random() * (h - 60)}px`);
@@ -312,31 +406,31 @@ if (tryBox) {
     brief.replaceChildren(); tasks.replaceChildren(); done.hidden = true;
     const think = el('p', 'thinking');
     const dots = el('span', 'dots'); dots.append(el('i'), el('i'), el('i'));
-    think.append(el('span', null, 'Mel is writing the brief'), dots);
+    think.append(el('span', null, t('try.writing', 'Mel is writing the brief')), dots);
     brief.append(think); bee();
     await wait(900); if (id !== run) return;
     think.remove();
     const goal = q.charAt(0).toUpperCase() + q.slice(1).replace(/[.!?]+$/, '') + '.';
-    for (const [k, v] of [['Goal', goal], ['Build', plan.build], ['Constraints', 'Plain HTML, CSS and JavaScript, works on phones.'], ['Checks', plan.checks]]) {
+    for (const [k, v] of [[t('try.goal', 'Goal'), goal], [t('try.build', 'Build'), plan.build], [t('try.constraints', 'Constraints'), t('try.constraintsV', 'Plain HTML, CSS and JavaScript, works on phones.')], [t('try.checks', 'Checks'), plan.checks]]) {
       const p = el('p', 'bl'); p.append(el('b', null, k), v); brief.append(p);
       await wait(260); if (id !== run) return;
     }
     await wait(300);
     const rows = plan.tasks.map(([who, title]) => {
       const li = el('li');
-      const img = el('img'); img.src = `assets/crew/${AV[who]}.svg`; img.alt = ''; img.width = 28; img.height = 28;
+      const img = el('img'); img.src = `${ROOT}assets/crew/${AV[who]}.svg`; img.alt = ''; img.width = 28; img.height = 28;
       const mid = el('span'); mid.append(el('b', null, title), el('span', 'who', NAME[who]));
-      const st = el('span', 'ts', 'queued'); st.dataset.s = 'queued';
+      const st = el('span', 'ts', t('try.queued', 'queued')); st.dataset.s = 'queued';
       li.append(img, mid, st); tasks.append(li);
       return st;
     });
     for (const st of rows) {
       if (id !== run) return;
-      st.textContent = 'running'; st.dataset.s = 'running'; bee();
+      st.textContent = t('try.running', 'running'); st.dataset.s = 'running'; bee();
       await wait(900); if (id !== run) return;
-      st.textContent = 'done'; st.dataset.s = 'done';
+      st.textContent = t('try.done', 'done'); st.dataset.s = 'done';
     }
-    done.textContent = 'Done in this preview. In the Hive, this writes real files in your folder.';
+    done.textContent = t('try.finished', 'Done in this preview. In the Hive, this writes real files in your folder.');
     done.hidden = false; bee(); bee();
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); go(input.value); });
@@ -344,7 +438,7 @@ if (tryBox) {
   const tio = new IntersectionObserver(([e]) => {
     if (!e.isIntersecting) return;
     tio.disconnect();
-    if (!input.value) { input.value = 'a landing page for my bakery'; go(input.value); }
+    if (!input.value) { input.value = $('[data-try-chips] button', tryBox)?.textContent || 'a landing page for my bakery'; go(input.value); }
   }, { threshold: 0.4 });
   tio.observe(tryBox);
 }

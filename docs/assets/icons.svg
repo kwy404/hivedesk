@@ -41,5 +41,6 @@
 <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/></symbol>
 <symbol id="i-office" viewBox="0 0 24 24"><path d="M3 20.5h18M5 20.5V9l7-5 7 5v11.5"/><path d="M9.5 20.5v-5h5v5M8.5 11h2M13.5 11h2"/></symbol>
 <symbol id="i-wand" viewBox="0 0 24 24"><path d="M4 20L15 9M13 7l4 4"/><path d="M17.5 3v3M19 4.5h-3M20 9.5v2M21 10.5h-2M8 3v2M9 4h-2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
 <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><path d="M10.9 12.7L20 3.6M16.5 7l2.6 2.6M14 9.6l2 2"/></symbol>
 </svg>
