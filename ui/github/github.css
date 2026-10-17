@@ -17,7 +17,7 @@
 .gh-card .row .field-in { flex: 1; min-width: 160px; }
 .gh-banner { border-radius: 10px; padding: 9px 12px; font-size: 12.5px; border: 1px solid var(--line-2); }
 .gh-banner p { margin: 4px 0 0; line-height: 1.5; }
-.gh-banner.bad { background: var(--bad-a); border-color: rgb(229 123 110 / .3); color: #F2B3AA; }
+.gh-banner.bad { background: var(--bad-a); border-color: rgb(229 123 110 / .3); color: var(--bad); }
 .gh-banner.warn { background: var(--warn-a); border-color: rgb(232 180 92 / .3); color: var(--warn); }
 .gh-warn-t { color: var(--warn); }
 .gh-account { display: flex; align-items: center; gap: 12px; }
@@ -45,7 +45,7 @@
 .ghc {
   position: fixed; z-index: 9971; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); display: flex; flex-direction: column;
-  background: #1E1A16; border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--shadow-pop); overflow: hidden;
+  background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: var(--shadow-pop); overflow: hidden;
 }
 .ghc-head { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
 .ghc-head h2 { margin: 0 0 3px; font-size: 15.5px; font-weight: 660; color: var(--text); overflow-wrap: anywhere; }

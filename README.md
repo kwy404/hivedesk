@@ -147,6 +147,21 @@ The default crew is **Mel** (foreman and planner), **Dev**, **Designer**, **QA**
 
 The words work once and expire after 10 minutes. Pairing goes through public MQTT relays that only see a random topic and ciphertext.
 
+## GitHub and the changelog
+
+Open the **GitHub** window from the dock, or just ask: "connect my GitHub", "create a private repository called shop", "commit and push", "open a pull request", "show the changelog" (Portuguese works too). Mel turns the request into a plan and shows a card with exactly what will happen: repository name, visibility, branch, files, commit message and remote URL. Nothing runs until you press Yes, and you can edit the message, the name and the pull request text on the card.
+
+- **Connect** with your `gh` login (hivedesk asks first and shows the account), or paste a fine-grained token. The window links to the token page and lists the permissions to pick: Contents and Pull requests read and write, Commit statuses and Actions read-only, Administration read and write only if you want hivedesk to create repositories. The token is stored only in `~/.hivedesk/github.json`, readable by your user only, and is never sent to the browser. There is no hivedesk server in between.
+- **Work:** list and search your repositories, clone one into an empty workspace, or create a public or private repository from the workspace. After a job, Commit moves the work to a branch named after the job, Mel writes the commit message from the job report, and the pull request body is the job report. The window shows the pull request link and its CI status.
+- **git** runs on your machine inside the workspace, without hooks from the workspace and without password prompts. If git is missing, the window says how to install it.
+- **Changelog:** when a job ends, Mel drafts an entry in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format (Added, Changed, Fixed) with a suggested version bump and its reason. You edit and approve it, then it goes into the workspace `CHANGELOG.md`, the commit and the pull request. The **Activity** tab shows who did what and when, crew and people (Code together guests by name); click an entry to see the file and its diff, filter it, or export it as CSV, JSON or Markdown.
+
+**Sign in with a code (optional).** The device sign in is off unless you register your own OAuth app, because hivedesk has no client id of its own:
+
+1. On GitHub, open Settings, Developer settings, OAuth Apps, New OAuth App. Any name works; for the homepage and callback URL use `http://127.0.0.1` (the device flow does not call it).
+2. In the app settings, tick **Enable Device Flow** and save.
+3. Copy the **Client ID** (not a secret) into `~/.hivedesk/config.json`: `{ "github": { "clientId": "<your client id>" } }`, then restart hivedesk.
+
 ## FAQ
 
 **Do I need an account or an API key?** No. Keys are optional, only to add a cloud provider or an OpenAI compatible endpoint; they stay in a key store on your machine.

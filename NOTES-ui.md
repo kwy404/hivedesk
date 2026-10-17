@@ -79,3 +79,20 @@ Please keep them when you commit.
    `var(--panel*)`, `var(--text*)` and `var(--hd-hover)` for new surfaces.
 4. Strings live under `themes.*` and `extensions.*` in all 10 `i18n/*.json` files; `ui/extensions/strings.js` keeps an English copy as fallback.
 5. Suggestion: a "Themes" entry in Settings (next to the motion and wallpaper choices) that opens the gallery.
+
+## From github and changelog (ui/github/, ui/changelog/)
+
+1. **One import** in `ui/js/main.js`: `import '../github/index.js';` registers the `github` and `changelog` window types, two dock
+   buttons through `addDockItem`, the Ctrl K entries through `globalThis.hivedeskPalette`, and the confirmation card.
+2. **For the voice mode and the palette:**
+   ```js
+   import { runIntent } from '/github/index.js';   // also window.hivedeskGitHub.runIntent
+   const r = await runIntent('faça commit e push');                     // shows the card, runs only on Yes
+   const r = await runIntent(text, { confirm: async (plan) => yes });   // or { yes, edits }
+   // r = { ok, ran, parsed, plan, result? | message? | error? }
+   ```
+   `plan.title` / `plan.titleKey`, `plan.steps[]` (`key`, `text`, `params`, `remote`), `plan.facts[]` and `plan.warnings[]` can be read
+   aloud; `stepLabel(step, plan)` gives the translated sentence. Anything but an explicit yes runs nothing.
+3. **Strings:** 243 keys under `github.*` and `changelog.*` were added to all 10 `i18n/*.json` files (additions only, no existing key changed).
+   `ui/github/strings/<locale>.json` keeps the same tables as a fallback if the shared files are regenerated without them.
+4. The card sits at z-index 9970/9971 so it stays above the guided tour (9860 to 9900) and below tooltips.

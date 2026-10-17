@@ -285,3 +285,34 @@ hooks (about 8 lines), keeping your `openApp` as the fallback:
 3. **Top bar intents.** The plug-in wraps `hive.createJob`: "crie um tema ..." starts the theme flow (returns `{ jobId: null, flow: "theme" }`)
    and "crie uma extensão ..." scaffolds an extension and starts a normal job with `refine: false`. A playbook id skips both.
 4. The plug-in is loaded in `src/index.js` right after the GitHub plug-in, and closed in `close()`.
+
+## From github and changelog (src/github/, src/changelog/)
+
+1. **Loading.** `src/index.js` has one line after the lend plug-in that calls the default export of
+   `src/github/index.js` with `{ bus, hive, scheduler, toolbox, server: { route, command }, config: { dir, home, workspace, demo, version, github } }`.
+   It also registers `src/changelog/`. `opts.github` (tests only) overrides `apiBase`, `webBase`, `fetch`, `ghToken`, `ask`.
+   If you add a general plug-in loader, both folders already export `default register(ctx)`.
+2. **Security, please do this one: block crew writes inside `.git/`.** `Workspace.resolve` accepts `.git/config` and `.git/hooks/*`.
+   A worker could then make git run a command (a filter driver, `core.sshCommand`, an include). The git runner already disables hooks,
+   fsmonitor and credential helpers, but only refusing paths whose first segment is `.git` closes it fully.
+3. **PROTOCOL.md, please add** (all names only grow):
+   * Commands: `github.status`, `github.gh.check`, `github.gh.confirm { pendingId }`, `github.token.set { token }`, `github.device.start`,
+     `github.device.cancel`, `github.disconnect`, `github.repos { query }`, `github.plan { intent, name?, private?, repo?, branch?, message?, jobId? }`,
+     `github.intent { text, jobId?, useModel? }` (returns `{ parsed, plan }`), `github.confirm { planId, edits? }`, `github.cancel { planId }`,
+     `github.prs`, `github.pr.status { repo?, number? }`, `github.report { jobId? }`, `changelog.read`, `changelog.propose { jobId?, useModel? }`,
+     `changelog.proposals`, `changelog.write { proposalId?, markdown?, release?, version? }`, `changelog.preview`, `changelog.dismiss`,
+     `activity.list { who?, kind?, q?, jobId?, limit? }`, `activity.detail { seq }`. REST: `GET /api/activity/export?format=csv|json|md`.
+   * Events: `github.connected { login, source }`, `github.disconnected`, `github.cloned`, `github.repo.created { fullName, private, url }`,
+     `github.branch { branch }`, `github.committed { sha, branch, subject, files }`, `github.pushed { remote, branch, url, repo }`,
+     `github.pr.opened { number, url, title, head, base, repo }`, `github.failed { action, code, message }`,
+     `changelog.proposed { proposalId, entry, markdown, suggestion: { bump, version, current, reason } }`, `changelog.written { path, version, markdown }`.
+     The changelog plug-in also emits `file.changed` for CHANGELOG.md (`workerId: "user"`, `proposedBy: "mel"`).
+   * Live frames: `github.plan { plan, origin: "chat", text }` and `github.device { state, userCode?, verificationUri?, message? }`.
+   * Error codes: `not_connected`, `git_missing`, `git_failed`, `git_identity`, `nothing_to_commit`, `nothing_to_push`, `no_remote`,
+     `github_unauthorized`, `github_forbidden`, `github_invalid`, `not_configured`, `gh_missing`, `gh_not_logged_in`, `expired`, `not_understood`.
+   * No token ever appears in an event, a reply or a live frame (tested in `test/github/flow.test.js`).
+4. **Chat.** When a user (or a `guest:<name>`) message in #general or dm:mel reads like a GitHub request, Mel answers with the plan in plain
+   words and the UI shows the confirmation card. Nothing runs from chat without the Yes on the card.
+5. **Job end.** On `job.done`, Mel drafts a changelog entry (rules only, no model turn) and says so in #general. Engine tests that count
+   Mel's messages after `job.done` should expect one more.
+6. **Activity log.** Guests are named from `workerId: "guest:<name>"` (as `src/collab/` does), `from: "guest:<name>"` or `guest: { name }`.
