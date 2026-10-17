@@ -15,6 +15,7 @@
   "files": [
     "src",
     "ui",
+    "desktop",
     "assets",
     "i18n",
     "PROTOCOL.md",
@@ -33,7 +34,8 @@
     "test": "vitest run",
     "e2e:lend": "node test/lend/e2e-lend.mjs",
     "e2e:ui": "node test/e2e-ui.mjs",
-    "e2e:local": "node test/e2e-local.mjs"
+    "e2e:local": "node test/e2e-local.mjs",
+    "smoke:desktop": "node desktop/scripts/smoke.mjs"
   },
   "engines": {
     "node": ">=18.17"
@@ -57,7 +59,8 @@
     "url": "https://github.com/kwy404/hivedesk/issues"
   },
   "devDependencies": {
-    "vitest": "^3.2.4",
-    "playwright-core": "1.63.0"
+    "monaco-editor": "0.52.2",
+    "playwright-core": "1.63.0",
+    "vitest": "^3.2.4"
   }
 }

@@ -202,6 +202,11 @@ async function main() {
     process.exitCode = report.ok ? 0 : 1;
     return;
   }
+  // >>> desktop hook (desktop/README.md): a second run focuses the open window; packages pick the folder.
+  const desktop = args.open ? await import('../desktop/index.js').catch(() => null) : null;
+  if (desktop && await desktop.focusExisting({ home: cacheHome(), args })) return;
+  if (desktop && !args.dir) args.dir = desktop.packagedDir({ home: cacheHome() }) || undefined;
+  // <<< desktop hook
   let dir = path.resolve(args.dir || process.cwd());
   // The first run wizard: only in a real terminal, and not when flags already decide everything.
   let setup = null;
@@ -245,10 +250,6 @@ async function main() {
   console.log(`  open:   ${app.url}`);
   const openUrl = startUrl(app.server.port, app.server.token, args);
   if (openUrl !== app.url) console.log(`          ${openUrl}`);
-  if (args.open) {
-    const how = args.browser || setup?.app === false ? (openBrowser(openUrl) && 'browser') : openApp(openUrl, cacheHome());
-    if (how) console.log(`  opened ${how === 'app' ? 'in its own app window' : 'in the browser'}`);
-  }
   console.log('  press Ctrl+C to stop');
   let stopping = false;
   const stop = async () => {
@@ -261,6 +262,15 @@ async function main() {
   };
   process.on('SIGINT', stop);
   process.on('SIGTERM', stop);
+  // >>> desktop hook: the native window, or the app window / browser as a fallback.
+  if (args.open && desktop && setup?.app !== false) {
+    await desktop.openDesktop({ app, url: openUrl, args, dir, home: cacheHome(), log, progress, quit: stop,
+      version: VERSION, configLang: setup?.lang, openFallback: (u) => openApp(u, cacheHome()) });
+  } else if (args.open) {
+    const how = args.browser || setup?.app === false ? (openBrowser(openUrl) && 'browser') : openApp(openUrl, cacheHome());
+    if (how) console.log(`  opened ${how === 'app' ? 'in its own app window' : 'in the browser'}`);
+  }
+  // <<< desktop hook
 }
 
 const invoked = process.argv[1] && path.resolve(process.argv[1]);

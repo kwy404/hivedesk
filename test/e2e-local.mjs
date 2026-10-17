@@ -1,6 +1,6 @@
 // End to end check with a real local model (not part of the unit tests).
 // Usage: node test/e2e-local.mjs --model <file.gguf> [--request "..."] [--dir <folder>] [--cpu]
-// Set HIVEDESK_RUNTIME to a node_modules folder that has node-llama-cpp to skip the runtime install.
+// Set HIVEDESK_LLAMA_RUNTIME to a node_modules folder that has node-llama-cpp to skip the runtime install.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';

@@ -25,9 +25,9 @@ function installedEntry(home) {
   }
 }
 
-/** Where the runtime is, without installing: HIVEDESK_RUNTIME (a node_modules folder that has node-llama-cpp) or the cache. */
+/** Where the runtime is, without installing: HIVEDESK_LLAMA_RUNTIME (a node_modules folder that has node-llama-cpp) or the cache. */
 export async function findRuntime(home) {
-  const fromEnv = process.env.HIVEDESK_RUNTIME;
+  const fromEnv = process.env.HIVEDESK_LLAMA_RUNTIME;
   if (fromEnv) {
     const direct = path.join(fromEnv, RUNTIME_PACKAGE, 'package.json');
     if (fs.existsSync(direct)) {
