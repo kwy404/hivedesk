@@ -7,6 +7,8 @@ import { brainInfo } from './brainstate.js';
 import * as wm from './wm.js';
 import * as act from './actions.js';
 import { isMuted, setMuted } from './sound.js';
+import { t, fmtKeys } from './i18n.js';
+import { widgetLabel } from './dock.js';
 
 let scrim = null;
 let box = null;
@@ -38,39 +40,48 @@ function marked(text, marks) {
 function commands(q) {
   const s = S();
   const list = [];
-  const add = (group, label, run, opts = {}) => list.push({ group, label, run, ...opts });
+  const add = (group, label, run, opts = {}) => list.push({ group: t(`pal.group.${group}`), label, run, ...opts });
   const bi = brainInfo();
-  if (q && bi.canRequest && !ui.replay) add('Ask the crew', `Build: ${q}`, () => act.createJob(q), { icon: 'hive', keep: true, kb: ['Enter'] });
-  add('Ask the crew', 'New request', () => document.querySelector('#ask')?.focus(), { icon: 'plan', kb: ['/'] });
-  for (const [type, label, ic] of [['timeline', 'Timeline', 'plan'], ['chat', '#general', 'chat'], ['files', 'Files', 'folder'], ['preview', 'Live preview', 'preview'], ['runlog', 'Run log', 'terminal'], ['playbooks', 'Playbooks', 'playbook'], ['replay', 'Replay', 'replay'], ['approvals', 'Approvals', 'approval'], ['settings', 'Settings', 'model'], ['lend', 'Lend your PC', 'lend']]) {
-    add('Open', label, () => wm.open(type), { icon: ic });
+  if (q && bi.canRequest && !ui.replay) add('ask', t('pal.build', { q }), () => act.createJob(q), { icon: 'hive', keep: true, kb: ['Enter'] });
+  add('ask', t('pal.newRequest'), () => document.querySelector('#ask')?.focus(), { icon: 'plan', kb: ['/'] });
+  if (window.hivedeskVoice?.supported) add('ask', t('pal.voice'), () => window.hivedeskVoice.start(), { icon: 'chat', kb: ['Ctrl', 'Space'] });
+  for (const [type, ic] of [['timeline', 'plan'], ['chat', 'chat'], ['files', 'folder'], ['preview', 'preview'], ['runlog', 'terminal'], ['playbooks', 'playbook'], ['replay', 'replay'], ['approvals', 'approval']]) {
+    add('open', widgetLabel(type), () => wm.open(type), { icon: ic });
   }
-  add('Open', 'Hire a worker', () => import('./widgets/hire.js').then((m) => m.openHire()), { icon: 'hire' });
-  for (const w of s.crew) add('Crew', `Chat with ${w.name}`, () => wm.open('worker', w.id), { av: w, hint: w.role });
+  add('open', t('dock.settings'), () => wm.open('settings'), { icon: 'model' });
+  add('open', t('dock.lend'), () => wm.open('lend'), { icon: 'lend' });
+  add('open', t('dock.hire'), () => import('./widgets/hire.js').then((m) => m.openHire()), { icon: 'hire' });
+  for (const w of s.crew) add('crew', t('pal.chatWith', { name: w.name }), () => wm.open('worker', w.id), { av: w, hint: w.role });
   for (const a of s.approvals || []) {
-    add('Approvals', `Approve: ${a.summary || a.tool}`, () => act.resolveApproval(a.id, true), { icon: 'check' });
-    add('Approvals', `Reject: ${a.summary || a.tool}`, () => act.resolveApproval(a.id, false), { icon: 'x' });
+    add('approvals', t('pal.approve', { what: a.summary || a.tool }), () => act.resolveApproval(a.id, true), { icon: 'check' });
+    add('approvals', t('pal.reject', { what: a.summary || a.tool }), () => act.resolveApproval(a.id, false), { icon: 'x' });
   }
   const fid = wm.focusedId();
   if (fid) {
-    const t = wm.get(fid)?.titleEl.textContent || '';
-    add('Window', `Snap ${t} left`, () => wm.snap(fid, 'left'), { icon: 'arrow', kb: ['Ctrl', 'Alt', 'Left'] });
-    add('Window', `Snap ${t} right`, () => wm.snap(fid, 'right'), { icon: 'arrow', kb: ['Ctrl', 'Alt', 'Right'] });
-    add('Window', `Maximize ${t}`, () => wm.toggleMax(fid), { icon: 'preview', kb: ['Ctrl', 'Alt', 'Up'] });
-    add('Window', `Minimize ${t}`, () => wm.minimize(fid), { icon: 'stop', kb: ['Ctrl', 'Alt', 'Down'] });
-    add('Window', `Close ${t}`, () => wm.close(fid), { icon: 'x', kb: ['Ctrl', 'Alt', 'W'] });
+    const title = wm.get(fid)?.titleEl.textContent || '';
+    add('window', t('pal.snapLeft', { title }), () => wm.snap(fid, 'left'), { icon: 'arrow', kb: ['Ctrl', 'Alt', 'Left'] });
+    add('window', t('pal.snapRight', { title }), () => wm.snap(fid, 'right'), { icon: 'arrow', kb: ['Ctrl', 'Alt', 'Right'] });
+    add('window', t('pal.maximize', { title }), () => wm.toggleMax(fid), { icon: 'preview', kb: ['Ctrl', 'Alt', 'Up'] });
+    add('window', t('pal.minimize', { title }), () => wm.minimize(fid), { icon: 'stop', kb: ['Ctrl', 'Alt', 'Down'] });
+    add('window', t('pal.close', { title }), () => wm.close(fid), { icon: 'x', kb: ['Ctrl', 'Alt', 'W'] });
   }
-  add('Window', 'Next window', () => wm.cycle(1), { icon: 'arrow', kb: ['Ctrl', '`'] });
-  add('Window', 'Arrange windows', () => wm.arrange('grid'), { icon: 'hive' });
-  add('Window', 'Cascade windows', () => wm.arrange('cascade'), { icon: 'hive' });
-  add('Window', 'Minimize all', () => wm.minimizeAll(), { icon: 'stop' });
-  add('Window', 'Reset layout', () => import('./main.js').then((m) => m.resetLayout()), { icon: 'replay' });
-  add('Settings', isMuted() ? 'Turn sounds on' : 'Turn sounds off', () => { setMuted(!isMuted()); act.setSettings({ sound: !isMuted() }); }, { icon: 'chat' });
-  add('Settings', s.settings.approvalMode ? 'Turn approval mode off' : 'Turn approval mode on', () => act.setSettings({ approvalMode: !s.settings.approvalMode }), { icon: 'lock' });
-  if (!bi.canRequest && !ui.replay) add('Settings', bi.key === 'none' ? 'Choose a model' : `Model: ${bi.label}`, () => wm.open('settings'), { icon: 'model' });
-  if (ui.replay) add('Replay', 'Back to live', () => import('./store.js').then((m) => m.exitReplay()), { icon: 'arrow' });
-  for (const p of s.playbooks || []) add('Playbooks', `Use playbook: ${p.title}`, () => import('./widgets/playbooks.js').then((m) => m.usePlaybook(p)), { icon: 'playbook' });
-  for (const path of Object.keys(s.files).sort().slice(0, 400)) add('Files', path, () => wm.open('code', path), { icon: 'code' });
+  add('window', t('pal.next'), () => wm.cycle(1), { icon: 'arrow', kb: ['Ctrl', '`'] });
+  add('window', t('pal.arrange'), () => wm.arrange('grid'), { icon: 'hive' });
+  add('window', t('pal.cascade'), () => wm.arrange('cascade'), { icon: 'hive' });
+  add('window', t('pal.minimizeAll'), () => wm.minimizeAll(), { icon: 'stop' });
+  add('window', t('pal.resetLayout'), () => import('./main.js').then((m) => m.resetLayout()), { icon: 'replay' });
+  add('settings', isMuted() ? t('pal.soundOn') : t('pal.soundOff'), () => { setMuted(!isMuted()); act.setSettings({ sound: !isMuted() }); }, { icon: 'chat' });
+  add('settings', s.settings.approvalMode ? t('pal.approvalOff') : t('pal.approvalOn'), () => act.setSettings({ approvalMode: !s.settings.approvalMode }), { icon: 'lock' });
+  add('settings', t('pal.language'), () => import('./help.js').then((m) => m.openLanguageMenu()), { icon: 'globe' });
+  if (!bi.canRequest && !ui.replay) add('settings', bi.key === 'none' ? t('pal.chooseModel') : t('pal.modelIs', { label: bi.label }), () => wm.open('settings'), { icon: 'model' });
+  add('help', t('pal.tour'), () => import('./tour.js').then((m) => m.startTour()), { icon: 'compass' });
+  add('help', t('pal.about'), () => import('./about.js').then((m) => m.openAbout()), { icon: 'hive' });
+  add('help', t('pal.shortcuts'), () => import('./help.js').then((m) => m.openShortcuts()), { icon: 'plan' });
+  if (ui.replay) add('replay', t('pal.backToLive'), () => import('./store.js').then((m) => m.exitReplay()), { icon: 'arrow' });
+  for (const p of s.playbooks || []) add('playbooks', t('pal.usePlaybook', { title: p.title }), () => import('./widgets/playbooks.js').then((m) => m.usePlaybook(p)), { icon: 'playbook' });
+  for (const path of Object.keys(s.files).sort().slice(0, 400)) add('files', path, () => wm.open('code', path), { icon: 'code' });
+  // Entries from modules outside ui/js (the Code editor, Code together): fn(q) => [{ group, label, run, icon }].
+  for (const fn of globalThis.hivedeskPalette || []) { try { list.push(...(fn(q) || [])); } catch (err) { console.error(err); } }
   return list;
 }
 
@@ -78,12 +89,12 @@ export function openPalette() {
   if (box) { box.querySelector('input').focus(); return; }
   returnTo = document.activeElement;
   scrim = h('div', { class: 'kpal-scrim', on: { pointerdown: () => closePalette() } });
-  const input = h('input', { type: 'text', placeholder: 'Search windows, workers, files and actions', 'aria-label': 'Command', role: 'combobox', 'aria-expanded': 'true', 'aria-controls': 'kpal-list', 'aria-autocomplete': 'list', autocomplete: 'off', spellcheck: false });
-  const listEl = h('div', { class: 'kpal-list', id: 'kpal-list', role: 'listbox', 'aria-label': 'Results' });
-  box = h('div', { class: 'kpal', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Command palette' },
-    h('div', { class: 'kpal-in' }, h('span', { html: '<svg class="ico" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 20 20"/></svg>' }), input, h('kbd', { class: 'kbd', text: 'Esc' })),
+  const input = h('input', { type: 'text', placeholder: t('pal.placeholder'), 'aria-label': t('pal.command'), role: 'combobox', 'aria-expanded': 'true', 'aria-controls': 'kpal-list', 'aria-autocomplete': 'list', autocomplete: 'off', spellcheck: false });
+  const listEl = h('div', { class: 'kpal-list', id: 'kpal-list', role: 'listbox', 'aria-label': t('pal.results') });
+  box = h('div', { class: 'kpal', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('top.palette') },
+    h('div', { class: 'kpal-in' }, h('span', { html: '<svg class="ico" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 20 20"/></svg>' }), input, h('kbd', { class: 'kbd', text: fmtKeys('Esc')[0] })),
     listEl,
-    h('div', { class: 'kpal-foot' }, h('span', {}, h('kbd', { class: 'kbd', text: 'Up' }), ' ', h('kbd', { class: 'kbd', text: 'Down' }), ' to move'), h('span', {}, h('kbd', { class: 'kbd', text: 'Enter' }), ' to run'), h('span', { class: 'grow' }), h('span', { text: 'Workers take turns on one model' })));
+    h('div', { class: 'kpal-foot' }, h('span', {}, h('kbd', { class: 'kbd', text: t('key.up') }), ' ', h('kbd', { class: 'kbd', text: t('key.down') }), ' ', t('pal.toMove')), h('span', {}, h('kbd', { class: 'kbd', text: t('key.enter') }), ' ', t('pal.toRun')), h('span', { class: 'grow' }), h('span', { class: 'kpal-note', text: t('pal.turns') })));
   document.body.append(scrim, box);
   let results = [];
   let sel = 0;
@@ -95,7 +106,7 @@ export function openPalette() {
     results = results.slice(0, 60);
     sel = Math.min(sel, Math.max(0, results.length - 1));
     listEl.replaceChildren();
-    if (!results.length) { listEl.append(h('div', { class: 'kpal-empty', text: 'Nothing matches. Press Esc to close.' })); input.removeAttribute('aria-activedescendant'); return; }
+    if (!results.length) { listEl.append(h('div', { class: 'kpal-empty', text: t('pal.empty') })); input.removeAttribute('aria-activedescendant'); return; }
     let group = null;
     results.forEach(({ c, m }, i) => {
       if (!q && c.group !== group) { group = c.group; listEl.append(h('div', { class: 'kpal-g', role: 'presentation', text: group })); }
@@ -103,7 +114,7 @@ export function openPalette() {
         c.av ? beeAvatar(c.av, 22, { ring: false }) : icon(c.icon || 'arrow'),
         h('span', { class: 'ellipsis', html: marked(c.label, m.marks) }),
         c.hint ? h('span', { class: 'tiny faint ellipsis', text: c.hint }) : null,
-        c.kb ? h('span', { class: 'kb' }, c.kb.map((k) => h('kbd', { class: 'kbd', text: k }))) : (q ? h('span', { class: 'kb tiny faint', text: c.group }) : null));
+        c.kb ? h('span', { class: 'kb' }, fmtKeys(c.kb.join(' ')).map((k) => h('kbd', { class: 'kbd', text: k }))) : (q ? h('span', { class: 'kb tiny faint', text: c.group }) : null));
       it.addEventListener('pointermove', () => { if (sel !== i) { sel = i; paintSel(); } });
       it.addEventListener('click', () => runAt(i));
       listEl.append(it);

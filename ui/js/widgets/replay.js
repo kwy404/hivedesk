@@ -5,7 +5,8 @@ import { register } from '../wm.js';
 import { rev, ui, liveState, enterReplay, exitReplay, onEvent, worker } from '../store.js';
 import { command } from '../net.js';
 import { notify } from '../notify.js';
-import { track, btn } from './util.js';
+import { t } from '../i18n.js';
+import { track, STATUS_LABEL } from './util.js';
 
 const KIND = { 'job.created': 'job', 'job.done': 'done', 'job.failed': 'fail', 'approval.requested': 'approval', 'file.changed': 'file' };
 
@@ -14,31 +15,41 @@ function describe(ev) {
   const d = ev.data || {};
   const name = (id) => worker(id).name;
   switch (ev.type) {
-    case 'job.created': return `New job: ${d.job?.request || ''}`;
-    case 'job.planned': return `Mel planned ${(d.tasks || []).length} tasks`;
-    case 'job.done': return 'Job done';
-    case 'job.failed': return 'Job failed';
-    case 'task.status': return `Task ${d.status}`;
-    case 'file.changed': return `${name(d.workerId)} ${d.op === 'create' ? 'created' : d.op === 'delete' ? 'deleted' : 'edited'} ${d.path}`;
-    case 'chat.message': return `${name(d.from)}: ${String(d.text || '').slice(0, 70)}`;
-    case 'approval.requested': return `${name(d.approval?.workerId)} asked for approval`;
-    case 'approval.resolved': return d.approved ? 'Approved' : 'Rejected';
-    case 'run.finished': return `Ran ${d.command} (exit ${d.exitCode})`;
-    case 'turn.started': return `${name(d.workerId)} took a turn on the model`;
-    case 'turn.ended': return `${name(d.workerId)} finished a turn`;
-    case 'queue.updated': return `Turn queue: ${(d.running || []).length} running, ${(d.waiting || []).length} waiting`;
-    case 'worker.status': return `${name(d.workerId)}: ${String(d.status || '').replace('_', ' ')}`;
-    case 'tool.called': return `${name(d.workerId)} used ${d.tool}${d.args?.path ? ` on ${d.args.path}` : ''}`;
-    case 'tool.result': return d.ok ? 'Tool finished' : 'Tool failed';
-    case 'qa.report': return d.passed ? 'QA passed' : `QA found ${(d.issues || []).length} issues`;
-    case 'playbook.saved': return 'Playbook saved';
-    case 'brain.status': return `Model: ${d.state}`;
+    case 'job.created': return t('replay.ev.jobCreated', { request: d.job?.request || '' });
+    case 'job.planned': return t('replay.ev.jobPlanned', { count: (d.tasks || []).length });
+    case 'job.done': return t('replay.ev.jobDone');
+    case 'job.failed': return t('replay.ev.jobFailed');
+    case 'task.status': return t('replay.ev.taskStatus', { status: String(d.status || '') });
+    case 'file.changed': return t('replay.ev.fileChanged', { name: name(d.workerId), op: String(d.op || ''), path: d.path });
+    case 'chat.message': return t('replay.ev.chat', { name: name(d.from), text: String(d.text || '').slice(0, 70) });
+    case 'approval.requested': return t('replay.ev.approvalRequested', { name: name(d.approval?.workerId) });
+    case 'approval.resolved': return d.approved ? t('replay.ev.approved') : t('replay.ev.rejected');
+    case 'run.finished': return t('replay.ev.runFinished', { command: d.command, code: String(d.exitCode) });
+    case 'turn.started': return t('replay.ev.turnStarted', { name: name(d.workerId) });
+    case 'turn.ended': return t('replay.ev.turnEnded', { name: name(d.workerId) });
+    case 'queue.updated': return t('replay.ev.queue', { running: (d.running || []).length, waiting: (d.waiting || []).length });
+    case 'worker.status': return t('replay.ev.workerStatus', { name: name(d.workerId), status: STATUS_LABEL[d.status] || String(d.status || '').replace('_', ' ') });
+    case 'tool.called': return d.args?.path ? t('replay.ev.toolCalledOn', { name: name(d.workerId), tool: d.tool, path: d.args.path }) : t('replay.ev.toolCalled', { name: name(d.workerId), tool: d.tool });
+    case 'tool.result': return d.ok ? t('replay.ev.toolFinished') : t('replay.ev.toolFailed');
+    case 'qa.report': return d.passed ? t('replay.ev.qaPassed') : t('replay.ev.qaFound', { count: (d.issues || []).length });
+    case 'playbook.saved': return t('replay.ev.playbookSaved');
+    case 'brain.status': return t('replay.ev.brainStatus', { state: d.state });
     default: return ev.type;
   }
 }
 
+/** A button whose label is a translation key that can change later (Play / Pause). */
+function keyBtn(key, onClick, cls, ic, tip) {
+  return h('button', { type: 'button', class: cls, tip, on: { click: onClick } }, ic ? icon(ic, 'ico-sm') : null, h('span', { tx: key }));
+}
+
+function setKey(el, key) {
+  el.dataset.tx = key;
+  el.textContent = t(key);
+}
+
 register('replay', {
-  title: 'Replay',
+  title: () => t('replay.title'),
   glyph: () => icon('replay'),
   size: [620, 250],
   min: [340, 220],
@@ -46,16 +57,16 @@ register('replay', {
   create(ctx) {
     const events = [];
     let loaded = false;
-    const track_ = h('div', { class: 'scrub-track', role: 'presentation' });
+    const track_ = h('div', { class: 'scrub-track', role: 'presentation', tip: 'tip.replay.track' });
     const fill = h('div', { class: 'scrub-fill' });
     const headEl = h('div', { class: 'scrub-head' });
-    const range = h('input', { type: 'range', min: '1', max: '1', value: '1', step: '1', 'aria-label': 'Event number' });
+    const range = h('input', { type: 'range', min: '1', max: '1', value: '1', step: '1', ta: 'replay.rangeAria', tip: 'tip.replay.range', kb: 'Left Right' });
     const info = h('div', { class: 'row small', style: 'margin-top:10px;min-height:22px' });
-    const playBtn = btn('Play', () => togglePlay(), 'btn btn-sm btn-quiet', 'replay');
-    const speed = h('div', { class: 'seg', role: 'group', 'aria-label': 'Speed' }, ...[1, 4, 16].map((x) => h('button', { type: 'button', 'aria-pressed': String(x === 4), dataset: { x }, text: `${x}x`, on: { click: (e) => { spd = x; for (const b of speed.children) b.setAttribute('aria-pressed', String(b === e.currentTarget)); } } })));
-    const liveBtn = btn('Back to live', () => goLive(), 'btn btn-sm btn-primary', 'arrow');
+    const playBtn = keyBtn('replay.play', () => togglePlay(), 'btn btn-sm btn-quiet', 'replay', 'tip.replay.play');
+    const speed = h('div', { class: 'seg', role: 'group', ta: 'replay.speedAria' }, ...[1, 4, 16].map((x) => h('button', { type: 'button', 'aria-pressed': String(x === 4), dataset: { x }, tx: 'replay.speedValue', txArgs: { x }, tip: 'tip.replay.speed', on: { click: (e) => { spd = x; for (const b of speed.children) b.setAttribute('aria-pressed', String(b === e.currentTarget)); } } })));
+    const liveBtn = keyBtn('replay.backToLive', () => goLive(), 'btn btn-sm btn-primary', 'arrow', 'tip.replay.live');
     ctx.body.append(h('div', { class: 'scrub' }, track_, range, info, h('div', { class: 'row', style: 'margin-top:10px;flex-wrap:wrap' }, playBtn, speed, h('span', { class: 'grow' }), liveBtn)),
-      h('div', { class: 'foot tiny muted', text: 'Replay rebuilds the desktop from the event log. Nothing is re-run and no model is used.' }));
+      h('div', { class: 'foot tiny muted', tx: 'replay.foot' }));
     let spd = 4;
     let playing = null;
     let inflight = false;
@@ -68,7 +79,7 @@ register('replay', {
         for (const e of r.events || []) events.push({ seq: e.seq, ts: e.ts, type: e.type, data: e.type === 'file.changed' ? { path: e.data?.path, op: e.data?.op, workerId: e.data?.workerId } : e.data });
         loaded = true;
       } catch (err) {
-        notify({ title: 'Could not load the event log', body: err.message, tone: 'bad' });
+        notify({ title: t('replay.loadFailed'), body: err.message, tone: 'bad' });
       }
       paint();
     }
@@ -103,14 +114,14 @@ register('replay', {
       paintMarkers();
       clear(info);
       const ev = events.find((e) => e.seq === seq) || events[events.length - 1];
-      if (!last) { info.append(h('span', { class: 'muted', text: 'The log is empty. Start a job and come back.' })); return; }
+      if (!last) { info.append(h('span', { class: 'muted', text: t('replay.empty') })); return; }
       info.append(
-        ui.replay ? h('span', { class: 'hchip hchip-honey', text: 'Replaying' }) : h('span', { class: 'hchip hchip-ok', text: 'Live' }),
-        h('span', { class: 'mono tiny muted', text: `#${seq} of ${last}` }),
+        ui.replay ? h('span', { class: 'hchip hchip-honey', text: t('replay.replaying') }) : h('span', { class: 'hchip hchip-ok', text: t('replay.live') }),
+        h('span', { class: 'mono tiny muted', text: t('replay.position', { seq, last }) }),
         ev?.ts ? h('span', { class: 'tiny muted', text: fmtTime(ev.ts) }) : null,
-        h('span', { class: 'grow ellipsis', text: loaded ? describe(ev) : 'Loading the event log...' }));
+        h('span', { class: 'grow ellipsis', text: loaded ? describe(ev) : t('replay.loading') }));
       liveBtn.disabled = !ui.replay;
-      ctx.setSub(ui.replay ? `at #${seq}` : 'live');
+      ctx.setSub(ui.replay ? t('replay.sub.at', { seq }) : t('replay.sub.live'));
     }
 
     async function goTo(seq) {
@@ -127,7 +138,7 @@ register('replay', {
           const r = await command('replay.at', { seq: s }, { timeout: 30000 });
           enterReplay(r.state || r, s);
         } catch (err) {
-          notify({ title: 'Replay failed', body: err.message, tone: 'bad' });
+          notify({ title: t('replay.failed'), body: err.message, tone: 'bad' });
           break;
         }
       }
@@ -135,11 +146,11 @@ register('replay', {
     }
 
     function goLive() { stopPlay(); if (ui.replay) exitReplay(); paint(); }
-    function stopPlay() { clearInterval(playing); playing = null; playBtn.lastChild.textContent = 'Play'; }
+    function stopPlay() { clearInterval(playing); playing = null; setKey(playBtn.lastChild, 'replay.play'); }
     function togglePlay() {
       if (playing) { stopPlay(); return; }
       if (!ui.replay) goTo(1);
-      playBtn.lastChild.textContent = 'Pause';
+      setKey(playBtn.lastChild, 'replay.pause');
       playing = setInterval(() => {
         if (inflight) return;
         const cur = ui.replay ? ui.replay.seq : 1;

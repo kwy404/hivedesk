@@ -11,8 +11,43 @@
   <!-- Monsoon 0.2.0 and Voodoo.js 1.0.0, vendored so the Hive works offline -->
   <link rel="stylesheet" href="/vendor/monsoon-0.2.0.min.css">
   <link rel="stylesheet" href="/css/hive.css">
+  <link rel="stylesheet" href="/css/polish.css">
   <script src="/vendor/voodoo-1.0.0.full.min.js" data-manual data-no-observer data-xray-shortcut="false"></script>
-  <script type="module" src="/js/main.js"></script>
+  <script>
+    // Boot guard: if a module of the desktop fails to load or throws before it starts, show the
+    // reason and a Retry button instead of a spinner that never ends.
+    (function () {
+      var shown = false;
+      function fail(detail) {
+        if (shown || window.__hiveBooted) return;
+        shown = true;
+        var lang = (function () { try { return localStorage.getItem('hivedesk.lang'); } catch (e) { return null; } })() || navigator.language || 'en';
+        var codes = ['en', 'pt-BR', 'es', 'fr', 'de', 'it', 'ja', 'ko', 'zh-CN', 'ru'];
+        var code = codes.filter(function (c) { return c.toLowerCase() === lang.toLowerCase(); })[0] || codes.filter(function (c) { return c.split('-')[0] === lang.split('-')[0].toLowerCase(); })[0] || 'en';
+        var paint = function (m) {
+          var box = document.querySelector('.boot-in');
+          if (!box) return;
+          box.querySelector('h1').textContent = m['boot.failed.title'] || 'The Hive did not open';
+          box.querySelector('p').textContent = m['boot.failed.text'] || 'A part of the desktop failed to load. Check that hivedesk is still running in the terminal, then try again.';
+          var spin = box.querySelector('.spin'); if (spin) spin.remove();
+          var pre = document.createElement('code'); pre.className = 'boot-err'; pre.textContent = String(detail || '').slice(0, 300);
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-primary boot-retry'; b.textContent = m['boot.failed.retry'] || 'Retry';
+          b.onclick = function () { location.reload(); };
+          box.append(pre, b);
+          b.focus();
+        };
+        fetch('/i18n/' + code + '.json').then(function (r) { return r.ok ? r.json() : {}; }).then(paint, function () { paint({}); });
+      }
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && t.tagName === 'SCRIPT') fail('Could not load ' + (t.src || 'a script'));
+        else if (e.message) fail(e.message);
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) { fail(e.reason && e.reason.message || e.reason); });
+      window.__hiveBootFail = fail;
+    })();
+  </script>
+  <script type="module" src="/js/main.js" onerror="window.__hiveBootFail && window.__hiveBootFail('Could not load /js/main.js')"></script>
   <link rel="modulepreload" href="/js/actions.js">
   <link rel="modulepreload" href="/js/bees.js">
   <link rel="modulepreload" href="/js/brainstate.js">
@@ -52,8 +87,8 @@
   <div class="boot" role="status" aria-live="polite">
     <div class="boot-in">
       <img src="/assets/mascot-dark.svg" alt="Mel, the crew foreman bee" width="120" height="120">
-      <h1>Opening the Hive</h1>
-      <p>Connecting to hivedesk on this computer.</p>
+      <h1 data-tx="boot.title">Opening the Hive</h1>
+      <p data-tx="boot.text">Connecting to hivedesk on this computer.</p>
       <span class="spin" aria-hidden="true"></span>
     </div>
   </div>

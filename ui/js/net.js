@@ -1,5 +1,7 @@
 // WebSocket client for the hivedesk engine (PROTOCOL.md sections 1, 2 and 4).
 
+import { t as tr } from './i18n.js';
+
 const listeners = new Map();
 let ws = null;
 let seq = 0;
@@ -46,6 +48,7 @@ function emit(kind, payload) {
 export const connection = { state: 'connecting', attempts: 0, nextRetryAt: 0 };
 
 function setState(s, extra = {}) {
+  if (remote && s !== 'open') return; // the local socket's state does not matter while the host's session is shown
   Object.assign(connection, { state: s }, extra);
   emit('connection', { ...connection });
 }
@@ -63,6 +66,7 @@ export function connect() {
     while (outbox.length) ws.send(outbox.shift());
   });
   ws.addEventListener('message', (e) => {
+    if (remote) return; // Code together: this desktop shows the host's session (useRemote below)
     let frame;
     try { frame = JSON.parse(e.data); } catch { return; }
     if (!frame || typeof frame !== 'object') return;
@@ -72,7 +76,7 @@ export function connect() {
         pending.delete(frame.id);
         clearTimeout(p.timer);
         if (frame.ok) p.resolve(frame.result ?? {});
-        else p.reject(Object.assign(new Error(frame.error?.message || 'Command failed'), { code: frame.error?.code || 'internal' }));
+        else p.reject(Object.assign(new Error(frame.error?.message || tr('net.commandFailed')), { code: frame.error?.code || 'internal' }));
       }
     }
     emit('frame', frame);
@@ -81,7 +85,7 @@ export function connect() {
   ws.addEventListener('close', () => {
     ws = null;
     for (const [id, p] of pending) {
-      if (p.sentWhileOpen) { clearTimeout(p.timer); p.reject(Object.assign(new Error('Lost the connection before the engine answered.'), { code: 'offline' })); pending.delete(id); }
+      if (p.sentWhileOpen) { clearTimeout(p.timer); p.reject(Object.assign(new Error(tr('net.lostBeforeAnswer')), { code: 'offline' })); pending.delete(id); }
     }
     checkAuthThenRetry();
   });
@@ -107,6 +111,7 @@ export function retryNow() { clearTimeout(retryTimer); connect(); }
 
 /** Sends a raw frame (used by the lend window for brain.token, which has no reply). */
 export function sendRaw(frame) {
+  if (remote) { remote.send(frame); return; }
   const s = JSON.stringify(frame);
   if (ws && ws.readyState === 1) ws.send(s);
   else outbox.push(s);
@@ -123,7 +128,7 @@ export function command(type, data = {}, { timeout = 30000 } = {}) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       pending.delete(id);
-      reject(Object.assign(new Error('The engine did not answer in time.'), { code: 'timeout' }));
+      reject(Object.assign(new Error(tr('net.timeout')), { code: 'timeout' }));
     }, timeout);
     const open = ws && ws.readyState === 1;
     pending.set(id, { resolve, reject, timer, sentWhileOpen: open });
@@ -131,4 +136,39 @@ export function command(type, data = {}, { timeout = 30000 } = {}) {
   });
 }
 
-export function isOpen() { return !!ws && ws.readyState === 1; }
+export function isOpen() { return !!remote || (!!ws && ws.readyState === 1); }
+
+/* ---------- Code together hook (ui/lend/collab/client.js) ----------
+   A guest's desktop renders the host's session as if it were local: while a remote transport is
+   set, frames come from it (transport.onFrame) and commands go to it (transport.send) instead of
+   this PC's engine. useRemote(null) returns to the local engine. */
+let remote = null;
+
+function dispatch(frame) {
+  if (!frame || typeof frame !== 'object') return;
+  if (frame.kind === 'reply') {
+    const p = pending.get(frame.id);
+    if (p) {
+      pending.delete(frame.id);
+      clearTimeout(p.timer);
+      if (frame.ok) p.resolve(frame.result ?? {});
+      else p.reject(Object.assign(new Error(frame.error?.message || tr('net.commandFailed')), { code: frame.error?.code || 'internal' }));
+    }
+  }
+  emit('frame', frame);
+  emit(frame.kind, frame);
+}
+
+export function useRemote(transport) {
+  for (const [id, p] of pending) { clearTimeout(p.timer); p.reject(Object.assign(new Error(tr('net.lostBeforeAnswer')), { code: 'offline' })); pending.delete(id); }
+  remote = transport || null;
+  if (remote) {
+    remote.onFrame = (frame) => { if (remote === transport) dispatch(frame); };
+    setState('open');
+    return;
+  }
+  // Back to this PC's engine: a fresh socket brings a fresh hello.
+  if (ws) { try { ws.close(); } catch {} } else connect();
+}
+
+export const isRemote = () => !!remote;

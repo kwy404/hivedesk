@@ -1,6 +1,7 @@
 // Helpers for widgets: reactive re-render on store revisions, batched to one frame.
 
 import { h, icon } from '../dom.js';
+import { L, tmap } from '../i18n.js';
 
 const V = window.V;
 
@@ -13,6 +14,7 @@ export function track(deps, render) {
   const flush = () => { queued = false; try { render(); } catch (err) { console.error(err); } };
   V.effect(() => {
     deps();
+    void L.v; // a language switch re-renders too
     if (!queued) { queued = true; requestAnimationFrame(flush); }
   });
   flush();
@@ -30,15 +32,11 @@ export function btn(label, onClick, cls = 'btn btn-sm btn-quiet', ic) {
   return h('button', { type: 'button', class: cls, on: { click: onClick } }, ic ? icon(ic, 'ico-sm') : null, label);
 }
 
-export const STATUS_LABEL = {
-  idle: 'Idle', queued: 'Waiting for its turn', thinking: 'Thinking', tool: 'Using a tool',
-  waiting_approval: 'Waiting for your approval', error: 'Error', paused: 'Paused',
-};
+/** Worker status words (translated at read time). */
+export const STATUS_LABEL = tmap('status.worker');
 
-export const TASK_LABEL = {
-  pending: 'Pending', ready: 'Ready', running: 'Running', review: 'In review', done: 'Done',
-  failed: 'Failed', blocked: 'Blocked', skipped: 'Skipped',
-};
+/** Task status words (translated at read time). */
+export const TASK_LABEL = tmap('status.task');
 
 export const TASK_CHIP = { running: 'hchip-honey', done: 'hchip-ok', failed: 'hchip-bad', review: 'hchip-info', blocked: 'hchip-warn' };
 

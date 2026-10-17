@@ -9,47 +9,47 @@ import { provide } from './menu.js';
 import { workerMenu, workerStatus } from './widgets/worker.js';
 import { openHire } from './widgets/hire.js';
 import { track } from './widgets/util.js';
+import { t } from './i18n.js';
+import { setTip } from './tooltip.js';
 
+/** Dock widgets: [window type, icon]. Labels and tooltips come from dock.<type> and tip.dock.<type>. */
 export const WIDGETS = [
-  ['timeline', 'Timeline', 'plan'],
-  ['chat', '#general', 'chat'],
-  ['files', 'Files', 'folder'],
-  ['preview', 'Live preview', 'preview'],
-  ['runlog', 'Run log', 'terminal'],
-  ['playbooks', 'Playbooks', 'playbook'],
-  ['replay', 'Replay', 'replay'],
-  ['approvals', 'Approvals', 'approval'],
+  ['timeline', 'plan'],
+  ['chat', 'chat'],
+  ['files', 'folder'],
+  ['preview', 'preview'],
+  ['runlog', 'terminal'],
+  ['playbooks', 'playbook'],
+  ['replay', 'replay'],
+  ['approvals', 'approval'],
 ];
+export const widgetLabel = (type) => t(`dock.${type}`);
 
 const items = new Map(); // window id -> dock button
 let pluginBox = null;
 
 /** Lets another module add its own dock button (the Office adds the mini widget). */
 export function addDockItem({ id, label, sub, content, onClick, menu }) {
-  const b = dockBtn(id, label, content, onClick, sub);
+  const b = dockBtn(id, { raw: label, sub }, content, onClick);
   if (menu) provide(b, menu);
   pluginBox?.append(b);
   return b;
 }
-let tip;
 
-function showTip(btn, text, sub) {
-  tip.replaceChildren(text, sub ? h('span', { class: 'faint', text: sub }) : '');
-  const r = btn.getBoundingClientRect();
-  tip.classList.add('on');
-  const tr = tip.getBoundingClientRect();
-  tip.style.left = `${Math.max(8, Math.min(r.left + r.width / 2 - tr.width / 2, innerWidth - tr.width - 8))}px`;
-  tip.style.top = `${r.top - tr.height - 10}px`;
-}
-const hideTip = () => tip.classList.remove('on');
-
-function dockBtn(id, label, content, onClick, sub) {
-  const b = h('button', { type: 'button', class: 'dk', 'aria-label': label, dataset: { win: id } }, content);
+/**
+ * A dock button. Fixed items pass translation keys (`label`, `tipKey`); crew and code items pass
+ * plain text in `raw` with an optional `sub` line (a string, or a function read when hovered).
+ */
+function dockBtn(id, { label, raw, tipKey, sub }, content, onClick) {
+  const b = h('button', { type: 'button', class: 'dk', dataset: { win: id, tipPos: 'top' } }, content);
+  if (label) { b.dataset.ta = label; b.setAttribute('aria-label', t(label)); b.dataset.tip = tipKey; }
+  else {
+    b.setAttribute('aria-label', raw);
+    const refresh = () => setTip(b, { title: raw, help: typeof sub === 'function' ? sub() : sub });
+    refresh();
+    if (typeof sub === 'function') { b.addEventListener('pointerenter', refresh); b.addEventListener('focus', refresh); }
+  }
   b.addEventListener('click', onClick);
-  b.addEventListener('pointerenter', () => showTip(b, label, typeof sub === 'function' ? sub() : sub));
-  b.addEventListener('pointerleave', hideTip);
-  b.addEventListener('focus', () => showTip(b, label, typeof sub === 'function' ? sub() : sub));
-  b.addEventListener('blur', hideTip);
   items.set(id, b);
   return b;
 }
@@ -63,35 +63,33 @@ export function bounce(id) {
 }
 
 export function init(el, desktopMenu) {
-  tip = h('div', { class: 'dk-tip', role: 'tooltip' });
-  document.body.append(tip);
-  const crewBox = h('div', { class: 'row', style: 'gap:4px' });
+  const crewBox = h('div', { class: 'row dock-crew', style: 'gap:4px', dataset: { tour: 'crew' } });
   const widgetBox = h('div', { class: 'row', style: 'gap:4px' });
   const extraBox = h('div', { class: 'row', style: 'gap:4px' });
   pluginBox = h('div', { class: 'row', style: 'gap:4px' });
-  const shelf = h('nav', { class: 'dock-shelf', 'aria-label': 'Dock' }, crewBox, h('div', { class: 'dock-sep' }), widgetBox, extraBox, pluginBox, h('div', { class: 'dock-sep' }),
-    dockBtn('lend', 'Lend your PC', h('span', { class: 'dk-hex' }, icon('lend')), () => wm.toggleFromDock(ui.lend ? 'lending' : 'lend'), () => (ui.lend ? 'you are lending this PC' : "use a friend's model")),
-    dockBtn('settings', 'Settings', h('span', { class: 'dk-hex' }, icon('model')), () => wm.toggleFromDock('settings')));
+  const shelf = h('nav', { class: 'dock-shelf', ta: 'dock.label' }, crewBox, h('div', { class: 'dock-sep' }), widgetBox, extraBox, pluginBox, h('div', { class: 'dock-sep' }),
+    dockBtn('lend', { label: 'dock.lend', tipKey: 'tip.dock.lend' }, h('span', { class: 'dk-hex' }, icon('lend')), () => wm.toggleFromDock(ui.lend ? 'lending' : 'lend')),
+    dockBtn('settings', { label: 'dock.settings', tipKey: 'tip.dock.settings' }, h('span', { class: 'dk-hex' }, icon('model')), () => wm.toggleFromDock('settings')));
   el.append(shelf);
   wm.setDockTarget((id) => items.get(id === 'lending' ? 'lend' : id) || items.get(id.split(':')[0]) || null);
 
-  for (const [type, label, ic] of WIDGETS) widgetBox.append(dockBtn(type, label, h('span', { class: 'dk-hex' }, icon(ic)), () => wm.toggleFromDock(type)));
+  for (const [type, ic] of WIDGETS) widgetBox.append(dockBtn(type, { label: `dock.${type}`, tipKey: `tip.dock.${type}` }, h('span', { class: 'dk-hex' }, icon(ic)), () => wm.toggleFromDock(type)));
 
   provide(shelf, (target) => {
     const b = target.closest?.('.dk');
     if (!b) return desktopMenu();
     const id = b.dataset.win;
-    if (id === 'hire') return [{ label: 'Hire a worker', icon: 'hire', action: () => openHire() }];
+    if (id === 'hire') return [{ label: t('dock.hire'), icon: 'hire', action: () => openHire() }];
     if (id.startsWith('worker:')) {
       const w = S().crew.find((x) => x.id === id.slice(7));
       return workerMenu(w);
     }
     const win = wm.get(id);
     return [
-      { label: win ? (win.min ? 'Restore' : 'Focus') : 'Open', icon: 'arrow', action: () => (win ? wm.restore(id) : wm.open(...id.split(/:(.*)/s).slice(0, 2))) },
-      { label: 'Minimize', icon: 'stop', disabled: !win || win.min, action: () => wm.minimize(id) },
+      { label: win ? (win.min ? t('win.restore') : t('dock.focus')) : t('dock.open'), icon: 'arrow', action: () => (win ? wm.restore(id) : wm.open(...id.split(/:(.*)/s).slice(0, 2))) },
+      { label: t('win.minimize'), icon: 'stop', disabled: !win || win.min, action: () => wm.minimize(id) },
       { sep: true },
-      { label: 'Close', icon: 'x', disabled: !win, action: () => wm.close(id) },
+      { label: t('win.close'), icon: 'x', disabled: !win, action: () => wm.close(id) },
     ];
   });
 
@@ -101,12 +99,13 @@ export function init(el, desktopMenu) {
     clear(crewBox);
     for (const w of s.crew) {
       const st = workerStatus(w.id);
-      const b = dockBtn(`worker:${w.id}`, w.name, beeAvatar(w, 38, { ring: true, status: st.key }), () => wm.toggleFromDock('worker', w.id), () => `${w.role || ''} · ${workerStatus(w.id).label}`);
+      const b = dockBtn(`worker:${w.id}`, { raw: w.name, sub: () => t('dock.workerSub', { role: w.role || t('dock.worker'), status: workerStatus(w.id).label }) }, beeAvatar(w, 38, { ring: true, status: st.key }), () => wm.toggleFromDock('worker', w.id));
+      b.dataset.status = st.key;
       const unread = ui.unread[`dm:${w.id}`];
       if (unread) b.append(h('span', { class: 'badge-n', text: String(unread) }));
       crewBox.append(b);
     }
-    crewBox.append(dockBtn('hire', 'Hire a worker', h('span', { class: 'dk-hex', style: 'background:transparent;outline:1px dashed rgba(242,233,218,.18);outline-offset:-1px' }, icon('hire')), () => openHire(), 'role prompt, color, tools'));
+    crewBox.append(dockBtn('hire', { label: 'dock.hire', tipKey: 'tip.dock.hire' }, h('span', { class: 'dk-hex', style: 'background:transparent;outline:1px dashed rgba(242,233,218,.18);outline-offset:-1px' }, icon('hire')), () => openHire()));
     paintState();
   });
 
@@ -125,7 +124,7 @@ export function init(el, desktopMenu) {
     clear(extraBox);
     for (const k of [...items.keys()]) if (k.startsWith('code:')) items.delete(k);
     for (const w of wm.list()) {
-      if (w.type === 'code') extraBox.append(dockBtn(w.id, w.arg.split('/').pop(), h('span', { class: 'dk-hex' }, icon('code')), () => wm.toggleFromDock('code', w.arg), w.arg));
+      if (w.type === 'code') extraBox.append(dockBtn(w.id, { raw: w.arg.split('/').pop(), sub: w.arg }, h('span', { class: 'dk-hex' }, icon('code')), () => wm.toggleFromDock('code', w.arg)));
     }
     for (const [id, b] of items) {
       const w = wm.get(id) || (id === 'lend' ? wm.get('lending') : null);

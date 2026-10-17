@@ -4,6 +4,7 @@
 
 import { h, reducedMotion, debounce } from './dom.js';
 import { ui } from './store.js';
+import { t, onLocale } from './i18n.js';
 
 const V = window.V;
 const LAYOUT_KEY = 'hivedesk.layout.v2';
@@ -121,14 +122,14 @@ export function open(type, arg, opts = {}) {
     else focus(id);
     return existing;
   }
-  const title = typeof def.title === 'function' ? def.title(arg) : def.title;
+  const title = titleOf(def, arg);
   const titleEl = h('div', { class: 'win-title', text: title });
   const subEl = h('div', { class: 'win-sub' });
   const glyph = h('div', { class: 'win-glyph' }, def.glyph ? def.glyph(arg) : null);
-  const bMin = h('button', { class: 'mn', type: 'button', html: ctlSvg.min, 'aria-label': 'Minimize', title: 'Minimize' });
-  const bMax = h('button', { class: 'mx', type: 'button', html: ctlSvg.max, 'aria-label': 'Maximize', title: 'Maximize' });
-  const bX = h('button', { class: 'x', type: 'button', html: ctlSvg.x, 'aria-label': 'Close', title: 'Close' });
-  const bar = h('div', { class: 'win-bar', tabindex: '0', role: 'group', 'aria-label': `${title} window. Arrow keys move, Shift and arrows resize.` },
+  const bMin = h('button', { class: 'mn', type: 'button', html: ctlSvg.min, ta: 'win.minimize', tip: 'tip.win.minimize', kb: 'Ctrl Alt Down' });
+  const bMax = h('button', { class: 'mx', type: 'button', html: ctlSvg.max, ta: 'win.maximize', tip: 'tip.win.maximize', kb: 'Ctrl Alt Up' });
+  const bX = h('button', { class: 'x', type: 'button', html: ctlSvg.x, ta: 'win.close', tip: 'tip.win.close', kb: 'Ctrl Alt W' });
+  const bar = h('div', { class: 'win-bar', tabindex: '0', role: 'group', 'aria-label': t('win.barLabel', { title }) },
     glyph, titleEl, subEl, h('div', { class: 'win-sp' }), h('div', { class: 'win-ctl' }, bMin, bMax, bX));
   const body = h('div', { class: 'win-body' });
   const el = h('section', { class: 'win', 'aria-label': title, dataset: { id, type } }, bar, body,
@@ -155,7 +156,7 @@ export function open(type, arg, opts = {}) {
 
   const ctx = {
     win: w, body, el,
-    setTitle: (t) => { titleEl.textContent = t; el.setAttribute('aria-label', t); },
+    setTitle: (text) => { w.fixedTitle = text; paintTitle(w, text); },
     setSub: (t) => { subEl.textContent = t || ''; },
     setGlyph: (node) => { glyph.replaceChildren(node); },
     onDispose: (fn) => w.disposers.push(fn),
@@ -175,10 +176,28 @@ export function open(type, arg, opts = {}) {
 }
 
 function updateMaxBtn(w) {
-  w.bMax.innerHTML = w.snap === 'max' ? ctlSvg.restore : ctlSvg.max;
-  w.bMax.setAttribute('aria-label', w.snap === 'max' ? 'Restore' : 'Maximize');
-  w.bMax.title = w.snap === 'max' ? 'Restore' : 'Maximize';
+  const maxed = w.snap === 'max';
+  w.bMax.innerHTML = maxed ? ctlSvg.restore : ctlSvg.max;
+  w.bMax.dataset.ta = maxed ? 'win.restore' : 'win.maximize';
+  w.bMax.setAttribute('aria-label', t(w.bMax.dataset.ta));
+  w.bMax.dataset.tip = maxed ? 'tip.win.restore' : 'tip.win.maximize';
 }
+
+function titleOf(def, arg) {
+  return typeof def.title === 'function' ? def.title(arg) : def.title;
+}
+
+function paintTitle(w, text) {
+  w.titleEl.textContent = text;
+  w.el.setAttribute('aria-label', text);
+  w.bar.setAttribute('aria-label', t('win.barLabel', { title: text }));
+}
+
+// A language switch renames every window whose title comes from its type.
+onLocale(() => {
+  for (const w of wins.values()) if (w.fixedTitle == null) paintTitle(w, titleOf(w.def, w.arg));
+  changed();
+});
 
 export function focus(id, { quiet = false } = {}) {
   const w = wins.get(id);
@@ -210,7 +229,10 @@ export function close(id) {
     changed();
   };
   if (reducedMotion() || isPhone()) done();
-  else w.el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.97)' }], { duration: 160, easing: 'ease-in' }).onfinish = done;
+  else {
+    w.el.style.pointerEvents = 'none';
+    w.el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(6px) scale(.965)' }], { duration: 170, easing: 'cubic-bezier(.4,0,1,1)' }).onfinish = done;
+  }
 }
 
 function focusTop() {

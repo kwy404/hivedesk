@@ -5,6 +5,7 @@ import { h, icon, fmtTime } from './dom.js';
 import { beeAvatar } from './bees.js';
 import { ui } from './store.js';
 import { play } from './sound.js';
+import { t } from './i18n.js';
 
 const history = [];
 let host;
@@ -13,7 +14,7 @@ let sysAllowed = false;
 try { sysAllowed = localStorage.getItem('hivedesk.sysnotify') === '1'; } catch {}
 
 export function init() {
-  host = h('div', { class: 'ntoasts', role: 'region', 'aria-label': 'Notifications', 'aria-live': 'polite' });
+  host = h('div', { class: 'ntoasts', role: 'region', ta: 'notify.region', 'aria-live': 'polite' });
   document.body.append(host);
 }
 
@@ -53,7 +54,7 @@ export function notify(n) {
   }
   if (n.quiet) return entry;
   const lead = n.worker ? beeAvatar(n.worker, 28, { ring: true }) : h('div', { class: `ntoast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive', 'ico-sm'));
-  const closeBtn = h('button', { class: 'ibtn ibtn-sm', type: 'button', 'aria-label': 'Dismiss', on: { click: () => dismiss() } }, icon('x', 'ico-sm'));
+  const closeBtn = h('button', { class: 'ibtn ibtn-sm', type: 'button', ta: 'notify.dismiss', tip: 'tip.notify.dismiss', on: { click: () => dismiss() } }, icon('x', 'ico-sm'));
   const actions = n.actions?.length ? h('div', { class: 'ntoast-a' }, n.actions.map((a) => h('button', {
     type: 'button', class: `btn btn-xs ${a.primary ? 'btn-primary' : a.danger ? 'btn-bad' : 'btn-quiet'}`, text: a.label,
     on: { click: () => { dismiss(); a.run(); } },
@@ -84,7 +85,7 @@ export function dismissKey(key) {
 
 export function historyView(onAfter) {
   const listEl = h('div', { class: 'noti-list' });
-  if (!history.length) listEl.append(h('div', { class: 'pop-note', style: 'border:0', text: 'Nothing yet. Finished jobs, approvals and problems show up here.' }));
+  if (!history.length) listEl.append(h('div', { class: 'pop-note', style: 'border:0', text: t('notify.empty') }));
   for (const n of history.slice(0, 40)) {
     listEl.append(h('div', { class: 'noti' },
       h('div', { class: `ntoast-i ${n.tone || ''}` }, icon(n.icon || TONE_ICON[n.tone] || 'hive')),

@@ -7,6 +7,7 @@ import * as wm from '../wm.js';
 import { S, rev, ui, worker, extra } from '../store.js';
 import { provide } from '../menu.js';
 import * as act from '../actions.js';
+import { t } from '../i18n.js';
 import { diffView, diffStats } from '../diff.js';
 import { codeHtml } from '../highlight.js';
 import { track, stateBox } from './util.js';
@@ -26,12 +27,12 @@ export function showFile(path, mode = 'diff') {
 export function fileMenu(path) {
   return [
     { header: path },
-    { label: 'Open', icon: 'code', kb: 'Enter', action: () => wm.open('code', path) },
-    { label: 'Diff', icon: 'replay', action: () => showFile(path, 'diff') },
-    { label: 'Reveal in Files', icon: 'folder', action: () => showFile(path, sel.mode) },
-    { label: 'Open in preview', icon: 'preview', disabled: !/\.html?$/i.test(path), action: () => import('./preview.js').then((m) => m.previewPath(path)) },
+    { id: 'open', label: t('files.menu.open'), icon: 'code', kb: 'Enter', action: () => wm.open('code', path) },
+    { id: 'diff', label: t('files.menu.diff'), icon: 'replay', action: () => showFile(path, 'diff') },
+    { id: 'reveal', label: t('files.menu.reveal'), icon: 'folder', action: () => showFile(path, sel.mode) },
+    { id: 'preview', label: t('files.menu.preview'), icon: 'preview', disabled: !/\.html?$/i.test(path), action: () => import('./preview.js').then((m) => m.previewPath(path)) },
     { sep: true },
-    { label: 'Copy path', icon: 'copy', action: () => act.copy(path, 'Path copied') },
+    { id: 'copy', label: t('files.menu.copyPath'), icon: 'copy', action: () => act.copy(path, t('files.pathCopied')) },
   ];
 }
 
@@ -53,13 +54,13 @@ function buildTree(files) {
 const fileIcon = (name) => (/\.(html?|css|js|mjs|ts|json|md)$/i.test(name) ? 'code' : 'writer');
 
 register('files', {
-  title: 'Files',
+  title: () => t('files.title'),
   glyph: () => icon('folder'),
   size: [700, 480],
   min: [360, 240],
   cardH: 520,
   create(ctx) {
-    const tree = h('div', { class: 'pane ftree', role: 'tree', 'aria-label': 'Workspace files' });
+    const tree = h('div', { class: 'pane ftree', role: 'tree', ta: 'files.treeAria' });
     const head = h('div', { class: 'tb' });
     const view = h('div', { class: 'pane' });
     const right = h('div', { style: 'display:flex;flex-direction:column;min-height:0' }, head, view);
@@ -69,7 +70,7 @@ register('files', {
     provide(tree, (target) => {
       const row = target.closest?.('.frow');
       if (row?.dataset.path) return fileMenu(row.dataset.path);
-      if (row?.dataset.dir) return [{ label: collapsed.has(row.dataset.dir) ? 'Expand' : 'Collapse', icon: 'folder', action: () => { toggleDir(row.dataset.dir); } }, { label: 'Copy path', icon: 'copy', action: () => act.copy(row.dataset.dir, 'Path copied') }];
+      if (row?.dataset.dir) return [{ label: collapsed.has(row.dataset.dir) ? t('files.menu.expand') : t('files.menu.collapse'), icon: 'folder', action: () => { toggleDir(row.dataset.dir); } }, { label: t('files.menu.copyPath'), icon: 'copy', action: () => act.copy(row.dataset.dir, t('files.pathCopied')) }];
       return null;
     });
     provide(view, () => sel.path && S().files[sel.path] ? fileMenu(sel.path) : null);
@@ -99,21 +100,21 @@ register('files', {
       const focusedPath = document.activeElement?.closest?.('.frow')?.dataset.path;
       clear(tree);
       const paths = Object.keys(files);
-      ctx.setSub(paths.length ? `${paths.length} file${paths.length > 1 ? 's' : ''}` : '');
+      ctx.setSub(paths.length ? t('files.count', { count: paths.length }) : '');
       if (!paths.length) {
-        tree.append(h('div', { class: 'state', style: 'min-height:120px' }, h('p', { class: 'small', text: 'The workspace is empty. Files the crew writes show up here.' })));
+        tree.append(h('div', { class: 'state', style: 'min-height:120px' }, h('p', { class: 'small', text: t('files.treeEmpty') })));
         return;
       }
       const walk = (node, lvl) => {
         for (const d of [...node.dirs.values()].sort((a, b) => a.name.localeCompare(b.name))) {
           const isC = collapsed.has(d.key);
-          tree.append(h('div', { class: 'frow', role: 'treeitem', tabindex: '-1', 'aria-expanded': String(!isC), style: `--lvl:${lvl}`, dataset: { dir: d.key } },
+          tree.append(h('div', { class: 'frow', role: 'treeitem', tabindex: '-1', 'aria-expanded': String(!isC), style: `--lvl:${lvl}`, dataset: { dir: d.key }, 'data-tip-title': d.key, 'data-tip-help': isC ? t('files.row.dirExpand') : t('files.row.dirCollapse') },
             h('span', { html: `<svg class="ico" viewBox="0 0 24 24" style="width:10px;height:10px;transform:rotate(${isC ? 0 : 90}deg)"><path d="M9 6l6 6-6 6"/></svg>` }), icon('folder'), h('span', { class: 'nm', text: d.name })));
           if (!isC) walk(d, lvl + 1);
         }
         for (const f of node.files) {
           const fresh = f.lastSeq > lastSeqSeen && lastSeqSeen > 0;
-          tree.append(h('div', { class: `frow${fresh ? ' fresh' : ''}`, role: 'treeitem', tabindex: '-1', 'aria-selected': String(f.path === sel.path), style: `--lvl:${lvl}`, dataset: { path: f.path }, title: `${f.path} · ${fmtBytes(f.bytes)}` },
+          tree.append(h('div', { class: `frow${fresh ? ' fresh' : ''}`, role: 'treeitem', tabindex: '-1', 'aria-selected': String(f.path === sel.path), style: `--lvl:${lvl}`, dataset: { path: f.path }, 'data-tip-title': f.path, 'data-tip-help': t('files.row.fileHelp', { size: fmtBytes(f.bytes) }), kb: 'Enter' },
             h('span', { style: 'width:10px' }), icon(fileIcon(f.name)), h('span', { class: 'nm', text: f.name }), h('span', { class: 'op', dataset: { op: f.op || '' } })));
         }
       };
@@ -135,7 +136,7 @@ register('files', {
       clear(head); clear(view);
       if (!path) {
         const n = Object.keys(s.files).length;
-        view.append(stateBox({ icon: 'folder', title: n ? 'Pick a file' : 'No files yet', text: n ? 'Select a file to see what changed. Every write by the crew is shown as a diff.' : 'When a worker writes a file you will see the diff here, line by line.' }));
+        view.append(stateBox({ icon: 'folder', title: n ? t('files.pick.title') : t('files.none.title'), text: n ? t('files.pick.text') : t('files.none.text') }));
         return;
       }
       const f = s.files[path];
@@ -143,19 +144,19 @@ register('files', {
       const last = diffs[diffs.length - 1];
       const by = last?.workerId || f.workerId;
       const st = last ? diffStats(last.diff) : null;
-      const seg = h('div', { class: 'seg', role: 'tablist', 'aria-label': 'View' },
-        h('button', { type: 'button', role: 'tab', 'aria-selected': String(sel.mode === 'diff'), on: { click: () => { sel.mode = 'diff'; } } }, 'Diff'),
-        h('button', { type: 'button', role: 'tab', 'aria-selected': String(sel.mode === 'code'), on: { click: () => { sel.mode = 'code'; } } }, 'Code'));
+      const seg = h('div', { class: 'seg', role: 'tablist', 'aria-label': t('files.view.aria') },
+        h('button', { type: 'button', role: 'tab', 'aria-selected': String(sel.mode === 'diff'), tip: 'tip.files.diff', on: { click: () => { sel.mode = 'diff'; } } }, t('files.view.diff')),
+        h('button', { type: 'button', role: 'tab', 'aria-selected': String(sel.mode === 'code'), tip: 'tip.files.code', on: { click: () => { sel.mode = 'code'; } } }, t('files.view.code')));
       head.append(
         h('div', { class: 'grow' }, h('div', { class: 'crumbs ellipsis' }, ...path.split('/').flatMap((p, i, arr) => (i < arr.length - 1 ? [p, h('span', { class: 'faint', text: '/' })] : [h('b', { text: p, style: 'color:var(--text);font-weight:600' })]))),
           h('div', { class: 'tiny muted row', style: 'gap:6px;margin-top:2px' }, by ? beeAvatar(worker(by), 16, { ring: false }) : null,
-            h('span', { text: [by ? worker(by).name : null, last ? (last.op === 'create' ? 'created' : 'edited') : null, last ? ago(last.ts) : null, fmtBytes(f.bytes)].filter(Boolean).join(' · ') }),
+            h('span', { text: [by ? worker(by).name : null, last ? (last.op === 'create' ? t('files.op.created') : t('files.op.edited')) : null, last ? ago(last.ts) : null, fmtBytes(f.bytes)].filter(Boolean).join(' · ') }),
             st ? h('span', { style: 'color:var(--ok)', text: `+${st.add}` }) : null, st ? h('span', { style: 'color:var(--bad)', text: `-${st.del}` }) : null)),
         seg,
-        h('button', { class: 'ibtn', type: 'button', title: 'Open in Code viewer', 'aria-label': 'Open in Code viewer', on: { click: () => wm.open('code', path) } }, icon('code')));
+        h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.openCode'), tip: 'tip.files.openCode', on: { click: () => wm.open('code', path) } }, icon('code')));
       if (sel.mode === 'diff') {
         if (last) view.append(diffView(last.diff, last.op === 'create' && !last.diff ? f.content : null));
-        else view.append(stateBox({ icon: 'replay', title: 'No diff in this session', text: 'This file was written before you opened the page. Switch to Code to read it.' }));
+        else view.append(stateBox({ icon: 'replay', title: t('files.noDiff.title'), text: t('files.noDiff.text') }));
       } else {
         const holder = h('div', { class: 'code' }, h('div', { class: 'skel', style: 'margin:10px 14px;width:60%' }));
         view.append(holder);
@@ -163,7 +164,7 @@ register('files', {
           const content = await act.readFile(path);
           holder.innerHTML = codeHtml(content, path);
         } catch (err) {
-          clear(holder).append(h('div', { class: 'honest bad' }, icon('x'), h('div', { text: `Could not read the file: ${err.message}` })));
+          clear(holder).append(h('div', { class: 'honest bad' }, icon('x'), h('div', { text: t('files.readError', { error: err.message }) })));
         }
       }
     }
@@ -183,7 +184,7 @@ register('files', {
 });
 
 register('code', {
-  title: (path) => (path ? path.split('/').pop() : 'Code'),
+  title: (path) => (path ? path.split('/').pop() : t('files.code.title')),
   glyph: () => icon('code'),
   size: [620, 520],
   min: [320, 220],
@@ -193,16 +194,16 @@ register('code', {
     const head = h('div', { class: 'tb' });
     const pane = h('div', { class: 'pane' });
     ctx.body.append(head, pane);
-    provide(pane, () => (path ? [...fileMenu(path).filter((x) => x.label !== 'Open')] : null));
+    provide(pane, () => (path ? fileMenu(path).filter((x) => x.id !== 'open') : null));
     let lastSeq = -1;
     track(() => [rev.files, ui.replay], async () => {
       const f = S().files[path];
       ctx.setSub(path);
       clear(head);
       head.append(h('div', { class: 'grow crumbs ellipsis', text: path }), f ? h('span', { class: 'hchip hchip-mono', text: fmtBytes(f.bytes) }) : null,
-        h('button', { class: 'ibtn', type: 'button', title: 'Copy path', 'aria-label': 'Copy path', on: { click: () => act.copy(path, 'Path copied') } }, icon('copy')),
-        h('button', { class: 'ibtn', type: 'button', title: 'Reveal in Files', 'aria-label': 'Reveal in Files', on: { click: () => showFile(path) } }, icon('folder')));
-      if (!f) { clear(pane).append(stateBox({ icon: 'code', title: 'File not in the workspace', text: 'It was deleted, or it does not exist at this point of the replay.' })); lastSeq = -1; return; }
+        h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.menu.copyPath'), tip: 'tip.files.copyPath', on: { click: () => act.copy(path, t('files.pathCopied')) } }, icon('copy')),
+        h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.menu.reveal'), tip: 'tip.files.reveal', on: { click: () => showFile(path) } }, icon('folder')));
+      if (!f) { clear(pane).append(stateBox({ icon: 'code', title: t('files.missing.title'), text: t('files.missing.text') })); lastSeq = -1; return; }
       if (f.lastSeq === lastSeq) return;
       lastSeq = f.lastSeq;
       try {
@@ -211,7 +212,7 @@ register('code', {
         clear(pane).append(h('div', { class: 'code', html: codeHtml(content, path) }));
         pane.scrollTop = top;
       } catch (err) {
-        clear(pane).append(h('div', { class: 'honest bad' }, icon('x'), h('div', { text: `Could not read the file: ${err.message}` })));
+        clear(pane).append(h('div', { class: 'honest bad' }, icon('x'), h('div', { text: t('files.readError', { error: err.message }) })));
       }
     });
   },

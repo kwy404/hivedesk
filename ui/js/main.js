@@ -23,7 +23,11 @@ import './widgets/replay.js';
 import './widgets/approvals.js';
 import './widgets/settings.js';
 import './widgets/lend.js';
+import '/editor/register.js'; // the Code editor and Code together windows (ui/editor/, ui/lend/collab/)
 import './widgets/brief.js';
+import './widgets/memory.js';
+import './widgets/providers.js';
+import './widgets/prompts.js';
 import { approvalTitle } from './widgets/approvals.js';
 import { beeAvatar } from './bees.js';
 import { openHire } from './widgets/hire.js';
@@ -34,6 +38,7 @@ import * as i18n from './i18n.js';
 import { t } from './i18n.js';
 import * as tooltip from './tooltip.js';
 import { celebrate } from './fx.js';
+import '../github/index.js'; // GitHub and Changelog windows, dock buttons, Ctrl K entries, runIntent
 
 const V = window.V;
 const root = document.documentElement;
@@ -83,6 +88,10 @@ function desktopMenu() {
       { label: t('menu.workerChat'), icon: 'chat', items: () => S().crew.map((w) => ({ label: w.name, iconEl: dockAv(w), action: () => wm.open('worker', w.id) })) },
       { label: t('dock.settings'), icon: 'model', action: open('settings') },
       { label: t('dock.lend'), icon: 'lend', action: open('lend') },
+      { label: 'Brief and report', icon: 'plan', action: open('brief') },
+      { label: 'Memory', icon: 'playbook', action: open('memory') },
+      { label: 'Providers', icon: 'key', action: open('providers') },
+      { label: 'Prompts (debug)', icon: 'code', action: open('prompts') },
     ] },
     { label: t('menu.arrange'), icon: 'plan', items: [
       { label: t('menu.tidy'), icon: 'hive', action: () => wm.arrange('grid') },
@@ -211,6 +220,9 @@ net.on('hello', (f) => {
     wm.applyLayout(saved?.wins?.length ? saved : defaultLayout());
     if (wm.isPhone()) requestAnimationFrame(() => { desk.scrollTop = 0; });
     if (/(?:^|[#&?])w=[A-Za-z-]+/.test(location.hash + location.search)) wm.open('lend');
+    // the OS locale from the engine is the fallback when the browser languages did not match
+    if (f.locale) i18n.adoptOsLocale(f.locale);
+    if (!f.lend && !/[?&]notour/.test(location.search)) import('./tour.js').then((m) => m.maybeAutoStart());
   }
   if (f.lend) wm.open('lending', undefined, { snap: 'max' });
   // Diffs, tool calls and QA reports from before this page opened come from the log.
@@ -303,6 +315,7 @@ const empty = h('div', { class: 'desk-empty', hidden: true }, h('div', {}, h('im
 desk.prepend(empty);
 wm.onChange(() => { empty.hidden = wm.list().some((w) => !w.min); });
 net.connect();
+window.__hiveBooted = true;
 
 // Keep the desk label up to date for screen readers.
 V.effect(() => { void rev.crew; void i18n.L.v; desk.setAttribute('aria-label', t('desk.label')); });

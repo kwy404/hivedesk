@@ -204,3 +204,43 @@ tr.is-refused .lend-pill, tr.is-failed .lend-pill, tr.is-rejected .lend-pill { c
   .lend-dot.is-on { animation: lend-pulse 2s ease-in-out infinite; }
 }
 @keyframes lend-pulse { 50% { box-shadow: 0 0 0 7px rgba(127, 201, 143, 0.06); } }
+
+/* Standalone page only: the language picker and the tooltip (the desktop styles its own). */
+.lend-lang { position: absolute; top: 12px; right: 16px; z-index: 2; }
+.lend-lang-select {
+  appearance: auto;
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--hd-text, #eee6d8);
+  background: var(--hd-panel-2, #23201c);
+  border: 1px solid var(--hd-line, #34302a);
+  border-radius: 8px;
+  padding: 5px 8px;
+  max-width: 46vw;
+}
+.lend-lang-select:focus-visible { outline: 2px solid var(--hd-accent, #f2a93b); outline-offset: 2px; }
+body.lend-page .lend-root { padding-top: 56px; }
+
+body.lend-page .hd-tip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--hd-line, #34302a);
+  background: var(--hd-panel-2, #23201c);
+  color: var(--hd-text, #eee6d8);
+  font: 12px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+body.lend-page .hd-tip[hidden] { display: none; }
+body.lend-page .hd-tip.on { opacity: 1; transform: none; }
+body.lend-page .hd-tip-t { font-weight: 600; }
+body.lend-page .hd-tip-h { color: var(--hd-muted, #a59c8e); margin-top: 2px; }
+body.lend-page .hd-tip-k { display: flex; gap: 4px; margin-top: 4px; }
+body.lend-page .hd-tip-k[hidden] { display: none; }
+body.lend-page .hd-tip .kbd { font: 11px/1.4 ui-monospace, monospace; padding: 0 5px; border: 1px solid var(--hd-line, #34302a); border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { body.lend-page .hd-tip { transition: none; transform: none; } }

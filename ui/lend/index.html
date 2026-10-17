@@ -11,17 +11,11 @@
 </head>
 <body class="lend-page">
   <main id="lend-root" class="lend-root" aria-live="polite">
-    <p class="lend-status">Connecting to the local hivedesk...</p>
+    <p class="lend-status" data-tx="lend.page.connecting">Connecting to the local hivedesk...</p>
   </main>
   <script type="module">
-    import { boot } from '/lend/index.js';
-    boot().catch((err) => {
-      document.getElementById('lend-root').innerHTML = '';
-      const p = document.createElement('p');
-      p.className = 'lend-error';
-      p.textContent = `Could not reach the local hivedesk: ${err.message}`;
-      document.getElementById('lend-root').append(p);
-    });
+    import { boot, bootFailed } from '/lend/index.js';
+    boot().catch((err) => bootFailed(err));
   </script>
 </body>
 </html>

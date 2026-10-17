@@ -795,6 +795,7 @@
   "preview.empty.text": "When the crew writes an index.html in the workspace, the page runs here and reloads as files change.",
   "preview.empty.title": "Nothing to preview yet",
   "preview.frameTitle": "Live preview of the workspace",
+  "preview.loading": "Loading the page",
   "preview.menu.device": "Device",
   "preview.menu.reload": "Reload",
   "preview.newTab": "Open in a new tab",

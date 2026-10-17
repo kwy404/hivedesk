@@ -3,6 +3,8 @@
 // Big data (chat, files) stays in a plain object; Voodoo.js reactive revision counters
 // tell the widgets which slice changed, so only that part of the screen re-renders.
 
+import { t } from './i18n.js';
+
 const V = window.V;
 
 export const rev = V.reactive({
@@ -93,9 +95,9 @@ export function applyEvent(ev) {
 function workerOf(s, id) { return s.crew.find((w) => w.id === id); }
 export const worker = (id) => workerOf(S(), id) || fallbackWorker(id);
 function fallbackWorker(id) {
-  if (id === 'user') return { id: 'user', name: 'You', role: 'you', color: '#8C8172' };
+  if (id === 'user') return { id: 'user', name: t('who.you'), role: t('who.youRole'), color: '#8C8172' };
   if (id === 'system') return { id: 'system', name: 'hivedesk', role: 'system', color: '#8C8172' };
-  return { id, name: id || 'Unknown', role: '', color: '#8C8172' };
+  return { id, name: id || t('who.unknown'), role: '', color: '#8C8172' };
 }
 
 /**

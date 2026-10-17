@@ -2,9 +2,11 @@
 
 import { S, extra, ui } from './store.js';
 import { fmtBytes } from './dom.js';
+import { t } from './i18n.js';
 
-const BACKEND = { local: 'Local', ollama: 'Ollama', lmstudio: 'LM Studio', openai: 'Endpoint', fake: 'Demo script', remote: 'Friend' };
-export const backendLabel = (b) => BACKEND[b] || b || 'None';
+const BACKEND = { ollama: 'Ollama', lmstudio: 'LM Studio' };
+const BACKEND_KEY = { local: 'brain.backend.local', openai: 'brain.backend.openai', fake: 'brain.backend.fake', remote: 'brain.backend.remote' };
+export const backendLabel = (b) => BACKEND[b] || (BACKEND_KEY[b] ? t(BACKEND_KEY[b]) : b || t('brain.backend.none'));
 
 export function shortModel(m) {
   if (!m) return '';
@@ -24,24 +26,24 @@ export function brainInfo() {
   const dl = extra.download;
   const rt = extra.runtime;
   const model = shortModel(b.model || dl?.model);
-  if (ui.connection === 'unauthorized') return { key: 'auth', dot: 'error', label: 'Needs the secret link', detail: 'Open the address printed in the terminal.', canRequest: false, progress: null };
-  if (ui.connection !== 'open') return { key: 'offline', dot: 'offline', label: 'Not connected', detail: 'Reconnecting to hivedesk on this computer.', canRequest: false, progress: null };
-  if (!ui.hello) return { key: 'hello', dot: 'loading', label: 'Connecting', detail: '', canRequest: false, progress: null, indeterminate: true };
-  if (rt?.state === 'installing') return { key: 'runtime', dot: 'loading', label: 'Installing the local runtime', detail: rt.line || 'node-llama-cpp, one time only', canRequest: false, progress: null, indeterminate: true };
-  if (rt?.state === 'failed' && b.state !== 'ready') return { key: 'runtime-failed', dot: 'error', label: 'Runtime install failed', detail: rt.hint || rt.message || '', canRequest: false, progress: null };
+  if (ui.connection === 'unauthorized') return { key: 'auth', dot: 'error', label: t('brain.auth.label'), detail: t('brain.auth.detail'), canRequest: false, progress: null };
+  if (ui.connection !== 'open') return { key: 'offline', dot: 'offline', label: t('brain.offline.label'), detail: t('brain.offline.detail'), canRequest: false, progress: null };
+  if (!ui.hello) return { key: 'hello', dot: 'loading', label: t('brain.hello.label'), detail: '', canRequest: false, progress: null, indeterminate: true };
+  if (rt?.state === 'installing') return { key: 'runtime', dot: 'loading', label: t('brain.runtime.label'), detail: rt.line || t('brain.runtime.detail'), canRequest: false, progress: null, indeterminate: true };
+  if (rt?.state === 'failed' && b.state !== 'ready') return { key: 'runtime-failed', dot: 'error', label: t('brain.runtimeFailed.label'), detail: rt.hint || rt.message || '', canRequest: false, progress: null };
   switch (b.state) {
     case 'ready': {
-      const label = s.demo || b.backend === 'fake' ? 'Demo script' : [backendLabel(b.backend), model].filter(Boolean).join(' · ');
+      const label = s.demo || b.backend === 'fake' ? t('brain.backend.fake') : [backendLabel(b.backend), model].filter(Boolean).join(' · ');
       return { key: 'ready', dot: 'ready', label, detail: b.detail || '', canRequest: true, progress: null };
     }
-    case 'loading': return { key: 'loading', dot: 'loading', label: 'Model loading', detail: model ? `${model} is loading into memory. The crew starts when it is ready.` : 'The crew starts when it is ready.', canRequest: false, progress: null, indeterminate: true };
+    case 'loading': return { key: 'loading', dot: 'loading', label: t('brain.loading.label'), detail: model ? t('brain.loading.detailModel', { model }) : t('brain.loading.detail'), canRequest: false, progress: null, indeterminate: true };
     case 'downloading': {
       const total = dl?.total || dl?.bytes || 0;
       const p = total ? Math.min(1, (dl?.received || 0) / total) : null;
-      return { key: 'downloading', dot: 'downloading', label: p != null ? `Downloading model ${Math.floor(p * 100)}%` : 'Downloading model', detail: `${model || 'Model'}${total ? `, ${fmtBytes(total)}` : ''}`, canRequest: false, progress: p, indeterminate: p == null };
+      return { key: 'downloading', dot: 'downloading', label: p != null ? t('brain.downloading.labelPct', { pct: Math.floor(p * 100) }) : t('brain.downloading.label'), detail: total ? t('brain.downloading.detailSize', { model: model || t('brain.model'), size: fmtBytes(total) }) : model || t('brain.model'), canRequest: false, progress: p, indeterminate: p == null };
     }
-    case 'needs_download': return { key: 'needs_download', dot: 'needs_download', label: 'Model download needed', detail: dl ? `${shortModel(dl.model)}, ${fmtBytes(dl.bytes)} from ${dl.source || 'huggingface.co'}` : 'Open Settings to download a model.', canRequest: false, progress: null };
-    case 'error': return { key: 'error', dot: 'error', label: 'Model error', detail: b.detail || 'Open Settings for details.', canRequest: false, progress: null };
-    default: return { key: 'none', dot: 'none', label: 'No model yet: choose one', detail: 'Without a model nothing is generated. Pick one in Settings.', canRequest: false, progress: null };
+    case 'needs_download': return { key: 'needs_download', dot: 'needs_download', label: t('brain.needsDownload.label'), detail: dl ? t('brain.needsDownload.detail', { model: shortModel(dl.model), size: fmtBytes(dl.bytes), source: dl.source || 'huggingface.co' }) : t('brain.needsDownload.detailNone'), canRequest: false, progress: null };
+    case 'error': return { key: 'error', dot: 'error', label: t('brain.error.label'), detail: b.detail || t('brain.error.detail'), canRequest: false, progress: null };
+    default: return { key: 'none', dot: 'none', label: t('brain.none.label'), detail: t('brain.none.detail'), canRequest: false, progress: null };
   }
 }

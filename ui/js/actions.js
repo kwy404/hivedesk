@@ -6,16 +6,17 @@ import { command } from './net.js';
 import { notify } from './notify.js';
 import { S, worker, extra } from './store.js';
 import { copyText } from './dom.js';
+import { t } from './i18n.js';
 
-async function run(type, data, { ok, fail = 'That did not work', quietOk = true } = {}) {
+async function run(type, data, { ok, fail = 'actions.fail.generic', quietOk = true } = {}) {
   try {
     const r = await command(type, data);
-    if (ok && !quietOk) notify({ title: ok, tone: 'ok' });
+    if (ok && !quietOk) notify({ title: t(ok), tone: 'ok' });
     return r;
   } catch (err) {
     notify({
-      title: fail,
-      body: err.code === 'offline' || err.code === 'timeout' ? `${err.message} Check that hivedesk is still running.` : err.message,
+      title: t(fail),
+      body: err.code === 'offline' || err.code === 'timeout' ? t('actions.checkRunning', { message: err.message }) : err.message,
       tone: 'bad', sound: 'error',
     });
     return null;
@@ -23,28 +24,28 @@ async function run(type, data, { ok, fail = 'That did not work', quietOk = true 
 }
 
 export const createJob = (request, { playbookId, approval } = {}) =>
-  run('job.create', { request, ...(playbookId ? { playbookId } : {}), ...(approval != null ? { approval } : {}) }, { fail: 'Could not start the job' });
-export const cancelJob = (jobId) => run('job.cancel', { jobId }, { fail: 'Could not cancel the job' });
-export const sendChat = (channel, text) => run('chat.send', { channel, text }, { fail: 'Message not sent' });
-export const resolveApproval = (approvalId, approved, note) => run('approval.resolve', { approvalId, approved, ...(note ? { note } : {}) }, { fail: 'Could not answer the approval' });
-export const hire = (data) => run('crew.hire', data, { fail: 'Could not hire this worker' });
-export const updateWorker = (workerId, fields) => run('crew.update', { workerId, ...fields }, { fail: 'Could not update the worker' });
-export const fire = (workerId) => run('crew.fire', { workerId }, { fail: 'Could not fire the worker' });
-export const setSettings = (data) => run('settings.set', data, { fail: 'Could not save the setting' });
-export const selectBrain = (choice) => run('brain.select', choice, { fail: 'Could not switch the model' });
-export const startDownload = (model) => run('brain.download', model ? { model } : {}, { fail: 'Could not start the download' });
-export const deletePlaybook = (playbookId) => run('playbook.delete', { playbookId }, { fail: 'Could not delete the playbook' });
+  run('job.create', { request, ...(playbookId ? { playbookId } : {}), ...(approval != null ? { approval } : {}) }, { fail: 'actions.fail.createJob' });
+export const cancelJob = (jobId) => run('job.cancel', { jobId }, { fail: 'actions.fail.cancelJob' });
+export const sendChat = (channel, text) => run('chat.send', { channel, text }, { fail: 'actions.fail.sendChat' });
+export const resolveApproval = (approvalId, approved, note) => run('approval.resolve', { approvalId, approved, ...(note ? { note } : {}) }, { fail: 'actions.fail.resolveApproval' });
+export const hire = (data) => run('crew.hire', data, { fail: 'actions.fail.hire' });
+export const updateWorker = (workerId, fields) => run('crew.update', { workerId, ...fields }, { fail: 'actions.fail.updateWorker' });
+export const fire = (workerId) => run('crew.fire', { workerId }, { fail: 'actions.fail.fire' });
+export const setSettings = (data) => run('settings.set', data, { fail: 'actions.fail.setSettings' });
+export const selectBrain = (choice) => run('brain.select', choice, { fail: 'actions.fail.selectBrain' });
+export const startDownload = (model) => run('brain.download', model ? { model } : {}, { fail: 'actions.fail.startDownload' });
+export const deletePlaybook = (playbookId) => run('playbook.delete', { playbookId }, { fail: 'actions.fail.deletePlaybook' });
 
 // Task and worker controls that the context menus offer (PROTOCOL.md: task.retry, task.reassign,
 // task.cancel, and crew.update with paused).
-export const retryTask = (taskId) => run('task.retry', { taskId }, { fail: 'Could not retry the task' });
-export const reassignTask = (taskId, workerId) => run('task.reassign', { taskId, workerId }, { fail: 'Could not reassign the task' });
-export const cancelTask = (taskId) => run('task.cancel', { taskId }, { fail: 'Could not cancel the task' });
-export const pauseWorker = (workerId, paused) => run('crew.update', { workerId, paused }, { fail: paused ? 'Could not pause the worker' : 'Could not resume the worker' });
+export const retryTask = (taskId) => run('task.retry', { taskId }, { fail: 'actions.fail.retryTask' });
+export const reassignTask = (taskId, workerId) => run('task.reassign', { taskId, workerId }, { fail: 'actions.fail.reassignTask' });
+export const cancelTask = (taskId) => run('task.cancel', { taskId }, { fail: 'actions.fail.cancelTask' });
+export const pauseWorker = (workerId, paused) => run('crew.update', { workerId, paused }, { fail: paused ? 'actions.fail.pauseWorker' : 'actions.fail.resumeWorker' });
 
 export async function assignTask(workerId, text) {
   const w = worker(workerId);
-  return sendChat(`dm:${workerId}`, text ? `New task for ${w.name}: ${text}` : '');
+  return sendChat(`dm:${workerId}`, text ? t('actions.newTask', { name: w.name, text }) : '');
 }
 
 export async function readFile(path) {
@@ -55,8 +56,8 @@ export async function readFile(path) {
   return r.content;
 }
 
-export function copy(text, label = 'Copied') {
-  copyText(text).then(() => notify({ title: label, tone: 'ok', timeout: 1800, quiet: false }), () => notify({ title: 'Could not copy', tone: 'bad' }));
+export function copy(text, label) {
+  copyText(text).then(() => notify({ title: label || t('actions.copied'), tone: 'ok', timeout: 1800, quiet: false }), () => notify({ title: t('actions.copyFailed'), tone: 'bad' }));
 }
 
 export function pendingApprovals() { return S().approvals || []; }
