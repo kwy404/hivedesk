@@ -225,3 +225,10 @@ describe('checks for empty files', () => {
     expect(checkWorkspace(ws).issues).toEqual(['style.css: the file is empty']);
   });
 });
+
+describe('inline styles', () => {
+  it('checks the braces of a style block', () => {
+    const page = '<!doctype html><html lang="en"><head><meta name="viewport" content="x"><title>T</title><style>body { a: b; }\n c: d; }</style></head><body></body></html>';
+    expect(checkHtml('a.html', page, () => true)).toEqual(['a.html <style>: unexpected }']);
+  });
+});

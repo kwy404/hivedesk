@@ -50,7 +50,7 @@ export function checkHtml(file, html, exists) {
     if (exists && !exists(target) && !exists(target.replace(/\/$/, '') + '/index.html')) issues.push(`${file}: links to ${ref}, which does not exist`);
   }
   // Inline <style> blocks get the same brace check as .css files.
-  for (const block of html.matchAll(/<style[^>]*>([sS]*?)</style>/gi)) issues.push(...checkCss(`${file} <style>`, block[1]));
+  for (const block of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) issues.push(...checkCss(`${file} <style>`, block[1]));
   const imgRe = /<img\b(?![^>]*\balt=)[^>]*>/gi;
   if (imgRe.test(html)) issues.push(`${file}: an <img> has no alt text`);
   return issues;
