@@ -129,7 +129,7 @@ export function createVoiceSession({ t, lang, speak, onUpdate, actions }) {
             confirm: (plan) => ask({
               kind: 'git',
               summary: actions.planTitle ? actions.planTitle(plan) : plan.title,
-              details: (plan.steps || []).map((s) => s.text || s.label || '').filter(Boolean),
+              details: actions.planSteps ? actions.planSteps(plan) : (plan.steps || []).map((s) => s.text || s.label || '').filter(Boolean),
             }),
           });
           if (r && r.ok === false && r.message) await say(r.message);

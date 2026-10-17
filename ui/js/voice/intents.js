@@ -12,7 +12,8 @@ export function fold(text) {
   return String(text || '')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toLowerCase()
-    .replace(/[.,!?;:"'()[\]{}、。！？，「」‘’“”¿¡]/g, ' ')
+    .replace(/ß/g, 'ss')
+    .replace(/[-.,!?;:"'()[\]{}、。！？，「」‘’“”¿¡]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -61,11 +62,13 @@ export function yesNo(text, t, lang) {
   const words = cjk ? f.replace(/\s/g, '').length : f.split(' ').length;
   if (cjk ? words > 12 : words > 5) return null;
   const hasNo = findPhrase(f, no, cjk);
-  const hasYes = findPhrase(f, yes, cjk);
+  // a no phrase may contain a yes word ("bu shi" contains "shi"): read the no words first
+  const afterNo = hasNo ? strip(f, [no], cjk) : f;
+  const hasYes = findPhrase(afterNo, yes, cjk);
   if (!hasNo && !hasYes) return null;
-  const rest = strip(f, [yes, no, filler], cjk);
+  const rest = strip(afterNo, [yes, filler], cjk);
   if (cjk ? rest.replace(/\s/g, '').length > 1 : rest.length > 0) return null;
-  if (hasNo && hasYes) return null; // "yes no": not clear
+  if (hasNo && hasYes) return null; // "yes, no": not clear
   return hasYes ? 'yes' : 'no';
 }
 

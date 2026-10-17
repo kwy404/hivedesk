@@ -22,8 +22,9 @@
 .kpal-note { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ---------- top bar fits the new tools (mic, language, help, Office) ---------- */
-.topbar { grid-template-columns: auto minmax(200px, 1.15fr) minmax(0, 1fr) auto; }
+.topbar { grid-template-columns: auto minmax(200px, 1fr) auto auto; }
 .ask { max-width: 640px; }
+.strip { max-width: 380px; }
 .bar-right { gap: 4px; min-width: 0; }
 .pill.model .pill-txt { max-width: 170px !important; }
 @media (max-width: 1500px) and (min-width: 761px) {
@@ -33,6 +34,7 @@
 @media (max-width: 1280px) and (min-width: 761px) {
   .strip { display: none; }
   .topbar { grid-template-columns: auto minmax(180px, 1fr) 0 auto; }
+  .strip { max-width: 0; }
   .pill.model .pill-txt, .pill.model .sep, .pill.model .num.tps { display: none; }
   .demo-tag { display: none; }
   .of-seg button span { display: none; }
@@ -253,7 +255,11 @@
 
 /* ---------- phones ---------- */
 @media (max-width: 760px) {
-  .bar-right .help-btn, .bar-right .ibtn[data-ta="top.sound"], .bar-right .ibtn[data-ta="top.palette"] { display: none; }
+  .bar-right .help-btn, .bar-right .ibtn[data-ta="top.sound"], .bar-right .ibtn[data-ta="top.palette"], .bar-right .ibtn[data-ta="top.approvals"] { display: none; }
+  .bar-right { gap: 0; }
+  .bar-right .ibtn { width: 30px; }
+  .brand { gap: 6px; }
+  .topbar .row { gap: 6px !important; }
   .lang-btn .lang-code { display: none; }
   .lang-btn { padding: 0; width: 32px; justify-content: center; }
   .hd-tip { display: none; }

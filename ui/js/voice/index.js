@@ -88,15 +88,26 @@ function statusText() {
   return t('voice.say.statusEnded', { status: j.status, request: j.request });
 }
 
-/** The client side of runIntent: github.intent, a confirmation, then github.confirm or github.cancel. */
-async function runIntent(text, { confirm }) {
-  const r = await command('github.intent', { text });
-  if (!r?.plan) return { ok: false, ran: false, message: r?.message || t('voice.say.noGit') };
-  const yes = (await confirm(r.plan)) === true;
-  if (!yes) { command('github.cancel', { planId: r.plan.id }).catch(() => {}); return { ok: true, ran: false, plan: r.plan }; }
-  const result = await command('github.confirm', { planId: r.plan.id });
-  return { ok: true, ran: true, plan: r.plan, result };
+/**
+ * Git and GitHub go through runIntent(text, { confirm }) from the GitHub module (ui/github/):
+ * it plans, calls our confirm (Mel reads the plan and waits for a clear yes) and only then runs.
+ */
+let gh = null;
+async function github() {
+  gh ||= Promise.all([import('/github/index.js'), import('/github/t.js')]).then(([m, tm]) => ({ ...m, T: tm.T }));
+  return gh;
 }
+async function runIntent(text, opts) {
+  const m = await github();
+  return m.runIntent(text, { ...opts, quiet: true });
+}
+let ghT = null;
+github().then((m) => { ghT = m; }).catch(() => {});
+const planTitle = (plan) => {
+  if (ghT && plan.titleKey) { const s = ghT.T(plan.titleKey, plan.titleParams); if (s && s !== plan.titleKey) return s; }
+  return plan.title || '';
+};
+const planSteps = (plan) => (plan.steps || []).map((st) => { try { return ghT ? ghT.stepLabel(st, plan) : st.text; } catch { return st.text; } }).filter(Boolean);
 
 const session = createVoiceSession({
   t,
@@ -110,7 +121,8 @@ const session = createVoiceSession({
     status: statusText,
     openWindow: (type) => { if (!wm.typeDef(type)) return false; wm.open(type); return true; },
     runIntent,
-    planTitle: (plan) => (plan.titleKey && t(plan.titleKey, plan.titleParams) !== plan.titleKey ? t(plan.titleKey, plan.titleParams) : plan.title),
+    planTitle,
+    planSteps,
   },
 });
 
