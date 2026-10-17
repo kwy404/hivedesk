@@ -33,7 +33,7 @@ npx hivedesk
 
 The wizard asks for the language, the project folder, which brain to use, how the crew should work and who is on it. Every question has a recommended default, so pressing Enter all the way works. Run it again and it offers to reuse the same setup; `--yes` skips the questions.
 
-Prefer a double click? The [website](https://kwy404.github.io/hivedesk/#download) has one-click launchers for Windows (`hivedesk-windows.cmd`), macOS (`hivedesk-macos.command`) and Linux (`hivedesk-linux.sh`). Each one checks for Node.js 18 or newer and runs `npx hivedesk@latest`; if Node.js is missing, it opens the official download page and says why. They are not code signed, so Windows SmartScreen and macOS Gatekeeper ask before the first run.
+Prefer a download? The [download page](https://kwy404.github.io/hivedesk/#download) has `hivedesk-windows-x64.zip`, `hivedesk-macos-universal.zip` and `hivedesk-linux-x64.tar.gz` from the [latest release](https://github.com/kwy404/hivedesk/releases/latest), plus tiny launcher scripts that check for Node.js 18 or newer and run `npx hivedesk@latest` (if Node.js is missing, they open the official download page and say why). None of them is code signed yet, so Windows SmartScreen and macOS Gatekeeper ask before the first run.
 
 ### What the first run does
 
@@ -100,6 +100,8 @@ A small model on your own machine is private and free to run. It is also slower 
 | GPU with 4 to 7 GB | Qwen2.5-Coder 3B, fully on the GPU | Usable | Small tasks, components, scripts, copy. |
 | GPU with 7 to 10 GB | Qwen2.5-Coder 7B | Good | Small and medium tasks, with you steering. |
 | 10 GB or more, or a key | Qwen2.5-Coder 14B, or a bigger model through Ollama, LM Studio or a cloud provider with your own key | Faster | Bigger jobs and longer plans. |
+
+**Measured** on a GTX 1060 6 GB (Vulkan, 16 GB of RAM) with the 3B fully on the GPU: ready in 11 to 50 seconds once downloaded, 17 to 39 tokens per second while writing (4 to 10 on turns that read a long prompt), and a tiny static page (brief, plan, write, QA, report) in about 2 to 2.5 minutes after the model was loaded. Results vary between runs: in one run of four, a worker said it was done without writing its file and the report listed it as missing. The 7B could not be measured on that machine: loading it pushed free RAM under 1.5 GB while other apps were open, so the run was stopped.
 
 **Great at:** landing pages, small CRUD apps, scripts, UI components, tests, docs and copy, fixing a bug you describe.
 

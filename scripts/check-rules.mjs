@@ -10,7 +10,7 @@ const EMOJI = new RegExp(`\\p{Emoji_Presentation}|${String.fromCharCode(0xfe0f)}
 const NAMES = new RegExp(`\\b(${['Cla', 'ude'].join('')}|${['Anth', 'ropic'].join('')})\\b`, 'i');
 // Provider and model names may appear as supported options (provider list, adapters, their tests, the
 // Providers window and the setup wizard), never in comparisons: the phrase check below still applies there.
-const PROVIDER_FILES = new Set(['src/brain/cloud.js', 'src/brain/keys.js', 'test/cloud.test.js', 'ui/js/widgets/providers.js', 'src/wizard/core.js', 'src/wizard/i18n.js', 'test/wizard.test.js']);
+const PROVIDER_FILES = new Set(['PROTOCOL.md', 'FIRST-RUN.md', 'src/brain/cloud.js', 'src/brain/keys.js', 'test/cloud.test.js', 'ui/js/widgets/providers.js', 'src/wizard/core.js', 'src/wizard/i18n.js', 'test/wizard.test.js']);
 const PHRASES = [/\balternative to\b/i, /\ba clone of\b/i, /\bbetter than\b/i, /\binspired by\b/i];
 
 const problems = [];

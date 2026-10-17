@@ -75,7 +75,7 @@ Task     { id, jobId, title, detail, assignee, dependsOn: string[], status, atte
 Job      { id, request, status, approval, refine, createdAt, finishedAt?, taskIds: string[], playbookId?, summary?,
            briefProposed?: Brief, brief?: { text, source }, report?: Report & { improvedPrompt, nextPrompts } }
          status: "refining" | "awaiting_brief" | "planning" | "running" | "done" | "failed" | "cancelled"
-Brief    { goal, build: string[], constraints: string[], acceptance: string[], questions: [{ question, answer }], text }
+Brief    { goal, build: string[], constraints: string[], acceptance: string[], questions: [{ question, options: string[], answer }], text }
          text is the Markdown the user sees and edits; acceptance items are "- [ ] ..." lines in it.
 Report   { built, files: [{ path, op, added, removed }], checks: [{ name, ok, detail }], missing: string[], turns, seconds }
 Approval { id, jobId, taskId, workerId, tool, args, summary, diff?, createdAt }
@@ -107,9 +107,12 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `crew.fired` | `{ workerId }` |
 | `job.created` | `{ job: Job }` |
 | `job.refining` | `{ workerId: "mel" }` Mel is writing the brief |
-| `brief.proposed` | `{ original, brief: Brief }` the job waits (status `awaiting_brief`) until `brief.approve` |
+| `brief.proposed` | `{ original, brief: Brief, vague }` (`vague`: the request was short, so the brief expands it and asks up to 3 multiple choice questions) the job waits (status `awaiting_brief`) until `brief.approve` |
 | `brief.approved` | `{ text, source: "refined" \| "edited" \| "original", brief?: Brief, by?: "user" \| "auto" }` the planner and the workers work from `text` |
 | `job.report` | `{ report: Report, improvedPrompt, nextPrompts: string[] }` after `job.done` or `job.failed` |
+| `memory.used` | `{ items: [{ id, text, kind, scope }] }` the memories put into this job's prompts |
+| `memory.changed` | `{ count }` |
+| `providers.changed` | `{ providers: { [id]: { label, configured, model, baseUrl?, keyHint } } }` never a key |
 | `worker.note` | `{ workerId, taskId, text }` a decision the worker wrote in its scratchpad |
 | `job.planning` | `{ workerId: "mel", playbookId?, playbookScore? }` |
 | `job.planned` | `{ tasks: Task[], playbookId? }` |
@@ -121,7 +124,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `task.updated` | `{ task: { id, ...changed fields } }` for example a new `assignee` |
 | `job.resumed` | `{ by: "user" }` a finished or failed job runs again after `task.retry` |
 | `queue.updated` | `{ running: [{ workerId, taskId, brainId }], waiting: [{ workerId, taskId }] }` |
-| `turn.started` | `{ turnId, workerId, taskId, brainId, n }` (n: turn number inside the task) |
+| `turn.started` | `{ turnId, workerId, taskId, brainId, n, budget? }` (n: turn number inside the task; budget: `{ family, limit, used, sections, trimmed, version }` of the assembled prompt) |
 | `turn.ended` | `{ turnId, workerId, taskId, brainId, promptTokens, completionTokens, ms, tps, error? }` |
 | `worker.status` | `{ workerId, status, detail? }` status: `"idle"` \| `"queued"` \| `"thinking"` \| `"tool"` \| `"waiting_approval"` \| `"error"` |
 | `chat.message` | `{ id, channel, from, text, taskId? }` channel: `"general"` or `"dm:<workerId>"`; from: a worker id, `"user"` or `"system"` |
@@ -153,7 +156,22 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | --- | --- | --- |
 | `ping` | `{}` | `{ pong: true, ts }` |
 | `job.create` | `{ request, approval?: boolean, refine?: boolean, playbookId?: string }` (`refine` defaults to `settings.refine`, true) | `{ jobId }` |
-| `brief.approve` | `{ jobId, use: "refined" \| "edited" \| "original", text? }` (`text` with `edited`) | `{}` |
+| `brief.approve` | `{ jobId, use: "refined" \| "edited" \| "original", text?, answers? }` (`text` with `edited`; `answers`: the picked option per question, by index) | `{}` |
+| `memory.list` | `{ q? }` | `{ entries: MemoryEntry[], enabled }` |
+| `memory.add` | `{ text, scope?: "project" \| "user", kind?, pinned? }` | `{ entry }` |
+| `memory.update` | `{ id, text?, pinned?, kind? }` | `{ entry }` |
+| `memory.delete` | `{ id }` | `{}` |
+| `memory.forget` | `{ text }` removes the entry that best matches ("forget this") | `{ forgotten }` |
+| `session.list` | `{}` | `{ sessions: [{ id, request, startedAt, status, summary, improvedPrompt, files }] }` |
+| `session.get` | `{ id }` | `{ id, records }` (the lines of `.hivedesk/sessions/<id>.jsonl`) |
+| `session.continue` | `{ id, request? }` a new job that continues that session | `{ jobId }` |
+| `provider.list` | `{}` | `{ providers }` as in `providers.changed` |
+| `provider.setKey` | `{ provider, key?, model?, baseUrl? }` provider: `anthropic`, `openai`, `xai`, `gemini`, `compatible` | `{ provider }` (public view) |
+| `provider.removeKey` | `{ provider }` | `{ removed }` |
+| `provider.test` | `{ provider, model? }` a tiny request | `{ ok, model?, ms, error?, code? }` |
+| `provider.models` | `{ provider }` from the provider, or defaults | `{ models }` |
+| `turn.recent` | `{}` the last 40 model turns kept in memory | `{ turns: [{ turnId, workerId, taskId, jobId, brainId, budget, chars, ts }] }` |
+| `turn.prompt` | `{ turnId }` | `{ turnId, messages, response, budget, ... }` the exact prompt and answer |
 | `playbook.save` | `{ jobId }` keep a job plan and its improved prompt as a playbook | `{ playbook }` |
 | `job.cancel` | `{ jobId }` | `{}` |
 | `chat.send` | `{ channel, text }` user message; in a running job it is added to the context of the addressed worker (or Mel for `general`) | `{ id }` |
@@ -164,7 +182,7 @@ Message  { role: "system" | "user" | "assistant", content: string }
 | `task.retry` | `{ taskId }` a failed, blocked, cancelled or done task goes back in line (status `ready`, or `pending` while its dependencies run); tasks blocked by it are unblocked; a job that already ended is reopened (`job.resumed`) | `{}` |
 | `task.reassign` | `{ taskId, workerId }` hand a task that is not done to another worker (`task.updated`); a running task stops and starts again with the new worker; a failed one is also retried | `{}` |
 | `task.cancel` | `{ taskId }` the task becomes `skipped` (a running one is stopped); tasks that depend on it become `blocked` | `{}` |
-| `settings.set` | `{ approvalMode?, sound?, refine?: boolean, crew?: string[] }` (`crew`: the builtin roles that take part; Mel and hired workers always do) | `{ settings }` |
+| `settings.set` | `{ approvalMode?, sound?, refine?: boolean, crew?: string[], memory?: boolean, workerBrains?: { [workerId]: provider | "default" } }` (`crew`: the builtin roles that take part; Mel and hired workers always do) | `{ settings }` |
 | `brain.probe` | `{}` | `{ hardware, options: BrainOption[], recommended }` |
 | `brain.select` | `BrainChoice` | `{ status }` |
 | `brain.download` | `{ model? }` start (or retry) the automatic model download; needed only after `--no-download` or a failure | `{}` |
@@ -189,6 +207,10 @@ BrainOption  { backend, label, model?, url?, available: boolean, reason?, bytes?
 DoctorReport { ok, checks: [{ id, label, ok, detail, hint? }], hardware, models: [{ file, bytes, path }] }
 ```
 
+```text
+MemoryEntry { id, scope: "project" | "user", kind: "fact" | "preference" | "rejected" | "session" | "decision", text, pinned, uses, createdAt, updatedAt? }
+```
+
 Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`, plus short snake_case codes from plug-ins (for example `rate_limited`). An unknown command answers `bad_request` with the message `unknown command: <type>`.
 
 ## 5. REST
@@ -210,6 +232,7 @@ All JSON unless noted. Same token rule as section 1.
 | `GET /api/playbooks` | `{ playbooks }` |
 | `GET /api/doctor` | `DoctorReport` |
 | `POST /api/command` | body `{ "type": "...", "data": {...} }`, answer `{ ok, result }` or `{ ok:false, error }` |
+| `GET /manifest.webmanifest`, `/sw.js`, `/offline.html`, `/pwa.js` | the installable app shell; no token needed (no data in them) |
 | `GET /preview/<path>` | the workspace served as a static site (`/preview/` serves `index.html`). This route does not need the token: it is read only, checks the Host header, and is served with `Content-Security-Policy: sandbox allow-scripts ...` so the page runs in an opaque origin and cannot call the API |
 
 ### State
@@ -230,6 +253,10 @@ State {
   files:    { [path]: { bytes, content?, lastSeq } },
   runs:     run.finished data[], last 50
   playbooks: Playbook[],
+  usage:    { [brainId]: { prompt, completion, turns } },  tokens per brain this session
+  providers: { [id]: { label, configured, model } },     never keys
+  notes:    { [workerId]: [{ text, taskId, ts }] },        worker scratchpads
+  choice:   brain.choice data, memoryCount: number,
   tokens:   { prompt, completion }
 }
 ```
@@ -261,7 +288,8 @@ How the engine picks and installs a brain on start (no questions asked) is descr
  * @typedef {Object} Brain
  * @property {string} id
  * @property {string} label
- * @property {"local"|"remote"} kind
+ * @property {"local"|"remote"|"cloud"} kind
+ * @property {Set<string>} [only]   the scheduler gives this brain only the turns of these workers
  * @property {(messages: Message[], options?: ChatOptions) => Promise<ChatResult>} chat
  * @property {() => object} [info]
  * @property {() => Promise<void>} [close]
