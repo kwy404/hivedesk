@@ -45,7 +45,7 @@ After `hello`, a client that reconnects can ask for missed events with the `even
 
 ## 3. Events
 
-Events are the source of truth. They are appended to `.hivedesk/events.jsonl` (one JSON object per line) and broadcast to every client.
+Events are the source of truth. They are appended to the project log (one JSON object per line; since 1.0 in segments under `.hivedesk/events/`, section 7) and broadcast to every client.
 
 ```json
 {
@@ -63,6 +63,10 @@ Events are the source of truth. They are appended to `.hivedesk/events.jsonl` (o
 * `type`: dotted name, see the list below.
 * `jobId`: present when the event belongs to a job.
 * `demo`: present and `true` on every event produced by `--demo`. The UI must show a visible "Demo" label while `hello.demo` is true or it renders demo events.
+* `origin` (1.0): who caused it, `{ kind: "user" | "crew" | "system" | "peer", peerId?, agentId? }`. Older events have none: read them as `system`.
+* `cause` (1.0, optional): the command id (`cm_<n>`) or the seq of the event that started the work.
+
+Since 1.0 every type has a schema (docs/1.0/protocol/core.md section 1) and `state.board` holds the 1.0 tasks (section 7 there). `state.demo` is true only while the engine runs `--demo`.
 * `data`: payload, shape depends on `type`.
 
 ### Shared shapes
@@ -221,6 +225,11 @@ MemoryEntry { id, scope: "project" | "user", kind: "fact" | "preference" | "reje
 
 Error codes in a failed `reply`: `bad_request`, `not_found`, `conflict`, `unauthorized`, `not_lending`, `busy`, `internal`, `forbidden` (Hive City ownership and guest rules, HTTP 403), plus short snake_case codes from plug-ins (for example `rate_limited`). An unknown command answers `bad_request` with the message `unknown command: <type>`.
 
+### Domains and question cards (1.0)
+
+Events: `job.domain` (the domain of a job and why), `crew.question` (a question card: `id`, `questions[{ id, topic, multi, text, options[{ id, label, description, recommended?, reason? }] }]`, `defaults`, `labels`), `crew.answered` (`{ id, answers: { [questionId]: { options, other? } }, decided, by, summary }`), `security.report`. A `chat.message` that announces a card carries `question` (the card id); the state keeps open cards in `state.questions`.
+Commands (host only, never guests or peers): `crew.answer { questionId, answers }` or `{ questionId, decide: true }`, `crew.questions`, `crew.match { questionId, text }`, `security.audit`. The full contract is `docs/1.0/DOMAINS.md`; the setting `questions: false` turns the cards off.
+
 ## 5. REST
 
 All JSON unless noted. Same token rule as section 1.
@@ -343,7 +352,7 @@ export default function register({ scheduler, bus, server, config }) {}
 * `bus.emit(type, data, { jobId })` appends and broadcasts an event (use `lend.*` types).
 * `bus.on(listener)` receives every event.
 * `server.route(method, path, handler)` adds a REST route under the same token check, `handler(req, res, url)`.
-* `server.command(type, handler)` adds a command, `handler(data, client) => result`.
+* `server.command(type, handler, spec?)` adds a command, `handler(data, client, ctx) => result`, through the command router (docs/1.0/protocol/core.md section 6): `spec.peer` names the capability a peer needs, `spec.local` keeps it local, `spec.schema` checks the data.
 * `config` has `{ dir, port, token, lend, demo, version }`.
 
 The engine does not depend on `src/lend/`; when it is missing, lending is simply off.
@@ -359,6 +368,7 @@ Shared cache for every project (override with the env var `HIVEDESK_HOME`):
   city/
     machine.json   this machine's stable id (m_ + 8 hex) and name
     agents/        one <agentId>.json per persistent agent: level, xp, stats and its private memory
+  engine.json      the engine `hivedesk start` runs now ({ v, pid, port, dir }), so `hivedesk city` and the other subcommands find it
 ```
 
 Per project:
@@ -366,7 +376,11 @@ Per project:
 
 ```text
 <dir>/.hivedesk/
-  events.jsonl     append-only event log (source of truth)
+  events.jsonl     the 0.x append-only log; since 1.0 read as segment 0 and no longer written
+  events/          the log in segments of at most 64 MB, named by their first seq (source of truth)
+  snapshots/       store snapshots (<seq>.json): a start replays only the events after the newest
+  meta.json        layout version and the migrations applied to this folder
+  demo             present only in a demo folder
   state.json       snapshot, rewritten at most every 2 s and on exit (a cache; deleted is fine)
   playbooks/       one <id>.json per playbook
   workspace/       the files the crew builds (preview serves this)
@@ -378,3 +392,5 @@ Per project:
 `hivedesk --demo` uses a scripted fake brain, so the whole loop runs with no model. Every event carries `"demo": true`, `session.started.data.demo` is true, `hello.demo` is true, and Mel posts a first `chat.message` in `general`: "This is a demo. No model is running; the crew follows a script."
 
 The demo also plays the Hive City scenario (CITY-PROTOCOL.md section 9), with `city.demo.step` captions.
+
+Since 1.0 the demo runs only in a demo folder (a fresh temp folder, or an empty or demo `--dir`) with its own home, and a 0.2 project whose log holds demo events gets them moved to `events/demo-0.2.jsonl` once (docs/1.0/protocol/core.md section 5).
