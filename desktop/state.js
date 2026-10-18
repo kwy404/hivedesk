@@ -4,7 +4,7 @@ import path from 'node:path';
 
 export const MIN = Object.freeze({ width: 760, height: 520 });
 export const DEFAULT = Object.freeze({ width: 1280, height: 820, maximized: false });
-export const DEFAULT_SETTINGS = Object.freeze({ closeToTray: true, frame: 'custom', lastDir: null });
+export const DEFAULT_SETTINGS = Object.freeze({ closeToTray: true, frame: 'custom', lastDir: null, profileAsked: false });
 
 const int = (v) => (Number.isFinite(v) ? Math.round(v) : undefined);
 
@@ -85,7 +85,8 @@ export class WindowStore {
     return {
       closeToTray: typeof s.closeToTray === 'boolean' ? s.closeToTray : DEFAULT_SETTINGS.closeToTray,
       frame: s.frame === 'system' ? 'system' : 'custom',
-      lastDir: typeof s.lastDir === 'string' && s.lastDir ? s.lastDir : null
+      lastDir: typeof s.lastDir === 'string' && s.lastDir ? s.lastDir : null,
+      profileAsked: s.profileAsked === true
     };
   }
 
@@ -94,6 +95,7 @@ export class WindowStore {
     if (typeof patch.closeToTray === 'boolean') next.closeToTray = patch.closeToTray;
     if (patch.frame === 'system' || patch.frame === 'custom') next.frame = patch.frame;
     if (typeof patch.lastDir === 'string' && patch.lastDir) next.lastDir = patch.lastDir;
+    if (typeof patch.profileAsked === 'boolean') next.profileAsked = patch.profileAsked;
     writeJson(this.settingsFile, next);
     return next;
   }

@@ -41,6 +41,16 @@ static class Launcher
     static int Main(string[] args)
     {
         string root = AppDomain.CurrentDomain.BaseDirectory;
+        // Installed by hivedesk-setup.exe: current.txt names the version folder in versions\ (the updater swaps it).
+        string pointer = Path.Combine(root, "current.txt");
+        if (File.Exists(pointer))
+        {
+            try { File.Delete(Path.Combine(root, "hivedesk.exe.old")); } catch (Exception) { }
+            string v = File.ReadAllText(pointer).Trim();
+            bool ok = v.Length > 0 && v.Length < 64 && v.All(c => char.IsLetterOrDigit(c) || c == '.' || c == '-' || c == '+');
+            string dir = ok ? Path.Combine(root, "versions", v) : null;
+            if (dir != null && Directory.Exists(dir)) root = dir + Path.DirectorySeparatorChar;
+        }
         string cli = Path.Combine(root, "app", "desktop", "main.js");
         string home = Environment.GetEnvironmentVariable("HIVEDESK_HOME");
         if (string.IsNullOrEmpty(home)) home = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".hivedesk");

@@ -1,6 +1,11 @@
 #!/bin/sh
 # hivedesk launcher for Linux: runs the bundled Node (or the system Node) with the app.
 HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+# Installed by hivedesk-linux-install.sh: current.txt names the version folder in versions/ (the updater swaps it).
+if [ -f "$HERE/current.txt" ]; then
+  V="$(tr -d ' \r\n' < "$HERE/current.txt")"
+  case "$V" in *[!0-9A-Za-z.+-]*|'') ;; *) [ -x "$HERE/versions/$V/hivedesk" ] && exec "$HERE/versions/$V/hivedesk" "$@" ;; esac
+fi
 NODE="$HERE/node/bin/node"
 [ -x "$NODE" ] || NODE="$(command -v node 2>/dev/null)"
 if [ -z "$NODE" ]; then

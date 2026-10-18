@@ -149,9 +149,9 @@ describe('window state store', () => {
   });
   it('keeps the settings: close to tray on by default, the frame and the last folder', () => {
     const s = new WindowStore(dir);
-    expect(s.settings()).toEqual({ closeToTray: true, frame: 'custom', lastDir: null });
+    expect(s.settings()).toEqual({ closeToTray: true, frame: 'custom', lastDir: null, profileAsked: false });
     s.setSettings({ closeToTray: false, frame: 'system', lastDir: '/work/site', junk: 1 });
-    expect(new WindowStore(dir).settings()).toEqual({ closeToTray: false, frame: 'system', lastDir: '/work/site' });
+    expect(new WindowStore(dir).settings()).toEqual({ closeToTray: false, frame: 'system', lastDir: '/work/site', profileAsked: false });
     s.setSettings({ frame: 'weird' });
     expect(s.settings().frame).toBe('system');
   });

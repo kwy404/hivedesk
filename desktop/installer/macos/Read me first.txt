@@ -1,0 +1,36 @@
+hivedesk @VERSION@ for macOS (Apple Silicon and Intel)
+Your agents. Your machines. Your City.
+
+INSTALL
+  Drag hivedesk to Applications, then open it from Applications.
+
+FIRST LAUNCH
+  hivedesk is signed ad hoc, not with an Apple Developer ID, and it is not notarized,
+  so macOS asks once:
+  1. Open hivedesk. macOS says it cannot verify the app. Click Done (or Cancel).
+  2. Open System Settings, then Privacy and Security.
+  3. Scroll down. Next to "hivedesk was blocked", click Open Anyway, then confirm
+     with your password or Touch ID.
+  4. Open hivedesk again. macOS does not ask again.
+  On older macOS versions: Control click hivedesk in Applications and choose Open.
+  In a terminal, this does the same:
+     xattr -dr com.apple.quarantine /Applications/hivedesk.app
+
+UPDATES
+  hivedesk checks for a new version when it starts and every 6 hours. Updates are signed
+  (Ed25519) and checked with SHA-256 before they replace the app; if a new version does not
+  start, the previous one comes back. Turn it off in the menu: Update automatically.
+
+PRIMEIRA ABERTURA (pt-BR)
+  Arraste o hivedesk para Aplicativos e abra. Se o macOS disser que não pode verificar o app,
+  abra Ajustes do Sistema, Privacidade e Segurança, clique em Abrir Mesmo Assim ao lado do
+  hivedesk e confirme. Depois disso ele abre normalmente.
+
+CREDITS
+  hivedesk, MIT License, made by Alexandre Kohler
+  GitHub    https://github.com/kwy404/hivedesk
+  npm       https://www.npmjs.com/package/hivedesk
+  Site      https://kwy404.github.io/hivedesk/
+  Author    https://github.com/kwy404
+  LinkedIn  https://www.linkedin.com/in/alexandre-silva-173687256/
+  Inside: Node.js (MIT) and Neutralinojs (MIT); their licenses ship in the app.

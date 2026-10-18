@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { EventEmitter } from 'node:events';
 import { connectWs } from './wsclient.js';
@@ -15,6 +16,54 @@ const ICONS = path.join(HERE, 'app', 'resources', 'icons');
 export const NATIVE_ALLOW = [
   'app.exit', 'window.*', 'os.setTray', 'os.showNotification', 'os.showFolderDialog', 'os.showOpenDialog', 'os.open'
 ];
+
+// The native helpers of remote desktop (docs/1.0/PLAN.md section 12.3). This list is the only way a helper
+// gets into the desktop packages and the only thing src/remote/helper.js starts: a shipped helper must be
+// listed here with the SHA-256 of its text (line endings normalized to LF), and an external program is
+// called by name, never bundled. test/remote/helpers.test.js fails when a file in desktop/helpers/ is not listed.
+export const NATIVE_HELPERS = Object.freeze([
+  Object.freeze({
+    id: 'win-input', platform: 'win32', file: 'helpers/win-input.ps1', runner: 'powershell',
+    sha256: '2af78e3f6118206a78669f70ad9068c06b11fe2511d7c4f2cd8784330068d05e',
+    does: ['input', 'hotkey', 'indicator', 'lock'], license: 'MIT (ours)'
+  }),
+  Object.freeze({
+    id: 'x11-xdotool', platform: 'linux', external: 'xdotool',
+    does: ['input'], license: 'xdotool is a separate program under its own license; called when installed, never shipped'
+  }),
+  Object.freeze({
+    id: 'loginctl', platform: 'linux', external: 'loginctl',
+    does: ['lock'], license: 'part of systemd; called when present, never shipped'
+  })
+]);
+
+/** SHA-256 of a helper's text with CRLF turned into LF, so a Windows checkout and a Linux build agree. */
+export function helperHash(text) {
+  return createHash('sha256').update(String(text).replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+}
+
+/**
+ * The path of a listed, shipped helper whose content matches its pinned hash, or an error code.
+ * @returns {{ ok: true, path: string, helper: object } | { ok: false, code: 'not_listed' | 'missing' | 'hash_mismatch' | 'external' }}
+ */
+export function verifiedHelper(id) {
+  const helper = NATIVE_HELPERS.find((h) => h.id === id);
+  if (!helper) return { ok: false, code: 'not_listed' };
+  if (!helper.file) return { ok: false, code: 'external' };
+  const abs = path.join(HERE, helper.file);
+  let text;
+  try { text = fs.readFileSync(abs, 'utf8'); } catch { return { ok: false, code: 'missing' }; }
+  if (helperHash(text) !== helper.sha256) return { ok: false, code: 'hash_mismatch' };
+  return { ok: true, path: abs, helper };
+}
+
+/** True when a path inside desktop/ may go into a package: anything outside helpers/, or a listed helper file. */
+export function packagedHelperAllowed(relFromDesktop) {
+  const rel = String(relFromDesktop).replace(/\\/g, '/');
+  if (!rel.startsWith('helpers/') && rel !== 'helpers') return true;
+  if (rel === 'helpers') return true;
+  return NATIVE_HELPERS.some((h) => h.file === rel);
+}
 
 /** The runtime config for one run (written to ~/.hivedesk/desktop/app/neutralino.config.json). */
 export function runtimeConfig({ url, title = 'hivedesk', state, frame = 'custom', hidden = false, version = '0.0.0' }) {

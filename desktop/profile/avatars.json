@@ -1,0 +1,147 @@
+{
+  "_note": "The avatar gallery of the 1.0 profile (ui/profile/avatars.js, docs/1.0/PROFILE.md): the same ids. The installer and the first run card draw a monogram from bg and fg; the app draws the full avatar from the id. Regenerate when the gallery changes.",
+  "placeholder": false,
+  "default": "comb-amber",
+  "avatars": [
+    {
+      "id": "comb-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "comb-blue",
+      "bg": "#6E9FD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "comb-green",
+      "bg": "#5FB088",
+      "fg": "#14171B"
+    },
+    {
+      "id": "comb-violet",
+      "bg": "#9C8BD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bee-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bee-blue",
+      "bg": "#6E9FD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bee-rose",
+      "bg": "#CF7F98",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bee-green",
+      "bg": "#5FB088",
+      "fg": "#14171B"
+    },
+    {
+      "id": "tower-slate",
+      "bg": "#9AA3AE",
+      "fg": "#14171B"
+    },
+    {
+      "id": "tower-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "tower-teal",
+      "bg": "#5DAFAE",
+      "fg": "#14171B"
+    },
+    {
+      "id": "tower-violet",
+      "bg": "#9C8BD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bridge-teal",
+      "bg": "#5DAFAE",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bridge-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bridge-blue",
+      "bg": "#6E9FD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "bridge-rose",
+      "bg": "#CF7F98",
+      "fg": "#14171B"
+    },
+    {
+      "id": "orbit-violet",
+      "bg": "#9C8BD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "orbit-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "orbit-green",
+      "bg": "#5FB088",
+      "fg": "#14171B"
+    },
+    {
+      "id": "orbit-blue",
+      "bg": "#6E9FD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "grid-blue",
+      "bg": "#6E9FD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "grid-rose",
+      "bg": "#CF7F98",
+      "fg": "#14171B"
+    },
+    {
+      "id": "grid-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    },
+    {
+      "id": "grid-slate",
+      "bg": "#9AA3AE",
+      "fg": "#14171B"
+    },
+    {
+      "id": "rings-green",
+      "bg": "#5FB088",
+      "fg": "#14171B"
+    },
+    {
+      "id": "rings-violet",
+      "bg": "#9C8BD6",
+      "fg": "#14171B"
+    },
+    {
+      "id": "rings-teal",
+      "bg": "#5DAFAE",
+      "fg": "#14171B"
+    },
+    {
+      "id": "rings-amber",
+      "bg": "#E0A447",
+      "fg": "#14171B"
+    }
+  ]
+}

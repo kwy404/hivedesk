@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- The DMG window background (660 by 440). Rendered to background.png and background@2x.png by
+     desktop/scripts/dmg-art.mjs. The app icon sits at (165, 210) and the Applications link at (495, 210),
+     as set in make-dmg.sh. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 660px; height: 440px; overflow: hidden; }
+  body { position: relative; background: #111214; color: #EDEEF0; font: 13px/1.45 -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .comb { position: absolute; inset: 0; opacity: .9;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='62.35' viewBox='0 0 72 124.7'><path d='M36 0 72 20.8v41.6L36 83.1 0 62.4V20.8zM0 62.4v41.6l36 20.7M72 62.4v41.6l-36 20.7' fill='none' stroke='%23F2E9DA' stroke-opacity='.06' stroke-width='2'/></svg>"); }
+  .glow { position: absolute; inset: 0; background: radial-gradient(60% 55% at 50% 48%, rgb(255 181 49 / .16), transparent 70%); }
+  .top { position: absolute; left: 32px; top: 26px; display: flex; align-items: center; gap: 10px; }
+  .top b { font-size: 17px; font-weight: 650; letter-spacing: .01em; }
+  .top span { color: #FFB531; background: rgb(255 181 49 / .14); border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
+  .tag { position: absolute; right: 32px; top: 30px; color: #7D828C; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .slot { position: absolute; top: 140px; width: 150px; height: 150px; border-radius: 30px; border: 1.5px dashed rgb(242 233 218 / .10); }
+  .slot.a { left: 90px; } .slot.b { left: 420px; }
+  .arrow { position: absolute; left: 262px; top: 196px; width: 136px; height: 30px; }
+  .drag { position: absolute; left: 0; right: 0; top: 302px; text-align: center; font-size: 15px; font-weight: 600; }
+  .drag em { font-style: normal; color: #FFB531; }
+  .first { position: absolute; left: 32px; right: 32px; bottom: 44px; padding: 10px 14px; border-radius: 12px; background: rgb(28 30 34 / .9); border: 1px solid #2A2D33; color: #B9BCC3; font-size: 11.5px; }
+  .first b { color: #EDEEF0; }
+  .credits { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; color: #7D828C; font-size: 10.5px; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+  <div class="comb"></div>
+  <div class="glow"></div>
+  <div class="top">
+    <svg width="26" height="26" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD072"/><stop offset="1" stop-color="#F09A1E"/></linearGradient><clipPath id="c"><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z"/></clipPath></defs><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z" fill="url(#g)"/><g clip-path="url(#c)"><rect y="12.2" width="32" height="3" fill="#1B1714" opacity=".9"/><rect y="18.6" width="32" height="3" fill="#1B1714" opacity=".9"/><path d="M0 0h19L0 21z" fill="#fff" opacity=".18"/></g></svg>
+    <b>hivedesk</b><span>macOS</span>
+  </div>
+  <div class="tag">Your agents. Your machines. Your City.</div>
+  <div class="slot a"></div>
+  <div class="slot b"></div>
+  <svg class="arrow" viewBox="0 0 136 30"><defs><linearGradient id="ar" gradientUnits="userSpaceOnUse" x1="0" y1="15" x2="136" y2="15"><stop offset="0" stop-color="#FFB531" stop-opacity=".2"/><stop offset="1" stop-color="#FFB531"/></linearGradient></defs><path d="M4 15h120" stroke="url(#ar)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 7"/><path d="M114 5l12 10-12 10" fill="none" stroke="#FFB531" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="drag">Drag <em>hivedesk</em> to Applications</div>
+  <div class="first"><b>First launch:</b> macOS says it cannot verify the app (it is not notarized). Open <b>System Settings, Privacy and Security</b>, click <b>Open Anyway</b> next to hivedesk and confirm. Details in “Read me first”.</div>
+  <div class="credits">github.com/kwy404/hivedesk &nbsp;·&nbsp; npm i hivedesk &nbsp;·&nbsp; MIT &nbsp;·&nbsp; made by Alexandre Kohler</div>
+</body>
+</html>

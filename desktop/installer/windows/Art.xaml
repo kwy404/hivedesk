@@ -1,0 +1,158 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- The tour illustrations, 240 by 150, drawn as vectors in the brand colors. -->
+  <LinearGradientBrush x:Key="A1" StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#FFFFD072" Offset="0"/><GradientStop Color="#FFF09A1E" Offset="1"/></LinearGradientBrush>
+  <SolidColorBrush x:Key="G1" Color="#FF2A2D33"/>
+  <SolidColorBrush x:Key="G2" Color="#FF363A41"/>
+  <SolidColorBrush x:Key="G3" Color="#FF464B54"/>
+  <SolidColorBrush x:Key="Lit" Color="#FFFFC85A"/>
+  <SolidColorBrush x:Key="Dim" Color="#33FFB531"/>
+  <Pen x:Key="Edge" Brush="#33F2E9DA" Thickness="1"/>
+  <Pen x:Key="AmberPen" Brush="#FFFFB531" Thickness="2" StartLineCap="Round" EndLineCap="Round"/>
+  <Pen x:Key="DashPen" Brush="#FFFFB531" Thickness="2" DashCap="Round" StartLineCap="Round" EndLineCap="Round">
+    <Pen.DashStyle><DashStyle Dashes="0.1,3"/></Pen.DashStyle>
+  </Pen>
+
+  <DrawingImage x:Key="art.city">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Brush="#FF1A1C20" Pen="{StaticResource Edge}" Geometry="M120,70 L210,115 L120,148 L30,115 Z"/>
+        <GeometryDrawing Brush="#40FFB531" Geometry="M120,104 L150,119 L120,130 L90,119 Z"/>
+        <!-- tower left -->
+        <GeometryDrawing Brush="{StaticResource G2}" Geometry="M58,64 L82,76 L82,122 L58,110 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Geometry="M82,76 L106,64 L106,110 L82,122 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M58,64 L82,52 L106,64 L82,76 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M63,74 h5 v6 h-5 Z M71,78 h5 v6 h-5 Z M63,88 h5 v6 h-5 Z M88,80 h5 v6 h-5 Z M96,76 h5 v6 h-5 Z M96,90 h5 v6 h-5 Z"/>
+        <!-- tall center -->
+        <GeometryDrawing Brush="{StaticResource G2}" Geometry="M108,34 L130,45 L130,112 L108,101 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Geometry="M130,45 L152,34 L152,101 L130,112 Z"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M108,34 L130,23 L152,34 L130,45 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M113,50 h4 v6 h-4 Z M121,54 h4 v6 h-4 Z M113,66 h4 v6 h-4 Z M121,84 h4 v6 h-4 Z M136,52 h4 v6 h-4 Z M144,48 h4 v6 h-4 Z M144,70 h4 v6 h-4 Z M136,84 h4 v6 h-4 Z"/>
+        <!-- small right -->
+        <GeometryDrawing Brush="{StaticResource G2}" Geometry="M154,82 L174,92 L174,124 L154,114 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Geometry="M174,92 L194,82 L194,114 L174,124 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M154,82 L174,72 L194,82 L174,92 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M159,94 h4 v5 h-4 Z M180,96 h4 v5 h-4 Z M187,92 h4 v5 h-4 Z"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M82,124 Q120,140 174,126"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M127,128 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.agents">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M64,96 L120,58 L176,96 M64,96 L176,96"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M120,30 L144,44 L144,72 L120,86 L96,72 L96,44 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M110,54 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z M124,54 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z M110,64 Q120,72 130,64 L128,62 Q120,68 112,62 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Pen="{StaticResource Edge}" Geometry="M64,76 L84,88 L84,112 L64,124 L44,112 L44,88 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M56,98 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z M67,98 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Pen="{StaticResource Edge}" Geometry="M176,76 L196,88 L196,112 L176,124 L156,112 L156,88 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M168,98 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z M179,98 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M150,18 h62 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-46 l-10,8 v-8 h-6 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M154,28 h44 v3 h-44 Z M154,36 h30 v3 h-30 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M28,22 h56 a8,8 0 0 1 8,8 v12 a8,8 0 0 1 -8,8 h-6 v8 l-10,-8 h-40 a8,8 0 0 1 -8,-8 v-12 a8,8 0 0 1 8,-8 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M34,32 l4,4 l8,-8 l2,2 l-10,10 l-6,-6 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M52,32 h28 v3 h-28 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.p2p">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M74,75 C100,40 140,40 166,75"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M74,75 C100,110 140,110 166,75"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M52,48 L76,62 L76,90 L52,104 L28,90 L28,62 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M28,70 H76 V74 H28 Z M28,80 H76 V84 H28 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Pen="{StaticResource Edge}" Geometry="M188,48 L212,62 L212,90 L188,104 L164,90 L164,62 Z"/>
+        <GeometryDrawing Brush="#80FFB531" Geometry="M164,70 H212 V74 H164 Z M164,80 H212 V84 H164 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M104,58 h32 a6,6 0 0 1 6,6 v26 a6,6 0 0 1 -6,6 h-32 a6,6 0 0 1 -6,-6 v-26 a6,6 0 0 1 6,-6 Z"/>
+        <GeometryDrawing Pen="{StaticResource AmberPen}" Geometry="M110,58 v-8 a10,10 0 0 1 20,0 v8"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M116,74 a4,4 0 1 0 8,0 a4,4 0 1 0 -8,0 Z M118,76 h4 v10 h-4 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M96,124 h48 v3 h-48 Z M106,132 h28 v3 h-28 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.compute">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M60,36 h4 v-10 h4 v10 h6 v-10 h4 v10 h6 v-10 h4 v10 h4 v4 H60 Z M60,110 H96 v4 h-4 v10 h-4 v-10 h-6 v10 h-4 v-10 h-6 v10 h-4 v-10 h-4 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M46,40 h64 a6,6 0 0 1 6,6 v58 a6,6 0 0 1 -6,6 h-64 a6,6 0 0 1 -6,-6 v-58 a6,6 0 0 1 6,-6 Z"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M60,56 h36 a4,4 0 0 1 4,4 v30 a4,4 0 0 1 -4,4 h-36 a4,4 0 0 1 -4,-4 v-30 a4,4 0 0 1 4,-4 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M66,68 H90 V71 H66 Z M66,78 H90 V81 H66 Z"/>
+        <GeometryDrawing Pen="{StaticResource AmberPen}" Geometry="M126,62 H172 M164,54 L172,62 L164,70"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M172,88 H126 M134,80 L126,88 L134,96"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M184,44 h28 a5,5 0 0 1 5,5 v52 a5,5 0 0 1 -5,5 h-28 a5,5 0 0 1 -5,-5 v-52 a5,5 0 0 1 5,-5 Z"/>
+        <GeometryDrawing Brush="{StaticResource Dim}" Geometry="M187,90 h22 v10 h-22 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M187,90 h14 v10 h-14 Z M187,54 h22 v3 h-22 Z M187,62 h16 v3 h-16 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M58,128 h44 v3 h-44 Z M182,118 h34 v3 h-34 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.workbench">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M30,18 h180 a8,8 0 0 1 8,8 v98 a8,8 0 0 1 -8,8 h-180 a8,8 0 0 1 -8,-8 v-98 a8,8 0 0 1 8,-8 Z"/>
+        <GeometryDrawing Brush="#FF202227" Geometry="M22,34 H218 V36 H22 Z M64,36 H66 V132 H64 Z"/>
+        <GeometryDrawing Brush="#FFE5604F" Geometry="M32,26 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z"/>
+        <GeometryDrawing Brush="#FFFEBC2E" Geometry="M42,26 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z"/>
+        <GeometryDrawing Brush="#FF28C840" Geometry="M52,26 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z"/>
+        <GeometryDrawing Brush="#59F2E9DA" Geometry="M30,46 h26 v3 h-26 Z M34,54 h22 v3 h-22 Z M34,62 h18 v3 h-18 Z M30,70 h26 v3 h-26 Z M34,78 h20 v3 h-20 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M76,46 h18 v4 h-18 Z M120,54 h30 v4 h-30 Z M98,70 h22 v4 h-22 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M98,46 h50 v4 h-50 Z M86,54 h30 v4 h-30 Z M86,62 h70 v4 h-70 Z M86,70 h8 v4 h-8 Z M124,70 h40 v4 h-40 Z M76,78 h60 v4 h-60 Z"/>
+        <GeometryDrawing Brush="#FF0D0E10" Geometry="M66,92 H218 V124 a8,8 0 0 1 -8,8 H66 Z"/>
+        <GeometryDrawing Pen="{StaticResource AmberPen}" Geometry="M76,104 l6,4 l-6,4"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M88,106 h56 v3 h-56 Z"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M148,104 h6 v8 h-6 Z"/>
+        <GeometryDrawing Brush="#59F2E9DA" Geometry="M76,118 h90 v3 h-90 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.remote">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M20,34 h88 a6,6 0 0 1 6,6 v54 a6,6 0 0 1 -6,6 h-88 a6,6 0 0 1 -6,-6 v-54 a6,6 0 0 1 6,-6 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M58,100 h12 v14 h-12 Z M46,114 h36 v4 h-36 Z"/>
+        <GeometryDrawing Brush="#FF202227" Geometry="M22,42 h84 v50 h-84 Z"/>
+        <GeometryDrawing Brush="{StaticResource Dim}" Geometry="M30,50 h40 v28 h-40 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M132,30 h88 a6,6 0 0 1 6,6 v58 a6,6 0 0 1 -6,6 h-88 a6,6 0 0 1 -6,-6 v-58 a6,6 0 0 1 6,-6 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M170,100 h12 v14 h-12 Z M158,114 h36 v4 h-36 Z"/>
+        <GeometryDrawing Brush="#FF202227" Geometry="M134,38 h84 v54 h-84 Z"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M142,46 h44 v30 h-44 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M148,54 h28 v3 h-28 Z M148,62 h20 v3 h-20 Z"/>
+        <GeometryDrawing Brush="#FFF2E9DA" Pen="{StaticResource Edge}" Geometry="M196,64 L196,84 L201,79 L205,88 L209,86 L205,77 L212,77 Z"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M100,124 Q120,134 152,124"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M117,128 a3,3 0 1 0 6,0 a3,3 0 1 0 -6,0 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="art.phone">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#00000000" Geometry="M0,0 H240 V150 H0 Z"/>
+        <GeometryDrawing Brush="{StaticResource G1}" Pen="{StaticResource Edge}" Geometry="M96,8 h48 a10,10 0 0 1 10,10 v114 a10,10 0 0 1 -10,10 h-48 a10,10 0 0 1 -10,-10 v-114 a10,10 0 0 1 10,-10 Z"/>
+        <GeometryDrawing Brush="#FF0D0E10" Geometry="M91,22 h58 v104 h-58 Z"/>
+        <GeometryDrawing Brush="{StaticResource G3}" Geometry="M112,14 h16 v3 h-16 Z M110,132 h20 v3 h-20 Z"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M120,32 L132,39 L132,53 L120,60 L108,53 L108,39 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M108,44 H132 V46 H108 Z M108,49 H132 V51 H108 Z"/>
+        <GeometryDrawing Brush="#FF22252A" Geometry="M96,70 h48 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-48 a4,4 0 0 1 -4,-4 v-14 a4,4 0 0 1 4,-4 Z"/>
+        <GeometryDrawing Brush="#80F2E9DA" Geometry="M98,76 h34 v3 h-34 Z M98,83 h24 v3 h-24 Z"/>
+        <GeometryDrawing Brush="{StaticResource A1}" Geometry="M98,100 h44 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-44 a4,4 0 0 1 -4,-4 v-6 a4,4 0 0 1 4,-4 Z"/>
+        <GeometryDrawing Brush="#E61B1714" Geometry="M110,106 h20 v2 h-20 Z"/>
+        <GeometryDrawing Pen="{StaticResource DashPen}" Geometry="M60,60 Q72,48 84,56 M180,96 Q170,108 158,100"/>
+        <GeometryDrawing Brush="{StaticResource Lit}" Geometry="M52,60 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z M176,96 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+</ResourceDictionary>

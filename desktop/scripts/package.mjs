@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { RUNTIME, BINARIES } from '../platform.js';
 import { sha256 } from '../runtime.js';
 import { extractEntry } from '../zip.js';
+import { packagedHelperAllowed } from '../native.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
@@ -30,8 +31,13 @@ const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'))
 
 /** Copies what npm would publish (package.json "files"), always with desktop/. */
 function copyApp(dest) {
-  const files = new Set([...(pkg.files || []), 'desktop', 'package.json', 'LICENSE']);
-  const skip = (rel) => /^desktop[\\/](scripts|launcher|bin)([\\/]|$)/.test(rel) || /^desktop[\\/]icons[\\/].*\.(icns|ico)$/.test(rel) || /(^|[\\/])node_modules([\\/]|$)/.test(rel);
+  // "!path" entries of package.json files are left out, as npm does.
+  const slash = (p) => p.split(path.sep).join('/');
+  const excluded = (pkg.files || []).filter((f) => f.startsWith('!')).map((f) => f.slice(1));
+  const files = new Set([...(pkg.files || []).filter((f) => !f.startsWith('!')), 'desktop', 'package.json', 'LICENSE']);
+  // Only the native helpers desktop/native.js lists (with a pinned hash) go into a package.
+  const helperOk = (rel) => !/^desktop[\\/]helpers([\\/]|$)/.test(rel) || packagedHelperAllowed(rel.replace(/^desktop[\\/]/, ''));
+  const skip = (rel) => excluded.some((x) => slash(rel) === x || slash(rel).startsWith(`${x}/`)) || !helperOk(rel) || /^desktop[\\/](scripts|launcher|bin)([\\/]|$)/.test(rel) || /^desktop[\\/]icons[\\/].*\.(icns|ico)$/.test(rel) || /(^|[\\/])node_modules([\\/]|$)/.test(rel);
   for (const f of files) {
     const src = path.join(ROOT, f);
     if (!fs.existsSync(src)) continue;

@@ -12,10 +12,30 @@ import { WindowStore, MIN } from './state.js';
 import { lockFile, acquireLock, releaseLock } from './instance.js';
 import { openAppWindow, openDefaultBrowser } from './browser.js';
 import { desktopStrings, pickLocale } from './strings.js';
+import { detectInstall } from './update/layout.js';
+import { UpdateService } from './update/service.js';
+import { GALLERY, readProfile, writeProfile } from './profile/index.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SHELL = path.join(HERE, 'shell.html');
 const OS_NAME = { win32: 'windows', darwin: 'macos', linux: 'linux' };
+
+/** The only addresses the About panel and the update panel may open. */
+export const LINKS = Object.freeze({
+  repo: 'https://github.com/kwy404/hivedesk',
+  npm: 'https://www.npmjs.com/package/hivedesk',
+  site: 'https://kwy404.github.io/hivedesk/',
+  github: 'https://github.com/kwy404',
+  linkedin: 'https://www.linkedin.com/in/alexandre-silva-173687256/',
+  releases: 'https://github.com/kwy404/hivedesk/releases'
+});
+
+/** A link id, or the page of one release (only for a valid version). */
+export function linkUrl(id, version) {
+  if (Object.hasOwn(LINKS, id)) return LINKS[id];
+  if (id === 'release' && /^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$/.test(String(version || ''))) return `${LINKS.releases}/tag/v${version}`;
+  return null;
+}
 
 function readBody(req, limit = 64 * 1024) {
   return new Promise((resolve) => {
@@ -93,6 +113,26 @@ export async function openDesktop(o) {
     if (!got.ok) log(`another hivedesk (pid ${got.existing?.pid}) holds ${lock}`);
   }
 
+  // Updates: off in hidden test runs and with HIVEDESK_NO_UPDATE=1.
+  let updates = null;
+  if (!hidden && env.HIVEDESK_NO_UPDATE !== '1' && o.version) {
+    try {
+      const install = detectInstall({ home: o.home, env });
+      updates = new UpdateService({ home: o.home, version: o.version, locale: S.locale, install, log, env, requestQuit: () => { quit().catch(() => {}); } });
+      updates.on('notice', (n) => { if (install.kind === 'npx') console.log(`  ${S.t('cli.desktop.update.npxLine', { version: n.version })}`); });
+      let readyShown = null;
+      updates.on('change', (st) => {
+        if (st.status === 'ready' && readyShown !== st.version) {
+          readyShown = st.version;
+          if (!focused) notify(S.t('cli.desktop.notify.updateReady'), S.t('cli.desktop.notify.updateReadyBody', { version: st.version }));
+        }
+      });
+    } catch (err) {
+      log(`update: ${err.message}`);
+      updates = null;
+    }
+  }
+
   const crewPaused = () => {
     const crew = bus.state.crew || [];
     return crew.length > 0 && crew.every((w) => w.paused);
@@ -135,6 +175,8 @@ export async function openDesktop(o) {
   async function quit() {
     if (quitting) return;
     quitting = true;
+    try { updates?.applyOnQuit(); } catch (err) { log(`update: ${err.message}`); }
+    updates?.stop();
     await saveState();
     store.flush();
     if (!hidden) releaseLock(lock);
@@ -147,8 +189,12 @@ export async function openDesktop(o) {
     native.call('os.showNotification', { title, content: String(content || '').slice(0, 240), icon: 'INFO' }).catch(() => {});
   }
 
+  // While a remote screen share is active (src/remote/), the tray turns red and offers Stop first.
+  const remoteSharing = () => { try { return (o.app.remote?.desk?.snapshot?.().shares || []).length > 0; } catch { return false; } };
+  const trayIcon = () => (remoteSharing() ? '/resources/icons/trayIconRemote.png' : '/resources/icons/trayIcon.png');
   function trayMenu() {
     return [
+      ...(remoteSharing() ? [{ id: 'remoteStop', text: S.t('cli.desktop.tray.remoteStop') }, { id: 'sep0', text: '-' }] : []),
       { id: 'open', text: S.t('cli.desktop.tray.open') },
       { id: 'pause', text: S.t(crewPaused() ? 'cli.desktop.tray.resume' : 'cli.desktop.tray.pause') },
       { id: 'sep1', text: '-' },
@@ -159,7 +205,7 @@ export async function openDesktop(o) {
   }
   function updateTray() {
     if (!trayOk || !native || native.closed) return;
-    native.call('os.setTray', { icon: '/resources/icons/trayIcon.png', menuItems: trayMenu() }).catch(() => {});
+    native.call('os.setTray', { icon: trayIcon(), menuItems: trayMenu() }).catch(() => {});
   }
 
   /** Switches the project folder: the same command starts again in the new folder. */
@@ -200,7 +246,11 @@ export async function openDesktop(o) {
     closeToTray: S.t('cli.desktop.shell.closeToTray'), systemFrame: S.t('cli.desktop.shell.systemFrame'),
     minimize: S.t('cli.desktop.shell.minimize'), maximize: S.t('cli.desktop.shell.maximize'), restore: S.t('cli.desktop.shell.restore'),
     close: S.t('cli.desktop.shell.close'), pause: S.t('cli.desktop.tray.pause'), resume: S.t('cli.desktop.tray.resume'),
-    paused: S.t('cli.desktop.shell.paused')
+    paused: S.t('cli.desktop.shell.paused'),
+    checkUpdates: S.t('cli.desktop.shell.checkUpdates'), autoUpdate: S.t('cli.desktop.shell.autoUpdate'), beta: S.t('cli.desktop.shell.beta'),
+    about: S.t('cli.desktop.shell.about'),
+    profile: Object.fromEntries(Object.entries(S.table).filter(([k]) => k.startsWith('cli.desktop.profile.')).map(([k, v]) => [k.slice('cli.desktop.profile.'.length), v])),
+    update: Object.fromEntries(Object.entries(S.table).filter(([k]) => k.startsWith('cli.desktop.update.') || k.startsWith('cli.desktop.about.')).map(([k, v]) => [k.slice('cli.desktop.'.length), v]))
   });
   const publicState = (extra = {}) => ({
     mode, platform, native: mode === 'native', closeToTray: settings.closeToTray, frame: settings.frame,
@@ -208,7 +258,12 @@ export async function openDesktop(o) {
   });
   server.route('GET', '/api/desktop/shell', (req, res) => {
     const html = fs.readFileSync(SHELL, 'utf8');
-    const cfg = { start, platform, native: mode === 'native', strings: shellLabels(), min: MIN, state: publicState() };
+    const cfg = {
+      start, platform, native: mode === 'native', strings: shellLabels(), min: MIN, state: publicState(), version: o.version || '', locale: S.locale,
+      update: updates ? updates.state() : null,
+      // First run (the DMG and the Linux packages have no installer wizard): ask for a name and an avatar once.
+      profile: { needed: !hidden && !readProfile(o.home) && !settings.profileAsked, gallery: GALLERY.avatars, nameMax: 32 }
+    };
     const body = html
       .replace('{{LANG}}', S.locale)
       .replace('{{PLATFORM}}', platform === 'macos' ? 'mac' : platform)
@@ -258,6 +313,49 @@ export async function openDesktop(o) {
     const b = await readBody(req);
     settings = store.setSettings(b);
     json(res, 200, publicState());
+  });
+  server.route('GET', '/api/desktop/update', (req, res) => {
+    json(res, 200, updates ? updates.state() : { status: 'off' });
+  });
+  server.route('POST', '/api/desktop/update', async (req, res) => {
+    const b = await readBody(req);
+    if (!updates) return json(res, 409, { error: 'updates are off in this run' });
+    try {
+      switch (b.op) {
+        case 'check': await updates.check({ manual: true }); break;
+        case 'now': updates.updateNow().catch((err) => log(`update: ${err.message}`)); break;
+        case 'onClose': updates.onClose(); break;
+        case 'later': updates.later(); break;
+        case 'retry': updates.download().catch(() => {}); break;
+        case 'settings': updates.setSettings({ autoUpdate: b.autoUpdate, channel: b.channel }); break;
+        default: return json(res, 400, { error: 'unknown op' });
+      }
+      json(res, 200, updates.state());
+    } catch (err) {
+      json(res, 500, { error: err.message });
+    }
+  });
+  server.route('POST', '/api/desktop/link', async (req, res) => {
+    const b = await readBody(req);
+    const url = linkUrl(b.id, updates?.state().version);
+    if (!url) return json(res, 400, { error: 'unknown link' });
+    let ok = false;
+    if (native && !native.closed) {
+      try { await native.call('os.open', { url }); ok = true; } catch { ok = false; }
+    }
+    if (!ok) ok = !!openDefaultBrowser(url);
+    json(res, 200, { ok });
+  });
+  server.route('POST', '/api/desktop/profile', async (req, res) => {
+    const b = await readBody(req);
+    if (b.skip === true) { settings = store.setSettings({ profileAsked: true }); return json(res, 200, { ok: true, skipped: true }); }
+    try {
+      const p = writeProfile(o.home, { name: b.name, avatar: b.avatar });
+      settings = store.setSettings({ profileAsked: true });
+      json(res, 200, { ok: true, profile: p });
+    } catch (err) {
+      json(res, 400, { error: err.message });
+    }
   });
   server.route('POST', '/api/desktop/crew', async (req, res) => {
     const b = await readBody(req);
@@ -320,6 +418,13 @@ export async function openDesktop(o) {
     else if (ev.type === 'brief.proposed') notify(S.t('cli.desktop.notify.brief'), S.t('cli.desktop.notify.briefBody'));
     else if (ev.type === 'crew.updated') updateTray();
   });
+  // The remote screen state changes are live frames (remote.changed): the tray follows them.
+  let remoteWas = false;
+  const offRemote = bus.onLive?.((type) => {
+    if (type !== 'remote.changed' && type !== 'remote.ended') return;
+    const now = remoteSharing();
+    if (now !== remoteWas) { remoteWas = now; updateTray(); }
+  });
 
   // Decide and open.
   const webview = key ? checkWebview() : { ok: false, reason: 'unsupported' };
@@ -345,7 +450,8 @@ export async function openDesktop(o) {
       native.on('windowBlur', () => { focused = false; });
       native.on('trayMenuItemClicked', (item) => {
         const id = item?.id;
-        if (id === 'open') show();
+        if (id === 'remoteStop') { try { o.app.remote?.stopAll?.('tray'); } catch { /* nothing shared */ } updateTray(); }
+        else if (id === 'open') show();
         else if (id === 'pause') setCrewPaused(!crewPaused());
         else if (id === 'folder') revealFolder(o.dir);
         else if (id === 'quit') quit();
@@ -355,7 +461,7 @@ export async function openDesktop(o) {
       const ok = await Promise.race([ready, timer]);
       if (!ok) throw Object.assign(new Error('not ready'), { code: 'not_ready' });
       if (!hidden) {
-        try { await native.call('os.setTray', { icon: '/resources/icons/trayIcon.png', menuItems: trayMenu() }); trayOk = true; } catch (err) { log(`tray: ${err.message}`); }
+        try { await native.call('os.setTray', { icon: trayIcon(), menuItems: trayMenu() }); trayOk = true; } catch (err) { log(`tray: ${err.message}`); }
       }
       log(S.t('cli.desktop.opened'));
     } catch (err) {
@@ -376,6 +482,12 @@ export async function openDesktop(o) {
     }
   }
 
+  // The window (or the browser fallback) is up: this is the first launch health mark of an update.
+  if (updates) {
+    try { updates.reportHealthy(); } catch (err) { log(`update: ${err.message}`); }
+    updates.start();
+  }
+
   // Keep the window state fresh while it is shown (the runtime sends no move events).
   const poll = setInterval(() => { if (focused) saveState().catch(() => {}); }, 5000);
   poll.unref?.();
@@ -391,8 +503,11 @@ export async function openDesktop(o) {
     mode, decision, readyInfo, ready,
     get native() { return native; },
     show, quit,
+    updates,
     async close() {
       offBus();
+      offRemote?.();
+      updates?.stop();
       clearInterval(poll);
       process.removeListener('exit', onExit);
       store.flush();

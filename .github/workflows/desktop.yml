@@ -1,9 +1,9 @@
 name: Desktop
 
-# On a version tag (v0.1.0, v0.2.0, ...): builds the downloadable desktop packages and attaches them,
-# with the runtime binaries that `npx hivedesk` downloads, to the GitHub release of that tag.
-# Run it by hand (workflow_dispatch) to build the packages as workflow artifacts only.
-# What each package contains: desktop/README.md.
+# On a version tag (v1.0.0, v1.1.0-beta.1, ...): builds the installers and app packages for Windows, macOS
+# and Linux, the signed update manifest, and attaches all of them to the GitHub release of that tag.
+# Run it by hand (workflow_dispatch) to build everything as workflow artifacts only (nothing is signed or
+# published then). What each file is: desktop/README.md. How to release: desktop/RELEASE.md.
 
 on:
   push:
@@ -39,6 +39,18 @@ jobs:
         run: |
           v="$(node -p "require('./package.json').version")"
           test "v$v" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} does not match package.json $v"; exit 1; }
+      # Without the secret the key check warns and the release goes out without latest.json (signed later,
+      # desktop/scripts/sign-release.mjs). A key that is set but does not match the embedded public key stops here.
+      - name: Update signing key
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          HIVEDESK_UPDATE_KEY: ${{ secrets.HIVEDESK_UPDATE_KEY }}
+        run: node desktop/scripts/manifest.mjs --check --skip-without-key
+      - name: Release notes in 10 languages
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          node -e "const n=require('./desktop/release-notes/'+process.argv[1]+'.json');const l=['en','pt-BR','es','fr','de','it','ja','ko','zh-CN','ru'].filter(k=>!n[k]);if(l.length){console.error('release notes miss '+l.join(', '));process.exit(1)}" "$v"
       - run: npx vitest run test/desktop
 
   runtime:
@@ -58,7 +70,7 @@ jobs:
           if-no-files-found: error
 
   windows:
-    name: Windows x64
+    name: Windows x64 (package, hivedesk-setup.exe, offline installer)
     needs: check
     runs-on: windows-latest
     steps:
@@ -86,11 +98,32 @@ jobs:
       - name: Starts (version check with the bundled Node)
         shell: pwsh
         run: stage\hivedesk\node\node.exe stage\hivedesk\app\desktop\main.js --version
-      - name: Zip
+      - name: App package (zip, what the installers and the updater download)
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Compress-Archive -Path stage\hivedesk -DestinationPath dist\hivedesk-windows-x64.zip
+      - name: Installers (online, pinned to this package by SHA-256, and offline)
+        shell: pwsh
+        run: node desktop/scripts/build-setup.mjs --zip dist\hivedesk-windows-x64.zip --out dist\hivedesk-setup.exe --offline dist\hivedesk-setup-offline.exe
+      - name: Installer self-test (in a temporary prefix, no window)
+        shell: pwsh
+        run: |
+          foreach ($exe in @('hivedesk-setup.exe', 'hivedesk-setup-offline.exe')) {
+            $prefix = Join-Path $env:RUNNER_TEMP ("selftest-" + $exe)
+            $p = Start-Process -FilePath "dist\$exe" -ArgumentList @('--self-test', '--prefix', "`"$prefix`"", '--payload', "`"$PWD\dist\hivedesk-windows-x64.zip`"") -Wait -PassThru -WindowStyle Hidden
+            Get-Content "$prefix\self-test.log"
+            if ($p.ExitCode -ne 0) { Write-Error "$exe self-test failed"; exit 1 }
+          }
+      - name: Installer screenshots (offscreen)
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\hivedesk-setup.exe -ArgumentList @('--render', "`"$env:RUNNER_TEMP\screens`"", '--lang', 'all') -Wait -PassThru -WindowStyle Hidden
+          if ($p.ExitCode -ne 0) { exit 1 }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-screens
+          path: ${{ runner.temp }}/screens/*
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -98,7 +131,7 @@ jobs:
           if-no-files-found: error
 
   macos:
-    name: macOS universal
+    name: macOS universal (app package and hivedesk-macos.dmg)
     needs: check
     runs-on: macos-latest
     steps:
@@ -123,10 +156,15 @@ jobs:
           codesign --verify --deep --verbose=2 stage/hivedesk.app
       - name: Starts (version check with the bundled Node)
         run: stage/hivedesk.app/Contents/Resources/node/bin/node stage/hivedesk.app/Contents/Resources/app/desktop/main.js --version
-      - name: Zip
+      - name: App package (zip, what the updater downloads)
         run: |
           mkdir -p dist
           ditto -c -k --sequesterRsrc --keepParent stage/hivedesk.app dist/hivedesk-macos-universal.zip
+      - name: DMG
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          desktop/installer/macos/make-dmg.sh stage/hivedesk.app dist/hivedesk-macos.dmg "$v"
+          hdiutil verify dist/hivedesk-macos.dmg
       - uses: actions/upload-artifact@v4
         with:
           name: macos
@@ -134,7 +172,7 @@ jobs:
           if-no-files-found: error
 
   linux:
-    name: Linux x64
+    name: Linux x64 (package, AppImage, .deb, .rpm, install script)
     needs: check
     runs-on: ubuntu-latest
     steps:
@@ -148,12 +186,11 @@ jobs:
         run: node desktop/scripts/package.mjs --target linux-x64 --node "$NODE_BIN" --out stage
       - name: Starts (version check with the bundled Node)
         run: stage/hivedesk/node/bin/node stage/hivedesk/app/desktop/main.js --version
-      - name: Archive
+      - name: App package (tar.gz, what the install script and the updater download)
         run: |
           mkdir -p dist
           tar -czf dist/hivedesk-linux-x64.tar.gz -C stage hivedesk
       - name: AppImage
-        continue-on-error: true
         run: |
           curl -fsSL -o build/appimagetool "$APPIMAGETOOL_URL"
           echo "$APPIMAGETOOL_SHA256  build/appimagetool" | sha256sum -c -
@@ -165,6 +202,35 @@ jobs:
           cp desktop/launcher/linux/hivedesk.desktop build/AppDir/hivedesk.desktop
           cp desktop/icons/icon-512.png build/AppDir/hivedesk.png
           APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 build/appimagetool --no-appstream build/AppDir dist/hivedesk-linux-x86_64.AppImage
+      - name: .deb and .rpm
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ruby ruby-dev rpm >/dev/null
+          sudo gem install --no-document fpm >/dev/null
+          v="$(node -p "require('./package.json').version")"
+          pv="$(echo "$v" | tr '-' '~')"
+          root=build/pkgroot
+          mkdir -p "$root/opt" "$root/usr/bin" "$root/usr/share/applications" "$root/usr/share/icons/hicolor/512x512/apps"
+          cp -a stage/hivedesk "$root/opt/hivedesk"
+          ln -s /opt/hivedesk/hivedesk "$root/usr/bin/hivedesk"
+          sed 's|^Exec=.*|Exec=/opt/hivedesk/hivedesk %U|' desktop/launcher/linux/hivedesk.desktop > "$root/usr/share/applications/hivedesk.desktop"
+          cp desktop/icons/icon-512.png "$root/usr/share/icons/hicolor/512x512/apps/hivedesk.png"
+          common="-s dir -C $root -n hivedesk -v $pv --license MIT --vendor kwy404 --maintainer kwy404 --url https://github.com/kwy404/hivedesk --description 'Your agents. Your machines. Your City. A crew of AI workers that build real files on your machine with a local model.' --architecture x86_64"
+          eval fpm $common -t deb --deb-recommends libwebkit2gtk-4.1-0 --deb-recommends libayatana-appindicator3-1 -p "dist/hivedesk_${v}_amd64.deb" .
+          eval fpm $common -t rpm --rpm-os linux -p "dist/hivedesk-${v}-1.x86_64.rpm" .
+          dpkg-deb --info "dist/hivedesk_${v}_amd64.deb"
+          rpm -qip "dist/hivedesk-${v}-1.x86_64.rpm"
+      - name: Install script
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          sed "s/@VERSION@/$v/" desktop/installer/linux/hivedesk-linux-install.sh > dist/hivedesk-linux-install.sh
+          chmod +x dist/hivedesk-linux-install.sh
+          # Try it against the files just built, in a temporary prefix.
+          (cd dist && sha256sum hivedesk-linux-x64.tar.gz > "$RUNNER_TEMP/SHA256SUMS.txt")
+          cp dist/hivedesk-linux-x64.tar.gz "$RUNNER_TEMP/"
+          sh dist/hivedesk-linux-install.sh --from "$RUNNER_TEMP" --prefix "$RUNNER_TEMP/local"
+          test "$(cat "$RUNNER_TEMP/local/share/hivedesk/current.txt")" = "$v"
+          "$RUNNER_TEMP/local/share/hivedesk/hivedesk" --version
       - uses: actions/upload-artifact@v4
         with:
           name: linux
@@ -172,17 +238,33 @@ jobs:
           if-no-files-found: error
 
   release:
-    name: Attach to the release
+    name: Sign the update manifest and attach everything to the release
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [runtime, windows, macos, linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - uses: actions/download-artifact@v4
         with:
           path: dist
           merge-multiple: true
+          pattern: '{runtime,windows,macos,linux}'
+      - name: Every file is there
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          for f in hivedesk-setup.exe hivedesk-setup-offline.exe hivedesk-windows-x64.zip hivedesk-macos.dmg hivedesk-macos-universal.zip \
+                   hivedesk-linux-x86_64.AppImage hivedesk-linux-x64.tar.gz "hivedesk_${v}_amd64.deb" "hivedesk-${v}-1.x86_64.rpm" hivedesk-linux-install.sh; do
+            test -s "dist/$f" || { echo "::error::missing dist/$f"; exit 1; }
+          done
+      - name: Update manifest (latest.json), signed with HIVEDESK_UPDATE_KEY when it is set
+        env:
+          HIVEDESK_UPDATE_KEY: ${{ secrets.HIVEDESK_UPDATE_KEY }}
+        run: node desktop/scripts/manifest.mjs --skip-without-key --dist dist --version "$(node -p "require('./package.json').version")" --tag "${GITHUB_REF_NAME}"
       - name: Checksums
         run: |
           cd dist
@@ -194,7 +276,9 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           tag="${GITHUB_REF_NAME}"
+          pre=""
+          case "$tag" in *-*) pre="--prerelease" ;; esac
           if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --title "hivedesk ${tag#v}" --notes "Downloads for Windows, macOS and Linux. They are not signed: see desktop/README.md in the repository for the first launch prompts. Or run npx hivedesk with Node.js 18 or newer."
+            gh release create "$tag" $pre --title "hivedesk ${tag#v}" --notes-file <(node -p "require('./desktop/release-notes/${tag#v}.json').en + '\n\nWindows: hivedesk-setup.exe (or hivedesk-setup-offline.exe). macOS: hivedesk-macos.dmg. Linux: hivedesk-linux-x86_64.AppImage, the .deb, the .rpm, or sh hivedesk-linux-install.sh. The installers are not signed with paid certificates: see desktop/README.md for the first launch prompts. Or run npx hivedesk with Node.js 20 or newer.'")
           fi
           gh release upload "$tag" dist/* --clobber
