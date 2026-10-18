@@ -5,11 +5,14 @@
 // It runs inside the host engine on the same event log, so the existing Code together relay
 // (engine frames to every guest) replicates it, and a restart replays it.
 import os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ALL_TOOLS } from '../tools/index.js';
 import { guestOf, checkGuest } from '../collab/policy.js';
 import { acceptanceFrom } from '../crew/brief.js';
 import {
-  CITY, ROOMS, ROOM_IDS, WORK_KINDS, SPECIALIZATION, MAX_LOOPS, roomForRole, levelFor, publicMemory, statusForKind, isCityEvent
+  CITY, ROOMS, ROOM_IDS, WORK_KINDS, SPECIALIZATION, MAX_LOOPS, DEFAULT_PIPELINE, PIPELINE_ROLES, roomForRole, levelFor, publicMemory, statusForKind, isCityEvent
 } from './state.js';
 import { CityStore } from './store.js';
 import { pickAgent } from './router.js';
@@ -31,8 +34,12 @@ const COLOR = /^#[0-9a-fA-F]{6}$/;
 const TERMINAL = new Set(['done', 'blocked', 'cancelled']);
 /** Tools a guest's task never gets: no shell, no deletes. */
 export const GUEST_DENY = new Set(['run', 'delete_file']);
-/** The tools a guest's agent comes with: it reads and checks; only the host can grant more. */
-export const GUEST_TOOLS = Object.freeze(['list_files', 'read_file', 'check', 'preview']);
+/** What a friend's contributed agent may use until the host grants more (SEC-2). */
+export const READ_ONLY_TOOLS = Object.freeze(['list_files', 'read_file', 'check']);
+/** Brains a guest can never link to its building (SEC-1): the host's own models. */
+const HOST_BRAINS = new Set(['local', 'main', 'ollama', 'lmstudio', 'openai', 'cloud']);
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+export const STRINGS_FILE = path.join(HERE, '..', '..', 'i18n', 'parts', 'city.en.json');
 export const LIMITS = Object.freeze({
   title: 200, detail: 4000, criteria: 6, criterion: 200, memoryText: 300, memoryEntries: 40, name: 40,
   guestCommands: 40, guestWindowMs: 10_000, presencePerSecond: 15, agentsPerMachine: 4, pipeline: 8,
@@ -82,6 +89,12 @@ export class City {
     this.draining = false;
     this.routeQueued = false;
     this.saveTimers = new Map();
+    /** brainId -> owner ("peer:<id>") of the guest whose lend bridge attached it (SEC-1). */
+    this.brainOwners = new Map();
+    /** brainId -> { tps, at } from the last turn.ended on it: the real tokens per second. */
+    this.lastTps = new Map();
+    /** This engine's PeerId when the p2p identity exists (Stream 2), else null. */
+    this.peerId = opts.peerId || null;
     this.closed = false;
     this.started = false;
     this.cityEvents = 0;
@@ -147,7 +160,7 @@ export class City {
     const machine = {
       id: this.machineId, name: card.name || 'My PC', host: true, owner: 'host', online: true,
       gpu: hw?.gpu || null, ramBytes: hw?.ramBytes, cpus: hw?.cpus || os.cpus()?.length,
-      model: brain?.model || undefined, brainId: local || null, via: 'local'
+      model: brain?.model || undefined, brainId: local || null, via: 'local', ...(this.peerId ? { peerId: this.peerId } : {})
     };
     if (!s.machines[this.machineId]) this.emit('city.machine.joined', { machine: { ...machine, lending: { turns: 0, active: 0 }, agents: [] } });
     else this.emit('city.machine.updated', { machine });
@@ -284,7 +297,10 @@ export class City {
       case 'job.done':
       case 'job.failed':
       case 'job.cancelled': this._jobEnded(e); break;
-      case 'turn.ended': this._borrowTurn(d); break;
+      case 'turn.ended':
+        if (!d.error && d.brainId && d.tps > 0) this.lastTps.set(d.brainId, { tps: d.tps, at: this.now() });
+        this._borrowTurn(d);
+        break;
       case 'queue.updated': this._loads(d); break;
       case 'worker.status': if (d.status === 'idle') this._kick(); break;
     }
@@ -426,7 +442,7 @@ export class City {
     let run;
     if (room.kind === 'board') run = this._plan(t, agent, ctrl, x);
     else if (room.kind === 'review') run = this._review(t, agent, room, ctrl);
-    else if (room.kind === 'test') run = this._test(t);
+    else if (room.kind === 'test') run = this._test(t, agent, ctrl);
     else if (roomId === 'design' || room.executor === 'design') run = this._design(t, agent, ctrl);
     else run = this._work(t, agent, room, ctrl, x);
     Promise.resolve(run).then((res) => this._afterHop(t.id, roomId, agent.id, res, ctrl), (err) => this._afterHop(t.id, roomId, agent.id, { passed: false, issues: [String(err?.message || err).slice(0, 300)], by: 'agent' }, ctrl));
@@ -590,9 +606,77 @@ export class City {
     }
   }
 
-  async _test(t) {
-    const checks = checkFiles(this.toolbox.ws, t.files || [], { links: true });
-    return { passed: checks.passed, issues: checks.issues, by: 'checks' };
+  /**
+   * Test (QA): the project's own `npm test` when package.json has a real test script (approval
+   * rules apply), the static checks otherwise. The run is always asked for, in any approval mode,
+   * when a guest created the task, a friend's agent did its work or it changed package.json (SEC-3).
+   */
+  async _test(t, agent, ctrl) {
+    const script = this._testScript();
+    if (!script) {
+      const checks = checkFiles(this.toolbox.ws, t.files || [], { links: true });
+      // Plus the checks of the library playbooks that fit the task (src/crew/library/hook.js).
+      const lib = this.hive?.playbookTestChecks ? this.hive.playbookTestChecks(t) : null;
+      if (lib && !lib.passed) return { passed: false, issues: [...checks.issues, ...lib.issues].slice(0, 12), by: 'checks' };
+      return { passed: checks.passed, issues: checks.issues, by: 'checks' };
+    }
+    const ask = !!(t.guest || (t.files || []).includes('package.json') || this._remoteWork(t));
+    const workerId = agent?.workerId;
+    if (ask) {
+      // A guest's task or another machine's agent: only the host answers (strict, with the origin on the card).
+      const origin = this._originFor(null, t) || this._remoteOrigin(t);
+      const decision = await this.toolbox.approvals.request({
+        taskId: t.id, workerId, tool: 'run', args: { command: 'npm test' },
+        summary: `Run: npm test (the test script is: ${script.slice(0, 300)})`,
+        ...(origin ? { strict: true, origin } : {})
+      }, ctrl?.signal);
+      if (!decision.approved) return { passed: false, issues: [`npm test was not allowed${decision.note ? `: ${decision.note}` : ''}`], by: 'qa' };
+    }
+    let callId = null;
+    let finished = null;
+    const off = this.bus.on((e) => {
+      if (e.type === 'tool.called' && e.data?.tool === 'run' && e.data.taskId === t.id && e.data.workerId === workerId && !callId) callId = e.data.callId;
+      else if (e.type === 'run.finished' && callId && e.data?.callId === callId) finished = e.data;
+    });
+    let out;
+    try {
+      out = await this.toolbox.execute('run', { command: 'npm test' }, { workerId, taskId: t.id, signal: ctrl?.signal, ...(ask ? { approval: false } : {}) });
+    } finally { off(); }
+    if (!out.ok) return { passed: false, issues: [String(out.error || 'npm test could not run').slice(0, 300)], by: 'qa' };
+    if (!finished) return { passed: false, issues: ['npm test ended without an exit code'], by: 'qa' };
+    if (finished.exitCode === 0 && !finished.timedOut) return { passed: true, issues: [], by: 'qa', tests: true };
+    const tail = [finished.stderr || '', finished.stdout || ''].join('\n').split(/\r?\n/).map((x) => x.trim()).filter(Boolean).slice(-4);
+    const head = finished.timedOut ? 'npm test timed out' : `npm test failed with exit code ${finished.exitCode}`;
+    return { passed: false, issues: [head, ...tail.map((x) => x.slice(0, 200))], by: 'qa', tests: true };
+  }
+
+  /** The workspace's own test script, or null (no package.json, no script, or the npm default stub). */
+  _testScript() {
+    try {
+      if (!this.toolbox.ws.exists('package.json')) return null;
+      const pkg = JSON.parse(this.toolbox.ws.read('package.json'));
+      const s = pkg?.scripts?.test;
+      if (typeof s !== 'string' || !s.trim()) return null;
+      if (/no test specified/.test(s)) return null;
+      return s.trim();
+    } catch { return null; }
+  }
+
+  /** True when an agent that is not homed on this machine did a work hop of this task. */
+  /** The origin of the first agent from another machine that worked on this task, or null. */
+  _remoteOrigin(t) {
+    const authors = new Set([t.author, ...(t.verdicts || []).map((v) => v.agentId)].filter(Boolean));
+    for (const id of authors) {
+      const a = this.state.agents[id];
+      if (a && a.home !== this.machineId) { const m = this.state.machines[a.home]; return { kind: 'guest', id: String(m?.owner || '').replace(/^peer:/, ''), label: m?.name || 'another machine' }; }
+    }
+    return null;
+  }
+
+  _remoteWork(t) {
+    const authors = new Set([t.author, ...(t.verdicts || []).map((v) => v.agentId)].filter(Boolean));
+    for (const id of authors) { const a = this.state.agents[id]; if (a && a.home !== this.machineId) return true; }
+    return false;
   }
 
   _jobFiles(job) {
@@ -619,6 +703,8 @@ export class City {
     const owner = this.jobOwners.get(e.jobId);
     if (owner?.mode === 'hop') return;
     const job = this.bus.state.jobs.find((j) => j.id === e.jobId);
+    // A native 1.0 task run by the crew (src/tasks/crew-executor.js) already is the one task on the board.
+    if (job?.taskRef) return;
     const criteria = acceptanceFrom(job?.brief?.text || '').slice(0, LIMITS.criteria);
     const parent = owner?.mode === 'plan' ? this.state.tasks[owner.taskId] : null;
     const kids = [];
@@ -669,6 +755,7 @@ export class City {
     }
     if (ct.kind !== 'qa') {
       const job = this.bus.state.jobs.find((j) => j.id === e.jobId);
+      if (job?.taskRef) return;
       const owner = this.jobOwners.get(e.jobId);
       this._mirror(ct, e.jobId, acceptanceFrom(job?.brief?.text || ''), owner?.mode === 'plan' ? this.state.tasks[owner.taskId] : null);
     }
@@ -816,39 +903,52 @@ export class City {
     for (const b of Object.values(this.state.borrows)) if (b.status !== 'ended' && this.borrowRt.get(b.id)?.brainId === brainId) this._endBorrow(b.id, 'brain_gone');
   }
 
+  /**
+   * Model slots per machine: how many of its brains run a turn now. This is not CPU or GPU load
+   * (the probes of the compute plane measure those); the UI shows it as "slots busy". tps is the
+   * real tokens per second of the last turn that ended on one of its brains, 0 when none did.
+   */
   _loads(q) {
     const busy = new Set((q.running || []).map((r) => r.brainId));
     for (const m of Object.values(this.state.machines)) {
       if (!m.online) continue;
-      let load;
-      if (m.host) {
-        const own = [...this.scheduler.brains.entries()].filter(([id, slot]) => slot.brain.kind !== 'remote' && !Object.values(this.state.machines).some((x) => !x.host && x.brainId === id));
-        load = own.length ? own.filter(([id]) => busy.has(id)).length / own.length : 0;
-      } else {
-        load = m.brainId && busy.has(m.brainId) ? 1 : 0;
-      }
-      if (this.loads.get(m.id) === load) continue;
+      let ids;
+      if (m.host) ids = [...this.scheduler.brains.entries()].filter(([id, slot]) => slot.brain.kind !== 'remote' && !Object.values(this.state.machines).some((x) => !x.host && x.brainId === id)).map(([id]) => id);
+      else ids = m.brainId ? [m.brainId] : [];
+      const used = ids.filter((id) => busy.has(id)).length;
+      const load = ids.length ? used / ids.length : 0;
+      let tps = 0;
+      for (const id of ids) { const x = this.lastTps.get(id); if (x && x.tps > tps) tps = x.tps; }
+      const key = `${used}/${ids.length}/${tps}`;
+      if (this.loads.get(m.id) === load && this.loadKeys?.get(m.id) === key) continue;
       this.loads.set(m.id, load);
-      this.bus.live('city.machine.load', { machineId: m.id, load, queue: (q.waiting || []).length, tps: 0 });
+      (this.loadKeys ||= new Map()).set(m.id, key);
+      this.bus.live('city.machine.load', { machineId: m.id, load, slots: { busy: used, total: ids.length }, queue: (q.waiting || []).length, tps });
     }
   }
 
   // ---------------------------------------------------------------- machines and friends' agents
-  /** A friend's building joins the city. owner: "peer:<guestId>" (or "host" for a machine of the host's own). */
-  joinMachine(data, owner) {
+  /**
+   * A friend's building joins the city. owner: "peer:<guestId>" (or "host" for a machine of the host's own).
+   * trusted: what the engine itself verified (the p2p adapter passes the session's peerId).
+   */
+  joinMachine(data, owner, trusted = {}) {
     const m = data?.machine || {};
     const id = str(m.id, 30);
     if (!/^m_[0-9a-z_]{1,26}$/.test(id)) fail('bad_request', 'machine.id must look like m_1a2b3c4d');
     if (id === this.machineId) fail('forbidden', 'that is the host machine');
     const old = this.state.machines[id];
     if (old && old.online && old.owner !== owner) fail('forbidden', 'another person is in the city with that machine');
-    const brainId = typeof data.brainId === 'string' && this._lentBy(data.brainId, owner) ? data.brainId : null;
+    const brainId = this._guestBrain(data.brainId, owner);
     const machine = {
       id, name: str(m.name, LIMITS.name) || 'Friend', host: false, owner, online: true,
       gpu: m.gpu && typeof m.gpu === 'object' ? { name: str(m.gpu.name, 80) || undefined, vramBytes: num(m.gpu.vramBytes), backend: str(m.gpu.backend, 20) || undefined } : null,
       ramBytes: num(m.ramBytes), cpus: num(m.cpus), model: str(m.model, 120) || undefined,
       color: COLOR.test(m.color || '') ? m.color : undefined, brainId,
-      via: ['words', 'qr', 'link', 'demo'].includes(data.via) ? data.via : 'words', leftAt: null
+      via: ['words', 'qr', 'link', 'demo', 'invite', 'known'].includes(data.via) ? data.via : 'words', leftAt: null,
+      reported: true,
+      // the PeerId comes only from a verified p2p session (src/city/membership.js), never from the data
+      ...(typeof trusted.peerId === 'string' ? { peerId: trusted.peerId.slice(0, 64) } : {})
     };
     this.emit('city.machine.joined', { machine: { lending: old?.lending || { turns: 0, active: 0 }, agents: old?.agents || [], ...machine } });
     if (brainId) this._restrictBrain(brainId, id);
@@ -862,13 +962,20 @@ export class City {
     return { machineId: id, agents: ids };
   }
 
-  /**
-   * True when brainId is a friend's brain that this owner lent itself (brain.attach with its guest id).
-   * The host's own models, cloud brains and other guests' brains never qualify.
-   */
-  _lentBy(brainId, owner) {
+  /** Records that a guest's own lend bridge attached this brain (only then may it link it, SEC-1). */
+  noteBrainOwner(brainId, owner) {
+    if (typeof brainId === 'string' && typeof owner === 'string' && owner !== 'host') this.brainOwners.set(brainId, owner);
+  }
+
+  /** A brain id a guest may link to its building: a remote brain its own bridge attached, nothing else. */
+  _guestBrain(brainId, owner) {
+    if (typeof brainId !== 'string' || !brainId) return null;
+    if (HOST_BRAINS.has(brainId)) return null;
     const slot = this.scheduler.brains.get(brainId);
-    return !!slot && slot.brain.kind === 'remote' && !!owner && owner !== 'host' && slot.brain.owner === owner;
+    if (!slot || slot.brain.kind !== 'remote') return null;
+    // The owner is recorded by the p2p membership (noteBrainOwner) or by the 0.2.1 lend bridge (brain.owner on brain.attach).
+    if (this.brainOwners.get(brainId) !== owner && slot.brain.owner !== owner) return null;
+    return brainId;
   }
 
   /** A friend's brain inside the city serves only that friend's agents and the borrows its owner accepts. */
@@ -888,16 +995,18 @@ export class City {
     if (!local || !name) return null;
     const id = `${machineId}:${local}`;
     const role = str(a.role, 64) || 'Friend';
-    // A guest's agent reads and checks only; the host grants more with city.agent.update.
     const existing = this.state.agents[id];
-    const granted = existing?.tools && existing.grantedBy === 'host' ? existing.tools : null;
-    const asked = (Array.isArray(a.tools) ? a.tools : GUEST_TOOLS).filter((t) => GUEST_TOOLS.includes(t));
-    const tools = granted || (asked.length ? asked : [...GUEST_TOOLS]);
+    // A friend's agent gets read only tools; only the host can grant it more (city.agent.grant, SEC-2).
+    const granted = existing?.granted || [];
+    const asked = (Array.isArray(a.tools) ? a.tools : READ_ONLY_TOOLS).filter((t) => ALL_TOOLS.includes(t) && !GUEST_DENY.has(t) && (READ_ONLY_TOOLS.includes(t) || granted.includes(t)));
+    // Nothing safe asked for: the read only set, never the crew's default tools.
+    // What the host granted stays as the host set it; otherwise what was asked, else the read only set.
+    const tools = granted.length && existing?.grantedBy === 'host' && Array.isArray(existing.tools) ? [...existing.tools] : asked.length ? asked : [...READ_ONLY_TOOLS];
     let worker = existing ? this.bus.state.crew.find((w) => w.id === existing.workerId) : null;
     if (!worker) worker = this.hive.hire({ name, role, prompt: str(a.prompt, 2000) || undefined, tools, color: a.color, avatar: a.avatar });
     else {
       // A worker hired by an older version may still hold write tools: it comes back with the safe set.
-      if (!granted && (worker.tools || []).some((t) => !tools.includes(t))) worker = this.hive.updateWorker(worker.id, { tools }) || worker;
+      if ((worker.tools || []).some((t) => !tools.includes(t))) worker = this.hive.updateWorker(worker.id, { tools }) || worker;
       this.scheduler.setPaused(worker.id, false);
     }
     const xp = Math.min(Math.max(0, Number(a.xp) || 0), 1e6);
@@ -905,10 +1014,10 @@ export class City {
     const m = this.state.machines[machineId];
     const agent = {
       id, workerId: worker.id, name, role, avatar: worker.avatar, color: worker.color, specialization: spec,
-      level: levelFor(xp), xp, tools, permissions: perms(tools), ...(granted ? { grantedBy: 'host' } : {}),
+      level: levelFor(xp), xp, tools, permissions: perms(tools), ...(granted.length ? { grantedBy: 'host' } : {}),
       memory: a.memory && Array.isArray(a.memory.highlights) ? { count: num(a.memory.count) || 0, highlights: a.memory.highlights.slice(0, 4).map((h) => ({ id: str(h.id, 40), kind: str(h.kind, 20), text: str(h.text, LIMITS.memoryText) })) } : { count: 0, highlights: [] },
       room: spec[0], taskId: null, status: 'idle', brain: { kind: 'remote', machineId, label: m?.model || m?.name },
-      home: machineId, builtin: false, retired: false, stats: { done: 0, reviews: 0, tests: 0, loops: 0, ...(existing?.stats || {}) }
+      home: machineId, builtin: false, retired: false, granted, stats: { done: 0, reviews: 0, tests: 0, loops: 0, ...(existing?.stats || {}) }
     };
     this.emit('city.agent.joined', { agent });
     if (m?.brainId) {
@@ -1046,8 +1155,15 @@ export class City {
 
   // ---------------------------------------------------------------- who is asking
   _who(d) {
-    const g = guestOf(d);
-    if (g) return { guest: true, id: g.id, name: str(g.name, LIMITS.name) || 'Guest', role: g.role, owner: g.owner };
+    if (d && d.as && typeof d.as === 'object') {
+      // A verified PeerId (set by the Node router from the session, 52 characters) is kept whole, so two peers never share a building or a task.
+      const id = str(String(d.as.id ?? ''), d.as.verified === true ? 80 : 24) || 'guest';
+      const name = str(String(d.as.name ?? ''), LIMITS.name) || 'Guest';
+      // A peer through the Node router (verified, its grants checked) or a 0.2 guest with its role (src/collab/policy.js).
+      if (d.as.verified === true) return { guest: true, id, name, owner: `peer:${id}`, peerId: id };
+      const g = guestOf(d);
+      return { guest: true, id, name, role: g?.role || 'viewer', owner: `peer:${id}` };
+    }
     return { guest: false, id: 'h', name: 'You', role: 'host', owner: 'host' };
   }
 
@@ -1090,6 +1206,8 @@ export class City {
   createTask(d, who) {
     const title = str(d.title, LIMITS.title);
     if (!title) fail('bad_request', 'title is required');
+    // The host's desktop language: Mel and the crew narrate the job it becomes in it.
+    if (!who.guest && typeof d.lang === 'string') this.hive.setLang?.(d.lang);
     const want = d.agentId ? this.state.agents[str(d.agentId, 80)] : null;
     if (d.agentId && (!want || want.retired)) fail('not_found', 'no such agent');
     let room = str(d.room, 40) || (want ? want.specialization?.[0] : 'lobby');
@@ -1104,10 +1222,7 @@ export class City {
       const kind = this.state.rooms[room].kind;
       if (room === 'lobby' && want) room = want.specialization?.[0] || 'code';
       if (kind === 'board' && room === 'lobby') pipeline = ['lobby'];
-      else if (room === 'design') pipeline = ['design', 'code', 'review', 'test'];
-      else if (kind === 'review') pipeline = ['review', 'test'];
-      else if (kind === 'test') pipeline = ['test'];
-      else pipeline = [room, 'review', 'test'];
+      else pipeline = this.pipelineFrom(room);
     }
     const criteria = (Array.isArray(d.criteria) ? d.criteria : []).map((c) => str(c, LIMITS.criterion)).filter(Boolean).slice(0, LIMITS.criteria);
     const reviewOnly = this.state.rooms[pipeline[0]].kind === 'review' || this.state.rooms[pipeline[0]].kind === 'test';
@@ -1118,6 +1233,67 @@ export class City {
     });
     this._kick();
     return clone(t);
+  }
+
+  /**
+   * The pipeline a task dropped in a room follows: the rest of the city pipeline from that room
+   * (Architect, Developer, QA, Reviewer by default), or that room and then the checking rooms.
+   */
+  pipelineFrom(room) {
+    const base = (this.state.pipeline?.length ? this.state.pipeline : DEFAULT_PIPELINE).filter((r) => this.state.rooms[r]);
+    const i = base.indexOf(room);
+    if (i !== -1) return base.slice(i);
+    const checks = base.filter((r) => ['review', 'test'].includes(this.state.rooms[r]?.kind));
+    return [room, ...checks];
+  }
+
+  setPipeline(d, who) {
+    this._hostOnly(who);
+    const list = (Array.isArray(d.pipeline) ? d.pipeline : []).map((r) => str(r, 40)).filter(Boolean).slice(0, LIMITS.pipeline);
+    if (!list.length) fail('bad_request', 'pipeline: a list of room ids');
+    if (new Set(list).size !== list.length) fail('bad_request', 'a room appears twice in the pipeline');
+    for (const r of list) {
+      const room = this.state.rooms[r];
+      if (!room) fail('bad_request', `no room ${r}`);
+      if (room.kind === 'board' || room.hostOnly) fail('bad_request', `${room.name} cannot be a pipeline stage`);
+    }
+    if (!list.some((r) => WORK_KINDS.has(this.state.rooms[r].kind) || r === 'design')) fail('bad_request', 'the pipeline needs a room where the work is done');
+    this.emit('city.pipeline.updated', { pipeline: list });
+    return { pipeline: [...this.state.pipeline] };
+  }
+
+  /** Onboarding: the name of the city and of this machine. Host only. */
+  nameCity(d, who) {
+    this._hostOnly(who);
+    const name = str(d.name, LIMITS.name);
+    if (!name) fail('bad_request', 'name is required');
+    if (name !== this.state.name) this.emit('city.named', { name });
+    const machineName = str(d.machineName, LIMITS.name);
+    if (machineName && machineName !== this.state.machines[this.machineId]?.name) {
+      this.store.setMachineName(machineName);
+      this.emit('city.machine.updated', { machine: { id: this.machineId, name: machineName } });
+    }
+    return { name: this.state.name, machine: this.state.machines[this.machineId] };
+  }
+
+  /** Onboarding is over (the user finished or skipped the steps). Host only. */
+  finishOnboarding(d, who) {
+    this._hostOnly(who);
+    if (!this.state.onboarded) this.emit('city.onboarded', { skipped: !!d.skipped });
+    return { onboarded: this.state.onboarded };
+  }
+
+  /** The host gives a friend's agent more tools than the read only set (SEC-2). Host only, no shell. */
+  grantAgent(d, who) {
+    this._hostOnly(who);
+    const a = this._agent(d);
+    if (a.home === this.machineId) fail('bad_request', 'your own agents use city.agent.update');
+    const granted = (Array.isArray(d.tools) ? d.tools : []).filter((t) => ALL_TOOLS.includes(t) && !GUEST_DENY.has(t) && !READ_ONLY_TOOLS.includes(t));
+    const tools = [...new Set([...READ_ONLY_TOOLS, ...granted])];
+    this.emit('city.agent.updated', { agent: { id: a.id, granted, tools, permissions: perms(tools) } });
+    const w = this.bus.state.crew.find((x) => x.id === a.workerId);
+    if (w) this.hive.updateWorker(w.id, { tools });
+    return this.state.agents[a.id];
   }
 
   assignTask(d, who) {
@@ -1241,7 +1417,7 @@ export class City {
       if (who.guest) fail('forbidden', 'only the host can change the tools of an agent');
       let tools = d.tools.filter((t) => ALL_TOOLS.includes(t));
       if (a.home !== this.machineId) tools = tools.filter((t) => !GUEST_DENY.has(t));
-      if (tools.length) { patch.tools = tools; patch.permissions = perms(tools); crewPatch.tools = tools; if (a.home !== this.machineId) patch.grantedBy = 'host'; }
+      if (tools.length) { patch.tools = tools; patch.permissions = perms(tools); crewPatch.tools = tools; if (a.home !== this.machineId) { patch.grantedBy = 'host'; patch.granted = tools.filter((t) => !READ_ONLY_TOOLS.includes(t)); } }
     }
     const w = this.bus.state.crew.find((x) => x.id === a.workerId);
     if (w && Object.keys(crewPatch).length) {
@@ -1343,6 +1519,7 @@ export class City {
       id, name: str(d.name, LIMITS.name) || id, kind, tools: (Array.isArray(d.tools) ? d.tools : ['list_files', 'read_file']).filter((t) => ALL_TOOLS.includes(t)),
       accepts: (Array.isArray(d.accepts) ? d.accepts : [kind === 'work' ? 'code' : kind]).map((x) => str(x, 20)).filter(Boolean).slice(0, 8),
       requireApproval: !!d.requireApproval, hostOnly: !!d.hostOnly, builtin: false, ext: str(d.ext, 60) || undefined,
+      role: PIPELINE_ROLES.includes(d.role) ? d.role : (kind === 'review' ? 'reviewer' : kind === 'test' ? 'qa' : 'developer'),
       order: Object.keys(this.state.rooms).length, color: COLOR.test(d.color || '') ? d.color : undefined
     };
     if (kind === 'review') room.mode = ['auto', 'model', 'checks'].includes(d.mode) ? d.mode : 'auto';
@@ -1360,6 +1537,7 @@ export class City {
     if (typeof d.requireApproval === 'boolean') patch.requireApproval = d.requireApproval;
     if (r.kind === 'review' && ['auto', 'model', 'checks'].includes(d.mode)) patch.mode = d.mode;
     if (COLOR.test(d.color || '')) patch.color = d.color;
+    if (typeof d.role === 'string' && PIPELINE_ROLES.includes(d.role)) patch.role = d.role;
     if (Object.keys(patch).length > 1) this.emit('city.room.updated', { room: patch });
     return this.state.rooms[r.id];
   }
@@ -1412,15 +1590,23 @@ export class City {
 
   /** Registers the city.* commands on the engine server. */
   register(server) {
-    const cmd = (type, fn, { guest = true } = {}) => server.command(type, (data, client) => {
-      const d = data && typeof data === 'object' ? data : {};
-      const who = this._who(d);
-      if (who.guest && !guest) fail('forbidden', 'only the host can do this');
-      // The role of a guest is checked here too, not only in the host's browser (src/collab/policy.js).
-      if (who.guest) checkGuest(who, type, (code, message) => new CityError(code, message));
-      if (type !== 'city.presence') this._rate(who);
-      return fn(d, who, client);
-    });
+    this.handlers = new Map();
+    const cmd = (type, fn, { guest = true } = {}) => {
+      // `run` is also what the p2p adapter calls with a who it verified in Node (never `as`).
+      const run = (d, who, client) => {
+        if (who.guest && !guest) fail('forbidden', 'only the host can do this');
+        // A 0.2 guest's role is checked here too, not only in the host's browser (0.2.1). A verified peer
+        // (who.peerId) reaches this only after its capability was checked in Node.
+        if (who.guest && !who.peerId) checkGuest(who, type, (code, message) => new CityError(code, message));
+        if (type !== 'city.presence') this._rate(who);
+        return fn(d, who, client);
+      };
+      this.handlers.set(type, run);
+      server.command(type, (data, client) => {
+        const d = data && typeof data === 'object' ? data : {};
+        return run(d, this._who(d), client);
+      });
+    };
     cmd('city.state', () => ({ city: this.state, lastSeq: this.bus.seq }));
     cmd('city.sync', (d) => this.sync(d));
     cmd('city.task.create', (d, w) => ({ task: this.createTask(d, w) }));
@@ -1452,8 +1638,7 @@ export class City {
       if (COLOR.test(d.color || '')) patch.color = d.color;
       if (typeof d.brainId === 'string' && !m.host) {
         if (!this.scheduler.brains.has(d.brainId)) fail('not_found', 'no such brain');
-        // Only the machine's owner binds a model to it, and only a model that owner lent itself.
-        if (!this._lentBy(d.brainId, m.owner)) fail('forbidden', 'a building can use only the model its owner lends');
+        if (!this._guestBrain(d.brainId, m.owner)) fail('forbidden', "only a model this friend's own bridge lends can run its building");
         patch.brainId = d.brainId;
       }
       if (m.host && patch.name) this.store.setMachineName(patch.name);
@@ -1480,6 +1665,22 @@ export class City {
     cmd('city.room.add', (d, w) => ({ room: this.addRoom(d, w) }), { guest: false });
     cmd('city.room.update', (d, w) => ({ room: this.updateRoom(d, w) }), { guest: false });
     cmd('city.room.remove', (d, w) => this.removeRoom(d, w), { guest: false });
+    cmd('city.pipeline.set', (d, w) => this.setPipeline(d, w), { guest: false });
+    cmd('city.name.set', (d, w) => this.nameCity(d, w), { guest: false });
+    cmd('city.onboard.done', (d, w) => this.finishOnboarding(d, w), { guest: false });
+    cmd('city.agent.grant', (d, w) => ({ agent: this.grantAgent(d, w) }), { guest: false });
+    // The City strings (i18n/parts/city.en.json) until the parts are merged into i18n/en.json.
+    server.route?.('GET', '/api/city/strings', (req, res) => {
+      let body = '{}';
+      try { body = fs.readFileSync(STRINGS_FILE, 'utf8'); } catch { /* not shipped */ }
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      res.end(body);
+    });
+  }
+
+  /** The handler of a city command, for the p2p membership adapter (src/city/membership.js). */
+  handler(type) {
+    return this.handlers?.get(type) || null;
   }
 
   async close() {

@@ -60,11 +60,11 @@ describe('agents', () => {
 });
 
 describe('the task bus and the pipeline', () => {
-  it('flows a Design task through Design, Code, Review and Test to done, with a hop event for every move', async () => {
+  it('flows a Design task through Design, Code, Test and Review (Architect, Developer, QA, Reviewer) to done, with a hop event for every move', async () => {
     const respond = scripted({ scripts: HELLO });
     const r = rig({ respond });
     const { task } = await r.run('city.task.create', { title: 'Make a hello page', detail: 'A friendly page.', room: 'design' });
-    expect(task).toMatchObject({ pipeline: ['design', 'code', 'review', 'test'], stage: 0, room: 'design', status: 'open', createdBy: { kind: 'user' } });
+    expect(task).toMatchObject({ pipeline: ['design', 'code', 'test', 'review'], stage: 0, room: 'design', status: 'open', createdBy: { kind: 'user' } });
     const t = await done(r, task.id);
     expect(t.status).toBe('done');
     expect(t.spec).toBe('A hello page in hello.html.');
@@ -72,11 +72,15 @@ describe('the task bus and the pipeline', () => {
     expect(t.files).toEqual(['hello.html']);
     expect(t.author).toBe('dev');
     const hops = r.of('city.task.hop').map((e) => e.data.hop.to);
-    expect(hops).toEqual(['code', 'review', 'test']);
+    expect(hops).toEqual(['code', 'test', 'review']);
     const claims = r.of('city.task.claimed').map((e) => [e.data.agentId, e.data.room]);
-    expect(claims).toEqual([['designer', 'design'], ['dev', 'code'], ['designer', 'review'], ['qa', 'test']]);
+    expect(claims).toEqual([['designer', 'design'], ['dev', 'code'], ['qa', 'test'], ['designer', 'review']]);
     expect(r.of('city.task.claimed')[0].data.bid).toMatchObject({ skill: 1 });
-    expect(t.verdicts.map((v) => [v.room, v.passed, v.by])).toEqual([['review', true, 'agent'], ['test', true, 'checks']]);
+    expect(t.verdicts.map((v) => [v.room, v.passed, v.by])).toEqual([['test', true, 'checks'], ['review', true, 'agent']]);
+    // The 1.0 task state and its history.
+    expect(t.state).toBe('completed');
+    expect(t.history.map((x) => x.to)).toEqual(expect.arrayContaining(['assigned', 'working', 'testing', 'review', 'completed']));
+    expect(r.s.agents.dev.history.lastTasks).toEqual([task.id]);
     // The Code hop is a crew job with one task for Dev, no planner and no report.
     const job = r.bus.state.jobs[0];
     expect(job).toMatchObject({ cityTaskId: task.id, status: 'done' });
@@ -119,18 +123,19 @@ describe('the task bus and the pipeline', () => {
   it('fails a test on broken files, and waits for the user in a room that needs approval', async () => {
     const broken = { 'Make a hello page': [{ tool: 'write_file', args: { path: 'hello.html', content: '<p>no doctype' } }, { tool: 'done', args: { summary: 'ok' } }] };
     const r = rig({ respond: scripted({ scripts: broken }) });
-    await r.run('city.room.update', { roomId: 'review', requireApproval: true, mode: 'checks' });
+    await r.run('city.room.update', { roomId: 'test', requireApproval: true });
+    await r.run('city.room.update', { roomId: 'review', mode: 'checks' });
     const { task } = await r.run('city.task.create', { title: 'Make a hello page', room: 'code' });
-    await waitFor(() => r.s.tasks[task.id].awaiting === 'review');
+    await waitFor(() => r.s.tasks[task.id].awaiting === 'test');
     expect(r.of('city.task.awaiting')).toHaveLength(1);
-    const v = r.s.tasks[task.id].verdicts[0];
-    expect(v).toMatchObject({ room: 'review', passed: false, by: 'checks' });
-    // The user approves anyway: on to Test, where the checks fail and the task loops back.
-    await r.run('city.task.approve', { taskId: task.id });
-    await waitFor(() => r.s.tasks[task.id].verdicts.some((x) => x.room === 'test'));
-    const test = r.s.tasks[task.id].verdicts.find((x) => x.room === 'test');
-    expect(test.passed).toBe(false);
+    expect(r.s.tasks[task.id]).toMatchObject({ state: 'waiting', waitingFor: { kind: 'approval', ref: 'test' } });
+    const test = r.s.tasks[task.id].verdicts[0];
+    expect(test).toMatchObject({ room: 'test', passed: false, by: 'checks' });
     expect(test.issues.join(' ')).toMatch(/doctype/);
+    // The user approves anyway: on to Review, where the checks fail and the task loops back.
+    await r.run('city.task.approve', { taskId: task.id });
+    await waitFor(() => r.s.tasks[task.id].verdicts.some((x) => x.room === 'review'));
+    expect(r.s.tasks[task.id].verdicts.find((x) => x.room === 'review').passed).toBe(false);
     await waitFor(() => r.s.tasks[task.id].loops === 1);
     await r.run('city.task.cancel', { taskId: task.id });
     expect(r.s.tasks[task.id].status).toBe('cancelled');
@@ -149,7 +154,7 @@ describe('the task bus and the pipeline', () => {
     const moved = (await r.run('city.task.create', { title: 'Make a hello page', room: 'code', agentId: 'writer' })).task;
     expect(moved.wantAgent).toBe('writer');
     await r.run('city.task.move', { taskId: moved.id, room: 'test' });
-    expect(r.s.tasks[moved.id]).toMatchObject({ stage: 2, room: 'test' });
+    expect(r.s.tasks[moved.id]).toMatchObject({ stage: 1, room: 'test' });
     await r.city.close();
   });
 
@@ -406,7 +411,7 @@ describe('replication and persistence', () => {
     expect(room).toMatchObject({ builtin: false, kind: 'work', ext: 'my-ext' });
     await r.run('city.agent.update', { agentId: 'designer', specialization: ['design', 'lab'] });
     const { task } = await r.run('city.task.create', { title: 'Polish it', room: 'lab' });
-    expect(task.pipeline).toEqual(['lab', 'review', 'test']);
+    expect(task.pipeline).toEqual(['lab', 'test', 'review']);
     const t = await done(r, task.id);
     expect(t).toMatchObject({ status: 'done', author: 'designer' });
     await expect(r.run('city.room.remove', { roomId: 'code' })).rejects.toMatchObject({ code: 'bad_request' });

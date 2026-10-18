@@ -4,8 +4,8 @@
 // the scene never moves a bee or raises a building unless this view changed, and the view only
 // changes from a snapshot, an event or a live frame.
 
-export const ROOM_KINDS = ['lobby', 'design', 'code', 'review', 'test', 'ops', 'library'];
-export const PIPELINE = ['design', 'code', 'review', 'test'];
+export const ROOM_KINDS = ['lobby', 'design', 'code', 'test', 'review', 'ops', 'library'];
+export const PIPELINE = ['design', 'code', 'test', 'review'];
 
 /** Room colors, the same as the engine's builtin rooms. */
 export const ROOM_COLOR = {
@@ -70,7 +70,10 @@ export function applyLive(live, frame) {
       return true;
     case 'city.machine.load':
       if (!d.machineId) return false;
-      live.loads[d.machineId] = { load: Number(d.load) || 0, queue: d.queue || 0, tps: d.tps || 0 };
+      live.loads[d.machineId] = {
+        load: Number(d.load) || 0, queue: d.queue || 0, tps: Number(d.tps) > 0 ? Number(d.tps) : 0,
+        slots: d.slots && Number.isFinite(d.slots.busy) && Number.isFinite(d.slots.total) ? { busy: d.slots.busy, total: d.slots.total } : null,
+      };
       return true;
     default: return false;
   }
@@ -90,7 +93,11 @@ const STATUS = { waiting_model: 'waiting', waiting: 'waiting' };
  * @param {ReturnType<typeof blankLive>} [live]
  */
 export function viewOf(city, live = blankLive()) {
-  const v = { ready: !!city, selfId: city?.host || null, machines: {}, rooms: {}, agents: {}, tasks: {}, borrows: {}, pending: [], people: live.people, traffic: live.traffic, caption: live.caption, lastSeq: city?.lastSeq || 0 };
+  const v = {
+    ready: !!city, selfId: city?.host || null, name: city?.name || null, onboarded: !!city?.onboarded, pipeline: city?.pipeline || PIPELINE,
+    machines: {}, rooms: {}, agents: {}, tasks: {}, borrows: {}, pending: [], members: {}, loops: [], qa: { running: false, last: null },
+    people: live.people, traffic: live.traffic, caption: live.caption, lastSeq: city?.lastSeq || 0,
+  };
   if (!city) return v;
   let ci = 0;
   const machines = Object.values(city.machines || {}).sort((a, b) => String(a.joinedAt || '').localeCompare(String(b.joinedAt || '')));
@@ -100,13 +107,14 @@ export function viewOf(city, live = blankLive()) {
       id: m.id, name: m.name || m.id, self: m.id === city.host, host: !!m.host, owner: m.owner || '',
       color: m.color || (m.id === city.host ? '#FFB531' : MACHINE_COLORS[ci++ % MACHINE_COLORS.length]),
       gpu: m.gpu || null, ramBytes: m.ramBytes || null, cpus: m.cpus || null, model: m.model || null,
-      load: lv ? lv.load : 0, tps: lv?.tps || 0, queue: lv?.queue || 0,
+      load: lv ? lv.load : 0, tps: lv?.tps || 0, queue: lv?.queue || 0, slots: lv?.slots || null,
       lending: { turns: m.lending?.turns || 0, active: m.lending?.active || 0 },
       online: m.online !== false, joinedAt: m.joinedAt || null, via: m.via || null, agents: m.agents || [],
+      peerId: m.peerId || null, reported: !!m.reported, live: null,
     };
   }
   for (const r of Object.values(city.rooms || {}).sort((a, b) => (a.order ?? 99) - (b.order ?? 99))) {
-    v.rooms[r.id] = { id: r.id, name: r.name || r.id, kind: r.kind || 'work', tools: r.tools || [], accepts: r.accepts || [], requireApproval: !!r.requireApproval, hostOnly: !!r.hostOnly, mode: r.mode || null, builtin: !!r.builtin, color: r.color || ROOM_COLOR[r.id] || '#FFB531' };
+    v.rooms[r.id] = { id: r.id, name: r.name || r.id, kind: r.kind || 'work', role: r.role || null, tools: r.tools || [], accepts: r.accepts || [], requireApproval: !!r.requireApproval, hostOnly: !!r.hostOnly, mode: r.mode || null, builtin: !!r.builtin, color: r.color || ROOM_COLOR[r.id] || '#FFB531' };
   }
   if (!Object.keys(v.rooms).length) for (const k of ROOM_KINDS) v.rooms[k] = { id: k, name: k, kind: 'work', tools: [], accepts: [], builtin: true, color: ROOM_COLOR[k] };
   for (const a of Object.values(city.agents || {})) {
@@ -118,7 +126,9 @@ export function viewOf(city, live = blankLive()) {
       memory: a.memory?.highlights || [], memoryCount: a.memory?.count || 0,
       room: a.room || 'lobby', taskId: a.taskId || null, status: STATUS[a.status] || a.status || 'idle', rawStatus: a.status || 'idle',
       brain: a.brain || { kind: 'local' }, home: a.home || city.host, builtin: !!a.builtin, stats: a.stats || {},
+      thinksOn: a.thinksOn || null, model: a.model || null, history: a.history || null, owner: a.owner || null, machineId: a.machineId || a.home || null,
     };
+    if (a.status === 'testing') v.qa.running = true;
   }
   for (const t of Object.values(city.tasks || {})) {
     if (t.status === 'cancelled') continue;
@@ -128,8 +138,21 @@ export function viewOf(city, live = blankLive()) {
       assignee: t.agentId || null, wantAgent: t.wantAgent || null, machineId: ag && ag.home !== city.host ? ag.home : null,
       pipeline: t.pipeline || [], stage: t.stage || 0, loops: t.loops || 0, maxLoops: t.maxLoops || 3, awaiting: t.awaiting || null,
       issues: t.issues || [], files: t.files || [], createdBy: t.createdBy || null, guest: !!t.guest, updatedAt: t.updatedAt || t.createdAt || null,
+      state: t.state || null, history: t.history || [], verdicts: t.verdicts || [], waitingFor: t.waitingFor || null, criteria: t.criteria || [],
+      spec: t.spec || null, jobId: t.jobId || null, author: t.author || null, reason: t.reason || null, createdAt: t.createdAt || null,
     };
+    for (const x of t.verdicts || []) if (city.rooms?.[x.room]?.kind === 'test' || x.room === 'test') { if (!v.qa.at || String(t.updatedAt || '') >= v.qa.at) { v.qa.last = !!x.passed; v.qa.at = String(t.updatedAt || ''); } }
   }
+  // a task that just looped back: an arc from the room that sent it back to the work room, while it is there
+  const lastHop = new Map();
+  for (const h of city.hops || []) if (h?.taskId) lastHop.set(h.taskId, h);
+  for (const [taskId, h] of lastHop) {
+    const t = v.tasks[taskId];
+    if (!t || !h.from || h.from === h.to || t.room !== h.to || ['done', 'blocked'].includes(t.status)) continue;
+    const fromKind = city.rooms?.[h.from]?.kind;
+    if ((h.loop || 0) > 0 && (fromKind === 'review' || fromKind === 'test')) v.loops.push({ taskId, from: h.from, to: h.to, n: h.loop, max: t.maxLoops, reason: h.reason || '' });
+  }
+  for (const [peerId, m] of Object.entries(city.members || {})) v.members[peerId] = { ...m };
   for (const b of Object.values(city.borrows || {})) {
     if (b.status === 'active') v.borrows[b.id] = { id: b.id, agentId: b.agentId, from: b.from, to: b.to, limit: b.limit || null, used: b.used || { turns: 0 } };
     else if (b.status === 'pending') v.pending.push({ ...b });

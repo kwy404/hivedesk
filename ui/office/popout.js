@@ -35,7 +35,7 @@ export async function openPip() {
   const doc = pipWin.document;
   doc.title = 'hivedesk mini';
   const style = doc.createElement('style');
-  style.textContent = 'html,body{margin:0;height:100%;background:#0E0D0B;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}';
+  style.textContent = 'html,body{margin:0;height:100%;background:#0A0B0D;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}';
   doc.head.append(style);
   const frame = doc.createElement('iframe');
   frame.src = withToken('/widget.html?pip=1');

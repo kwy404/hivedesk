@@ -8,12 +8,12 @@ export const CORRIDOR_Y = 5;
 export const WALK_Z = 0.42;
 export const SEAT_Z = 0.95;
 
-/** Rooms of your building: back row follows the pipeline, front row holds the Lobby. */
+/** Rooms of your building: the back row follows the pipeline (Design, Code, Test, Review), the front row holds the Lobby. */
 export const ROOMS = {
   design: { x0: 0, x1: 4, y0: 0, y1: 4.6, row: 'back' },
   code: { x0: 4, x1: 8, y0: 0, y1: 4.6, row: 'back' },
-  review: { x0: 8, x1: 12, y0: 0, y1: 4.6, row: 'back' },
-  test: { x0: 12, x1: 16, y0: 0, y1: 4.6, row: 'back' },
+  test: { x0: 8, x1: 12, y0: 0, y1: 4.6, row: 'back' },
+  review: { x0: 12, x1: 16, y0: 0, y1: 4.6, row: 'back' },
   library: { x0: 0, x1: 4, y0: 5.4, y1: 10, row: 'front' },
   lobby: { x0: 4, x1: 12, y0: 5.4, y1: 10, row: 'front' },
   ops: { x0: 12, x1: 16, y0: 5.4, y1: 10, row: 'front' },
@@ -41,8 +41,8 @@ export function roomDoor(k) {
 export const SPOTS = {
   design: [{ x: 1.25, y: 2.25, desk: true }, { x: 3.0, y: 3.55, desk: false }, { x: 2.3, y: 3.9 }, { x: 1.0, y: 3.8 }],
   code: [{ x: 5.0, y: 2.0, desk: true }, { x: 7.0, y: 2.0, desk: true }, { x: 5.0, y: 3.95, desk: false }, { x: 7.0, y: 3.95 }],
-  review: [{ x: 9.15, y: 2.45, desk: true }, { x: 10.85, y: 2.45, desk: true }, { x: 10.0, y: 3.9 }, { x: 11.3, y: 3.95 }],
-  test: [{ x: 13.0, y: 2.1, desk: true }, { x: 15.0, y: 2.1, desk: true }, { x: 13.4, y: 3.9 }, { x: 14.8, y: 3.95 }],
+  test: [{ x: 9.0, y: 2.1, desk: true }, { x: 11.0, y: 2.1, desk: true }, { x: 9.4, y: 3.9 }, { x: 10.8, y: 3.95 }],
+  review: [{ x: 13.15, y: 2.45, desk: true }, { x: 14.85, y: 2.45, desk: true }, { x: 14.0, y: 3.9 }, { x: 15.3, y: 3.95 }],
   library: [{ x: 2.0, y: 7.6, desk: false }, { x: 1.2, y: 9.1 }, { x: 3.0, y: 9.2 }, { x: 2.8, y: 6.5 }],
   lobby: [{ x: 8.0, y: 6.9, desk: false }, { x: 5.6, y: 8.8 }, { x: 6.8, y: 9.3 }, { x: 9.4, y: 9.3 }, { x: 10.6, y: 8.6 }, { x: 5.4, y: 7.0 }, { x: 10.9, y: 7.1 }, { x: 8.0, y: 8.6 }],
   ops: [{ x: 14.0, y: 7.4, desk: true }, { x: 13.2, y: 9.2 }, { x: 15.0, y: 9.2 }, { x: 14.9, y: 6.4 }],

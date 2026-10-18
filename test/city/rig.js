@@ -81,9 +81,9 @@ export function friendBrain(id = 'b_friend', respond = scripted(), owner = 'peer
 }
 
 export const RITA = { id: 'g1', name: 'Rita', role: 'collaborator' };
-export const joinRita = (r, extra = {}) => r.run('city.machine.join', {
+export const joinRita = (r, extra = {}) => (r.city.noteBrainOwner('b_friend', 'peer:g1'), r.run('city.machine.join', {
   as: RITA,
   machine: { id: 'm_rita0001', name: "Rita's PC", gpu: { name: 'RTX 3060', vramBytes: 12e9 }, model: 'Qwen 7B' },
   agents: [{ id: 'pip', name: 'Pip', role: 'Reviewer', specialization: ['review', 'test'], tools: ['list_files', 'read_file', 'check', 'run'], xp: 30 }],
   brainId: 'b_friend', via: 'words', ...extra
-});
+}));

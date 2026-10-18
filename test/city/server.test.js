@@ -39,7 +39,7 @@ describe('the city on the engine server', () => {
     const health = (await request(port, `/api/health?t=${token}`)).json();
     expect(health.city).toBe(1);
     const created = await request(port, `/api/command?t=${token}`, { method: 'POST', body: { type: 'city.task.create', data: { title: 'A task', room: 'review' } } });
-    expect(created.json()).toMatchObject({ ok: true, result: { task: { pipeline: ['review', 'test'] } } });
+    expect(created.json()).toMatchObject({ ok: true, result: { task: { pipeline: ['review'] } } });
     await waitFor(() => got.some((f) => f.kind === 'event' && f.event.type === 'city.task.created'));
     const denied = await request(port, `/api/command?t=${token}`, { method: 'POST', body: { type: 'city.room.add', data: { id: 'lab', as: { id: 'g1', name: 'Eve' } } } });
     expect(denied.status).toBe(403);
@@ -68,9 +68,9 @@ describe('the --demo city scenario', () => {
     const borrow = Object.values(city.borrows)[0];
     expect(borrow).toMatchObject({ agentId: 'dev', to: DEMO_FRIEND.machine.id, status: 'ended', reason: 'limit', used: { turns: 3 } });
     const task = Object.values(city.tasks).find((t) => t.title === 'Add a weekly specials section');
-    expect(task).toMatchObject({ status: 'done', pipeline: ['design', 'code', 'review', 'test'], files: ['index.html'] });
+    expect(task).toMatchObject({ status: 'done', pipeline: ['design', 'code', 'test', 'review'], files: ['index.html'] });
     const hops = app.bus.events.filter((e) => e.type === 'city.task.hop' && e.data.hop.taskId === task.id).map((e) => e.data.hop.to);
-    expect(hops).toEqual(['code', 'review', 'test']);
+    expect(hops).toEqual(['code', 'test', 'review']);
     expect(task.verdicts.find((v) => v.room === 'review').agentId).toBe(`${DEMO_FRIEND.machine.id}:pip`);
     expect(app.toolbox.ws.read('index.html')).toContain('<section class="specials">');
     expect(app.bus.events.every((e) => e.demo === true)).toBe(true);

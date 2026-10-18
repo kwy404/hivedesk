@@ -8,7 +8,7 @@ import * as net from '/js/net.js';
 import * as wm from '/js/wm.js';
 import * as menu from '/js/menu.js';
 import { S, ui, extra, onEvent } from '/js/store.js';
-import { t, onLocale, fmtNumber } from '/js/i18n.js';
+import { t, onLocale, fmtNumber, locale } from '/js/i18n.js';
 import { notify } from '/js/notify.js';
 import { beeAvatar } from '/js/bees.js';
 import * as audio from '/office/audio.js';
@@ -16,6 +16,17 @@ import { CityScene } from './scene.js';
 import { viewOf, blankLive, noteEvent, applyLive, deriveCity, xpProgress, xpFor, fmtVram, borrowOf, pendingOf, ROOM_KINDS, ROOM_COLOR } from './model.js';
 import { roomAt, ROOMS } from './layout.js';
 import { wireCollab, onCityEvent as collabEvent } from './collab.js';
+import { tr as trCity, loadCityStrings } from './strings.js';
+import { hub, startHub, onHub, changed as hubChanged } from './hub.js';
+import { makePanels } from './panels.js';
+import { createOnboarding } from './onboarding.js';
+import { machineCard, liveOf } from './machines.js';
+import { bridgeJobs } from './compute.js';
+import { entryOf } from './activity.js';
+import '/js/widgets/machines.js';
+import '/js/widgets/activity.js';
+import { isRunning as tourRunning } from '/js/tour.js';
+import { myAvatarEl } from '/profile/ui.js';
 
 const st = { mode: 'none', lib: null, city: null, live: blankLive(), view: viewOf(null), mock: null };
 let layer; let canvas; let scene; let hitLayer; let cursorLayer; let hud = {};
@@ -23,17 +34,30 @@ let active = false;
 let office = null;
 const bees = new Map();
 const cursors = new Map();
-let side = null; // { kind: 'agent' | 'machine' | 'room', id }
+let side = null; // { kind: 'agent' | 'machine' | 'room' | 'task' | 'job' | 'peer' | 'activity', id }
+let panels = null;
+let onboarding = null;
+let sideTimer = null;
+/** Friends' cities this engine visits over p2p (city.remote.*), and which city is on screen. */
+const visit = { list: [], current: null, home: null, homeLive: null };
 let drag = null;
 let pending = false;
 let lastPresence = 0;
 let memoryEdit = null; // { agentId, entries }
 let hourOverride = null;
 
-const tr = (k, p) => t(k, p);
+const tr = (k, p) => trCity(k, p);
 const roomName = (k) => (ROOMS[k] || ROOM_KINDS.includes(k) ? tr(`city.room.${k}`) : (st.view.rooms[k]?.name || k));
 const agentName = (id) => st.view.agents[id]?.name || id || '';
 const machineName = (id) => st.view.machines[id]?.name || id || '';
+const peerName = (id) => {
+  if (!id) return '';
+  const p = hub.peers.peers[id];
+  if (p?.profile?.name) return p.profile.name;
+  if (p?.name) return p.name;
+  const m = Object.values(st.view.machines).find((x) => x.peerId === id);
+  return m?.name || String(id).slice(0, 10);
+};
 
 function linkCss() {
   if (document.querySelector('link[data-city]')) return;
@@ -47,15 +71,31 @@ function readHour() {
 const hourNow = () => { if (hourOverride != null) return hourOverride; const d = new Date(); return d.getHours() + d.getMinutes() / 60; };
 
 /* ---------- state ---------- */
+/** Every change lands here; the view is rebuilt once per frame, however many events arrived. */
 function refresh() {
-  st.view = viewOf(st.city, st.live);
   if (pending) return;
   pending = true;
-  requestAnimationFrame(() => {
+  const run = () => {
     pending = false;
+    st.view = buildView();
     scene?.sync();
     paintHud();
-  });
+    hubChanged();
+  };
+  if (document.hidden) setTimeout(run, 100); else requestAnimationFrame(run);
+}
+
+function buildView() {
+  const v = viewOf(st.city, st.live);
+  const now = Date.now();
+  for (const m of Object.values(v.machines)) {
+    m.live = liveOf(machineCard(m, v, hub.compute, { now, selfPeerId: hub.selfPeerId }));
+    m.bridge = !m.self && m.peerId ? bridgeJobs(hub.compute, m.peerId, now) : null;
+  }
+  const dl = hub.compute.download;
+  v.download = dl && now - dl.at < 10_000 ? dl : null;
+  v.visiting = visit.current ? (visit.list.find((x) => x.hostPeerId === visit.current) || { hostPeerId: visit.current }) : null;
+  return v;
 }
 
 function useDerived() {
@@ -84,13 +124,72 @@ async function startMock() {
 }
 
 function onCityEvent(ev) {
-  if (!st.city) return;
-  if (st.lib) st.lib.reduceCity(st.city, ev);
-  else return;
-  noteEvent(st.live, st.city, ev);
+  const home = visit.current ? visit.home : st.city;
+  if (!home || !st.lib) return;
+  st.lib.reduceCity(home, ev);
+  noteEvent(visit.current ? visit.homeLive : st.live, home, ev);
   collabEvent(ev, globalThis.hivedeskCollab);
   feed(ev);
+  if (ev.type === 'city.visit.started' || ev.type === 'city.visit.ended') loadVisits();
   refresh();
+}
+
+/* ---------- visiting a friend's city (src/city/membership.js, city.remote.*) ---------- */
+async function loadVisits() {
+  try {
+    const r = await net.command('city.remote.list', {});
+    visit.list = r?.visits || [];
+  } catch { visit.list = []; }
+  if (visit.current && !visit.list.some((x) => x.hostPeerId === visit.current)) goHome();
+  paintVisits();
+}
+
+async function visitCity(hostPeerId) {
+  try {
+    const r = await net.command('city.remote.state', { hostPeerId });
+    if (!visit.current) { visit.home = st.city; visit.homeLive = st.live; }
+    visit.current = hostPeerId;
+    st.city = JSON.parse(JSON.stringify(r.city));
+    st.live = blankLive();
+    closeSide();
+    scene.reset?.();
+    refresh();
+    paintVisits();
+  } catch (err) { notify({ title: tr('city.err.generic'), body: err.message, tone: 'bad', timeout: 5000 }); }
+}
+
+function goHome() {
+  if (!visit.current) return;
+  st.city = visit.home;
+  st.live = visit.homeLive || blankLive();
+  visit.current = null; visit.home = null; visit.homeLive = null;
+  closeSide();
+  scene.reset?.();
+  refresh();
+  paintVisits();
+}
+
+function onRemoteFrame(d) {
+  if (!d?.hostPeerId || d.hostPeerId !== visit.current || !st.lib) return;
+  const ev = d.event;
+  if (ev?.type === 'snapshot' || ev?.type === 'ended') { if (ev.type === 'ended') { goHome(); loadVisits(); } else visitCity(d.hostPeerId); return; }
+  if (!ev || typeof ev.seq !== 'number' || ev.seq <= (st.city?.lastSeq || 0)) return;
+  st.lib.reduceCity(st.city, ev);
+  noteEvent(st.live, st.city, ev);
+  refresh();
+}
+
+function paintVisits() {
+  if (!hud.visits) return;
+  clear(hud.visits);
+  hud.visits.hidden = !visit.list.length && !visit.current;
+  if (visit.current) {
+    const x = visit.list.find((v) => v.hostPeerId === visit.current);
+    hud.visits.append(h('span', { class: 'ct-chip ct-visit', text: tr('city.visit.in', { name: x?.name || '' }) }),
+      h('button', { type: 'button', class: 'btn btn-xs', text: tr('city.visit.home'), on: { click: () => goHome() } }));
+  } else {
+    for (const x of visit.list) hud.visits.append(h('button', { type: 'button', class: 'btn btn-xs', text: tr('city.visit.go', { name: x.name }), on: { click: () => visitCity(x.hostPeerId) } }));
+  }
 }
 
 /** Sends a city command to the engine (or the mock). Errors become a short notification. */
@@ -98,6 +197,7 @@ async function cmd(type, data = {}) {
   try {
     if (st.mode === 'mock') return await st.mock.command(type, data);
     if (st.mode !== 'engine') throw Object.assign(new Error(tr('city.err.noCity')), { code: 'no_city' });
+    if (visit.current && type.startsWith('city.')) return await net.command('city.remote.cmd', { hostPeerId: visit.current, type, data });
     return await net.command(type, data);
   } catch (err) {
     if (type !== 'city.presence') notify({ title: tr('city.err.generic'), body: err.message, tone: 'bad', timeout: 5000 });
@@ -121,12 +221,25 @@ export async function initCity({ desk, addDockItem, office: off }) {
   office = off;
   linkCss();
   readHour();
+  loadCityStrings().then(() => { if (active) paintHud(); if (side) paintSide(); });
+  startHub();
+  hub.view = () => st.view;
+  hub.names = () => names();
+  panels = makePanels({
+    view: () => st.view, cmd, open: (s) => openSide(s), close: () => closeSide(), repaint: () => paintSide(),
+    roomName, agentName, machineName, peerName, names: () => names(),
+    mine: () => !visit.current && !net.isRemote(), demo: () => st.mode === 'mock' || !!ui.demo,
+    invite: () => invite(), openWindow: (type) => { office.setMode('desktop'); wm.open(type); },
+  });
+  hub.panels = panels;
+  onHub(() => { if (side && ['machine', 'job', 'peer', 'activity', 'task'].includes(side.kind)) paintSideSoon(); });
   layer = h('section', { class: 'of-layer ct-layer', hidden: true, ta: 'city.aria.layer' });
   canvas = h('canvas', { class: 'of-canvas ct-canvas', 'aria-hidden': 'true' });
   hitLayer = h('div', { class: 'of-hits' });
   cursorLayer = h('div', { class: 'ct-cursors', 'aria-hidden': 'true' });
   layer.append(canvas, hitLayer, cursorLayer, buildHud());
   desk.append(layer);
+  onboarding = createOnboarding({ layer, view: () => st.view, cmd, invite: () => invite(), onDone: () => refresh() });
 
   scene = new CityScene(canvas, {
     getCity: () => st.view,
@@ -136,7 +249,7 @@ export async function initCity({ desk, addDockItem, office: off }) {
     onSound: (n) => audio.fx(n),
     onFrame: (sc) => { syncHits(sc); syncCursors(sc); levels(sc); roomWatch(sc); },
   });
-  new ResizeObserver(() => { if (active) scene.resize(layer.clientWidth, layer.clientHeight); }).observe(layer);
+  new ResizeObserver(() => { if (active) { updateInsets(); scene.resize(layer.clientWidth, layer.clientHeight); } }).observe(layer);
   wireCanvas();
 
   office.addView({
@@ -152,10 +265,13 @@ export async function initCity({ desk, addDockItem, office: off }) {
       { header: tr('city.title') },
       { label: tr('city.fit'), icon: 'hive', action: () => { office.setMode('city'); scene.fit(); closeSide(); } },
       { label: tr('city.machines'), icon: 'gpu', action: () => { office.setMode('city'); openSide({ kind: 'machine' }); } },
+      { label: tr('city.act.title'), icon: 'queue', action: () => { office.setMode('city'); openSide({ kind: 'activity' }); } },
       { label: tr('city.invite'), icon: 'lend', action: () => invite() },
     ],
   });
 
+  // first run: the profile and City card decides before the desktop tour may start (ui/js/onboarding-gate.js)
+  globalThis.hivedeskOnboarding = { decided: false };
   // engine wiring
   const q = new URLSearchParams(location.search).get('city');
   if (q === 'mock') startMock();
@@ -164,10 +280,13 @@ export async function initCity({ desk, addDockItem, office: off }) {
     const city = f.state?.city;
     if ((f.city === 1 || city) && (st.lib || await loadLib())) {
       st.mode = 'engine';
+      visit.current = null; visit.home = null; visit.homeLive = null;
       st.city = city ? JSON.parse(JSON.stringify(city)) : st.lib.initialCity();
       st.live = blankLive();
       refresh();
-    } else useDerived();
+      loadVisits();
+      maybeOnboard();
+    } else { useDerived(); globalThis.hivedeskOnboarding = { decided: true }; }
   });
   net.on('event', (f) => {
     const ev = f.event;
@@ -176,7 +295,11 @@ export async function initCity({ desk, addDockItem, office: off }) {
     onCityEvent(ev);
   });
   net.on('live', (f) => {
-    if (st.mode !== 'engine' || !String(f.type || '').startsWith('city.')) return;
+    const type = String(f.type || '');
+    if (st.mode !== 'engine') return;
+    if (type === 'city.remote') { onRemoteFrame(f.data); return; }
+    if (!type.startsWith('city.')) { if (/^(job\.token|resources\.sample|resource\.advert|brain\.download\.progress)$/.test(type)) refresh(); return; }
+    if (visit.current) { if (applyLive(visit.homeLive, f)) return; return; }
     if (applyLive(st.live, f)) refresh();
   });
   // a dropped link: catch up with city.sync and the tail of events
@@ -199,6 +322,7 @@ export async function initCity({ desk, addDockItem, office: off }) {
 function enter({ quiet } = {}) {
   active = true;
   layer.hidden = false;
+  updateInsets();
   scene.resize(layer.clientWidth, layer.clientHeight);
   scene.sync();
   scene.start();
@@ -240,6 +364,7 @@ function buildHud() {
   hud.caption = h('div', { class: 'ct-caption', hidden: true, role: 'status' });
   const inviteBtn = h('button', { type: 'button', class: 'btn btn-xs ct-invite', on: { click: () => invite() } }, h('span', { class: 'ct-gl', html: '<svg viewBox="0 0 24 24" class="ico ico-sm"><circle cx="9" cy="8" r="3.4"/><path d="M3 19c.6-3.3 3-5.2 6-5.2s5.4 1.9 6 5.2M18 7v6M15 10h6"/></svg>' }), h('span', { tx: 'city.invite' }));
   const cityCard = h('div', { class: 'of-card ct-card' }, h('div', { class: 'of-row' }, hud.title, hud.demo), hud.stats, hud.caption, inviteBtn);
+  hud.card = cityCard;
 
   // the task board (the Lobby board, mirrored here so notes can be dragged anywhere)
   hud.input = h('input', { class: 'ct-input', type: 'text', maxLength: 200, tp: 'city.board.placeholder', ta: 'city.board.placeholder', on: { keydown: (e) => { if (e.key === 'Enter') addTask(); }, input: () => paintDraft() } });
@@ -259,7 +384,10 @@ function buildHud() {
   hud.people = h('div', { class: 'ct-people' });
   hud.clock = h('div', { class: 'of-pill ct-clock' });
   const machinesBtn = h('button', { type: 'button', class: 'of-pill ct-pill-btn', on: { click: () => toggleSide({ kind: 'machine' }) } }, h('span', { class: 'ct-gl', html: '<svg viewBox="0 0 24 24" class="ico ico-sm"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M8 10h3v4H8zM14 10h2M14 13h2M8 3v3M12 3v3M16 3v3M8 18v3M12 18v3M16 18v3"/></svg>' }), h('span', { tx: 'city.machines' }));
-  hud.top = h('div', { class: 'ct-top' }, hud.people, hud.clock, machinesBtn);
+  const activityBtn = h('button', { type: 'button', class: 'of-pill ct-pill-btn', on: { click: () => toggleSide({ kind: 'activity' }) } }, h('span', { class: 'ct-gl', html: '<svg viewBox="0 0 24 24" class="ico ico-sm"><path d="M4 6h10M4 12h16M4 18h12"/><circle cx="19" cy="6" r="1.6"/></svg>' }), h('span', { text: tr('city.act.title') }));
+  hud.activityLabel = activityBtn.lastChild;
+  hud.visits = h('div', { class: 'ct-visits', hidden: true });
+  hud.top = h('div', { class: 'ct-top' }, hud.visits, hud.people, hud.clock, activityBtn, machinesBtn);
 
   // bottom: room bar, zoom, feed
   hud.rooms = h('nav', { class: 'ct-rooms', ta: 'city.rooms' });
@@ -271,11 +399,33 @@ function buildHud() {
   hud.feed = h('ol', { class: 'of-card of-feed ct-feed', 'aria-live': 'polite', ta: 'city.feed' });
   hud.side = h('aside', { class: 'of-card ct-side', hidden: true });
   hud.tip = h('div', { class: 'ct-droptip', hidden: true });
-  return h('div', { class: 'of-hud ct-hud' }, cityCard, hud.board, hud.top, hud.side, hud.rooms, hud.zoom, hud.feed, hud.tip);
+  // PLAN 1.5: the mock city (?city=mock) always shows a full width ribbon, so its numbers are never taken for real ones.
+  hud.mock = h('div', { class: 'ct-mock-ribbon', role: 'status', hidden: true });
+  hud.root = h('div', { class: 'of-hud ct-hud' }, hud.mock, cityCard, hud.board, hud.top, hud.side, hud.rooms, hud.zoom, hud.feed, hud.tip);
+  return hud.root;
+}
+
+/**
+ * The parts of the screen the HUD covers, so framing the city keeps it in the free space at any
+ * size from 1024x768 to 4K, with the board, the side panel and the HUD zoom of big screens.
+ */
+function updateInsets() {
+  if (!layer || !scene) return;
+  const lr = layer.getBoundingClientRect();
+  if (!lr.width) return;
+  const shown = (el) => el && !el.hidden && getComputedStyle(el).display !== 'none';
+  const ins = { l: 24, r: 24, t: 70, b: 70 };
+  if (shown(hud.board)) ins.l = Math.max(ins.l, hud.board.getBoundingClientRect().right - lr.left + 18);
+  else if (shown(hud.card)) ins.t = Math.max(ins.t, hud.card.getBoundingClientRect().bottom - lr.top + 12);
+  if (shown(hud.side) && hud.side.getBoundingClientRect().width < lr.width * 0.8) ins.r = Math.max(ins.r, lr.right - hud.side.getBoundingClientRect().left + 18);
+  if (shown(hud.top)) ins.t = Math.max(ins.t, hud.top.getBoundingClientRect().bottom - lr.top + 34);
+  if (shown(hud.rooms)) ins.b = Math.max(ins.b, lr.bottom - hud.rooms.getBoundingClientRect().top + 22);
+  scene.insets = ins;
 }
 
 function paintHud() {
   if (!hud.stats || !active) return;
+  if (hud.activityLabel) hud.activityLabel.textContent = tr('city.act.title');
   const v = st.view;
   const machines = Object.values(v.machines);
   const agents = Object.values(v.agents);
@@ -288,6 +438,7 @@ function paintHud() {
   const isDemo = st.mode === 'mock' || ui.demo;
   hud.demo.hidden = !isDemo;
   hud.demo.textContent = st.mode === 'mock' ? tr('city.mock') : tr('city.demo');
+  if (hud.mock) { hud.mock.hidden = st.mode !== 'mock'; hud.mock.textContent = `${tr('city.mock')}: ${tr('city.mockRibbon')}`; }
   // demo captions
   const cap = v.caption;
   if (cap && Date.now() - cap.at < 9000) {
@@ -318,7 +469,7 @@ function paintPeople() {
   const people = Object.values(st.view.people || {}).filter((p) => !isMe(p) && Date.now() - (p.seen || 0) < 20000);
   clear(hud.people);
   hud.people.hidden = !people.length;
-  const me = h('span', { class: 'ct-person ct-me', title: tr('city.you') }, h('i', { style: 'background:#FFB531' }), h('span', { tx: 'city.you' }));
+  const me = h('span', { class: 'ct-person ct-me', title: tr('city.you') }, myAvatarEl(18), h('span', { tx: 'city.you' }));
   hud.people.append(me);
   for (const p of people.slice(0, 5)) hud.people.append(h('span', { class: 'ct-person', title: p.name }, h('i', { style: `background:${safeColor(p.color)}` }), h('span', { text: String(p.name || '').slice(0, 20) })));
 }
@@ -370,7 +521,7 @@ function paintBoard() {
 function makeNote(id) {
   const n = h('div', { class: 'ct-note', tabindex: '0', role: 'button', dataset: { id } });
   n.addEventListener('pointerdown', (e) => startDrag(e, n, { taskId: id }));
-  n.addEventListener('click', () => { if (n._dragged) { n._dragged = false; return; } const x = st.view.tasks[id]; if (x && ROOMS[x.room]) openRoom(x.room); });
+  n.addEventListener('click', () => { if (n._dragged) { n._dragged = false; return; } if (st.view.tasks[id]) openTask(id); });
   n.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const r = n.getBoundingClientRect(); menu.open({ x: r.left + 12, y: r.bottom, items: noteMenu(id) }); } });
   menu.provide(n, () => noteMenu(id));
   return n;
@@ -401,6 +552,7 @@ function noteMenu(id) {
   const off = x.status === 'done';
   return [
     { header: x.title },
+    { label: tr('city.tp.open'), icon: 'plan', action: () => openTask(id) },
     { label: tr('city.menu.handTo'), icon: 'hire', disabled: off, items: Object.values(st.view.agents).map((a) => ({ label: `${a.name} (${a.role})`, iconEl: beeAvatar(avatarOf(a), 18, { ring: false }), action: () => cmd('city.task.assign', { taskId: id, agentId: a.id }).catch(() => {}) })) },
     { label: tr('city.menu.sendTo'), icon: 'arrow', disabled: off, items: Object.keys(st.view.rooms).map((k) => ({ label: roomName(k), action: () => cmd('city.task.move', { taskId: id, room: k }).catch(() => {}) })) },
     { sep: true },
@@ -422,7 +574,7 @@ async function addTask(target = {}) {
   if (!title) { hud.input.focus(); return; }
   hud.input.value = '';
   paintDraft();
-  await cmd('city.task.create', { title, ...(target.agentId ? { agentId: target.agentId } : { room: target.room || 'lobby' }) }).catch(() => { hud.input.value = title; paintDraft(); });
+  await cmd('city.task.create', { title, lang: locale(), ...(target.agentId ? { agentId: target.agentId } : { room: target.room || 'lobby' }) }).catch(() => { hud.input.value = title; paintDraft(); });
 }
 
 /* ---------- drag a note onto a bee or a room ---------- */
@@ -517,7 +669,9 @@ function wireCanvas() {
     const m = scene.machineHits.find((r) => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h);
     const w = scene.unproject(sx, sy + scene.cam.A * 0.3 * 1.12);
     const room = roomAt(w.x, w.y);
-    const hl = m ? { kind: 'machine', id: m.id } : room ? { kind: 'room', id: room } : null;
+    const noteHit = (scene.noteHits || []).find((r) => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h);
+    const brHit = (scene.bridgeHits || []).find((r) => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h);
+    const hl = brHit ? { kind: 'job', id: brHit.jobId } : noteHit ? { kind: 'task', id: noteHit.id } : m ? { kind: 'machine', id: m.id } : room ? { kind: 'room', id: room } : null;
     if (!drag && (scene.highlight?.kind !== 'agent')) scene.highlight = hl;
     canvas.style.cursor = hl ? 'pointer' : 'grab';
     presence(w, room);
@@ -531,7 +685,12 @@ function wireCanvas() {
     if (wasMove) return;
     const lr = canvas.getBoundingClientRect();
     const sx = e.clientX - lr.left; const sy = e.clientY - lr.top;
-    const m = scene.machineHits.find((r) => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h);
+    const inR = (r) => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h;
+    const br = (scene.bridgeHits || []).find(inR);
+    if (br) { openSide({ kind: 'job', id: br.jobId }); return; }
+    const note = (scene.noteHits || []).find(inR);
+    if (note && st.view.tasks[note.id]) { openTask(note.id); return; }
+    const m = scene.machineHits.find(inR);
     if (m) { openSide({ kind: 'machine', id: m.id }); scene.focusMachine(m.id); paintRooms(); return; }
     const w = scene.unproject(sx, sy + scene.cam.A * 0.3 * 1.12);
     const room = roomAt(w.x, w.y);
@@ -640,12 +799,29 @@ function agentMenu(id) {
 const avatarOf = (a) => ({ id: a.workerId || a.id, name: a.name, role: a.role, color: a.color });
 
 /* ---------- side panel: agent card, machines, room ---------- */
+function openTask(id) {
+  // the whole building stays in view, so a loop arc and the next hop can be seen
+  openSide({ kind: 'task', id });
+  scene.highlight = { kind: 'task', id };
+  paintRooms();
+}
+
+let sideSoon = false;
+function paintSideSoon() {
+  if (sideSoon) return;
+  sideSoon = true;
+  requestAnimationFrame(() => { sideSoon = false; if (side) paintSide(); });
+}
+
 function openSide(s) {
+  // the scroll of a side panel stays where it was when the same panel repaints
   side = s;
+  if (hud.root) hud.root.dataset.side = s.kind;
   memoryEdit = null;
   hud.side.hidden = false;
   paintSide();
   scene.panelRight = true;
+  updateInsets();
   if (!scene.focus && !scene.userMoved) scene.fit();
   if (!reducedMotion()) hud.side.animate([{ opacity: 0, transform: 'translateX(14px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.16,1,.3,1)' });
   if (s.kind === 'agent') scene.highlight = { kind: 'agent', id: s.id };
@@ -653,7 +829,10 @@ function openSide(s) {
 function toggleSide(s) { if (side && side.kind === s.kind && side.id === s.id) closeSide(); else openSide(s); }
 function closeSide() {
   side = null; memoryEdit = null;
+  clearInterval(sideTimer);
+  if (hud.root) delete hud.root.dataset.side;
   if (hud.side) hud.side.hidden = true;
+  updateInsets();
   if (scene) { scene.panelRight = false; if (!scene.focus && !scene.userMoved) scene.fit(); }
   if (scene?.focus?.kind === 'room' || scene?.focus?.kind === 'machine') scene.fit();
   paintRooms();
@@ -668,15 +847,28 @@ function openRoom(id) {
 
 function paintSide() {
   if (!side || !hud.side) return;
+  // do not repaint under the user's typing or an open select
+  const focused = hud.side.contains(document.activeElement) && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName);
+  if (focused && hud.side.dataset.kind === side.kind) return;
   clear(hud.side);
   const close = h('button', { type: 'button', class: 'of-ib ct-close', ta: 'city.card.close', title: tr('city.card.close'), on: { click: () => closeSide() } }, h('span', { class: 'ct-gl', html: '<svg viewBox="0 0 24 24" class="ico"><path d="M6 6l12 12M18 6 6 18"/></svg>' }));
   let body = null;
   if (side.kind === 'agent') body = agentCard(side.id);
-  else if (side.kind === 'machine') body = machinePanel(side.id);
+  else if (side.kind === 'machine') body = panels.machines(side.id);
   else if (side.kind === 'room') body = roomPanel(side.id);
+  else if (side.kind === 'task') body = panels.task(side.id);
+  else if (side.kind === 'job') body = panels.job(side.id);
+  else if (side.kind === 'peer') body = panels.peer(side.id);
+  else if (side.kind === 'activity') body = panels.activity(side);
   if (!body) { closeSide(); return; }
+  // a job panel counts its lease down every second; nothing else polls
+  clearInterval(sideTimer);
+  if (side.kind === 'job') sideTimer = setInterval(() => { if (side?.kind === 'job') paintSide(); else clearInterval(sideTimer); }, 1000);
+  const keep = hud.side.dataset.kind === side.kind && hud.side.dataset.id === String(side.id ?? '') ? hud.side.scrollTop : 0;
   hud.side.dataset.kind = side.kind;
+  hud.side.dataset.id = String(side.id ?? '');
   hud.side.append(close, body);
+  hud.side.scrollTop = keep;
 }
 
 function agentCard(id) {
@@ -710,10 +902,17 @@ function agentCard(id) {
     h('dt', { tx: 'city.card.room' }), h('dd', {}, roomSel),
     h('dt', { tx: 'city.card.task' }), h('dd', { text: task ? task.title : tr('city.card.none') }),
     h('dt', { tx: 'city.card.brain' }), h('dd', {}, h('span', { class: `ct-brain ct-brain-${brain.kind}`, text: tr(`city.brain.${brain.kind}`) || brain.kind }), brain.label ? h('span', { class: 'ct-faint', text: ` ${brain.label}` }) : null),
+    h('dt', { text: tr('city.card.thinksOn') }), h('dd', { text: a.thinksOn ? tr(`city.thinks.${a.thinksOn.kind}`, { name: a.thinksOn.peerId ? peerName(a.thinksOn.peerId) : '', model: a.thinksOn.model || tr('city.m.notMeasured') }) : tr('city.m.notMeasured') }),
     h('dt', { tx: 'city.card.home' }), h('dd', {}, h('i', { class: 'ct-dot', style: `background:${home?.color || '#FFB531'}` }), h('span', { text: home ? home.name : '' })),
     h('dt', { tx: 'city.card.spec' }), h('dd', {}, ...(a.specialization || []).map((k) => h('span', { class: 'ct-tag', style: `--c:${ROOM_COLOR[k] || '#FFB531'}`, text: roomName(k) }))));
   card.append(grid);
   if (a.stats && (a.stats.done || a.stats.reviews || a.stats.tests)) card.append(h('div', { class: 'ct-faint small', text: tr('city.card.stats', { done: a.stats.done || 0, reviews: a.stats.reviews || 0, tests: a.stats.tests || 0 }) }));
+  if (a.history?.loops) card.append(h('div', { class: 'ct-faint small', text: tr('city.card.loops', { n: a.history.loops }) }));
+  const last = (a.history?.lastTasks || []).map((tid) => v.tasks[tid]).filter(Boolean).reverse();
+  if (last.length) {
+    card.append(h('section', { class: 'ct-sec' }, h('span', { class: 'of-k', text: tr('city.card.lastTasks') }),
+      h('div', { class: 'ct-rtasks' }, ...last.map((x) => h('button', { type: 'button', class: 'ct-linkbtn', text: x.title, on: { click: () => openTask(x.id) } })))));
+  }
 
   // memory
   const memBox = h('section', { class: 'ct-sec' }, h('div', { class: 'of-row' }, h('span', { class: 'of-k', tx: 'city.card.memory' }), h('span', { class: 'ct-faint small', text: tr('city.card.memoryCount', { n: a.memoryCount }) })));
@@ -777,50 +976,6 @@ function memoryEditor(a) {
   return box;
 }
 
-function machinePanel(focusId) {
-  const v = st.view;
-  const box = h('div', { class: 'ct-machines' }, h('div', { class: 'ct-panel-h' }, h('strong', { tx: 'city.machine.title' }), h('span', { class: 'ct-faint small', tx: 'city.machine.limits' })));
-  const list = Object.values(v.machines).sort((a, b) => (b.self - a.self) || String(a.joinedAt || '').localeCompare(String(b.joinedAt || '')));
-  for (const m of list) {
-    const agents = Object.values(v.agents).filter((x) => x.home === m.id);
-    const borrowsHere = Object.values(v.borrows).filter((b) => b.to === m.id || b.from === m.id);
-    const asks = v.pending.filter((b) => b.to === m.id);
-    const card = h('section', { class: 'ct-mcard', dataset: { focus: String(m.id === focusId) }, style: `--c:${m.color}` });
-    append(card, [
-      h('div', { class: 'ct-mhead' }, h('i', { class: 'ct-hexdot' }), h('strong', { text: m.name }),
-        h('span', { class: 'ct-tag', style: `--c:${m.self ? '#FFB531' : m.color}`, text: tr(m.self ? 'city.machine.host' : 'city.machine.friend') }),
-        h('span', { class: `ct-online ${m.online ? 'on' : ''}`, text: tr(m.online ? 'city.machine.online' : 'city.machine.offline') })),
-      m.via && m.via !== 'local' ? h('div', { class: 'ct-faint small', text: tr(`city.machine.via.${m.via}`) }) : null]);
-    const grid = h('dl', { class: 'ct-grid' });
-    grid.append(
-      h('dt', { tx: 'city.machine.gpu' }), h('dd', { text: m.gpu?.name || tr('city.machine.noGpu') }),
-      h('dt', { tx: 'city.machine.vram' }), h('dd', { text: fmtVram(m.gpu?.vramBytes) || '-' }),
-      h('dt', { tx: 'city.machine.model' }), h('dd', { text: m.model || '-' }),
-      h('dt', { tx: 'city.machine.load' }), h('dd', {}, h('div', { class: 'ct-bar', style: `--v:${Math.round(m.load * 100)}%` }, h('i')), h('span', { class: 'ct-faint small', text: `${Math.round(m.load * 100)}%${m.tps ? ` · ${m.tps} tok/s` : ''}` })),
-      h('dt', { tx: 'city.machine.lent' }), h('dd', { text: tr('city.machine.lentValue', { turns: m.lending.turns, active: m.lending.active }) }));
-    card.append(grid);
-    for (const b of borrowsHere) {
-      card.append(h('div', { class: 'ct-borrow' }, h('span', { class: 'ct-gl ct-cable', html: '<svg viewBox="0 0 24 24" class="ico ico-sm"><path d="M4 12h5l2-4 3 8 2-4h4"/></svg>' }),
-        h('span', { text: tr('city.borrow.active', { agent: agentName(b.agentId), machine: machineName(b.to) }) }),
-        h('span', { class: 'ct-faint small', text: tr('city.borrow.turns', { used: b.used?.turns || 0, limit: b.limit?.turns || '?' }) }),
-        h('button', { type: 'button', class: 'btn btn-xs btn-quiet', tx: 'city.borrow.stop', on: { click: () => cmd('city.borrow.stop', { borrowId: b.id }).catch(() => {}) } })));
-    }
-    for (const b of asks) {
-      const mineLender = m.self || st.mode === 'mock';
-      card.append(h('div', { class: 'ct-borrow ct-ask' }, h('span', { text: tr('city.borrow.request', { agent: agentName(b.agentId), machine: m.name }) }),
-        mineLender ? h('button', { type: 'button', class: 'btn btn-xs btn-primary', tx: 'city.borrow.accept', on: { click: () => cmd('city.borrow.answer', { borrowId: b.id, accept: true }).catch(() => {}) } }) : null,
-        mineLender ? h('button', { type: 'button', class: 'btn btn-xs btn-quiet', tx: 'city.borrow.refuse', on: { click: () => cmd('city.borrow.answer', { borrowId: b.id, accept: false }).catch(() => {}) } }) : null));
-    }
-    const row = h('div', { class: 'ct-avs' });
-    for (const a of agents) row.append(h('button', { type: 'button', class: 'ct-avbtn', title: a.name, 'aria-label': a.name, on: { click: () => openSide({ kind: 'agent', id: a.id }) } }, beeAvatar(avatarOf(a), 28, { ring: true })));
-    card.append(h('div', { class: 'ct-faint small', tx: 'city.machine.agents' }), row);
-    box.append(card);
-  }
-  box.append(h('button', { type: 'button', class: 'btn btn-xs', tx: 'city.invite', on: { click: () => invite() } }));
-  requestAnimationFrame(() => box.querySelector('[data-focus="true"]')?.scrollIntoView({ block: 'nearest' }));
-  return box;
-}
-
 function roomPanel(id) {
   const v = st.view;
   const r = v.rooms[id] || { id, tools: [], accepts: [] };
@@ -835,7 +990,8 @@ function roomPanel(id) {
     h('div', { class: 'ct-rules' },
       r.requireApproval ? h('span', { class: 'ct-tag ct-warn', tx: 'city.roomPanel.approval' }) : null,
       r.hostOnly ? h('span', { class: 'ct-tag ct-info', tx: 'city.roomPanel.hostOnly' }) : null,
-      r.mode ? h('span', { class: 'ct-tag', text: tr(`city.roomPanel.mode.${r.mode}`) }) : null),
+      r.mode ? h('span', { class: 'ct-tag', text: tr(`city.roomPanel.mode.${r.mode}`) }) : null,
+    r.role ? h('span', { class: 'ct-tag', text: tr(`city.role.${r.role}`) }) : null),
     h('div', { class: 'ct-faint small', tx: 'city.roomPanel.tools' }),
     r.tools.length ? h('div', { class: 'ct-tools' }, ...r.tools.map((x) => h('span', { class: 'ct-tool', 'aria-pressed': 'true', text: x }))) : h('div', { class: 'ct-faint small', tx: 'city.roomPanel.noTools' }),
     h('div', { class: 'of-k', tx: 'city.roomPanel.agents' }));
@@ -847,7 +1003,7 @@ function roomPanel(id) {
   for (const x of tasks) {
     const a = x.assignee && v.agents[x.assignee];
     tl.append(h('div', { class: 'ct-rtask', dataset: { s: x.status } },
-      h('div', { class: 'ct-note-t', text: x.title }),
+      h('button', { type: 'button', class: 'ct-linkbtn ct-note-t', text: x.title, on: { click: () => openTask(x.id) } }),
       h('div', { class: 'ct-note-m' }, h('span', { class: 'ct-faint', text: tr(`city.task.status.${x.status}`) }), a ? h('span', { class: 'ct-who' }, beeAvatar(avatarOf(a), 16, { ring: false }), h('span', { text: a.name })) : null,
         x.loops ? h('span', { class: 'ct-faint', text: tr('city.task.loops', { n: x.loops, max: x.maxLoops }) }) : null),
       x.issues?.length ? h('div', { class: 'ct-issues', text: x.issues.slice(0, 2).join(' · ') }) : null,
@@ -871,34 +1027,37 @@ function invite() {
   wm.open('lend');
 }
 
-/* ---------- activity feed: short lines from real events ---------- */
+/* ---------- activity feed: the last lines of the Activity stream ---------- */
+function names() {
+  const v = st.view;
+  return {
+    agentName, machineName, peerName, roomName, city: st.city,
+    taskTitle: (id) => v.tasks[id]?.title || st.city?.tasks?.[id]?.title || id || '',
+    workerName: (id) => Object.values(v.agents).find((a) => a.workerId === id)?.name || id || '',
+  };
+}
+
+const FEED_KINDS = new Set(['task', 'peer', 'agent', 'grant', 'job']);
 function feed(ev) {
   if (!hud.feed) return;
-  const d = ev.data || {};
-  const v = viewOf(st.city, st.live);
-  const title = (id) => v.tasks[id]?.title || st.city.tasks?.[id]?.title || '';
-  let line = null; let tone = '';
-  switch (ev.type) {
-    case 'city.machine.joined': if (!d.machine?.host) { line = tr('city.feed.machineJoined', { name: d.machine?.name || '' }); tone = 'honey'; } break;
-    case 'city.machine.left': line = tr('city.feed.machineLeft', { name: machineName(d.machineId) }); break;
-    case 'city.agent.joined': line = tr('city.feed.agentJoined', { name: d.agent?.name || '' }); tone = 'honey'; break;
-    case 'city.task.created': line = tr('city.feed.taskCreated', { title: d.task?.title || '' }); break;
-    case 'city.task.claimed': line = tr('city.feed.claimed', { agent: v.agents[d.agentId]?.name || d.agentId, title: title(d.taskId) }); break;
-    case 'city.task.hop': if (d.hop && d.hop.from !== d.hop.to && d.hop.from) line = tr('city.feed.hop', { title: title(d.task?.id), room: roomName(d.hop.to) }); break;
-    case 'city.task.verdict': line = tr(d.passed ? 'city.feed.verdictOk' : 'city.feed.verdictBad', { agent: v.agents[d.agentId]?.name || '', title: title(d.taskId) }); tone = d.passed ? 'ok' : 'bad'; break;
-    case 'city.task.done': line = tr('city.feed.done', { title: title(d.taskId) }); tone = 'ok'; break;
-    case 'city.task.blocked': line = tr('city.feed.blocked', { title: title(d.taskId) }); tone = 'bad'; break;
-    case 'city.borrow.requested': line = tr('city.feed.borrowAsk', { agent: v.agents[d.borrow?.agentId]?.name || '', machine: machineName(d.borrow?.to) }); tone = 'info'; break;
-    case 'city.borrow.answered': if (d.accepted) { const b = st.city.borrows?.[d.borrowId]; line = tr('city.feed.borrowStart', { agent: v.agents[b?.agentId]?.name || '', machine: machineName(b?.to) }); tone = 'info'; } break;
-    case 'city.borrow.ended': { const b = st.city.borrows?.[d.borrowId]; line = tr('city.feed.borrowEnd', { agent: v.agents[b?.agentId]?.name || '' }); break; }
-    case 'city.agent.leveled': if ((d.level || 1) < 2) break; line = tr('city.feed.leveled', { agent: v.agents[d.agentId]?.name || '', n: d.level }); tone = 'honey'; break;
-    default: break;
-  }
-  if (!line) return;
-  const li = h('li', { dataset: { tone } }, h('span', { class: 'of-dot' }), h('span', { text: line }));
+  const e = entryOf(ev, names());
+  if (!e || !FEED_KINDS.has(e.kind) || e.key === 'city.act.claimed') return;
+  const li = h('li', { dataset: { tone: e.tone || '' } }, h('span', { class: 'of-dot' }), h('span', { text: tr(e.key, e.p) }));
   hud.feed.prepend(li);
   while (hud.feed.children.length > 5) hud.feed.lastChild.remove();
   if (!reducedMotion() && active) li.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
+}
+
+/* ---------- onboarding: Create your City ---------- */
+function maybeOnboard() {
+  const decided = () => { globalThis.hivedeskOnboarding = { decided: true }; };
+  if (st.mode !== 'engine' || ui.demo || net.isRemote() || visit.current) return decided();
+  if (!st.city || st.city.onboarded || !st.city.host) return decided();
+  if (new URLSearchParams(location.search).get('onboarding') === 'off') return decided();
+  // The card goes first on a first run (the tour waits for it); a tour the person started by hand finishes first.
+  if (tourRunning()) { clearTimeout(maybeOnboard.t); maybeOnboard.t = setTimeout(maybeOnboard, 1200); return; }
+  onboarding?.show();
+  decided();
 }
 
 /* ---------- keyboard ---------- */
@@ -911,6 +1070,9 @@ function onKey(e) {
   }
   const tag = (e.target?.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (onboarding?.open) return;
+  if (e.key === 'a' || e.key === 'A') { toggleSide({ kind: 'activity' }); return; }
+  if (e.key === 'm' || e.key === 'M') { toggleSide({ kind: 'machine' }); return; }
   if (e.key === '+' || e.key === '=') scene.zoomAt(1.25, layer.clientWidth / 2, layer.clientHeight / 2);
   else if (e.key === '-') scene.zoomAt(0.8, layer.clientWidth / 2, layer.clientHeight / 2);
   else if (e.key === '0') { closeSide(); scene.fit(); }
@@ -926,6 +1088,14 @@ window.hivedeskCity = {
   openMachines: (id) => { openSide({ kind: 'machine', id }); if (id) scene.focusMachine(id); },
   fit: () => { closeSide(); scene.fit(); },
   focusMachine: (id) => scene.focusMachine(id),
+  openTask: (id) => openTask(id),
+  openJob: (id) => openSide({ kind: 'job', id }),
+  openPeer: (id) => openSide({ kind: 'peer', id }),
+  openActivity: () => openSide({ kind: 'activity' }),
+  onboard: () => onboarding?.show(),
+  hub: () => hub,
+  /** frame times of the last N frames, for the 60 fps check */
+  perf: () => scene.perf?.() || null,
 };
 
 /* ---------- glyphs ---------- */

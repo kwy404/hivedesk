@@ -2,7 +2,7 @@
 // for both machines. Every event is labeled demo by the bus; each step has a city.demo.step caption.
 //   1. Rita joins with the six words, her building rises, she contributes Pip, a reviewer.
 //   2. Dev's machine is busy, so Dev borrows Rita's GPU for three turns, then the borrow ends.
-//   3. A task dropped in the Design room flows Design, Code, Review (Pip), Test and done.
+//   3. A task dropped in the Design room flows Design, Code, Test and Review (Pip) to done.
 import { createDemoBrain, DEMO_CITY_TASK } from '../demo.js';
 
 export const DEMO_FRIEND = Object.freeze({
@@ -44,6 +44,7 @@ export async function runCityDemo({ city, scheduler, bus, stepMs = 1800, signal 
   brain.owner = DEMO_FRIEND.owner; // lent by Rita, so her building may use it
   brain.only = new Set();
   scheduler.addBrain(brain);
+  city.noteBrainOwner(DEMO_FRIEND.brainId, DEMO_FRIEND.owner);
   step('friend', 'Rita joined with the six words. Her building rises across the bridge, and she brings Pip, a reviewer.');
   city.joinMachine({ machine: DEMO_FRIEND.machine, agents: DEMO_FRIEND.agents, brainId: DEMO_FRIEND.brainId, via: 'words' }, DEMO_FRIEND.owner);
   await sleep(stepMs, signal);
@@ -65,12 +66,12 @@ export async function runCityDemo({ city, scheduler, bus, stepMs = 1800, signal 
   // 3. A task through every room, once the bakery page it changes is built.
   await jobsIdle(bus, signal);
   if (signal?.aborted || city.closed) return null;
-  step('task', 'A task note lands in the Design room. It goes Design, Code, Review, Test, then done.');
+  step('task', 'A task note lands in the Design room. It goes Design, Code, Test, Review, then done.');
   const task = city.createTask({ title: DEMO_CITY_TASK.title, detail: DEMO_CITY_TASK.detail, room: 'design' }, host);
   city.onTaskDone = (id) => {
     if (id !== task.id) return;
     city.onTaskDone = null;
-    step('done', 'Done: the task went through Design, Code, Review and Test. Every hop was an event.');
+    step('done', 'Done: the task went through Design, Code, Test and Review. Every hop was an event.');
   };
   return { taskId: task.id };
 }
