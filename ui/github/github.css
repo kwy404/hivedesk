@@ -8,7 +8,7 @@
 
 .gh-stack { display: flex; flex-direction: column; gap: 12px; }
 .gh-stack > p { margin: 0; line-height: 1.55; }
-.gh-card { border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; background: rgb(242 233 218 / .025); display: flex; flex-direction: column; gap: 8px; }
+.gh-card { border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; background: color-mix(in srgb, var(--text) 2.5%, transparent); display: flex; flex-direction: column; gap: 8px; }
 .gh-card h3 { margin: 0; font-size: 13px; font-weight: 640; color: var(--text); }
 .gh-card p { margin: 0; line-height: 1.5; }
 .gh-card a, .gh-repos a, .cl-md a { color: var(--honey-2); text-underline-offset: 2px; word-break: break-all; }
@@ -17,8 +17,8 @@
 .gh-card .row .field-in { flex: 1; min-width: 160px; }
 .gh-banner { border-radius: 10px; padding: 9px 12px; font-size: 12.5px; border: 1px solid var(--line-2); }
 .gh-banner p { margin: 4px 0 0; line-height: 1.5; }
-.gh-banner.bad { background: var(--bad-a); border-color: rgb(229 123 110 / .3); color: var(--bad); }
-.gh-banner.warn { background: var(--warn-a); border-color: rgb(232 180 92 / .3); color: var(--warn); }
+.gh-banner.bad { background: var(--bad-a); border-color: color-mix(in srgb, var(--bad) 30%, transparent); color: var(--bad); }
+.gh-banner.warn { background: var(--warn-a); border-color: color-mix(in srgb, var(--warn) 30%, transparent); color: var(--warn); }
 .gh-warn-t { color: var(--warn); }
 .gh-account { display: flex; align-items: center; gap: 12px; }
 .gh-account img, .gh-av { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; background: var(--panel-3); }
@@ -41,7 +41,7 @@
 .linkish { appearance: none; background: none; border: 0; padding: 0; color: var(--honey-2); font: inherit; text-decoration: underline; cursor: pointer; }
 
 /* confirmation card */
-.ghc-scrim { position: fixed; inset: 0; z-index: 9970; background: rgb(8 7 6 / .6); backdrop-filter: blur(3px); }
+.ghc-scrim { position: fixed; inset: 0; z-index: 9970; background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(3px); }
 .ghc {
   position: fixed; z-index: 9971; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); display: flex; flex-direction: column;

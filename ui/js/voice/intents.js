@@ -5,7 +5,7 @@
 // so every language has its own natural phrasing. Matching works on folded text: lower case,
 // no accents, punctuation as spaces. CJK languages match substrings (no spaces between words).
 
-export const WINDOWS = ['timeline', 'chat', 'files', 'preview', 'runlog', 'playbooks', 'replay', 'approvals', 'settings', 'lend', 'brief'];
+export const WINDOWS = ['timeline', 'chat', 'files', 'preview', 'runlog', 'playbooks', 'replay', 'approvals', 'settings', 'lend', 'brief', 'editor', 'library', 'memory'];
 
 /** Lower case, accents removed, punctuation turned into spaces, spaces collapsed. */
 export function fold(text) {
@@ -74,7 +74,7 @@ export function yesNo(text, t, lang) {
 
 /**
  * Parses one sentence into an intent:
- *   { kind: 'yes'|'no'|'stop'|'git'|'approve'|'reject'|'status'|'open'|'help'|'build'|'unknown', window?, request?, text }
+ *   { kind: 'yes'|'no'|'end'|'stop'|'connect'|'share'|'git'|'approve'|'reject'|'status'|'open'|'help'|'build'|'unknown', window?, request?, address?, resource?, person?, text }
  * @param {string} text
  * @param {(key: string) => string} t  translate function for the current language
  * @param {string} lang  locale code
@@ -88,7 +88,24 @@ export function parseIntent(text, t, lang) {
   const yn = yesNo(raw, t, lang);
   if (yn) return out(yn);
   const has = (key) => findPhrase(f, phrases(t, key), cjk);
+  const short = (n) => (cjk ? f.replace(/\s/g, '').length <= n * 2 : f.split(' ').length <= n);
+  // "that is all", "goodbye": the end of the conversation
+  if (has('voice.lex.end') && short(5)) return out('end');
   if (has('voice.lex.stop') && (cjk ? f.replace(/\s/g, '').length <= 8 : f.split(' ').length <= 3)) return out('stop');
+  // "connect to 123 456 7890": a remote desktop address has ten digits
+  const digits = raw.replace(/\D/g, '');
+  if (has('voice.lex.connect') && digits.length === 10) return out('connect', { address: digits });
+  // "share my GPU with Ana"
+  const share = has('voice.lex.share');
+  if (share) {
+    const resource = has('voice.lex.gpu') ? 'gpu' : has('voice.lex.cpu') ? 'cpu' : null;
+    if (resource) {
+      const w = findPhrase(f, phrases(t, 'voice.lex.with'), cjk);
+      const after = w ? (cjk ? f.slice(w.i + w.p.length) : ` ${f} `.slice(w.i + w.p.length + 2)).trim() : '';
+      const person = strip(after, [phrases(t, 'voice.lex.filler')], cjk).split(' ').slice(0, 3).join(' ');
+      return out('share', { resource, person });
+    }
+  }
   if (has('voice.lex.git')) return out('git');
   if (has('voice.lex.approve')) return out('approve');
   if (has('voice.lex.reject')) return out('reject');
@@ -101,6 +118,7 @@ export function parseIntent(text, t, lang) {
   const build = has('voice.lex.build');
   if (build) return out('build', { request: raw.replace(/[\s.]+$/, '') });
   const words = cjk ? f.replace(/\s/g, '').length / 2 : f.split(' ').length;
-  if (words >= 5) return out('build', { request: raw });
+  // a long sentence without a build word: maybe a request (the engine decides when it can)
+  if (words >= 5) return out('build', { request: raw, guess: true });
   return out('unknown');
 }

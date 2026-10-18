@@ -17,7 +17,7 @@ export const PATTERNS = ['comb', 'fine', 'dots', 'grid', 'pixel', 'none'];
 export const SHADOWS = ['soft', 'deep', 'hard', 'flat'];
 export const SOUND_PACKS = ['chime', 'soft', 'wood', 'pixel', 'off'];
 export const FONT_PRESETS = {
-  system: '"Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif',
+  system: '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif',
   rounded: 'ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif',
   humanist: '"Seravek", "Gill Sans Nova", "Ubuntu", "Calibri", "Segoe UI", system-ui, sans-serif',
   serif: '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif',
@@ -25,7 +25,7 @@ export const FONT_PRESETS = {
   pixel: '"Press Start 2P", "VT323", "Lucida Console", ui-monospace, Consolas, monospace'
 };
 export const MONO_PRESETS = {
-  system: 'ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace',
+  system: '"JetBrains Mono", "Cascadia Mono", "Cascadia Code", ui-monospace, "SF Mono", Menlo, Consolas, monospace',
   pixel: '"VT323", "Lucida Console", ui-monospace, Consolas, monospace'
 };
 
@@ -215,20 +215,20 @@ export function fixContrast(theme) {
 
 function clone(v) { return JSON.parse(JSON.stringify(v)); }
 
-/** Mel, the default: used to fill gaps in partial themes. */
+/** Mel, the default: used to fill gaps in partial themes. Graphite and near black, amber for state and focus (docs/1.0/DESIGN.md). */
 export const BASE = {
-  format: FORMAT, version: VERSION, id: 'mel', name: 'Mel', description: 'Dark honey on deep charcoal. The default Hive.',
+  format: FORMAT, version: VERSION, id: 'mel', name: 'Mel', description: 'Graphite and near black with amber for state and focus. The default Hive.',
   author: 'hivedesk', scheme: 'dark',
   colors: {
-    bg: '#0E0D0B', bg2: '#141210', panel: '#191613', panel2: '#1F1B17', panel3: '#27221D', panel4: '#2F2923', line: '#F2E9DA',
-    text: '#F2E9DA', text2: '#CFC4B3', muted: '#9A8F80', faint: '#756B5F',
-    accent: '#FFB531', accent2: '#FFD072', accentInk: '#1A1206',
-    ok: '#7DC49B', warn: '#E8B45C', bad: '#E57B6E', info: '#86A9D6'
+    bg: '#0A0B0D', bg2: '#0E1013', panel: '#131519', panel2: '#181B20', panel3: '#1F2329', panel4: '#272C33', line: '#E4E8EE',
+    text: '#E6E8EB', text2: '#B4BAC3', muted: '#8A919B', faint: '#656C76',
+    accent: '#F2A93B', accent2: '#F6C46F', accentInk: '#17110A',
+    ok: '#62B98C', warn: '#D8A54F', bad: '#E0695C', info: '#72A4DE'
   },
-  radius: { window: 14, control: 9, small: 6 },
+  radius: { window: 10, control: 6, small: 4 },
   fonts: { sans: 'system', mono: 'system' },
   shadow: { style: 'soft', strength: 1 },
-  pattern: { kind: 'comb', color: '#FFD072', opacity: 0.065, size: 56 },
+  pattern: { kind: 'comb', color: '#E4E8EE', opacity: 0.03, size: 56 },
   lines: 1, motion: 1, sound: 'chime'
 };
 
@@ -277,9 +277,9 @@ export function validateTheme(input, opts = {}) {
     scheme: scheme || 'dark',
     colors: errors.some((e) => e.startsWith('colors.')) ? { ...BASE.colors, ...colors } : colors,
     radius: {
-      window: Math.round(clamp(num(r.window, 14), 0, 28)),
-      control: Math.round(clamp(num(r.control, 9), 0, 20)),
-      small: Math.round(clamp(num(r.small, 6), 0, 14))
+      window: Math.round(clamp(num(r.window, 10), 0, 28)),
+      control: Math.round(clamp(num(r.control, 6), 0, 20)),
+      small: Math.round(clamp(num(r.small, 4), 0, 14))
     },
     fonts: { sans: fontOf(f.sans, FONT_PRESETS, 'sans'), mono: fontOf(f.mono, MONO_PRESETS, 'mono') },
     shadow: {
@@ -315,8 +315,8 @@ function shadowCss(style, k) {
   const deep = style === 'deep' ? 1.4 : 1;
   const a = (x) => Math.round(clamp(x * k * deep, 0, 0.95) * 100) / 100;
   return {
-    win: `0 0 0 1px rgb(0 0 0 / ${a(0.35)}), 0 1px 0 rgb(255 255 255 / .035) inset, 0 2px 6px rgb(0 0 0 / ${a(0.35)}), 0 22px 54px -18px rgb(0 0 0 / ${a(0.75)})`,
-    pop: `0 0 0 1px rgb(0 0 0 / ${a(0.4)}), 0 8px 24px -6px rgb(0 0 0 / ${a(0.6)}), 0 28px 70px -20px rgb(0 0 0 / ${a(0.7)})`
+    win: `0 0 0 1px rgb(0 0 0 / ${a(0.4)}), 0 1px 0 rgb(255 255 255 / .03) inset, 0 16px 40px -16px rgb(0 0 0 / ${a(0.6)})`,
+    pop: `0 0 0 1px rgb(0 0 0 / ${a(0.45)}), 0 24px 48px -16px rgb(0 0 0 / ${a(0.7)})`
   };
 }
 
@@ -371,7 +371,7 @@ export function themeVars(theme) {
     '--info': c.info, '--info-a': rgba(c.info, 0.13),
     '--outline': mix(c.bg, '#000000', 0.4),
     '--r-win': `${theme.radius.window}px`, '--r-ctl': `${theme.radius.control}px`, '--r-sm': `${theme.radius.small}px`,
-    '--t-fast': `${Math.round(120 * m)}ms`, '--t': `${Math.round(200 * m)}ms`, '--t-slow': `${Math.round(320 * m)}ms`,
+    '--t-fast': `${Math.round(150 * m)}ms`, '--t': `${Math.round(200 * m)}ms`, '--t-slow': `${Math.round(250 * m)}ms`,
     '--shadow-win': sh.win, '--shadow-pop': sh.pop,
     '--font-sans': sans, '--font-mono': mono,
     '--ring': rgba(c.accent, 0.6),
@@ -382,11 +382,11 @@ export function themeVars(theme) {
     '--hd-muted': c.muted, '--hd-accent': c.accent,
     '--hd-hover': rgba(c.text, light ? 0.07 : 0.06),
     '--hd-hover-2': rgba(c.text, light ? 0.11 : 0.1),
-    '--hd-topbar': `linear-gradient(180deg, ${rgba(c.panel, 0.94)}, ${rgba(c.bg2, 0.88)})`,
-    '--hd-dock': `linear-gradient(180deg, ${rgba(c.panel3, 0.92)}, ${rgba(c.panel, 0.94)})`,
-    '--hd-hex': `linear-gradient(165deg, ${c.panel4}, ${c.panel2})`,
-    '--hd-glow-1': rgba(c.accent, light ? 0.08 : 0.055),
-    '--hd-glow-2': rgba(c.accent, light ? 0.05 : 0.035),
+    '--hd-topbar': rgba(c.bg2, 0.9),
+    '--hd-dock': rgba(c.panel, 0.84),
+    '--hd-hex': c.panel3,
+    '--hd-glow-1': rgba(c.accent, light ? 0.05 : 0.025),
+    '--hd-glow-2': rgba(c.info, light ? 0.04 : 0.02),
     '--hd-scrim': rgba(light ? '#2B2620' : '#080706', light ? 0.32 : 0.55),
     '--hd-selection': rgba(c.accent, 0.3),
     '--hd-pattern': pat.url,

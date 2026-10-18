@@ -11,6 +11,7 @@ import { notify } from '../notify.js';
 import { t, tmap } from '../i18n.js';
 import { setTip } from '../tooltip.js';
 import { track, stateBox, btn } from './util.js';
+import { usedView, usedBox } from './library-used.js';
 
 const V = window.V;
 const box = V.reactive({ v: 0 });
@@ -137,7 +138,7 @@ register('brief', {
   create(ctx) {
     const pane = h('div', { class: 'pane pane-pad' });
     ctx.body.append(pane);
-    track(() => [box.v, ui.replay, S().jobs.length], () => {
+    track(() => [box.v, usedBox.v, ui.replay, S().jobs.length], () => {
       clear(pane);
       const j = latest();
       if (!j) {
@@ -147,6 +148,8 @@ register('brief', {
       }
       ctx.setSub(j.request.slice(0, 60));
       if (j.proposed) pane.append(briefView(j.id, j));
+      const used = usedView(j.id);
+      if (used) pane.append(used);
       if (j.report) pane.append(reportView(j.id, j.report));
     });
   },
@@ -155,14 +158,14 @@ register('brief', {
 // Styles live here so this window does not touch the shared stylesheet.
 const css = `
 .brief-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; padding: 0 12px 10px; }
-.brief-grid h4, .rep-body h4 { margin: 10px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
-.brief-orig { margin: 0; padding: 10px; border: 1px dashed var(--line); border-radius: 8px; color: var(--text-2); }
-.brief-text { margin: 0; padding: 10px; white-space: pre-wrap; word-break: break-word; font: 12.5px/1.5 var(--font-mono); background: rgb(242 233 218 / .04); border: 1px solid var(--line); border-radius: 8px; max-height: 340px; overflow: auto; }
+.brief-grid h4, .rep-body h4 { margin: 10px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-t); }
+.brief-orig { margin: 0; padding: 10px; border: 1px dashed var(--line-2); border-radius: 6px; color: var(--text-2); }
+.brief-text { margin: 0; padding: 10px; white-space: pre-wrap; word-break: break-word; font: 12.5px/1.5 var(--font-mono); background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; max-height: 340px; overflow: auto; }
 .brief-editing { grid-column: 2; }
-.brief-edit { width: 100%; box-sizing: border-box; font: 12.5px/1.5 var(--font-mono); color: var(--text); background: rgb(242 233 218 / .04); border: 1px solid rgb(255 181 49 / .35); border-radius: 8px; padding: 10px; resize: vertical; }
+.brief-edit { width: 100%; box-sizing: border-box; font: 12.5px/1.5 var(--font-mono); color: var(--text); background: var(--bg-2); border: 1px solid var(--accent-line); border-radius: 6px; padding: 10px; resize: vertical; }
 .rep-body { padding: 0 12px 12px; }
 .rep-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; }
-.rep-prompt { margin-top: 12px; padding: 10px; border: 1px solid rgb(255 181 49 / .25); border-radius: 10px; background: var(--honey-a); }
+.rep-prompt { margin-top: 12px; padding: 10px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel-2); box-shadow: inset 2px 0 0 var(--honey); }
 .rep-next { display: grid; gap: 6px; }
 .rep-next-b { justify-content: flex-start; text-align: left; white-space: normal; height: auto; min-height: 28px; }
 @media (max-width: 560px) { .brief-grid { grid-template-columns: 1fr; } .brief-editing { grid-column: 1; } }

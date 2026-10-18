@@ -1,0 +1,86 @@
+// The strings of the 1.0 Lend screen and Join window (keys lend.p2p.*). The same English is in
+// i18n/parts/s2-p2p.en.json for the merge into i18n/en.json (test/lend/p2p-model.test.js keeps
+// both equal); until that merge, tx() falls back to this English instead of showing the key.
+
+export const P2P_EN = Object.freeze({
+  'lend.p2p.formTitle': 'What you lend',
+  'lend.p2p.formHelp': 'Nothing is shared until you accept someone. Each part has its own limit, and every grant ends on time or when you stop.',
+  'lend.p2p.gpu': 'GPU',
+  'lend.p2p.gpuVram': 'VRAM limit in GB',
+  'lend.p2p.cpu': 'CPU',
+  'lend.p2p.cpuThreads': 'Threads',
+  'lend.p2p.cpuLoad': 'Load limit in percent',
+  'lend.p2p.ram': 'RAM',
+  'lend.p2p.ramGB': 'RAM limit in GB',
+  'lend.p2p.storage': 'Storage',
+  'lend.p2p.storageGB': 'Storage limit in GB',
+  'lend.p2p.modelDownload': 'Allow model downloads',
+  'lend.p2p.minutes': 'For how long',
+  'lend.p2p.minutesN': '{n} minutes',
+  'lend.p2p.makeWords': 'Make words',
+  'lend.p2p.nothing': 'Turn on the GPU or the CPU to lend.',
+  'lend.p2p.windowOpen': 'Keep this window open: the connection goes through it.',
+  'lend.p2p.offering': 'These words offer:',
+  'lend.p2p.cap.inference': 'Run model jobs: {jobs} at a time, up to {seconds} s and {tokens} tokens each',
+  'lend.p2p.cap.gpu': 'GPU: up to {gb} GB of VRAM',
+  'lend.p2p.cap.gpuSome': 'GPU {gpus}: up to {gb} GB of VRAM',
+  'lend.p2p.cap.cpu': 'CPU: {threads} threads, at most {pct}% load',
+  'lend.p2p.cap.ram': 'RAM: up to {gb} GB',
+  'lend.p2p.cap.storage': 'Storage: up to {gb} GB, no model downloads',
+  'lend.p2p.cap.storageDownload': 'Storage: up to {gb} GB, model downloads allowed',
+  'lend.p2p.cap.cityView': 'See your City (no file contents)',
+  'lend.p2p.cap.other': '{name}',
+  'lend.p2p.request': '{name} wants to borrow this PC',
+  'lend.p2p.requestKnown': '{name} wants to borrow this PC again',
+  'lend.p2p.theirFingerprint': 'Their fingerprint: {words}',
+  'lend.p2p.sasQuestion': 'Do these words match on their screen?',
+  'lend.p2p.sasHelp': 'Ask your friend to read the six words on their screen. Accept only if every word is the same.',
+  'lend.p2p.match': 'They match: lend',
+  'lend.p2p.noMatch': 'They do not match',
+  'lend.p2p.mismatch': 'The words did not match, so nobody was let in. Make new words and try again.',
+  'lend.p2p.decideIn': 'Decide within {n} minutes',
+  'lend.p2p.lendingTitle': 'Lending now',
+  'lend.p2p.left': '{n} minutes left',
+  'lend.p2p.revoke': 'Revoke',
+  'lend.p2p.online': 'online',
+  'lend.p2p.offline': 'offline',
+  'lend.p2p.nobody': 'Nobody borrows this PC right now.',
+  'lend.p2p.stopAll': 'Stop lending to everyone',
+  'lend.p2p.burned': 'Someone tried with the wrong words, so these words no longer work. Make new ones.',
+  'lend.p2p.join.start': 'Join',
+  'lend.p2p.join.meeting': 'Meeting your friend on the relays...',
+  'lend.p2p.join.handshake': 'Checking the words...',
+  'lend.p2p.join.sas': 'Read these six words to your friend. They accept only if their screen shows the same words.',
+  'lend.p2p.join.hostFingerprint': 'Their fingerprint: {words}',
+  'lend.p2p.join.waiting': 'Waiting for your friend to accept...',
+  'lend.p2p.join.accepted': 'Your friend accepted. You may use:',
+  'lend.p2p.join.refused': 'Your friend did not accept.',
+  'lend.p2p.join.refusedMismatch': 'Your friend saw other words, so the connection was refused. Someone else may have the words; ask for new ones.',
+  'lend.p2p.join.failed.words': 'The words did not work. They work once and for 10 minutes; ask for new words.',
+  'lend.p2p.join.failed.timeout': 'Nobody answered in time.',
+  'lend.p2p.join.failed.refused': 'That PC refused the connection.',
+});
+
+let i18n = null;
+
+/** Loads /js/i18n.js when it is there (the window), so Node tests can import this file. */
+export async function loadI18n() {
+  if (i18n) return i18n;
+  try {
+    i18n = await import('/js/i18n.js');
+  } catch {
+    i18n = { has: () => false, t: (k) => k };
+  }
+  return i18n;
+}
+
+const fill = (msg, params = {}) => msg.replace(/\{(\w+)\}/g, (_, k) => (params[k] ?? `{${k}}`));
+
+/** The current language's text for a key, or this English until the parts are merged. */
+export function tx(key, params) {
+  if (i18n?.has?.(key)) return i18n.t(key, params);
+  return fill(P2P_EN[key] ?? key, params);
+}
+
+/** A model line ({ key, params }) as text. */
+export const lineText = (line) => tx(line.key, line.params);

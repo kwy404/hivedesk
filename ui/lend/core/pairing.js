@@ -33,9 +33,11 @@ class Side extends Emitter {
     this.stopped = false;
   }
 
+  /** words: the six words (0.2), or a prepared { topic, key } from the engine (1.0, p2p-pipe.js). */
   async open(words) {
-    this.words = words;
-    this.rv = await deriveRendezvous(words, this.iterations);
+    const prepared = words && !Array.isArray(words) && typeof words.topic === 'string' && words.key;
+    this.words = prepared ? null : words;
+    this.rv = prepared ? words : await deriveRendezvous(words, this.iterations);
     if (this.stopped) throw new Error('stopped');
     this.hub = new RelayHub(this.rv.topic, this.hubOptions);
     this.hub.on('status', (s) => this.emit('status', s));

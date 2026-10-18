@@ -10,10 +10,14 @@ import { LIMITS } from './core/frames.js';
 import { DEFAULT_RATE } from './core/ratelimit.js';
 import { T } from './text.js';
 import { clear, copyText, coreText, failText, h, liveScope, qrNode, requestLog, wordGrid } from './view.js';
+import { mountP2PLend } from './p2p-screen.js';
 
 /**
  * hive: a connected HiveSocket (or anything with command, notify, on, hello).
  * options: passed to LendOffer (brokers, iceServers, iterations, ...), plus linkBase.
+ * A 1.0 engine (lend.status has p2p) gets the grant based screen of p2p-screen.js: identities,
+ * the SAS check, per resource limits and real revokes. options.legacy keeps the 0.2 screen for a
+ * friend who still runs 0.2.
  */
 export function mountLendScreen(root, { hive, options = {}, linkBase } = {}) {
   root.classList.add('lend-screen');
@@ -40,8 +44,10 @@ export function mountLendScreen(root, { hive, options = {}, linkBase } = {}) {
     try {
       const s = await hive.command('lend.status');
       state.chatCommand = s.guarded ? 'lend.chat' : 'brain.chat';
+      return s;
     } catch {
       state.chatCommand = 'brain.chat'; // the lend plug-in is missing: the engine's own command
+      return null;
     }
   }
 
@@ -199,12 +205,19 @@ export function mountLendScreen(root, { hive, options = {}, linkBase } = {}) {
 
   /** The screen goes away: stops the offer, the lending and the language subscription. */
   function unmount() {
+    api.p2p?.unmount();
     live.stop();
     clearInterval(timer);
     state.offer?.stop();
     state.bridge?.stop();
   }
 
-  probe().then(start);
+  probe().then((s) => {
+    if (s?.p2p && !options.legacy) {
+      live.stop();
+      return mountP2PLend(root, { hive, options }).then((p) => (api.p2p = p));
+    }
+    return start();
+  });
   return api;
 }

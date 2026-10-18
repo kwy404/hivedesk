@@ -18,7 +18,7 @@ import { micButton } from './voice/index.js';
 
 const V = window.V;
 
-export const LOGO = '<svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><defs><linearGradient id="lg-h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD072"/><stop offset="1" stop-color="#F29A1F"/></linearGradient><clipPath id="lg-c"><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z"/></clipPath></defs><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z" fill="url(#lg-h)"/><g clip-path="url(#lg-c)" fill="#24160C"><rect x="0" y="12.2" width="32" height="3"/><rect x="0" y="18.6" width="32" height="3"/></g><path d="M16 2.2 28 9.1v13.8L16 29.8 4 22.9V9.1z" fill="none" stroke="#24160C" stroke-width="1.4"/><path d="M8 9.6 16 5" stroke="#fff" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/></svg>';
+export const LOGO = '<svg viewBox="0 0 64 64" class="brand-mark" aria-hidden="true"><defs><clipPath id="lg-c"><path d="M32 4 56.2 18v28L32 60 7.8 46V18z"/></clipPath></defs><path d="M32 4 56.2 18v28L32 60 7.8 46V18z" fill="#F2A93B"/><g clip-path="url(#lg-c)" fill="#14171B"><rect x="0" y="24.5" width="64" height="5.5"/><rect x="0" y="36" width="64" height="5.5"/></g></svg>';
 
 let pop = null;
 function closePop() { pop?.remove(); pop = null; document.removeEventListener('pointerdown', outside, true); document.removeEventListener('keydown', escPop, true); }

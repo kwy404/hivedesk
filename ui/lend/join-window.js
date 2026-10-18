@@ -11,6 +11,7 @@ import { looksLikePaste, spread } from './core/paste.js';
 import { T } from './text.js';
 import { clear, coreText, failText, h, liveScope, requestLog, wordGrid } from './view.js';
 import { fmtNumber } from '/js/i18n.js';
+import { runP2PJoin } from './p2p-screen.js';
 
 /**
  * hive: a connected HiveSocket. options: passed to LendJoin. initial: a link or phrase to prefill
@@ -129,6 +130,14 @@ export function mountJoinWindow(root, { hive, options = {}, initial = '', label 
 
   async function connect(words) {
     state.join?.stop();
+    // A 1.0 engine joins through its control plane: identities, SAS words, the host's Accept.
+    if (state.p2p === undefined) state.p2p = await hive.command('lend.status').then((s) => !!s?.p2p && !options.legacy, () => false);
+    if (state.p2p) {
+      state.phase = 'p2p';
+      root.dataset.phase = 'p2p';
+      state.join = await runP2PJoin(root, { hive, words, options });
+      return;
+    }
     const status = live.text('p', { class: 'lend-status' }, () => T.joinKnocking);
     set('knocking', h('section', { class: 'lend-card' }, wordGrid(words), status));
     const join = new LendJoin(options);

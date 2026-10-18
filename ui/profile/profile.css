@@ -1,0 +1,53 @@
+/* The Profile window and the avatar gallery (docs/1.0/PROFILE.md). Tokens from ui/css/tokens.css. */
+
+.pf-av { display: inline-grid; place-items: center; width: var(--pf); height: var(--pf); flex: none; }
+.pf-av svg { width: 100%; height: 100%; display: block; }
+.ibtn.pf-top { width: auto; padding: 0 4px; }
+
+.pf { display: grid; align-content: start; gap: var(--s-4); padding: var(--s-4) var(--s-5) var(--s-5); }
+.pf-head { display: grid; grid-template-columns: auto 1fr auto; gap: var(--s-4); align-items: center; }
+.pf-who h2 { margin: 0; font-size: var(--fs-20); font-weight: var(--fw-semi); letter-spacing: -.01em; }
+.pf-bio { margin: var(--s-1) 0 0; color: var(--text-2); font-size: var(--fs-13); }
+.pf-meta { display: flex; gap: var(--s-2); align-items: center; margin-top: var(--s-1); color: var(--muted-t); font-size: var(--fs-12); }
+.pf-edit { align-self: start; }
+.pf-ids { display: grid; grid-template-columns: 120px 1fr; margin: 0; border-top: 1px solid var(--line); }
+.pf-ids dt, .pf-ids dd { padding: var(--s-2) 0; border-bottom: 1px solid var(--line); font-size: var(--fs-12); }
+.pf-ids dt { color: var(--muted-t); }
+.pf-ids dd { margin: 0; display: flex; align-items: center; gap: var(--s-2); min-width: 0; }
+.pf-ids code { font-size: var(--fs-13); color: var(--text); letter-spacing: .02em; }
+.pf-sec { display: grid; gap: var(--s-3); padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.pf-sec h3 { margin: 0; font-size: var(--fs-14); font-weight: var(--fw-semi); }
+.pf-sub { margin: -6px 0 0; color: var(--muted-t); font-size: var(--fs-12); }
+.pf-k { margin: var(--s-1) 0 0; font-size: var(--fs-11); font-weight: var(--fw-semi); text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--muted-t); }
+.pf-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-ctl); overflow: hidden; }
+.pf-stat { display: grid; gap: 2px; padding: var(--s-2) var(--s-3); background: var(--panel); }
+.pf-stat-k { font-size: var(--fs-11); color: var(--muted-t); }
+.pf-stat b { font-size: var(--fs-20); font-weight: var(--fw-semi); color: var(--text); line-height: 1.2; }
+.pf-stat-s { font-size: var(--fs-11); color: var(--faint); }
+.pf-domains { display: grid; gap: 4px; }
+.pf-dom { display: grid; grid-template-columns: 90px 1fr 48px; align-items: center; gap: var(--s-2); font-size: var(--fs-12); color: var(--text-2); }
+.pf-dom b { text-align: right; font-weight: var(--fw-medium); color: var(--text); }
+.pf-dom-bar { height: 4px; border-radius: 2px; background: var(--track); overflow: hidden; }
+.pf-dom-bar i { display: block; height: 100%; background: var(--muted-t); border-radius: 2px; }
+.pf-models { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pf-achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s-2); }
+.pf-ach { display: grid; grid-template-columns: 44px 1fr; gap: var(--s-3); align-items: center; padding: var(--s-2); border-radius: var(--r-ctl); border: 1px solid var(--line); background: var(--panel-2); }
+.pf-ach b { display: block; font-size: var(--fs-13); font-weight: var(--fw-semi); }
+.pf-ach span { display: block; font-size: var(--fs-11); color: var(--muted-t); line-height: 1.4; }
+.pf-ach[data-on=false] { background: transparent; }
+.pf-ach[data-on=false] b { color: var(--muted-t); }
+.pf-badge { display: inline-grid; }
+.pf-switch { gap: var(--s-2); font-size: var(--fs-13); cursor: pointer; }
+.pf-switch input { accent-color: var(--honey); }
+.pf-editor { gap: var(--s-2); }
+.pf-editor .lbl { margin: var(--s-2) 0 0; }
+.pf-acts { justify-content: flex-end; margin-top: var(--s-2); }
+
+.pf-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+.pf-tile { display: grid; place-items: center; padding: 2px; border: 1px solid transparent; border-radius: var(--r-ctl); background: transparent; cursor: pointer; transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
+.pf-tile:hover { background: var(--hover); }
+.pf-tile[aria-checked=true] { border-color: var(--honey); background: var(--accent-soft); }
+.pf-tile svg { width: 40px; height: 40px; display: block; }
+.ct-ob .pf-gallery { grid-template-columns: repeat(10, 1fr); gap: 4px; }
+.ct-ob .pf-tile svg { width: 32px; height: 32px; }
+@media (max-width: 560px) { .pf-head { grid-template-columns: auto 1fr; } .pf-edit { grid-column: 1 / -1; justify-self: start; } .pf { padding: var(--s-3); } }

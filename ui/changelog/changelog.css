@@ -10,24 +10,24 @@
 .cl-md h4.cl-removed, .cl-md h4.cl-security { color: var(--bad); }
 .cl-md ul { margin: 0 0 6px; padding-left: 20px; }
 .cl-md p { margin: 0 0 8px; }
-.cl-md code { font-family: var(--font-mono); font-size: 12px; background: rgb(242 233 218 / .06); padding: 1px 5px; border-radius: 5px; }
+.cl-md code { font-family: var(--font-mono); font-size: 12px; background: color-mix(in srgb, var(--text) 6%, transparent); padding: 1px 5px; border-radius: 5px; }
 .cl-ta { width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; resize: vertical; }
 .cl-ver { width: 96px; font-family: var(--font-mono); }
 .cl-bump { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .cl-bump p { flex-basis: 100%; margin: 0; }
-.cl-prop { border-color: var(--honey-b); background: rgb(255 181 49 / .04); }
+.cl-prop { border-color: var(--honey-b); background: color-mix(in srgb, var(--honey) 4%, transparent); }
 .cl-filters .field-sel { width: auto; flex: 0 1 170px; min-width: 120px; }
 .cl-filters .field-in { flex: 1; min-width: 140px; }
 .cl-list { list-style: none; margin: 0; padding: 0; }
 .cl-row { appearance: none; width: 100%; display: flex; align-items: center; gap: 8px; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text-2); font: inherit; font-size: 12.5px; text-align: left; }
 button.cl-row { cursor: pointer; }
-button.cl-row:hover { background: rgb(242 233 218 / .04); }
+button.cl-row:hover { background: color-mix(in srgb, var(--text) 4%, transparent); }
 button.cl-row:focus-visible { outline: 2px solid var(--honey); outline-offset: -2px; border-radius: 6px; }
 .cl-name { font-weight: 600; color: var(--text); white-space: nowrap; }
 .cl-act { display: inline-flex; align-items: center; gap: 4px; color: var(--muted-t); white-space: nowrap; }
 .cl-text { flex: 1; min-width: 0; }
 .cl-who { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; flex: none; background: var(--panel-4); color: var(--text); }
-.cl-who.guest { background: var(--info-a); color: var(--info); outline: 1px dashed rgb(134 169 214 / .5); }
+.cl-who.guest { background: var(--info-a); color: var(--info); outline: 1px dashed color-mix(in srgb, var(--info) 50%, transparent); }
 .cl-who.human { background: var(--honey-a); color: var(--honey-2); }
 .cl-detail .udiff { max-height: 320px; overflow: auto; }
 

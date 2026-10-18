@@ -6,7 +6,7 @@ import { command } from './net.js';
 import { notify } from './notify.js';
 import { S, worker, extra } from './store.js';
 import { copyText } from './dom.js';
-import { t } from './i18n.js';
+import { t, locale } from './i18n.js';
 
 async function run(type, data, { ok, fail = 'actions.fail.generic', quietOk = true } = {}) {
   try {
@@ -24,9 +24,12 @@ async function run(type, data, { ok, fail = 'actions.fail.generic', quietOk = tr
 }
 
 export const createJob = (request, { playbookId, approval } = {}) =>
-  run('job.create', { request, ...(playbookId ? { playbookId } : {}), ...(approval != null ? { approval } : {}) }, { fail: 'actions.fail.createJob' });
+  run('job.create', { request, lang: locale(), ...(playbookId ? { playbookId } : {}), ...(approval != null ? { approval } : {}) }, { fail: 'actions.fail.createJob' });
 export const cancelJob = (jobId) => run('job.cancel', { jobId }, { fail: 'actions.fail.cancelJob' });
-export const sendChat = (channel, text) => run('chat.send', { channel, text }, { fail: 'actions.fail.sendChat' });
+// jobs: a request typed in the chat starts a job, like the top bar (the engine decides what the message is).
+export const sendChat = (channel, text) => run('chat.send', { channel, text, lang: locale(), jobs: true }, { fail: 'actions.fail.sendChat' });
+/** Answers the crew's question about a message: "task" starts it as a job, "chat" just talks. */
+export const chooseChat = (messageId, choice) => run('chat.choose', { messageId, choice, lang: locale() }, { fail: 'actions.fail.sendChat' });
 export const resolveApproval = (approvalId, approved, note) => run('approval.resolve', { approvalId, approved, ...(note ? { note } : {}) }, { fail: 'actions.fail.resolveApproval' });
 export const hire = (data) => run('crew.hire', data, { fail: 'actions.fail.hire' });
 export const updateWorker = (workerId, fields) => run('crew.update', { workerId, ...fields }, { fail: 'actions.fail.updateWorker' });

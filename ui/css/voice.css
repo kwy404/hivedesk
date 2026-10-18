@@ -1,0 +1,35 @@
+/* Voice mode: the conversation orb with its live waveform and captions, the consent dialogs.
+   Loaded by ui/js/voice/index.js. Builds on the .vo rules in polish.css. */
+
+.vo.vo2 { width: min(560px, calc(100vw - 24px)); padding: 14px 16px 12px; }
+.vo2 .vo-top { align-items: center; }
+.vo2 .vo-label { font-size: 13px; }
+.vo-engine { color: var(--text-3, var(--text-2)); margin-top: 2px; overflow-wrap: anywhere; }
+.vo-canvas { display: block; width: 100%; height: 72px; margin-top: 8px; border-radius: 12px; background: radial-gradient(120% 140% at 50% 50%, rgb(255 181 49 / .07), transparent 70%); }
+.vo[data-phase=listening] .vo-canvas { background: radial-gradient(120% 140% at 50% 50%, rgb(255 181 49 / .14), transparent 70%); }
+.vo[data-phase=speaking] .vo-canvas { background: radial-gradient(120% 140% at 50% 50%, rgb(134 169 214 / .14), transparent 70%); }
+.vo2 .vo-heard { font-style: normal; color: var(--text); }
+.vo2 .vo-heard::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--honey); margin-right: 8px; vertical-align: middle; }
+.vo2 .vo-reply { font-size: 14px; color: var(--text); max-height: 30vh; overflow: auto; }
+.vo2 .vo-reply::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--info, #86A9D6); margin-right: 8px; vertical-align: middle; }
+.vo-mute .vo-slash { opacity: 0; stroke: currentColor; }
+.vo-mute.on { color: var(--bad, #E5735B); }
+.vo-mute.on .vo-slash { opacity: 1; }
+.vo-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.vo-dl { margin-top: 8px; display: grid; gap: 6px; }
+.vo-bar { height: 6px; border-radius: 4px; background: rgb(255 255 255 / .08); overflow: hidden; margin: 4px 0; }
+.vo-bar i { display: block; height: 100%; background: var(--honey); border-radius: 4px; transition: width .25s linear; }
+.vo2 .vo-card ol.vo-card-d { padding-left: 22px; }
+.vo-consent { display: grid; gap: 12px; }
+.vo-lead { margin: 0; line-height: 1.5; }
+.vo-pick { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.vo-pick legend { margin-bottom: 6px; }
+.vo-opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line, rgb(255 255 255 / .1)); cursor: pointer; }
+.vo-opt.on { border-color: rgb(255 181 49 / .55); background: rgb(255 181 49 / .06); }
+.vo-opt input { margin-top: 3px; }
+.vo-opt-b { display: grid; gap: 2px; }
+.vo-opt-h { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.vo-kv { margin: 0; }
+.vo-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.vo-warn { color: var(--warn, #E5B45B); }
+@media (prefers-reduced-motion: reduce) { .vo-bar i { transition: none; } }

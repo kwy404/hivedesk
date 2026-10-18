@@ -50,11 +50,11 @@ function paint() {
     el.bar.setAttribute('aria-valuenow', String(pct));
     el.sub.replaceChildren(
       node('span', { text: j.status === 'refining' ? 'Mel writes the brief' : j.status === 'awaiting_brief' ? 'Waiting for your brief check' : j.status === 'planning' ? 'Mel is planning' : j.status === 'done' ? 'Job done' : j.status === 'failed' ? 'Job failed' : `${done} of ${tasks.length} tasks` }),
-      node('span', { class: 'wg-honey', text: `${doneCount(s)} honey` }));
+      node('span', { class: 'wg-honey', text: `${doneCount(s)} tasks done` }));
   } else {
     el.req.textContent = ui.hello ? 'The crew is napping' : 'Connecting...';
     el.fill.style.width = '0%';
-    el.sub.replaceChildren(node('span', { text: 'Start a job in the Hive and watch them wake up.' }), node('span', { class: 'wg-honey', text: `${doneCount(s)} honey` }));
+    el.sub.replaceChildren(node('span', { text: 'Start a job in the Hive and watch them wake up.' }), node('span', { class: 'wg-honey', text: `${doneCount(s)} tasks done` }));
   }
   // the queue for the one shared model
   const run = s.queue.running || [];

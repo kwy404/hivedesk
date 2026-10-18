@@ -93,7 +93,7 @@ register('providers', {
 });
 
 document.head.append(h('style', { text: `
-.prov-note { padding: 10px; border: 1px solid rgb(255 181 49 / .25); border-radius: 10px; background: var(--honey-a); }
+.prov-note { padding: 10px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel-2); box-shadow: inset 2px 0 0 var(--info); }
 .prov-body { display: grid; gap: 8px; padding: 0 12px 10px; }
 .prov-workers { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
 .prov .ok { color: var(--ok); } .prov .bad { color: var(--bad); }

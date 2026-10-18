@@ -1,45 +1,42 @@
 /* The mini widget (360 by 480): office in miniature, job progress, queue, latest line,
-   Approve and Pause. Same palette as the Hive. */
+   Approve and Pause. Same tokens as the Hive (ui/css/tokens.css). */
 :root {
-  --bg: #0E0D0B; --panel: #191613; --panel-2: #1F1B17; --panel-3: #27221D;
-  --line: rgb(242 233 218 / .08); --line-2: rgb(242 233 218 / .13);
-  --text: #F2E9DA; --text-2: #CFC4B3; --muted: #8C8172; --faint: #645B50;
-  --honey: #FFB531; --honey-2: #FFD072; --honey-ink: #1A1206;
-  --ok: #7DC49B; --warn: #E8B45C; --bad: #E57B6E; --info: #86A9D6;
-  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* base tokens come from /css/tokens.css (loaded first by widget.html) */
+  --muted: var(--muted-t);
+  --font: var(--font-sans);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 13px/1.4 var(--font); overflow: hidden; }
 button { font: inherit; }
 .wg { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-.wg-top { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px 0 12px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #1B1713, #141210); flex: none; }
+.wg-top { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px 0 12px; border-bottom: 1px solid var(--line); background: var(--bg-2); flex: none; }
 .wg-brand { display: inline-flex; align-items: center; gap: 7px; font-weight: 650; font-size: 13.5px; }
 .wg-brand svg { width: 20px; height: 20px; }
-.wg-demo { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; color: var(--info); background: rgb(134 169 214 / .13); border: 1px solid rgb(134 169 214 / .28); }
+.wg-demo { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; color: var(--info); background: color-mix(in srgb, var(--info) 13%, transparent); border: 1px solid color-mix(in srgb, var(--info) 28%, transparent); }
 .wg-demo[hidden] { display: none; }
 .wg-conn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
 .wg-conn::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
 .wg-conn[data-s=open]::before { background: var(--ok); }
 .wg-conn[data-s=offline]::before, .wg-conn[data-s=unauthorized]::before { background: var(--bad); }
 .wg-ib { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
-.wg-ib:hover { background: rgb(242 233 218 / .07); color: var(--text); }
+.wg-ib:hover { background: color-mix(in srgb, var(--text) 7%, transparent); color: var(--text); }
 .wg-ib svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.wg-stage { position: relative; flex: 1 1 auto; min-height: 150px; background: #0C0A08; border-bottom: 1px solid var(--line); }
+.wg-stage { position: relative; flex: 1 1 auto; min-height: 150px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .wg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .wg-job, .wg-queue, .wg-chat, .wg-appr { padding: 8px 12px; border-bottom: 1px solid var(--line); flex: none; }
 .wg-req { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wg-bar { position: relative; height: 9px; margin: 6px 0 4px; border-radius: 6px; background: #120F0C; box-shadow: 0 0 0 1px rgb(0 0 0 / .5); overflow: hidden; }
-.wg-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 6px; background: linear-gradient(180deg, #FFD072, #F29A1F); box-shadow: 0 0 10px rgb(255 181 49 / .5); transition: width .6s cubic-bezier(.16, 1, .3, 1); }
+.wg-bar { position: relative; height: 4px; margin: 8px 0 6px; border-radius: 2px; background: var(--track); overflow: hidden; }
+.wg-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 2px; background: var(--honey); transition: width var(--t-slow) var(--ease); }
 .wg-sub { display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--muted); }
-.wg-honey { color: var(--honey-2); font-weight: 700; }
+.wg-honey { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
 .wg-queue { display: flex; align-items: center; gap: 6px; min-height: 42px; font-size: 12px; }
 .wg-k { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
 .wg-queue .grow { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); }
 .wg-chat { display: flex; gap: 8px; align-items: flex-start; min-height: 50px; font-size: 12.5px; }
 .wg-chat .txt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-2); }
 .wg-chat b { color: var(--text); font-weight: 650; margin-right: 4px; }
-.wg-appr { background: rgb(232 180 92 / .08); font-size: 12px; color: var(--text-2); }
+.wg-appr { background: color-mix(in srgb, var(--warn) 8%, transparent); font-size: 12px; color: var(--text-2); }
 .wg-appr[hidden] { display: none; }
 .wg-appr b { color: var(--warn); }
 .wg-actions { display: flex; gap: 8px; padding: 9px 12px; margin-top: auto; flex: none; }
@@ -52,6 +49,6 @@ button { font: inherit; }
 /* bee avatars (same look as the Hive) */
 .bee-av { position: relative; display: inline-grid; place-items: center; width: var(--av); height: var(--av); flex: none; }
 .bee-av svg { width: 100%; height: 100%; position: relative; z-index: 1; overflow: visible; }
-.bee-av-ring::before { content: ""; position: absolute; inset: 1px; clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); background: radial-gradient(120% 90% at 30% 20%, color-mix(in oklab, var(--wc) 34%, #2a241e), color-mix(in oklab, var(--wc) 12%, #17140f)); }
+.bee-av-ring::before { content: ""; position: absolute; inset: 1px; clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); background: color-mix(in srgb, var(--wc) 14%, var(--panel-2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wc) 30%, transparent); }
 .bee-av .sdot { position: absolute; right: -1px; bottom: 1px; z-index: 2; width: 7px; height: 7px; border-radius: 50%; background: var(--honey); box-shadow: 0 0 0 2px var(--panel); }
 @media (prefers-reduced-motion: reduce) { .wg-bar i { transition: none; } }

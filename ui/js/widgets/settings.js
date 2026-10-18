@@ -223,7 +223,20 @@ register('settings', {
     const voice = voiceSettings();
     ctx.onDispose(voice.dispose);
     const secHelp = h('section', { class: 'set-sec set-help', 'aria-labelledby': 'set-help' });
-    pane.append(secLang, secBrain, secChoice, secCrew, voice.el, secHw, secMore, secHelp);
+    // Profile: your name and avatar (docs/1.0/PROFILE.md); the page has the rest
+    const secProfile = h('section', { class: 'set-sec set-profile' });
+    import('/profile/ui.js').then((m) => {
+      const paintProfile = () => {
+        clear(secProfile).append(h('h3', { text: m.pt('profile.settings') }),
+          h('div', { class: 'set-row' }, m.avatarEl(m.profileView()?.profile, 36), h('div', { class: 'grow' }, h('b', { text: m.myName() }), h('span', { text: m.pt('profile.settings.sub') })),
+            h('button', { type: 'button', class: 'btn btn-sm btn-quiet', text: m.pt('profile.open'), on: { click: () => wm.open('profile') } })));
+      };
+      paintProfile();
+      ctx.onDispose(m.onProfile(paintProfile));
+    }).catch(() => {});
+    pane.append(secProfile, secLang, secBrain, secChoice, secCrew, voice.el, secHw, secMore, secHelp);
+    // Sections added by modules (ui/models/: Settings, Models), shown after the brain choice.
+    for (const make of globalThis.hivedeskSettingsSections || []) { try { const el = make(ctx); if (el) secCrew.before(el); } catch (err) { console.error(err); } }
 
     // Language: a live switch, no reload
     track(() => [L.code], () => {

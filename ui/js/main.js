@@ -28,6 +28,8 @@ import './widgets/brief.js';
 import './widgets/memory.js';
 import './widgets/providers.js';
 import './widgets/prompts.js';
+import './widgets/library.js';
+import { tr as libT } from './widgets/library-strings.js';
 import { approvalTitle } from './widgets/approvals.js';
 import { beeAvatar } from './bees.js';
 import { openHire } from './widgets/hire.js';
@@ -40,8 +42,10 @@ import { t } from './i18n.js';
 import * as tooltip from './tooltip.js';
 import { celebrate } from './fx.js';
 import '../github/index.js'; // GitHub and Changelog windows, dock buttons, Ctrl K entries, runIntent
+import '../models/index.js'; // Models window, first launch analysis and consent before any model download
 import '../themes/index.js'; // Themes window, theme editor, live theme tokens, Ctrl K entries
 import '../extensions/index.js'; // Extensions window, permission prompt, widget frames, Ctrl K entries
+import '../profile/ui.js'; // the local profile: top bar avatar, Profile window, avatar gallery (docs/1.0/PROFILE.md)
 
 const V = window.V;
 const root = document.documentElement;
@@ -95,6 +99,7 @@ function desktopMenu() {
       { label: 'Memory', icon: 'playbook', action: open('memory') },
       { label: 'Providers', icon: 'key', action: open('providers') },
       { label: 'Prompts (debug)', icon: 'code', action: open('prompts') },
+      { label: libT('library.dock'), icon: 'playbook', action: open('library') },
     ] },
     { label: t('menu.arrange'), icon: 'plan', items: [
       { label: t('menu.tidy'), icon: 'hive', action: () => wm.arrange('grid') },
@@ -320,6 +325,29 @@ desk.prepend(empty);
 wm.onChange(() => { empty.hidden = wm.list().some((w) => !w.min); });
 net.connect();
 window.__hiveBooted = true;
+
+// Remote screen (src/remote/, ui/remote/): the host dialog, the session bar, the viewer windows and a dock entry.
+import('/remote/index.js').then(async (m) => {
+  m.install();
+  const { tr } = await import('/remote/common.js');
+  dock.addDockItem({
+    id: 'remote-home', label: tr('remote.home.title'),
+    content: h('span', { class: 'dk-hex', html: '<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>' }),
+    onClick: () => window.hivedeskRemote?.openHome(),
+  });
+}).catch((err) => console.error('remote screen', err));
+
+// The phone remote (ui/phone/): pair a phone by QR, and its grants.
+import('/phone/desktop.js').then(async (m) => {
+  m.install();
+  const { EN } = await import('/phone/strings.js').catch(() => ({ EN: {} }));
+  const label = t('phone.button');
+  dock.addDockItem({
+    id: 'phone', label: label && label !== 'phone.button' ? label : EN['phone.button'] || 'Control from your phone',
+    content: h('span', { class: 'dk-hex', html: '<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>' }),
+    onClick: () => window.hivedeskPhone?.open(),
+  });
+}).catch((err) => console.error('phone remote', err));
 
 // Keep the desk label up to date for screen readers.
 V.effect(() => { void rev.crew; void i18n.L.v; desk.setAttribute('aria-label', t('desk.label')); });

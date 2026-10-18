@@ -172,6 +172,11 @@ export function reduce(s, ev, isLive) {
       if (s.chat[ch].length > 200) s.chat[ch].splice(0, s.chat[ch].length - 200);
       bump('chat'); break;
     }
+    case 'chat.chosen': {
+      const m = (s.chat[d.channel] || []).find((x) => x.replyTo === d.messageId && x.choices);
+      if (m) m.chosen = d.choice;
+      bump('chat'); break;
+    }
     case 'tool.called':
       if (isLive) { const list = (extra.tools[d.workerId] ||= []); list.push({ ...d, ts: ev.ts, state: 'running' }); if (list.length > 40) list.shift(); }
       bump('tools'); break;

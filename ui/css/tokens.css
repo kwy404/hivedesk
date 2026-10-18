@@ -1,0 +1,160 @@
+/* hivedesk 1.0 design tokens: the one token layer every surface reads (docs/1.0/DESIGN.md).
+   The base color, radius, font and motion values below are the default "Mel" theme; the theme
+   engine (ui/themes/core.js, themeVars) writes the same names on :root at runtime, so a theme
+   restyles everything live. Every other token is derived from the base ones and never holds a
+   literal color. Canvas scenes read these properties through ui/js/art.js. */
+
+:root, :root[data-theme=dark] {
+  /* ---------- base colors (theme engine) ---------- */
+  --seed: #F2A93B;
+  --bg: #0A0B0D;
+  --bg-2: #0E1013;
+  --panel: #131519;
+  --panel-2: #181B20;
+  --panel-3: #1F2329;
+  --panel-4: #272C33;
+  --line: rgb(228 232 238 / .07);
+  --line-2: rgb(228 232 238 / .11);
+  --line-3: rgb(228 232 238 / .17);
+  --text: #E6E8EB;
+  --text-2: #B4BAC3;
+  --muted-t: #8A919B;
+  --faint: #656C76;
+  --honey: #F2A93B;
+  --honey-2: #F6C46F;
+  --honey-ink: #17110A;
+  --honey-a: rgb(242 169 59 / .12);
+  --honey-b: rgb(242 169 59 / .22);
+  --ok: #62B98C;
+  --ok-a: rgb(98 185 140 / .13);
+  --warn: #D8A54F;
+  --warn-a: rgb(216 165 79 / .14);
+  --bad: #E0695C;
+  --bad-a: rgb(224 105 92 / .13);
+  --info: #72A4DE;
+  --info-a: rgb(114 164 222 / .13);
+  --outline: #060708;
+
+  /* ---------- derived color roles ---------- */
+  --accent: var(--honey);
+  --accent-2: var(--honey-2);
+  --accent-ink: var(--honey-ink);
+  --accent-a: color-mix(in srgb, var(--honey) 12%, transparent);
+  --accent-b: color-mix(in srgb, var(--honey) 22%, transparent);
+  --accent-line: color-mix(in srgb, var(--honey) 42%, transparent);
+  --accent-soft: color-mix(in srgb, var(--honey) 7%, transparent);
+  --link: #7FD6F0;
+  --link-a: color-mix(in srgb, var(--link) 12%, transparent);
+  --link-line: color-mix(in srgb, var(--link) 34%, transparent);
+  --ok-line: color-mix(in srgb, var(--ok) 34%, transparent);
+  --warn-line: color-mix(in srgb, var(--warn) 34%, transparent);
+  --bad-line: color-mix(in srgb, var(--bad) 34%, transparent);
+  --info-line: color-mix(in srgb, var(--info) 30%, transparent);
+  --violet: #A894E6;
+  --hover: color-mix(in srgb, var(--text) 6%, transparent);
+  --hover-2: color-mix(in srgb, var(--text) 10%, transparent);
+  --press: color-mix(in srgb, var(--text) 13%, transparent);
+  --well: color-mix(in srgb, var(--bg) 70%, transparent);
+  --track: var(--panel-4);
+  --glass: color-mix(in srgb, var(--panel) 84%, transparent);
+  --glass-2: color-mix(in srgb, var(--panel-2) 90%, transparent);
+  --glass-line: color-mix(in srgb, var(--text) 9%, transparent);
+  --glass-hi: color-mix(in srgb, var(--text) 4%, transparent);
+  --scrim: color-mix(in srgb, var(--bg) 62%, transparent);
+  --ring: color-mix(in srgb, var(--honey) 60%, transparent);
+  --code-fg: color-mix(in srgb, var(--text) 86%, var(--panel));
+  --code-ln: color-mix(in srgb, var(--text) 26%, var(--panel));
+
+  /* ---------- type ---------- */
+  --font-sans: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", "Cascadia Code", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --lh-tight: 1.25;
+  --lh: 1.5;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-metric: 700;
+  --track-caps: .06em;
+
+  /* ---------- space: 8 px grid, 4 px half step ---------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --h-xs: 24px;
+  --h-sm: 28px;
+  --h-md: 32px;
+  --h-lg: 36px;
+
+  /* ---------- radius, lines, elevation ---------- */
+  --r-sm: 4px;
+  --r-ctl: 6px;
+  --r-win: 10px;
+  --r-pill: 999px;
+  --hair: 1px;
+  --shadow-win: 0 0 0 1px rgb(0 0 0 / .4), 0 1px 0 rgb(255 255 255 / .03) inset, 0 16px 40px -16px rgb(0 0 0 / .6);
+  --shadow-pop: 0 0 0 1px rgb(0 0 0 / .45), 0 24px 48px -16px rgb(0 0 0 / .7);
+  --elev-0: none;
+  --elev-1: 0 0 0 1px rgb(0 0 0 / .35), 0 1px 0 var(--glass-hi) inset, 0 12px 28px -14px rgb(0 0 0 / .55);
+  --elev-2: var(--shadow-pop);
+  --blur: blur(16px) saturate(1.1);
+
+  /* ---------- motion ---------- */
+  --t-fast: 150ms;
+  --t: 200ms;
+  --t-slow: 250ms;
+  --ease: cubic-bezier(.2, 0, 0, 1);
+  --ease-out: cubic-bezier(.2, 0, 0, 1);
+  --ease-in: cubic-bezier(.4, 0, 1, 1);
+  --loop: 1.8s;
+
+  /* ---------- layout ---------- */
+  --bar-h: 52px;
+  --dock-h: 72px;
+  --gap: 12px;
+
+  /* ---------- tokens read by ui/lend/lend.css and the workbench ---------- */
+  --hd-bg: var(--bg);
+  --hd-panel: var(--panel);
+  --hd-panel-2: var(--panel-2);
+  --hd-line: var(--line-2);
+  --hd-text: var(--text);
+  --hd-muted: var(--muted-t);
+  --hd-accent: var(--honey);
+  --hd-hover: var(--hover);
+  --hd-hover-2: var(--hover-2);
+
+  /* ---------- Monsoon tokens mapped to the palette ---------- */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --surface: var(--panel);
+  --surface-2: var(--panel-2);
+  --surface-3: var(--panel-3);
+  --muted: var(--panel-2);
+  --muted-foreground: var(--muted-t);
+  --border: var(--line-2);
+  --primary: var(--honey);
+  --primary-foreground: var(--honey-ink);
+  --success: var(--ok);
+  --warning: var(--warn);
+  --danger: var(--bad);
+  color-scheme: dark;
+}
+
+/* Tabular figures for anything that counts. */
+.num, .tnum { font-variant-numeric: tabular-nums; }
+.caps { font-size: var(--fs-11); font-weight: var(--fw-semi); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--muted-t); }
+.glass {
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: var(--r-win);
+  box-shadow: var(--elev-1); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+}

@@ -1,5 +1,6 @@
 // #general and direct chats with a worker.
 
+import { myAvatarEl } from '/profile/ui.js';
 import { h, icon, clear, fmtTime, richText, syncList } from '../dom.js';
 import { beeAvatar } from '../bees.js';
 import { register } from '../wm.js';
@@ -9,35 +10,70 @@ import * as act from '../actions.js';
 import { t, fmtList } from '../i18n.js';
 import { track, stickyScroll, stateBox } from './util.js';
 import * as wm from '../wm.js';
+import { questionCard, isQuestionLine } from './question.js';
 
 function quoteOf(text) {
   const m = /^> (.*)\n/.exec(text || '');
   return m ? { quote: m[1], rest: text.slice(m[0].length) } : { quote: null, rest: text };
 }
 
+/** What a message says: crew messages with an i18n key are shown in the desktop's language. */
+export function msgText(m) {
+  if (m?.i18n?.key) {
+    const s = t(m.i18n.key, m.i18n.params || {});
+    if (s && s !== m.i18n.key) return s;
+  }
+  return m?.text || '';
+}
+
+/** The buttons under a crew question ("start as a task" or "just talk"); gone once one is picked. */
+function choiceRow(m) {
+  if (!m.choices?.length || m.chosen || !m.replyTo || ui.replay) return null;
+  const row = h('div', { class: 'row msg-choices', style: 'gap:6px;margin-top:6px;flex-wrap:wrap' });
+  const buttons = () => [...row.querySelectorAll('button')];
+  for (const c of m.choices) {
+    row.append(h('button', {
+      type: 'button', class: `btn btn-xs${c.id === 'task' ? ' btn-primary' : ''}`, text: t(c.key),
+      on: {
+        click: async () => {
+          for (const b of buttons()) b.disabled = true;
+          const r = await act.chooseChat(m.replyTo, c.id);
+          if (r) row.remove();
+          else for (const b of buttons()) b.disabled = false;
+        },
+      },
+    }));
+  }
+  return row;
+}
+
 function msgNode(m, prev) {
+  const text = msgText(m);
   if (m.from === 'system') {
-    return h('div', { class: `msg sys${/demo/i.test(m.text) ? ' demo-note' : ''}`, role: 'listitem' }, h('div', { class: 'msg-b', text: m.text }));
+    return h('div', { class: `msg sys${/demo/i.test(text) ? ' demo-note' : ''}`, role: 'listitem' }, h('div', { class: 'msg-b', text }));
   }
   const w = worker(m.from);
   const cont = prev && prev.from === m.from && prev.from !== 'system' && Date.parse(m.ts) - Date.parse(prev.ts) < 180000;
-  const { quote, rest } = quoteOf(m.text);
+  const { quote, rest } = quoteOf(text);
   const el = h('div', { class: `msg${cont ? ' cont' : ''}${m.from === 'user' ? ' me' : ''}`, role: 'listitem', tabindex: '-1' },
     beeAvatar(m.from === 'user' ? { ...w, role: 'you' } : w, 30, { ring: true }),
     h('div', { style: 'min-width:0' },
       h('div', { class: 'msg-h' },
-        h('span', { class: 'msg-n', text: w.name, style: m.from !== 'user' ? `color:color-mix(in oklab, ${w.color || '#FFB531'} 55%, #F2E9DA)` : '' }),
+        h('span', { class: 'msg-n', text: w.name, style: m.from !== 'user' ? `color:color-mix(in oklab, ${w.color || '#F2A93B'} 45%, var(--text))` : '' }),
         w.role && m.from !== 'user' ? h('span', { class: 'msg-r', text: w.role }) : null,
         h('span', { class: 'msg-t', text: fmtTime(m.ts) })),
       quote ? h('div', { class: 'reply-to', text: quote }) : null,
-      h('div', { class: 'msg-b' }, richText(rest))));
+      // A question card line: the card replaces the plain text version (kept for the CLI and the voice orb).
+      isQuestionLine(m) ? questionCard(m, () => richText(rest)) : h('div', { class: 'msg-b' }, richText(rest)),
+      choiceRow(m)));
   if (m.from === 'user') el.querySelector('.bee-av').replaceWith(youAvatar());
   el.__msg = m;
   return el;
 }
 
 function youAvatar() {
-  return h('span', { class: 'bee-av', style: '--av:30px', 'aria-hidden': 'true', html: '<svg viewBox="0 0 30 30"><path d="M15 1.5 27.5 8.5v13L15 28.5 2.5 21.5v-13z" fill="#2A251F" stroke="rgba(242,233,218,.18)"/><circle cx="15" cy="12.4" r="4.2" fill="#8C8172"/><path d="M7.8 22.2c1.3-3.6 4-5.2 7.2-5.2s5.9 1.6 7.2 5.2" fill="#8C8172"/></svg>' });
+  // the local profile avatar (docs/1.0/PROFILE.md); the monogram when none is picked
+  return h('span', { class: 'bee-av', style: '--av:28px', 'aria-hidden': 'true' }, myAvatarEl(28));
 }
 
 /**
@@ -65,7 +101,7 @@ export function chatFeed(channel, { placeholder, emptyTitle, emptyText, args } =
     replyBar.hidden = !m;
     if (m) {
       const w = worker(m.from);
-      replyBar.append(icon('chat', 'ico-sm'), h('span', { class: 'grow ellipsis', tx: 'chat.replyingTo', txArgs: { name: w.name, text: quoteOf(m.text).rest.split('\n')[0] } }),
+      replyBar.append(icon('chat', 'ico-sm'), h('span', { class: 'grow ellipsis', tx: 'chat.replyingTo', txArgs: { name: w.name, text: quoteOf(msgText(m)).rest.split('\n')[0] } }),
         h('button', { class: 'ibtn ibtn-sm', type: 'button', ta: 'chat.cancelReply', tip: 'tip.chat.cancelReply', on: { click: () => setReply(null) } }, icon('x', 'ico-sm')));
       ta.focus();
     }
@@ -92,7 +128,7 @@ export function chatFeed(channel, { placeholder, emptyTitle, emptyText, args } =
     if (!m) return null;
     const sel = String(getSelection() || '');
     return [
-      { label: sel ? t('chat.menu.copySelection') : t('chat.menu.copyMessage'), icon: 'copy', kb: 'Ctrl+C', action: () => act.copy(sel || quoteOf(m.text).rest, t('chat.copied')) },
+      { label: sel ? t('chat.menu.copySelection') : t('chat.menu.copyMessage'), icon: 'copy', kb: 'Ctrl+C', action: () => act.copy(sel || quoteOf(msgText(m)).rest, t('chat.copied')) },
       { label: t('chat.menu.reply'), icon: 'chat', disabled: m.from === 'user' || !!ui.replay, action: () => setReply(m) },
       m.from !== 'user' && m.from !== 'system' && !channel.startsWith('dm:') ? { label: t('chat.menu.chatWith', { name: worker(m.from).name }), icon: 'arrow', action: () => wm.open('worker', m.from) } : null,
     ];

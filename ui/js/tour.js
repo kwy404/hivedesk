@@ -3,6 +3,7 @@
 // keyboard (Right or Enter, Left, Esc), live language switch, and a bottom sheet layout on phones.
 // Replay it from Help or the command palette. Step 1 can launch a short "try it" job.
 
+import { tourMayStart, onboardingState } from './onboarding-gate.js';
 import { h, icon, reducedMotion } from './dom.js';
 import { t, onLocale } from './i18n.js';
 import { ui } from './store.js';
@@ -53,7 +54,20 @@ export function maybeAutoStart() {
   let seen = false;
   try { seen = localStorage.getItem(DONE_KEY) === 'done'; } catch {}
   if (seen || ui.lend || state) return;
-  setTimeout(() => { if (!state && !document.querySelector('.hd-dlg')) startTour(); }, 900);
+  // The profile and City card goes first; the tour waits until it is closed or skipped (onboarding-gate.js).
+  const t0 = Date.now();
+  const tick = () => {
+    if (state) return;
+    const ok = tourMayStart({
+      dialogOpen: !!document.querySelector('.hd-dlg, .qsheet-back'),
+      onboardingOpen: !!document.querySelector('.ct-ob'),
+      onboardingDecided: onboardingState().decided !== false,
+      waitedMs: Date.now() - t0,
+    });
+    if (ok) startTour();
+    else if (!document.querySelector('.hd-dlg') || Date.now() - t0 < 120_000) setTimeout(tick, 600);
+  };
+  setTimeout(tick, 900);
 }
 
 export function startTour({ at = 0 } = {}) {
