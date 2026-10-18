@@ -88,6 +88,9 @@ def main():
         left = [p for p in probes if p in text]
         if left:
             problems.append(f'{lang}: {len(left)} English sentences left, for example {left[:3]}')
+        m = re.search(r'data-lang-label[^>]*>([^<]*)<', doc)
+        if not m or m.group(1) != B.NATIVE[lang]:
+            problems.append(f'{lang}: the language button does not name {B.NATIVE[lang]}')
         problems += [f'{lang}: {m}' for m in seo_problems(doc, lang)]
     en_doc = open(os.path.join(DOCS, 'index.html'), encoding='utf-8').read()
     problems += [f'en: {m}' for m in seo_problems(en_doc, 'en')]

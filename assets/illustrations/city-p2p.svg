@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="130 -10 940 640" width="940" height="640" role="img" aria-labelledby="t"><title id="t">Your PC and a friend's PC with a GPU, linked peer to peer, are buildings in one City where agents work.</title><style>.ha-svg { width: 100%; height: auto; overflow: visible; }
+.ha-tether { fill: none; stroke: #FFF5E6; stroke-opacity: .16; stroke-width: 1.5; stroke-dasharray: 3 6; }
+.ha-link { fill: none; stroke: #FFB531; stroke-opacity: .25; stroke-width: 3; }
+.ha-link-flow { fill: none; stroke: #FFD27A; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 22; animation: haflow 1.6s linear infinite; }
+@keyframes haflow { to { stroke-dashoffset: -48; } }
+.ha-pkt { fill: #FFD27A; offset-path: path("M362 128 C 480 30, 720 30, 838 128"); offset-rotate: 0deg; animation: hapkt 2.8s var(--hd-ease) infinite; }
+.ha-pkt.p2 { fill: #9BD9AE; animation-direction: reverse; animation-delay: 1.4s; }
+@keyframes hapkt { 0% { offset-distance: 0%; opacity: 0; } 10%, 90% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+.ha-deck { fill: none; stroke: #2F2820; stroke-width: 12; stroke-linecap: round; }
+.ha-rail { fill: none; stroke: #FFF5E6; stroke-opacity: .18; stroke-width: 1.5; }
+.ha-deck-lit { fill: none; stroke: #FFB531; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 160; stroke-dashoffset: 160; animation: halit 4.2s var(--hd-ease) infinite; }
+@keyframes halit { 0% { stroke-dashoffset: 160; opacity: 1; } 45% { stroke-dashoffset: 0; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: .2; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.ha-bee { offset-path: path("M530 384 Q 607 348 685 374"); offset-rotate: auto; animation: habee 4.2s linear infinite; }
+.ha-bee.b2 { animation-delay: 1.4s; }
+.ha-bee.b3 { animation-delay: 2.8s; offset-path: path("M685 374 Q 607 348 530 384"); }
+@keyframes habee { 0% { offset-distance: 0%; opacity: 0; } 8%, 92% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+.ha-fan { animation: hafan 1.2s linear infinite; }
+@keyframes hafan { to { transform: rotate(360deg); } }
+.ha-gpu-glow { animation: haglow 2.4s ease-in-out infinite alternate; }
+@keyframes haglow { from { opacity: .35; } to { opacity: 1; } }
+.ha-vram rect { fill: #9BD9AE; opacity: .85; }
+.ha-vram .v4 { animation: hav 2.4s ease-in-out infinite alternate; }
+.ha-vram .v5 { opacity: .2; animation: hav 2.4s ease-in-out infinite alternate-reverse; }
+@keyframes hav { from { opacity: .2; } to { opacity: .9; } }
+.ha-win path { opacity: .85; }
+.ha-win .w2 { animation: hawin 5s steps(1) infinite; }
+.ha-win .w3 { animation: hawin 7s steps(1) infinite 2s; }
+@keyframes hawin { 0%, 60% { opacity: .85; } 61%, 100% { opacity: .15; } }
+.ha-city-glow { animation: haglow 4s ease-in-out infinite alternate; }
+.ha-code { stroke-dasharray: 120; stroke-dashoffset: 120; animation: hacode 3.2s var(--hd-ease) infinite; }
+@keyframes hacode { 0% { stroke-dashoffset: 120; } 40%, 100% { stroke-dashoffset: 0; } }
+.ha-labels { position: absolute; inset: 0; pointer-events: none; }
+.ha-l { position: absolute; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--hd-line-2); border-radius: 999px; background: color-mix(in srgb, var(--hd-bg) 82%, transparent); color: var(--hd-text); font-size: clamp(11px, 1.2vw, 13px); font-weight: 550; white-space: nowrap; transform: translateX(-50%); }
+.ha-l .i { width: 14px; height: 14px; color: var(--hd-honey-2); }
+.ha-l.l-a { left: 13.3%; top: 39%; }
+.ha-l.l-p { left: 50%; top: -1%; }
+.ha-l.l-b { right: 0; top: 47%; transform: none; }
+.ha-l.l-c { left: 50%; top: 99%; }
+.ha-l { padding: 2px 8px; }
+.ha-l .i { display: none; }
+.ha-l.l-b { top: 49%; }
+.ha-l.l-a { left: 2%; transform: none; }
+.ha-bee, .ha-pkt { display: none; }
+.ha-deck-lit { stroke-dashoffset: 0; opacity: .6; }
+.ha-l, .hd-chip, .city-tabs, .tabs-boxed, .tabs-boxed .tab { border-radius: 6px; }
+.ha-l { background: color-mix(in srgb, var(--hd-bg) 90%, transparent); border-color: var(--hd-line-2); font-weight: 500; }
+.ha-l .i { color: var(--hd-dim); }
+.ha-link { stroke: #E3A447; stroke-opacity: .18; stroke-width: 1.5; }
+.ha-link-flow { stroke: #E3A447; stroke-width: 1.5; stroke-dasharray: 1.5 18; }
+.ha-pkt { fill: #E3A447; }
+.ha-pkt.p2 { fill: #A9BCD0; }
+.ha-tether { stroke: #FFFFFF; stroke-opacity: .12; stroke-width: 1; }
+.ha-deck { stroke: #23262B; stroke-width: 10; }
+.ha-rail { stroke-opacity: .12; stroke-width: 1; }
+.ha-deck-lit { stroke: #E3A447; stroke-width: 2; }
+.ha-vram rect { fill: #7FC8A0; opacity: .8; }
+.ha-link-flow { animation-duration: 3s; }
+.ha-bee { animation-duration: 6s; }
+.ha-fan { animation-duration: 2.4s; }
+.ha-gpu-glow, .ha-city-glow, .ha-vram .v4, .ha-vram .v5 { animation-duration: 4s; }
+.ha-win .w2, .ha-win .w3 { animation: none; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } .ha-bee, .ha-pkt { display: none; } }
+.lbl rect { fill: #0F1013; stroke: #FFFFFF; stroke-opacity: .14; } .lbl text { fill: #E6E7EA; font: 500 14px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }</style><rect x="130" y="-10" width="940" height="640" fill="#0B0C0E"/>
+      
+      <defs>
+        <radialGradient id="ha-glow"><stop offset="0" stop-color="#E3A447" stop-opacity=".22"/><stop offset="1" stop-color="#E3A447" stop-opacity="0"/></radialGradient>
+        <radialGradient id="ha-gpu"><stop offset="0" stop-color="#7FC8A0" stop-opacity=".35"/><stop offset="1" stop-color="#7FC8A0" stop-opacity="0"/></radialGradient>
+        <pattern id="ha-plan" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="matrix(1 .3666 -1 .3666 0 0)"><path d="M24 0 V24 M0 24 H24" fill="none" stroke="#FFFFFF" stroke-opacity=".05"/></pattern>
+      </defs>
+      <g class="ha-island">
+        <path d="M300 452 L600 342 L900 452 L600 562 Z" fill="#121418"/>
+        <path d="M300 452 L600 342 L900 452 L600 562 Z" fill="url(#ha-plan)"/>
+        <path d="M300 452 L600 562 L900 452 L900 466 L600 576 L300 466 Z" fill="#0D0E11"/>
+        <path d="M300 452 L600 342 L900 452 L600 562 Z" fill="none" stroke="#FFFFFF" stroke-opacity=".12"/>
+      </g>
+      <circle cx="600" cy="452" r="150" fill="url(#ha-glow)" class="ha-city-glow"/>
+      <path class="ha-tether" d="M255 222 C 255 300, 420 250, 452 300"/>
+      <path class="ha-tether" d="M945 262 C 945 310, 790 250, 760 290"/>
+      <g class="ha-bld ha-a"><path d="M410.0 300.0 470.0 330.0 470.0 460.0 410.0 430.0 Z" fill="#17191D"/><path d="M470.0 330.0 530.0 300.0 530.0 430.0 470.0 460.0 Z" fill="#1E2126"/><path d="M470.0 270.0 530.0 300.0 470.0 330.0 410.0 300.0 Z" fill="#2B2E34"/><path d="M470.0 270.0 530.0 300.0 470.0 330.0 410.0 300.0 Z M470.0 330.0 V460.0" fill="none" stroke="#E3A447" stroke-width="1"/><path d="M418.0 318.0 L464.0 341.0" stroke="#E3A447" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M476.0 341.0 L522.0 318.0" stroke="#E3A447" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path d="M418.0 334.0 L464.0 357.0" stroke="#E3A447" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M476.0 357.0 L522.0 334.0" stroke="#E3A447" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path d="M418.0 350.0 L464.0 373.0" stroke="#E3A447" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M476.0 373.0 L522.0 350.0" stroke="#E3A447" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path class="w2" d="M418.0 366.0 L464.0 389.0" stroke="#E3A447" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M476.0 389.0 L522.0 366.0" stroke="#E3A447" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path d="M418.0 382.0 L464.0 405.0" stroke="#E3A447" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M476.0 405.0 L522.0 382.0" stroke="#E3A447" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path class="w3" d="M418.0 398.0 L464.0 421.0" stroke="#E3A447" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M476.0 421.0 L522.0 398.0" stroke="#E3A447" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path d="M418.0 414.0 L464.0 437.0" stroke="#E3A447" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M476.0 437.0 L522.0 414.0" stroke="#E3A447" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/></g>
+      <g class="ha-bld ha-bld-2"><path d="M685.0 280.0 740.0 307.5 740.0 467.5 685.0 440.0 Z" fill="#14171C"/><path d="M740.0 307.5 795.0 280.0 795.0 440.0 740.0 467.5 Z" fill="#1A1F26"/><path d="M740.0 252.5 795.0 280.0 740.0 307.5 685.0 280.0 Z" fill="#2A313B"/><path d="M740.0 252.5 795.0 280.0 740.0 307.5 685.0 280.0 Z M740.0 307.5 V467.5" fill="none" stroke="#8FA3B8" stroke-width="1"/><path d="M693.0 298.0 L734.0 318.5" stroke="#A9BCD0" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M746.0 318.5 L787.0 298.0" stroke="#A9BCD0" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path d="M693.0 314.0 L734.0 334.5" stroke="#A9BCD0" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M746.0 334.5 L787.0 314.0" stroke="#A9BCD0" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path d="M693.0 330.0 L734.0 350.5" stroke="#A9BCD0" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M746.0 350.5 L787.0 330.0" stroke="#A9BCD0" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path class="w2" d="M693.0 346.0 L734.0 366.5" stroke="#A9BCD0" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M746.0 366.5 L787.0 346.0" stroke="#A9BCD0" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path d="M693.0 362.0 L734.0 382.5" stroke="#A9BCD0" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M746.0 382.5 L787.0 362.0" stroke="#A9BCD0" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path class="w3" d="M693.0 378.0 L734.0 398.5" stroke="#A9BCD0" stroke-opacity=".85" stroke-width="3" stroke-linecap="round"/><path d="M746.0 398.5 L787.0 378.0" stroke="#A9BCD0" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/><path d="M693.0 394.0 L734.0 414.5" stroke="#A9BCD0" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M746.0 414.5 L787.0 394.0" stroke="#A9BCD0" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><path d="M693.0 410.0 L734.0 430.5" stroke="#A9BCD0" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/><path d="M746.0 430.5 L787.0 410.0" stroke="#A9BCD0" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/></g>
+      <g class="ha-bridge">
+        <path class="ha-deck" d="M530 392 Q 607 356 685 382"/>
+        <path class="ha-rail" d="M530 382 Q 607 346 685 372"/>
+        <path class="ha-deck-lit" d="M530 392 Q 607 356 685 382"/>
+      </g>
+      <g class="ha-bee b1"><path d="M0 -5.2 L4.5 -2.6 L4.5 2.6 L0 5.2 L-4.5 2.6 L-4.5 -2.6 Z" fill="#E3A447"/><path d="M-4.5 0 H4.5" stroke="#0B0C0E" stroke-width="1.3"/></g><g class="ha-bee b2"><path d="M0 -5.2 L4.5 -2.6 L4.5 2.6 L0 5.2 L-4.5 2.6 L-4.5 -2.6 Z" fill="#E3A447"/><path d="M-4.5 0 H4.5" stroke="#0B0C0E" stroke-width="1.3"/></g><g class="ha-bee b3"><path d="M0 -5.2 L4.5 -2.6 L4.5 2.6 L0 5.2 L-4.5 2.6 L-4.5 -2.6 Z" fill="#E3A447"/><path d="M-4.5 0 H4.5" stroke="#0B0C0E" stroke-width="1.3"/></g>
+      <g class="ha-pc">
+        <rect x="150" y="62" width="210" height="136" rx="6" fill="#121418" stroke="#FFFFFF" stroke-opacity=".14"/>
+        <rect x="160" y="72" width="190" height="116" rx="3" fill="#0A0B0D"/>
+        <path d="M174 92 h70 M174 106 h120 M174 120 h96 M174 134 h110" stroke="#C9CDD4" stroke-opacity=".35" stroke-width="4" stroke-linecap="round" class="ha-code"/>
+        <path d="M174 152 h60" stroke="#E3A447" stroke-opacity=".8" stroke-width="4" stroke-linecap="round"/>
+        <path d="M237 198 h36 l6 16 h-48z" fill="#16181C"/>
+      </g>
+      <g class="ha-pc ha-pc-2">
+        <rect x="840" y="62" width="210" height="136" rx="6" fill="#121418" stroke="#FFFFFF" stroke-opacity=".14"/>
+        <rect x="850" y="72" width="190" height="116" rx="3" fill="#0A0B0D"/>
+        <path d="M864 92 h80 M864 106 h110 M864 120 h60 M864 134 h120" stroke="#A9BCD0" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>
+        <path d="M927 198 h36 l6 16 h-48z" fill="#16181C"/>
+        <circle class="ha-gpu-glow" cx="945" cy="246" r="70" fill="url(#ha-gpu)"/>
+        <rect x="862" y="228" width="166" height="36" rx="4" fill="#111316" stroke="#FFFFFF" stroke-opacity=".18"/>
+        <g class="ha-fan" style="transform-origin:890px 246px"><circle cx="890" cy="246" r="11" fill="none" stroke="#C9CDD4" stroke-opacity=".45"/><path d="M890 235 v22 M879 246 h22" stroke="#C9CDD4" stroke-opacity=".45" stroke-width="1.5"/></g>
+        <g class="ha-fan" style="transform-origin:926px 246px"><circle cx="926" cy="246" r="11" fill="none" stroke="#C9CDD4" stroke-opacity=".45"/><path d="M926 235 v22 M915 246 h22" stroke="#C9CDD4" stroke-opacity=".45" stroke-width="1.5"/></g>
+        <g class="ha-vram"><rect x="954" y="240" width="7" height="12" rx="1"/><rect x="965" y="240" width="7" height="12" rx="1"/><rect x="976" y="240" width="7" height="12" rx="1"/><rect x="987" y="240" width="7" height="12" rx="1" class="v4"/><rect x="998" y="240" width="7" height="12" rx="1" class="v5"/><rect x="1009" y="240" width="7" height="12" rx="1" class="v5"/></g>
+      </g>
+      <path class="ha-link" d="M362 128 C 480 30, 720 30, 838 128"/>
+      <path class="ha-link-flow" d="M362 128 C 480 30, 720 30, 838 128"/>
+      <circle class="ha-pkt p1" r="3.5"/><circle class="ha-pkt p2" r="3"/>
+      <g class="ha-lock" transform="translate(600 54)">
+        <rect x="-18" y="-18" width="36" height="36" rx="8" fill="#0F1013" stroke="#E3A447" stroke-opacity=".7"/>
+        <rect x="-7" y="-2" width="14" height="10" rx="2" fill="none" stroke="#E3A447" stroke-width="1.6"/>
+        <path d="M-4.5 -2 v-3.5 a4.5 4.5 0 0 1 9 0 v3.5" fill="none" stroke="#E3A447" stroke-width="1.6"/>
+      </g>
+    <g class="lbl"><rect x="212" y="217" width="85" height="28" rx="6"/><text x="255" y="236" text-anchor="middle">Your PC</text></g><g class="lbl"><rect x="886" y="179" width="118" height="28" rx="6"/><text x="945" y="198" text-anchor="middle">Friend's PC</text></g><g class="lbl"><rect x="837" y="279" width="217" height="28" rx="6"/><text x="945" y="298" text-anchor="middle">GPU, shared with limits</text></g><g class="lbl"><rect x="484" y="1" width="233" height="28" rx="6"/><text x="600" y="20" text-anchor="middle">P2P, end to end encrypted</text></g><g class="lbl"><rect x="549" y="593" width="102" height="28" rx="6"/><text x="600" y="612" text-anchor="middle">Your City</text></g><g class="lbl"><rect x="567" y="313" width="77" height="28" rx="6"/><text x="606" y="332" text-anchor="middle">Agents</text></g></svg>

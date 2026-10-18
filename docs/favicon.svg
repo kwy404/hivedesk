@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="hivedesk">
-  <defs>
-    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD072"/><stop offset="1" stop-color="#F09A1E"/></linearGradient>
-    <clipPath id="lc"><path d="M54.5,40.8 Q54.5,45.0 50.9,47.1 L35.6,55.9 Q32.0,58.0 28.4,55.9 L13.1,47.1 Q9.5,45.0 9.5,40.8 L9.5,23.2 Q9.5,19.0 13.1,16.9 L28.4,8.1 Q32.0,6.0 35.6,8.1 L50.9,16.9 Q54.5,19.0 54.5,23.2 Z"/></clipPath>
-  </defs>
-  <path d="M54.5,40.8 Q54.5,45.0 50.9,47.1 L35.6,55.9 Q32.0,58.0 28.4,55.9 L13.1,47.1 Q9.5,45.0 9.5,40.8 L9.5,23.2 Q9.5,19.0 13.1,16.9 L28.4,8.1 Q32.0,6.0 35.6,8.1 L50.9,16.9 Q54.5,19.0 54.5,23.2 Z" fill="url(#lg)"/>
-  <g clip-path="url(#lc)">
-    <rect x="0" y="25" width="64" height="7.5" fill="#1B1714" opacity=".9"/>
-    <rect x="0" y="40" width="64" height="7.5" fill="#1B1714" opacity=".9"/>
-    <path d="M0 0H38L0 42Z" fill="#FFFFFF" opacity=".18"/>
-  </g>
-  <path d="M54.5,40.8 Q54.5,45.0 50.9,47.1 L35.6,55.9 Q32.0,58.0 28.4,55.9 L13.1,47.1 Q9.5,45.0 9.5,40.8 L9.5,23.2 Q9.5,19.0 13.1,16.9 L28.4,8.1 Q32.0,6.0 35.6,8.1 L50.9,16.9 Q54.5,19.0 54.5,23.2 Z" fill="none" stroke="#FFE3A3" stroke-opacity=".4" stroke-width="1"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="hivedesk"><g transform="translate(0 0) scale(1)"><clipPath id="fv"><path d="M32 4 56.2 18v28L32 60 7.8 46V18z"/></clipPath><path d="M32 4 56.2 18v28L32 60 7.8 46V18z" fill="#F2A93B"/><g clip-path="url(#fv)" fill="#14171B"><rect x="0" y="24.5" width="64" height="5.5"/><rect x="0" y="36" width="64" height="5.5"/></g><path d="M32 4 56.2 18v28L32 60 7.8 46V18z" fill="none" stroke="#14171B" stroke-opacity=".35" stroke-width="1.2"/></g></svg>

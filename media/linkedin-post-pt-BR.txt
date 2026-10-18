@@ -1,58 +1,43 @@
-GANCHO ALTERNATIVO 1:
-Eu pedi um site para uma padaria.
-Cinco abelhas fizeram, dentro do meu PC.
+O seu PC passa a noite parado.
+O do seu amigo também.
+E se os dois trabalhassem juntos?
 
-GANCHO ALTERNATIVO 2:
-Sem conta, sem assinatura, sem servidor de ninguém.
-Uma equipe inteira de IA rodando numa placa de vídeo de 6 GB.
+Hoje eu lanço o hivedesk 1.0.
 
-POST:
+É uma equipe de agentes de IA que roda no seu computador, com um modelo local, sem conta e sem mensalidade. Ela planeja, escreve, revisa e testa projetos de verdade. E, com a sua permissão, usa a GPU do seu amigo.
 
-Uma equipe inteira de IA.
-Dentro do seu computador.
+Tudo começou com um incômodo: as ferramentas de IA que eu usava moravam no servidor de outra pessoa, cobravam por mês e levavam meus arquivos junto. Enquanto isso, meu PC ficava parado.
 
-Parece bruxaria. Não é.
+O que tem na 1.0:
 
-Eu queria ver IA trabalhando como uma equipe de verdade.
-Alguém que entende o pedido, alguém que planeja, alguém que escreve o código e alguém que testa.
-E queria isso rodando na minha máquina, com os meus arquivos ficando comigo.
+1. Um comando: npx hivedesk. Ele analisa a sua GPU, a RAM e o disco, recomenda o modelo certo e pergunta antes de baixar qualquer coisa. Funciona com placa de vídeo ou só com CPU.
 
-Então eu fiz o hivedesk.
+2. Ele não faz só site. Faz app de celular, app de desktop, API, extensão de navegador, jogo e script de dados. E tem um modo segurança que audita o seu código e só corrige com a sua aprovação.
 
-Você digita "crie um site para minha padaria".
-A Mel, a abelha chefe, transforma o pedido num briefing melhor, com checklist.
-A equipe (Dev, Designer, QA e Writer) planeja, conversa e escreve arquivos de verdade, com diff.
-O QA roda as verificações, acha um erro, e o Dev corrige.
-Cada passo arriscado espera a sua aprovação.
-No fim vem um relatório e um prompt melhorado para a próxima vez.
+3. Quando não entende o pedido, ele pergunta. Como um engenheiro sênior: poucas perguntas, com opções, a recomendada primeiro e o motivo de cada uma.
 
-Tudo isso num escritório animado que parece um jogo.
+4. A equipe vive numa cidade. Cada agente tem sala e função. O que falha no teste volta para quem escreveu. Tudo fica registrado.
 
-E ainda tem:
-Modo de voz que pergunta antes de agir.
-Commit, push e pull request no GitHub, só depois do seu sim.
-Code together: um amigo entra com seis palavras, um QR code ou um link, e vocês editam juntos com cursores ao vivo.
-Temas e extensões criados pela própria equipe.
-10 idiomas, tour guiado e memória da sessão.
+5. Um amigo entra com seis palavras. Os dois veem as mesmas palavras de confirmação e só então você aceita. Identidade criptografada, sem conta.
 
-Como testar em 3 passos:
-1. Baixe o app para Windows, macOS ou Linux, ou rode npx hivedesk.
-2. Responda o assistente. Ele detecta a sua GPU e escolhe o modelo certo.
-3. Peça uma coisa pequena e aprove os passos.
+6. Você usa a GPU ou a CPU do amigo com limite, prazo e histórico. A equipe inteira pode rodar no PC dele, e cada ação vinda de lá espera o seu sim. Ele revoga quando quiser.
 
-Por que isso importa:
-Roda no seu PC. Sem conta. Seus arquivos ficam com você.
-Numa GPU de 6 GB, o modelo 3B roda inteiro na placa, de 17 a 39 tokens por segundo, pronto em 8 a 15 segundos depois da primeira vez.
-Se preferir, dá para usar um servidor de modelos local ou a sua própria chave de API.
-É grátis e de código aberto.
+7. Acesso remoto com um número de 10 dígitos. Copiou, colou, conectou. Ctrl+C aqui, Ctrl+V lá. Quem recebe decide o que libera.
 
-Limite honesto: um modelo pequeno local vai melhor em tarefas pequenas e médias. Os trabalhadores revezam um único modelo, então um job leva minutos, não segundos. E a primeira execução baixa de 1 a 5 GB.
+8. Controle pelo celular com um QR code, conversa por voz com confirmação antes de agir, editor com terminal e git, 10 idiomas e instaladores para Windows, macOS e Linux que se atualizam sozinhos.
 
-E o vídeo aí em cima também foi feito só com código: desenho, animação, trilha e efeitos sonoros.
+Grátis e open source.
+
+Os limites, com sinceridade:
+um modelo local pequeno faz bem projetos pequenos e médios. Um modelo gigante dividido entre PCs pela internet funciona, mas é lento; na mesma rede é bem melhor. No macOS o acesso remoto, por enquanto, é só para ver a tela. E no navegador muita coisa não funciona: a experiência completa é o app.
+
+Se você tem uma GPU parada em casa, testa e me conta.
+E marca aquele amigo que tem o PC mais forte do grupo.
 
 Site: https://kwy404.github.io/hivedesk
-Release 0.1.0: https://github.com/kwy404/hivedesk/releases/tag/v0.1.0
+Código: https://github.com/kwy404/hivedesk
+Para começar: npx hivedesk
 
-O que você pediria primeiro para uma equipe de IA que mora no seu computador?
+Você emprestaria a sua GPU para um amigo, se pudesse revogar a qualquer momento?
 
-#OpenSource #InteligenciaArtificial #JavaScript #DesenvolvimentoDeSoftware #IALocal
+#OpenSource #InteligenciaArtificial #DesenvolvimentoDeSoftware #P2P #JavaScript

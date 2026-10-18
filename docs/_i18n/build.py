@@ -22,7 +22,12 @@ import units as U  # noqa: E402
 BASE = 'https://kwy404.github.io/hivedesk/'
 LANGS = ['en', 'pt-BR', 'es', 'fr', 'de', 'it', 'ja', 'ko', 'zh-Hans', 'ru']
 LOCALE = {'en': 'en_US', 'pt-BR': 'pt_BR', 'es': 'es_ES', 'fr': 'fr_FR', 'de': 'de_DE', 'it': 'it_IT', 'ja': 'ja_JP', 'ko': 'ko_KR', 'zh-Hans': 'zh_CN', 'ru': 'ru_RU'}
-VERSION = json.load(open(os.path.join(os.path.dirname(DOCS), 'package.json'), encoding='utf-8'))['version']
+def _version():
+    m = re.search(r'<p class="mono" translate="no">hivedesk ([0-9][^<]*)</p>', open(os.path.join(DOCS, 'index.html'), encoding='utf-8').read())
+    return m.group(1) if m else json.load(open(os.path.join(os.path.dirname(DOCS), 'package.json'), encoding='utf-8'))['version']
+
+
+VERSION = _version()
 NATIVE = {'en': 'English', 'pt-BR': 'Português', 'es': 'Español', 'fr': 'Français', 'de': 'Deutsch', 'it': 'Italiano', 'ja': '日本語', 'ko': '한국어', 'zh-Hans': '简体中文', 'ru': 'Русский'}
 LANG_WORD = {'en': 'Language', 'pt-BR': 'Idioma', 'es': 'Idioma', 'fr': 'Langue', 'de': 'Sprache', 'it': 'Lingua', 'ja': '言語', 'ko': '언어', 'zh-Hans': '语言', 'ru': 'Язык'}
 ATTR_NAMES = '|'.join(re.escape(a) for a in U.ATTRS + ('content',))
@@ -40,12 +45,33 @@ def write(p, s):
 
 
 def js_strings():
-    """English strings of site.js: t('key', 'text') and P('key', 'text') (P adds the try.plan. prefix)."""
-    src = read(os.path.join(DOCS, 'assets', 'site.js'))
+    """English strings of the page scripts: t('key', 'text') and P('key', 'text') (P adds the try.plan. prefix)."""
     out = {}
-    for m in re.finditer(r"\b([tP])\('([\w.]+)', '((?:[^'\\]|\\.)*)'\)", src):
-        key = m.group(2) if m.group(1) == 't' else 'try.plan.' + m.group(2)
-        out[key] = m.group(3).replace("\\'", "'")
+    for name in ('site.js', 'v1.js'):
+        path = os.path.join(DOCS, 'assets', name)
+        if not os.path.exists(path):
+            continue
+        src = read(path)
+        for m in re.finditer(r"""\b([tP])\('([\w.]+)', (?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")\)""", src):
+            key = m.group(2) if m.group(1) == 't' else 'try.plan.' + m.group(2)
+            text = m.group(3) if m.group(3) is not None else m.group(4)
+            out[key] = text.replace("\\'", "'")
+    if 'data-try' not in read(os.path.join(DOCS, 'index.html')):
+        out = {k: v for k, v in out.items() if not k.startswith('try.')}
+    return out
+
+
+def playbooks():
+    """The playbook library as a small list for the site's picker (title, category, tags, when)."""
+    root = os.path.join(os.path.dirname(DOCS), 'src', 'crew', 'library', 'entries')
+    if not os.path.isdir(root):
+        return None
+    out = []
+    for dirpath, _, files in sorted(os.walk(root)):
+        for f in sorted(files):
+            if f.endswith('.json'):
+                e = json.loads(read(os.path.join(dirpath, f)))
+                out.append({'id': e['id'], 'title': e['title'], 'category': e.get('category', os.path.basename(dirpath)), 'tags': e.get('tags', [])[:8], 'when': e.get('when', '')[:160]})
     return out
 
 
@@ -78,7 +104,7 @@ def seo_block(doc, lang):
          'inLanguage': lang, 'applicationCategory': 'DeveloperApplication', 'operatingSystem': 'Windows, macOS, Linux',
          'softwareVersion': VERSION, 'license': 'https://opensource.org/licenses/MIT', 'isAccessibleForFree': True,
          'downloadUrl': 'https://github.com/kwy404/hivedesk/releases/latest', 'installUrl': 'https://www.npmjs.com/package/hivedesk',
-         'image': BASE + 'og.png', 'screenshot': BASE + 'assets/shots/city-overview.webp',
+         'image': BASE + 'og.png', 'screenshot': BASE + 'media/1.0/city-1920.webp',
          'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'USD'}, 'author': {'@id': BASE + '#author'}},
         {'@type': 'Person', '@id': BASE + '#author', 'name': 'Alexandre Kohler', 'url': 'https://github.com/kwy404',
          'sameAs': ['https://github.com/kwy404', 'https://www.linkedin.com/in/alexandre-silva-173687256/']},
@@ -97,17 +123,18 @@ def with_seo(doc, lang):
 
 
 def hero_h1(sentence):
+    """Word spans of the hero headline: one line per sentence (at most three), the last line highlighted."""
     parts = [p.strip() for p in re.split(r'(?<=[.。!！?？])\s*', sentence) if p.strip()]
-    if len(parts) > 2:
-        parts = [parts[0], ' '.join(parts[1:])]
+    if len(parts) > 3:
+        parts = parts[:2] + [' '.join(parts[2:])]
     out, n = [], 0
     for k, line in enumerate(parts):
         if k:
             out.append('<br>')
-        words = line.split(' ')
+        hl = len(parts) > 1 and k == len(parts) - 1
         spans = []
-        for w in words:
-            spans.append(f'<span class="w{" hl" if k else ""}" style="--i:{n}" aria-hidden="true">{html.escape(w, quote=False)}</span>')
+        for w in line.split(' '):
+            spans.append(f'<span class="w{" hl" if hl else ""}" style="--i:{n}" aria-hidden="true">{html.escape(w, quote=False)}</span>')
             n += 1
         out.append(' '.join(spans))
     longest = max(len(p) for p in parts)
@@ -140,8 +167,10 @@ def localize(src, lang, tr):
     doc = doc.replace('<html lang="en"', f'<html lang="{lang}"', 1)
     doc = re.sub(r'(\s(?:src|href|poster)=")(?=(?:assets/|media/|download/|lend/|favicon\.svg|og\.png))', r'\1../', doc)
     doc = doc.replace('href="./"', 'href="../"')
+    # every candidate of a srcset too
+    doc = re.sub(r'(\ssrcset=")([^"]*)"', lambda m: m.group(1) + ', '.join(('../' + c.strip()) if c.strip().startswith(('assets/', 'media/')) else c.strip() for c in m.group(2).split(',')) + '"', doc)
     # the language button names the page's language in that language
-    doc = re.sub(r'(<span class="lang-cur" data-lang-label>)[^<]*(</span>)', lambda m: m.group(1) + NATIVE[lang] + m.group(2), doc, count=1)
+    doc = re.sub(r'(<span class="lang-cur" data-lang-label[^>]*>)[^<]*(</span>)', lambda m: m.group(1) + NATIVE[lang] + m.group(2), doc, count=1)
     doc = re.sub(r'(<button id="lang-btn" class="lang-btn" type="button" aria-label=")[^"]*', lambda m: m.group(1) + f'{LANG_WORD[lang]}: {NATIVE[lang]}', doc, count=1)
     js = {k: v for k, v in tr.get('js', {}).items()}
     doc = doc.replace('</body>', '<script type="application/json" id="hd-t">' + json.dumps(js, ensure_ascii=False).replace('</', '<\\/') + '</script>\n</body>', 1)
@@ -174,6 +203,9 @@ def main():
         p = os.path.join(HERE, f'{lang}.json')
         tr = json.loads(read(p)) if os.path.exists(p) else {}
         write(os.path.join(DOCS, lang, 'index.html'), localize(src, lang, tr))
+    pbs = playbooks()
+    if pbs is not None:
+        write(os.path.join(DOCS, 'assets', 'playbooks.json'), json.dumps(pbs, ensure_ascii=False, separators=(',', ':')) + '\n')
     write(os.path.join(DOCS, 'sitemap.xml'), sitemap())
     write(os.path.join(DOCS, 'robots.txt'), f'User-agent: *\nAllow: /\nDisallow: /_i18n/\nSitemap: {BASE}sitemap.xml\n')
     print('built', ', '.join(LANGS))

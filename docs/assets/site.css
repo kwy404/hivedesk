@@ -47,7 +47,9 @@ code, kbd { font-family: var(--hd-mono); font-size: .875em; }
 p code, li code, td code, summary code { padding: 1px 6px; border: 1px solid var(--hd-line); border-radius: 6px; background: var(--hd-bg-2); color: var(--hd-text); overflow-wrap: anywhere; }
 kbd { display: inline-block; min-width: 22px; padding: 0 6px; border: 1px solid var(--hd-line-2); border-bottom-width: 2px; border-radius: 6px; background: var(--hd-bg-2); line-height: 20px; text-align: center; color: var(--hd-text); }
 b, strong { font-weight: 600; color: var(--hd-text); }
-.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* the 1.0 icon accent is gold; on a gold button it follows the text */
+.b-honey .i, .b-honey.i { --i-accent: currentColor; }
 .mono { font-family: var(--hd-mono); }
 .muted { color: var(--hd-dim); }
 .skip { position: absolute; left: 16px; top: -64px; z-index: 100; padding: 8px 16px; border-radius: 8px; background: var(--hd-honey); color: var(--hd-ink); font-weight: 600; }
@@ -1087,3 +1089,9 @@ html[data-site-theme] body { transition: background-color .4s, color .4s; }
 /* Header tooltips open toward the page, so a long translation never passes the right edge. */
 .top-act .tooltip::after { left: auto; right: -6px; translate: 0 -.25rem; }
 .top-act .tooltip:hover::after, .top-act .tooltip:has(:focus-visible)::after, .top-act .tooltip:focus-visible::after { translate: 0 0; }
+/* A Voodoo v-for row is a template: hidden until Voodoo clones it (the clones have no v-for). */
+[v-for] { display: none !important; }
+/* System faces for Japanese, Chinese and Korean text after Inter's Latin. */
+html[lang=ja] { --hd-sans: "Inter", "Inter Fallback", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, "Noto Sans JP", sans-serif; }
+html[lang=zh-Hans] { --hd-sans: "Inter", "Inter Fallback", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif; }
+html[lang=ko] { --hd-sans: "Inter", "Inter Fallback", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }

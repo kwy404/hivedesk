@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>hivedesk: 在你自己的电脑上运行 AI 智能体,免费开源</title>
-<meta name="description" content="hivedesk 是免费的多智能体工作空间: 一支 AI 智能体团队用开源模型在你自己的电脑上规划并生成真实文件。邀请朋友点对点共享 GPU。无需账户,无需 API 密钥。">
+<title>hivedesk: AI 智能体点对点协作,跨越你自己的电脑</title>
+<meta name="description" content="hivedesk 是免费开源的点对点工作空间,AI 智能体在你的多台电脑之间协同工作。邀请朋友,借用 GPU,共享屏幕。">
 <meta name="author" content="Alexandre Kohler">
 <meta name="theme-color" content="#0B0A09">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="hivedesk">
-<meta property="og:title" content="hivedesk: 在你自己的电脑上运行 AI 智能体,免费开源">
-<meta property="og:description" content="一支用开源模型在你自己的电脑上规划并生成真实文件的 AI 智能体团队。点对点邀请朋友,一起共享 GPU。">
+<meta property="og:title" content="hivedesk: AI 智能体点对点协作,跨越你自己的电脑">
+<meta property="og:description" content="你的智能体。你的机器。你的 City。一个点对点工作空间,让 AI 智能体跨越你的多台电脑协作。">
 <meta property="og:image" content="https://kwy404.github.io/hivedesk/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="hivedesk: 蜜蜂工头 Mel,旁边写着一条命令,一整支 AI 团队就在你自己的电脑上">
+<meta property="og:image:alt" content="hivedesk: 两台点对点连接的电脑,它们之间共享的一块 GPU,以及智能体工作的 City">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="hivedesk: 在你自己的电脑上运行 AI 智能体,免费开源">
-<meta name="twitter:description" content="一支用开源模型在你自己的电脑上规划并生成真实文件的 AI 智能体团队。点对点邀请朋友,一起共享 GPU。">
+<meta name="twitter:title" content="hivedesk: AI 智能体点对点协作,跨越你自己的电脑">
+<meta name="twitter:description" content="你的智能体。你的机器。你的 City。一个点对点工作空间,让 AI 智能体跨越你的多台电脑协作。">
 <meta name="twitter:image" content="https://kwy404.github.io/hivedesk/og.png">
 <!-- seo:start -->
 <link rel="canonical" href="https://kwy404.github.io/hivedesk/zh-Hans/">
@@ -53,17 +53,17 @@
    "@id": "https://kwy404.github.io/hivedesk/#app",
    "name": "hivedesk",
    "url": "https://kwy404.github.io/hivedesk/zh-Hans/",
-   "description": "hivedesk 是免费的多智能体工作空间: 一支 AI 智能体团队用开源模型在你自己的电脑上规划并生成真实文件。邀请朋友点对点共享 GPU。无需账户,无需 API 密钥。",
+   "description": "hivedesk 是免费开源的点对点工作空间,AI 智能体在你的多台电脑之间协同工作。邀请朋友,借用 GPU,共享屏幕。",
    "inLanguage": "zh-Hans",
    "applicationCategory": "DeveloperApplication",
    "operatingSystem": "Windows, macOS, Linux",
-   "softwareVersion": "0.2.1",
+   "softwareVersion": "1.0.0",
    "license": "https://opensource.org/licenses/MIT",
    "isAccessibleForFree": true,
    "downloadUrl": "https://github.com/kwy404/hivedesk/releases/latest",
    "installUrl": "https://www.npmjs.com/package/hivedesk",
    "image": "https://kwy404.github.io/hivedesk/og.png",
-   "screenshot": "https://kwy404.github.io/hivedesk/assets/shots/city-overview.webp",
+   "screenshot": "https://kwy404.github.io/hivedesk/media/1.0/city-1920.webp",
    "offers": {
     "@type": "Offer",
     "price": "0",
@@ -87,8 +87,8 @@
    "@type": "WebPage",
    "@id": "https://kwy404.github.io/hivedesk/zh-Hans/#page",
    "url": "https://kwy404.github.io/hivedesk/zh-Hans/",
-   "name": "hivedesk: 在你自己的电脑上运行 AI 智能体,免费开源",
-   "description": "hivedesk 是免费的多智能体工作空间: 一支 AI 智能体团队用开源模型在你自己的电脑上规划并生成真实文件。邀请朋友点对点共享 GPU。无需账户,无需 API 密钥。",
+   "name": "hivedesk: AI 智能体点对点协作,跨越你自己的电脑",
+   "description": "hivedesk 是免费开源的点对点工作空间,AI 智能体在你的多台电脑之间协同工作。邀请朋友,借用 GPU,共享屏幕。",
    "inLanguage": "zh-Hans",
    "isPartOf": {
     "@type": "WebSite",
@@ -109,15 +109,39 @@
      "name": "需要账户或 API 密钥吗?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "不需要。默认使用在你自己电脑上运行的模型。密钥是可选的,只在你想用自己的 API 密钥调用云端模型时才需要;它们保存在这台电脑的密钥库里。"
+      "text": "不需要。默认使用在你自己电脑上运行的模型,朋友会直接连接到你。密钥是可选的,只在你想用自己的 API 密钥调用云端模型时才需要;它们保存在你电脑上的密钥库里。"
      }
     },
     {
      "@type": "Question",
-     "name": "下载有多大,首次运行要多久?",
+     "name": "朋友能看到我的文件吗?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "模型根据你的硬件在 0.5 GB 到 9.0 GB 之间,运行环境另需几百 MB。在 100 Mbit/s 下,3B 模型大约 3 分钟,7B 大约 6 分钟。只需一次;之后每次运行,加载完模型就能用。"
+      "text": "只有你为他勾选了“读取工作区”才可以。朋友加入时,只开启了“查看 City”。他提出的编辑会等待你批准,新文件也一样。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "我借用朋友的 GPU 时,它能看到什么?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "只有发给它的作业的提示词和回答,别的都没有: 没有文件、工具或记忆。它的所有者可以停止任何作业,而由它的回答引发的任何工具调用都需要你批准。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "我需要桌面应用吗?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "不需要。 npx hivedesk 运行同一个引擎,并在你的浏览器中打开窗口。应用额外提供托盘、系统通知和文件夹选择器,并且在窗口关闭后也能继续出借。上面的表格列出了所有区别。"
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "有人能接管我的屏幕吗?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "没有你的点击就不能。在你允许自己的地址之前,远程屏幕一直关闭;每个请求都需要你接受,默认只能查看,每项授权都会过期,锁屏时不接受输入,一个快捷键或停止按钮就能结束一切。"
      }
     },
     {
@@ -125,39 +149,15 @@
      "name": "没有 GPU 的笔记本能运行吗?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "可以,在 CPU 上用小模型: 内存 16 GB 用 3B,8 到 16 GB 用 1.5B,更少的话用 0.5B。速度慢,每秒几个 token。小任务没问题,但需要耐心等待。"
+      "text": "可以,在 CPU 上用小模型,但很慢: 每秒几个 token。小任务没问题。在朋友允许的情况下,借用他的 GPU 就能运行更大的模型。"
      }
     },
     {
      "@type": "Question",
-     "name": "提示词润色会改变什么?",
+     "name": "如果两个网络连不上怎么办?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "在规划之前,Mel 会把你的需求变成一份简报: 目标、要构建什么、约束、检查,以及待确认的问题。在你使用简报、编辑它或保留原文之前,工作会一直等待。你可以在设置里关闭它。"
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "语音模式会把我的音频发到别处吗?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "语音使用浏览器的语音识别,可能会把音频发送到浏览器厂商的服务。有本地语音时,Mel 的语音回复在你的电脑上生成。完全本地的语音识别目前还没有提供。"
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "工作者会弄坏我的电脑吗?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "工作者只拥有限定在工作区文件夹内的工具,试图跳出该文件夹的路径会被拒绝。命令默认带有超时、输出上限,并且不联网;审批模式会让有风险的步骤等你处理。扩展在沙箱中运行,只拥有你同意的权限。"
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "为什么启动器会触发安全警告?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "它们是没有代码签名的普通脚本,所以 Windows SmartScreen 和 macOS Gatekeeper 会在首次运行前询问。每个启动器只检查 Node.js 并运行 npx hivedesk@latest 。"
+      "text": "运行 hivedesk doctor --p2p 。它会检查中继、你的端口和你的网络类型,并告诉你是哪一边阻断了连接。没有内置 TURN 中继;在同一网络中,请使用局域网选项。"
      }
     },
     {
@@ -165,7 +165,7 @@
      "name": "不下载模型也能先看看吗?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "可以: npx hivedesk --demo 会回放一项脚本化的工作。它展示的一切都标记为演示。"
+      "text": "可以: npx hivedesk --demo 会在它自己的临时文件夹里演示一座 City,每个脚本化事件都标记为演示。它从不碰你的项目。"
      }
     },
     {
@@ -173,7 +173,7 @@
      "name": "怎么卸载?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "删除 ~/.hivedesk/ (运行环境、模型、你的设置)以及项目里的 .hivedesk/ 文件夹。如果是用 npm 安装的,还要运行 npm rm -g hivedesk 。"
+      "text": "删除 ~/.hivedesk/ (你的身份、已知节点、运行环境、模型和你的设置)以及项目里的 .hivedesk/ 文件夹。如果是用 npm 安装的,还要运行 npm rm -g hivedesk 。"
      }
     }
    ]
@@ -204,12 +204,13 @@
 </script>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../assets/shots/hive.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="../assets/monsoon.css">
 <link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/v1.css">
 <script>document.documentElement.classList.add('hd-js')</script>
 <script type="module" src="../assets/site.js"></script>
+<script type="module" src="../assets/v1.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">跳到正文</a>
@@ -221,24 +222,23 @@
       <span>hivedesk</span>
     </a>
     <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="主导航">
-      <a href="#city" @click="open = false">Hive City</a>
-      <a href="#try" @click="open = false" data-i18n="nav.try">试一试</a>
-      <a href="#how" @click="open = false" data-i18n="nav.how">工作原理</a>
-      <a href="#features" @click="open = false" data-i18n="nav.features">功能</a>
-      <a href="#download" @click="open = false" data-i18n="nav.download">下载</a>
-      <a href="#limits" @click="open = false" data-i18n="nav.limits">局限</a>
+      <a href="#how" @click="open = false">工作原理</a>
+      <a href="#city" @click="open = false">City</a>
+      <a href="#security" @click="open = false">安全</a>
+      <a href="#compare" @click="open = false">应用还是浏览器</a>
+      <a href="#download" @click="open = false">下载</a>
       <a href="#faq" @click="open = false">常见问题</a>
     </nav>
     <div class="top-act">
       <span class="tooltip tooltip-bottom" data-tip="跳到某个分区 (Ctrl K)">
         <button class="icon-btn search-btn" type="button" v-hotkey="mod+k" @click="PAL.show()" aria-label="搜索本页 (Ctrl K)" aria-haspopup="dialog" aria-controls="palette">
-          <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><kbd class="kbd-hint">Ctrl K</kbd>
+          <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><kbd class="kbd-hint" aria-hidden="true">Ctrl K</kbd>
         </button>
       </span>
       <div class="lang" v-data="{ }" v-click-outside="LANGSEL.close(false)">
         <span class="tooltip tooltip-bottom" data-tip="语言">
           <button id="lang-btn" class="lang-btn" type="button" aria-label="语言: 简体中文" aria-haspopup="listbox" aria-controls="lang-list" :aria-expanded="LANGSEL.open ? 'true' : 'false'" @click="LANGSEL.toggle()" @keydown="LANGSEL.btnKey($event)">
-            <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-globe"/></svg><span class="lang-cur" data-lang-label>简体中文</span><svg class="i chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-globe"/></svg><span class="lang-cur" data-lang-label translate="no">简体中文</span><svg class="i chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
           </button>
         </span>
         <ul id="lang-list" class="menu lang-menu" role="listbox" tabindex="-1" aria-label="语言" style="display:none" v-show="LANGSEL.open" v-transition="pop" :aria-activedescendant="'lang-opt-' + LANGSEL.active" @keydown="LANGSEL.key($event)">
@@ -252,7 +252,7 @@
       </span>
       <div id="theme-pop" popover class="popover popover-end theme-pop">
         <p class="popover-title">应用内的主题</p>
-        <div class="segmented theme-seg" role="radiogroup" aria-label="主题" data-theme-seg>
+        <div class="segmented theme-seg" role="radiogroup" aria-label="主题" data-theme-seg translate="no">
             <label class="segmented-item"><input type="radio" name="site-theme" value="mel" checked><i class="sw" style="--a:#FFB531;--b:#0E0D0B" aria-hidden="true"></i>Mel</label>
             <label class="segmented-item"><input type="radio" name="site-theme" value="meia-noite"><i class="sw" style="--a:#8FA8FF;--b:#0A0D14" aria-hidden="true"></i>Meia-noite</label>
             <label class="segmented-item"><input type="radio" name="site-theme" value="floresta"><i class="sw" style="--a:#8BCF7A;--b:#0C120E" aria-hidden="true"></i>Floresta</label>
@@ -266,7 +266,7 @@
       <span class="tooltip tooltip-bottom" data-tip="GitHub 上的源代码">
         <a class="icon-btn" href="https://github.com/kwy404/hivedesk" rel="noopener" aria-label="GitHub 上的 hivedesk"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
       </span>
-      <a class="b b-light b-sm magnetic top-dl" href="#download" data-i18n="nav.download">下载</a>
+      <a class="b b-light b-sm top-dl" href="#download">下载</a>
       <button class="menu-btn" type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'" aria-controls="nav" aria-label="菜单">
         <span></span><span></span>
       </button>
@@ -277,502 +277,389 @@
 <main id="main">
 
 <!-- ================= HERO ================= -->
-<section class="hd-hero" aria-labelledby="hero-h">
-  <div class="hero-bg" aria-hidden="true"><div class="comb"></div><div class="cursor-glow"></div></div>
+<section class="hd-hero v1-hero" aria-labelledby="hero-h">
+  <div class="hero-bg" aria-hidden="true"><div class="grid-bg"></div></div>
   <div class="wrap hero-in">
-    <a class="eyebrow" href="#city"><span class="eb-tag">0.2.0</span><span data-i18n="hero.eyebrow">Hive City: 你的团队变成一座小城</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
-    <h1 id="hero-h" class="display" aria-label="你自己的 AI 团队。一条命令就到。" data-i18n-h1>
-      <span class="w" style="--i:0" aria-hidden="true">你自己的</span> <span class="w" style="--i:1" aria-hidden="true">AI</span> <span class="w" style="--i:2" aria-hidden="true">团队。</span><br><span class="w hl" style="--i:3" aria-hidden="true">一条命令就到。</span>
+    <a class="eyebrow" href="#how"><span class="eb-tag">1.0</span><span>智能体、GPU 和屏幕,点对点共享</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+    <h1 id="hero-h" class="display display-caps" aria-label="你的智能体。你的机器。你的 City。" data-i18n-h1>
+      <span class="w" style="--i:0" aria-hidden="true">你的智能体。</span><br><span class="w" style="--i:1" aria-hidden="true">你的机器。</span><br><span class="w hl" style="--i:2" aria-hidden="true">你的</span> <span class="w hl" style="--i:3" aria-hidden="true">City。</span>
     </h1>
-    <p class="lede" data-i18n="hero.lede">一支会规划、会交流、会在你的电脑上生成真实文件的 AI 工作团队,使用本地模型。</p>
+    <p class="lede">一个点对点工作空间,让 AI 智能体跨越你的多台电脑协作。</p>
     <div class="cta-row">
-      <div class="pill pill-hero" role="group" aria-label="安装命令">
-        <span class="pill-p" aria-hidden="true">$</span>
-        <code class="typed">npx hivedesk</code><span class="caret" aria-hidden="true"></span>
-        <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="已复制" aria-label="复制命令 npx hivedesk">
-          <svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>
-          <span class="copied-tip" aria-hidden="true">已复制</span>
-        </button>
-      </div>
-      <a class="b b-light b-lg magnetic" href="#download">
-        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="nav.download">下载</span>
-      </a>
+      <a class="b b-honey b-lg" href="#download"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg><span>建造你的 City</span></a>
+      <a class="b b-ghost b-lg" href="#how"><span>看看工作原理</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="byline">
-      <span><span data-i18n="hero.madeby">作者</span> <b>Alexandre Kohler</b></span>
-      <a href="https://github.com/kwy404" rel="me noopener" aria-label="Alexandre Kohler 的 GitHub"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
-      <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener" aria-label="Alexandre Kohler 的 LinkedIn"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linkedin"/></svg></a>
-      <span class="dot-sep" aria-hidden="true"></span><span>MIT</span><span class="dot-sep" aria-hidden="true"></span><span>Windows, macOS, Linux</span>
-    </p>
+    <p class="hero-rec"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg><span><b>桌面应用提供完整体验:</b> GPU 上的模型、从托盘出借,以及远程控制。<a href="#compare">浏览器标签页里能用什么</a></span></p>
   </div>
 
-  <div class="stage" data-parallax>
-    <figure class="window">
-      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>127.0.0.1 &middot; hivedesk</span></div>
-      <div class="window-body live">
-        <img src="../assets/shots/hive.webp" width="1920" height="1080" alt="演示模式下的 Hive: 一项面包店落地页工作的时间线、团队聊天、页面的实时预览、显示 diff 的文件窗口、完成一轮后的 Dev 工作者,底部是工作者停靠栏。" fetchpriority="high" decoding="async">
-        <div class="fx" aria-hidden="true">
-          <span class="fx-progress"></span>
-          <span class="fx-done d1">完成</span><span class="fx-done d2">完成</span><span class="fx-done d3">完成</span><span class="fx-done d4">完成</span>
-          <span class="fx-diff"></span>
-          <div class="fx-chat c1"><img src="../assets/crew/dev.svg" width="24" height="24" alt=""><span><b>Dev</b> index.html 和 app.js 已写好。</span></div>
-          <div class="fx-chat c2"><img src="../assets/crew/qa.svg" width="24" height="24" alt=""><span><b>QA</b> 发现 1 个问题: 有一张图片没有替代文本。</span></div>
-          <div class="fx-chat c3"><img src="../assets/crew/mel.svg" width="24" height="24" alt=""><span><b>Mel</b> 完成了,QA 也通过了。</span></div>
-          <span class="fx-bee b1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
-          <span class="fx-bee b2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
-          <span class="fx-bee b3"><img src="../assets/art/bee.svg" width="24" height="18" alt=""></span>
-        </div>
-      </div>
-    </figure>
-  </div>
-</section>
-
-<!-- ================= HIVE CITY ================= -->
-<section id="city" class="sec city" aria-labelledby="city-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker"><span class="soon" data-i18n="city.soon">0.2.0 新功能</span></p>
-      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City。<br><span>你的团队变成一座小城。</span></h2>
-      <p class="head-sub">现在 hivedesk 打开时是一座小城: 你的电脑是一栋有房间的建筑,智能体住在里面,每个任务都会穿过这些房间直到完成。朋友用六个词就能加入,还会把自己的电脑一起带来。</p>
-    </header>
-
-    <div class="city-show reveal" data-city>
-      <div class="tabs tabs-boxed city-tabs" role="tablist" aria-label="Hive City">
-        <button type="button" class="tab" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">城市</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">朋友加入</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">借用 GPU</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">Review 房间</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">智能体卡片</button>
-      </div>
-      <div class="city-stage">
-        <div class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
-          <img src="../assets/shots/city-overview.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="演示模式下的 Hive City: 你的建筑位于一座浮空岛上,有 Design、Code、Review、Test、Ops、Library 和 Lobby 房间,桥的另一头是朋友的塔楼,还有放着三个任务的任务板和事件流。">
-          <p class="city-cap"><b>城市就是系统的状态。</b> 每个房间都是一个真实的空间,有各自允许使用的工具。任务板显示每个任务以及它所处的循环。</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
-          <img src="../assets/shots/city-friend-rising.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="朋友用六个词加入后,他的建筑在你的旁边拔地而起。">
-          <p class="city-cap"><b>朋友就是建筑。</b> 朋友用 Code together 的六个词加入后,他的电脑会在你的旁边拔地而起,带着他的 GPU、模型和住在上面的智能体。</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
-          <img src="../assets/shots/city-bridge-gpu-borrow.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Dev 借用朋友 GPU 时亮起的桥,以及 Machines 面板: 已用 3 轮中的 2 轮,还有停止借用的按钮。">
-          <p class="city-cap"><b>借用 GPU,有额度限制。</b> 智能体向朋友的电脑申请一定的轮数和分钟数。出借方可以接受、调低额度或拒绝;每一轮都会计数,双方都能随时停止,传输的只有提示词和回答。</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
-          <img src="../assets/shots/city-review-room.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Review 房间内部: 一个智能体正按照标准阅读某个任务的 diff。">
-          <p class="city-cap"><b>Design、Code、Review、Test。</b> 另一个智能体按照标准审查 diff,然后运行检查。失败会连同问题退回给作者,最多 3 次,之后任务会被阻止。每一步你都可以批准或退回。</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
-          <img src="../assets/shots/city-agent-card.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="智能体卡片: 名字、主房间、等级和 XP、属性、工具,以及智能体的私人记忆。">
-          <p class="city-cap"><b>会留下来的智能体。</b> 每个智能体都有通过完成工作获得的等级和 XP、自己的工具,以及一份你可以编辑和置顶的私人记忆。它们都保存在你的电脑上,所以明天回来的还是同样的智能体,没做完的任务也会重新打开。</p>
-        </div>
-        <div class="city-progress" aria-hidden="true"><span></span></div>
-      </div>
-    </div>
-
-    <div class="city-grid reveal">
-      <div class="hd-card"><h3>会留下来的智能体</h3><p>团队里的每个工作者都是一个智能体,有自己的主房间、等级和 XP(完成工作得 10,审查得 4,测试得 3,任务无需循环再加 5)、工具,以及最多 40 条简短记录的记忆。</p></div>
-      <div class="hd-card"><h3>有规则的房间</h3><p>Lobby、Design、Code、Review、Test、Ops 和 Library。智能体在某个房间工作时,只能使用该房间的工具。Ops 仅限主机使用,扩展还可以添加房间。</p></div>
-      <div class="hd-card"><h3>任务总线</h3><p>任务来自你、来自 Mel 的计划,或来自退回工作的智能体。空闲的智能体按技能、等级和机器负载竞标;每一次认领、流转和裁定都是可以回放的事件。</p></div>
-      <div class="hd-card"><h3>有访客也安全</h3><p>机器、智能体或任务的所有者说了算。访客的任务在开启审批模式下运行,不能执行命令或删除,也绝不会进入 Ops。更喜欢旧版桌面?用 <code>--no-city</code> 启动。</p></div>
-    </div>
-    <p class="caption caption-center"><code>npx hivedesk --demo</code> 的真实截图,它会播放一个城市场景: 一位朋友用六个词加入,Dev 借用她的 GPU 三轮,一个任务依次经过 Design、Code、Review、Test 直到完成。每个演示事件都有标记。尚未支持: Test 运行的是静态检查(HTML、链接、JS 语法、CSS、JSON),而不是你自己的测试套件;借用是按请求限额的,不是长期共享。</p>
-  </div>
+  <figure class="hero-art" data-anim>
+    <img class="ha-img" src="../assets/art/1.0/hero.svg" width="1220" height="640" fetchpriority="high" decoding="async" alt="你的电脑和朋友的电脑是你 City 中浮岛上的两座建筑，由一座传送加密任务的桥相连，朋友的 GPU 正在出借轮次。">
+    <figcaption class="ha-labels">
+      <span class="ha-l l-a"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>你的电脑</span>
+      <span class="ha-l l-p"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg>加密 P2P</span>
+      <span class="ha-l l-b"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg>朋友带 GPU 的电脑</span>
+      <span class="ha-l l-c"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg>你的 City</span>
+    </figcaption>
+  </figure>
 </section>
 
 <!-- ================= FILM ================= -->
-<section id="film" class="film" aria-labelledby="film-h">
-  <div class="wrap film-in">
-    <div class="film-copy reveal">
-      <p class="kicker" data-i18n="film.kicker">短片</p>
-      <h2 id="film-h" class="h2" data-i18n-2="film.h2">75 秒了解 hivedesk。<br><span>从一句话到一个完成的页面。</span></h2>
-      <p class="head-sub">一段真实应用的短片: 向导为 GPU 选好模型,Mel 写出简报,团队动手构建,你来批准,工作最后以一个更好的提示词和一个拉取请求收尾。旁白以葡萄牙语显示在画面上,并配有英文字幕。</p>
-    </div>
-    <figure class="film-frame reveal" data-film>
-      <video class="film-video" width="1080" height="1350" preload="none" muted playsinline loop poster="../media/hivedesk-poster.webp" aria-label="hivedesk 短片,75 秒,带音乐和屏幕文字">
-        <source src="../media/hivedesk.mp4" type="video/mp4">
-        <track kind="captions" src="../media/hivedesk.en.vtt" srclang="en" label="English" default>
-        <track kind="captions" src="../media/hivedesk.pt-BR.vtt" srclang="pt-BR" label="Português">
+<section id="film" class="sec film" aria-labelledby="film-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <h2 id="film-h" class="h2">1.0 发布影片</h2>
+      <p class="head-sub">四分钟内看完 1.0 的全部内容，均录自真实应用。 画面中的文字为葡萄牙语。</p>
+    </header>
+    <div class="film-frame reveal">
+      <video width="1280" height="720" poster="../media/hivedesk-1.0-poster.webp" controls preload="none" playsinline aria-label="观看 hivedesk 1.0 发布影片">
+        <source src="../media/hivedesk-1.0.mp4" type="video/mp4">
       </video>
-      <button class="film-play" type="button" data-film-play>
-        <span class="film-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
-        <span class="film-label"><b data-i18n="film.play">带声音播放</b><span>1:15</span></span>
-      </button>
-      <figcaption class="sr">短片展示了向导、简报、工作中的团队、审批、拉取请求、主题、10 种语言和下载。</figcaption>
-    </figure>
+    </div>
   </div>
 </section>
 
-<!-- ================= NUMBERS ================= -->
-<section class="numbers" aria-label="数字看 hivedesk">
-  <div class="wrap">
-    <dl class="num-grid">
-      <div><dt>启动只需的命令</dt><dd>1</dd></div>
-      <div><dt>内置工作者,还能雇更多</dt><dd>5</dd></div>
-      <div><dt>Hive 支持的语言</dt><dd>10</dd></div>
-      <div><dt>内置主题</dt><dd>8</dd></div>
-      <div><dt>需要的账户或 API 密钥</dt><dd>0</dd></div>
-    </dl>
-  </div>
-</section>
-
-<!-- ================= TRY IT ================= -->
-<section id="try" class="sec try" aria-labelledby="try-h">
+<!-- ================= HOW ================= -->
+<section id="how" class="sec how" aria-labelledby="how-h">
   <div class="wrap">
     <header class="head head-center reveal">
-      <p class="kicker" data-i18n="try.kicker">在这里试试</p>
-      <h2 id="try-h" class="h2" data-i18n-2="try.h2">提一个小需求。<br><span>看看团队如何反应。</span></h2>
+      <p class="kicker">工作原理</p>
+      <h2 id="how-h" class="h2">一座 City。<br><span>连起你信任的每台机器。</span></h2>
+      <p class="head-sub">你的电脑是第一栋建筑,朋友会带来他们自己的。智能体住在房间里,接下任务,在调度器选中的那台机器上思考,始终不超出所有者允许的范围。</p>
     </header>
-    <div class="try-box reveal" data-try>
-      <form class="try-form" data-try-form>
-        <label class="sr" for="try-in" data-i18n="try.label">让团队做点什么?</label>
-        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-hive"/></svg>
-        <input id="try-in" name="q" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="今天让团队做点什么?" data-i18n-ph="try.ph">
-        <button class="b b-honey" type="submit"><span data-i18n="try.run">让团队开工</span></button>
-      </form>
-      <div class="try-chips" data-try-chips>
-        <button type="button">给我的面包店做一个落地页</button>
-        <button type="button">一个保存到 localStorage 的待办应用</button>
-        <button type="button">一个贪吃蛇游戏</button>
-        <button type="button">给我的脚本写一份 README</button>
+    <ol class="steps4 reveal">
+      <li class="hd-card"><span class="step-n">1</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg><h3>创建你的 City</h3><p>启动 hivedesk。你的电脑会变成一栋建筑,里面有供智能体工作的房间: Design、Code、Review、Test、Ops 和 Library。</p></li>
+      <li class="hd-card"><span class="step-n">2</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>邀请朋友</h3><p>分享六个词。你们双方比对核对词,由你决定对方可以做什么,然后他的机器会在你的旁边拔地而起。</p></li>
+      <li class="hd-card"><span class="step-n">3</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg><h3>智能体接下任务</h3><p>架构师做设计,开发者写代码,QA 跑测试,审查者阅读 diff。失败会退回给作者,最多 3 次。</p></li>
+      <li class="hd-card"><span class="step-n">4</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>借用 GPU</h3><p>当模型在你的机器上放不下时,调度器会向朋友的 GPU 申请租约,说明原因,并且只要你们任何一方喊停,就立即停止。</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= CITY ================= -->
+<section id="city" class="sec sec-line city" aria-labelledby="city-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">City</p>
+      <h2 id="city-h" class="h2">City 就是系统。<br><span>上面没有一样是装饰。</span></h2>
+      <p class="head-sub">建筑是机器,房间是带有各自工具的地方,每个任务都会穿过这些房间直到完成。每个数字都是实测的,否则面板会注明未测量。</p>
+    </header>
+
+    <div class="city-show reveal" data-city>
+      <div class="tabs tabs-boxed city-tabs" role="tablist" aria-label="City">
+        <button type="button" class="tab" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">City</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">房间内部</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">Office</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">机器</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">代码编辑器</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-5" id="ct-5" data-i="5" tabindex="-1">远程屏幕</button>
       </div>
-      <div class="try-stage" aria-live="polite">
-        <div class="try-col">
-          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-sparkle"/></svg><span data-i18n="try.brief">Mel 的简报</span></p>
-          <div class="try-brief" data-try-brief><p class="try-empty" data-i18n="try.empty">输入一个需求,或从上面选一个。</p></div>
+      <div class="city-stage">
+        <div class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
+          <img src="../media/1.0/city-1920.webp" srcset="../media/1.0/city-1440.webp 1440w, ../media/1.0/city-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="演示模式下的 City: 你的建筑位于一座浮空岛上,有 Design、Code、Review、Test、Ops、Library 和 Lobby 房间,桥的另一头是朋友的塔楼,还有任务板和事件流。">
+          <p class="city-cap"><b>有规则的房间。</b> 智能体在某个房间工作时,它的工具会被限制为该房间的工具。任务板显示每个任务、它的状态以及它所处的循环。</p>
         </div>
-        <div class="try-col">
-          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg><span data-i18n="try.tasks">任务,一轮一轮来</span></p>
-          <ol class="try-tasks" data-try-tasks></ol>
-          <p class="try-done" data-try-done hidden></p>
+        <div class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
+          <img src="../media/1.0/city-room-1920.webp" srcset="../media/1.0/city-room-1440.webp 1440w, ../media/1.0/city-room-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="Code 房间内部：显示规则和允许工具的房间面板，以及在那里工作的代理。">
+          <p class="city-cap"><b>每个房间都写明允许什么。</b> 面板列出房间内可用的工具、现在在场的代理和房间里的任务。</p>
         </div>
-        <div class="try-bees" aria-hidden="true" data-try-bees></div>
+        <div class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
+          <img src="../media/1.0/office-1920.webp" srcset="../media/1.0/office-1440.webp 1440w, ../media/1.0/office-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="Office 视图：围绕 Mel 坐在桌前的团队、当前任务及其进度。">
+          <p class="city-cap"><b>同样的事件，换到室内。</b> Office 显示工作中的团队、当前任务和已完成任务的数量。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
+          <img src="../media/1.0/machines-1920.webp" srcset="../media/1.0/machines-1440.webp 1440w, ../media/1.0/machines-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="City 旁边的机器面板：这台电脑的 GPU、显存、CPU 和内存，每个数字都标明来源。">
+          <p class="city-cap"><b>每个数字都有来源。</b> 实时采样会注明采样时间，没有测量的就写着未测量。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
+          <img src="../media/1.0/editor-1920.webp" srcset="../media/1.0/editor-1440.webp 1440w, ../media/1.0/editor-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="带资源管理器、已打开文件和运行日志的代码编辑器。">
+          <p class="city-cap"><b>真正的工作台。</b> 资源管理器、标签页、格式化和保存，团队运行的命令都在运行日志里。</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-5" aria-labelledby="ct-5" hidden>
+          <img src="../media/1.0/remote-1920.webp" srcset="../media/1.0/remote-1440.webp 1440w, ../media/1.0/remote-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="远程屏幕窗口：工作方式、你的地址、对方地址以及要申请的权限。">
+          <p class="city-cap"><b>没有勾选就不允许。</b> 被访问的电脑始终做决定，有人连接时，带停止按钮的红色横条一直在最上方。</p>
+        </div>
       </div>
-      <p class="try-fine"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span data-i18n="try.fine">在本页面中运行的脚本化预览。你输入的内容不会离开浏览器;真正的团队在你的电脑上用本地模型运行。</span></p>
+      <p class="caption caption-center">演示模式下的 hivedesk 1.0 截图，每个脚本事件都有标注。</p>
     </div>
   </div>
 </section>
 
-<!-- ================= STORY ================= -->
-<section id="how" class="sec story" aria-labelledby="how-h">
+<!-- ================= INVITE ================= -->
+<section id="invite" class="sec sec-line" aria-labelledby="invite-h">
   <div class="wrap">
-    <header class="head reveal">
-      <p class="kicker" data-i18n="nav.how">工作原理</p>
-      <h2 id="how-h" class="h2" data-i18n-2="how.h2">从一句话到发布。<br><span>六个步骤,全部在你的电脑上。</span></h2>
+    <header class="head head-center reveal">
+      <p class="kicker">邀请朋友</p>
+      <h2 id="invite-h" class="h2">六个词。<br><span>两次核对。一次点击。</span></h2>
+      <p class="head-sub">这些词通过中继找到彼此,并建立一个加密会话。接着两边的屏幕会显示相同的核对词,在你接受之前,什么都不会共享。</p>
     </header>
-    <div class="story-grid" data-story>
-      <div class="story-visual" aria-hidden="true">
-        <div class="sv-frame">
-          <div class="sv" data-v="0">
-            <div class="sv-ask"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span class="sv-typing">给我的面包店做一个落地页,带菜单和联系表单</span><span class="sv-build">构建</span></div>
-          </div>
-          <div class="sv" data-v="1">
-            <div class="sv-brief">
-              <span class="sv-label"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>Mel 的简报</span>
-              <p><b>目标</b>为街坊面包店 Crumb 做一个单页网站。</p>
-              <p><b>构建</b>首屏、三种面包的菜单、营业时间、联系表单。</p>
-              <p><b>约束</b>纯 HTML 和 CSS,手机上可用。</p>
-              <p><b>检查</b>图片有替代文本,表单有标签。</p>
-              <div class="sv-acts"><span class="on">使用这个</span><span>编辑</span><span>保留我的</span></div>
-            </div>
-          </div>
-          <div class="sv" data-v="2">
-            <div class="sv-plan">
-              <div class="node n1"><img src="../assets/crew/designer.svg" width="28" height="28" alt=""><span>确定外观</span></div>
-              <div class="node n2"><img src="../assets/crew/dev.svg" width="28" height="28" alt=""><span>构建页面</span></div>
-              <div class="node n3"><img src="../assets/crew/writer.svg" width="28" height="28" alt=""><span>编写 README</span></div>
-              <div class="node n4"><img src="../assets/crew/qa.svg" width="28" height="28" alt=""><span>检查页面</span></div>
-              <svg class="edges" viewBox="0 0 400 240" preserveAspectRatio="none"><path d="M120 50 C 190 50, 190 120, 260 120"/><path d="M120 190 C 190 190, 190 120, 260 120"/><path d="M120 50 L 120 190"/></svg>
-            </div>
-          </div>
-          <div class="sv" data-v="3">
-            <div class="sv-code">
-              <div class="code-top"><span>index.html</span><span class="who-chip"><img src="../assets/crew/dev.svg" width="18" height="18" alt="">Dev 正在编写</span></div>
-              <pre><span class="ln">1</span><span class="cl add">&lt;header class="hero"&gt;</span>
-<span class="ln">2</span><span class="cl add">  &lt;h1&gt;Bread worth waking up for.&lt;/h1&gt;</span>
-<span class="ln">3</span><span class="cl add">  &lt;a href="#order"&gt;Order for tomorrow&lt;/a&gt;</span>
-<span class="ln">4</span><span class="cl add">&lt;/header&gt;</span>
-<span class="ln">5</span><span class="cl add">&lt;section id="menu"&gt;&hellip;&lt;/section&gt;</span></pre>
-            </div>
-          </div>
-          <div class="sv" data-v="4">
-            <ul class="sv-checks">
-              <li class="ok">HTML 有效</li>
-              <li class="bad">有一张图片没有替代文本<em>修复任务已发给 Dev</em></li>
-              <li class="ok">表单有标签</li>
-              <li class="ok">在 375 px 下可用</li>
-              <li class="ok final">所有检查都已通过</li>
-            </ul>
-          </div>
-          <div class="sv" data-v="5">
-            <div class="sv-ship">
-              <div class="gh-row"><svg class="i"><use href="../assets/icons.svg#i-github"/></svg><b>发布到 GitHub</b><span class="muted">每一步都由你确认</span></div>
-              <ol>
-                <li><span class="tick"></span>分支 <code>hivedesk/crumb-landing</code></li>
-                <li><span class="tick"></span>提交 5 个文件</li>
-                <li><span class="tick"></span>推送到 origin</li>
-                <li><span class="tick"></span>拉取请求已创建</li>
-                <li><span class="tick"></span>检查通过</li>
-              </ol>
-            </div>
-          </div>
+
+    <div class="demo inv reveal" data-invite>
+      <div class="demo-bar">
+        <ol class="demo-steps" aria-label="步骤">
+          <li data-s="0">邀请</li><li data-s="1">加入</li><li data-s="2">握手</li><li data-s="3">核对词</li><li data-s="4">权限</li><li data-s="5">欢迎</li>
+        </ol>
+        <div class="demo-act">
+          <button type="button" class="b b-ghost b-sm" data-inv-reset>重新开始</button>
+          <button type="button" class="b b-honey b-sm" data-inv-next>下一步</button>
         </div>
-        <ol class="sv-dots"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
       </div>
-      <ol class="story-steps">
-        <li class="st-step" data-step="0"><span class="step-n">01</span><h3>提需求</h3><p>在需求框里写下你想要的,怎么想就怎么写。也可以直接说: 按住 <kbd>Ctrl</kbd> <kbd>Space</kbd> 时,语音模式会聆听。</p></li>
-        <li class="st-step" data-step="1"><span class="step-n">02</span><h3>润色</h3><p>Mel 会把它变成一份简报: 目标、要构建什么、约束、检查,以及待确认的问题。在你使用、编辑它或保留原话之前,工作会一直等待。</p></li>
-        <li class="st-step" data-step="2"><span class="step-n">03</span><h3>规划</h3><p>Mel 把简报拆成任务图,并把每个任务交给一个工作者。做得好的工作会变成 Mel 可以复用的剧本。</p></li>
-        <li class="st-step" data-step="3"><span class="step-n">04</span><h3>构建</h3><p>工作者轮流使用同一个本地模型,把真实文件写进你的工作区。每次写入都是一个 diff;命令和删除要等你批准。</p></li>
-        <li class="st-step" data-step="4"><span class="step-n">05</span><h3>检查</h3><p>QA 运行检查,把没通过的项作为修复任务退回,直到页面通过。</p></li>
-        <li class="st-step" data-step="5"><span class="step-n">06</span><h3>发布</h3><p>连接 GitHub 后,团队可以为每项工作创建分支、提交、推送,并打开带 CI 状态的拉取请求。每个操作都会先以计划的形式展示,只有你确认后才会执行。</p></li>
-      </ol>
+      <div class="inv-grid">
+        <article class="inv-pc">
+          <p class="inv-who"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>你的屏幕</p>
+          <div class="inv-panel" data-pane="you">
+            <div class="inv-v" data-v="0 1 2"><p class="inv-lbl">邀请词</p><p class="words" translate="no"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></p><p class="inv-note">只能用一次,有效期 10 分钟。</p></div>
+            <div class="inv-v" data-v="2"><p class="inv-status"><span class="spin" aria-hidden="true"></span>正在核对密钥</p></div>
+            <div class="inv-v" data-v="3 4"><p class="inv-lbl">核对词</p><p class="words words-sas" translate="no"><span>tiger</span><span>velvet</span><span>anchor</span><span>maple</span><span>ribbon</span><span>ocean</span></p><p class="inv-q">Ana 屏幕上的词和这些一致吗?</p></div>
+            <div class="inv-v" data-v="4">
+              <p class="inv-lbl">Ana 可以做什么</p>
+              <ul class="perm">
+                <li><label><input type="checkbox" checked data-perm="view"><span>查看 City</span></label></li>
+                <li><label><input type="checkbox" data-perm="member"><span>带来一栋建筑和智能体</span></label></li>
+                <li><label><input type="checkbox" data-perm="gpu"><span>用我的 GPU 运行作业</span></label></li>
+                <li><label><input type="checkbox" data-perm="read"><span>读取工作区</span></label></li>
+              </ul>
+            </div>
+            <div class="inv-v" data-v="5"><p class="inv-status ok"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>Ana 加入了你的 City</p><p class="inv-log" data-inv-log translate="no">p2p.join accepted, grants: city.view</p></div>
+          </div>
+        </article>
+        <div class="inv-mid" aria-hidden="true"><span class="inv-wire"></span><span class="inv-lock"><svg class="i"><use href="../assets/icons.svg#i-lock"/></svg></span></div>
+        <article class="inv-pc">
+          <p class="inv-who"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>Ana 的屏幕</p>
+          <div class="inv-panel" data-pane="ana">
+            <div class="inv-v" data-v="0"><p class="inv-status dim">正在等待邀请词</p></div>
+            <div class="inv-v" data-v="1 2"><p class="inv-lbl">用邀请词加入</p><p class="words words-typed" translate="no"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></p><p class="inv-status" data-v-only="1"><span class="spin" aria-hidden="true"></span>正在通过中继寻找对方</p></div>
+            <div class="inv-v" data-v="3 4"><p class="inv-lbl">核对词</p><p class="words words-sas" translate="no"><span>tiger</span><span>velvet</span><span>anchor</span><span>maple</span><span>ribbon</span><span>ocean</span></p><p class="inv-q">正在等待你接受</p></div>
+            <div class="inv-v" data-v="5"><p class="inv-status ok"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>你已进入 City</p></div>
+          </div>
+        </article>
+        <div class="inv-city" aria-hidden="true">
+          <svg viewBox="0 0 360 150">
+            <path d="M40 104 L180 52 L320 104 L180 156 Z" fill="#121418" stroke="#FFFFFF" stroke-opacity=".1"/>
+            <g><path d="M140 52 L170 67 L140 82 L110 67 Z" fill="#3A3D44"/><path d="M110 67 L140 82 L140 122 L110 107 Z" fill="#17191D"/><path d="M140 82 L170 67 L170 107 L140 122 Z" fill="#1E2126"/><path d="M110 67 L140 82 L170 67" fill="none" stroke="#E3A447" stroke-opacity=".7"/></g>
+            <g class="inv-rise"><path d="M226 48 L254 62 L226 76 L198 62 Z" fill="#2A313B"/><path d="M198 62 L226 76 L226 124 L198 110 Z" fill="#17202A"/><path d="M226 76 L254 62 L254 110 L226 124 Z" fill="#1E2C3A"/></g>
+          </svg>
+        </div>
+      </div>
+      <p class="demo-fine">这是本页面中的模拟: 不会发送任何内容。在应用中,邀请会在第一次基于它发起的握手时作废,无论对错;输错一个词就需要新的邀请。</p>
     </div>
   </div>
 </section>
 
-<!-- ================= BENTO ================= -->
-<section id="features" class="sec" aria-labelledby="feat-h">
+<!-- ================= BORROW ================= -->
+<section id="borrow" class="sec sec-line" aria-labelledby="borrow-h">
   <div class="wrap">
-    <header class="head reveal">
-      <p class="kicker" data-i18n="nav.features">功能</p>
-      <h2 id="feat-h" class="h2" data-i18n-2="feat.h2">团队需要的一切。<br><span>不该碰的一样不碰。</span></h2>
+    <header class="head head-center reveal">
+      <p class="kicker">借用 GPU</p>
+      <h2 id="borrow-h" class="h2">一份租约,一个上限<br><span>和一个停止按钮。</span></h2>
+      <p class="head-sub">在所有者开启之前,共享一直是关闭的,GPU 和 CPU 分开设置,并可以限制内存、作业数和时长。出借的作业持有一份 15 秒的租约,只要 token 在流动就会续期,而所有者自己的轮次始终优先。</p>
     </header>
 
-    <div class="bento">
-      <article class="tile tilt t-refine reveal" aria-labelledby="t-refine">
-        <div class="tile-copy"><h3 id="t-refine">提示词润色</h3><p>粗略的需求会在开工前变成结构化的简报。最后,工作报告还会为下一次建议一个更好的提示词。</p></div>
-        <div class="viz refine" aria-hidden="true">
-          <div class="rf-raw"><span class="rf-who">你</span><span class="rf-text">给我家面包店 crumb 做个网站,要菜单 + 联系方式</span></div>
-          <div class="rf-arrow"><svg class="i"><use href="../assets/icons.svg#i-wand"/></svg></div>
-          <div class="rf-brief">
-            <span class="rf-who rf-hl"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>简报</span>
-            <p class="rf-l"><b>目标</b>为街坊面包店 Crumb 做一个单页网站。</p>
-            <p class="rf-l"><b>构建</b>首屏、带三种面包和价格的菜单、营业时间、联系表单。</p>
-            <p class="rf-l"><b>约束</b>纯 HTML 和 CSS,手机上可用。</p>
-            <p class="rf-l"><b>检查</b>每张图片都有替代文本,表单有标签。</p>
-          </div>
+    <div class="demo bor reveal" data-borrow>
+      <div class="demo-bar">
+        <div class="seg-row" role="radiogroup" aria-label="任务需要的模型">
+          <span class="seg-lbl">任务需要</span>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="3" checked><span>3B 模型</span></label>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="7"><span>7B 模型</span></label>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="14"><span>14B 模型</span></label>
         </div>
-      </article>
-
-      <article class="tile tilt t-model reveal" aria-labelledby="t-model">
-        <div class="tile-copy"><h3 id="t-model">替你挑选模型</h3><p>它读取你的显存和内存,并用一句话说明原因。</p></div>
-        <div class="viz picker" aria-hidden="true">
-          <div class="vram"><span class="vram-label">显存</span><div class="vram-bar"><span class="vram-fill"></span><i style="left:40%">4</i><i style="left:70%">7</i><i style="left:100%">10 GB</i></div></div>
-          <ul class="pk-list">
-            <li><span>14B</span><span>9.0 GB</span></li>
-            <li><span>7B</span><span>4.7 GB</span></li>
-            <li class="pick"><span>3B<em>推荐</em></span><span>2.1 GB</span></li>
-            <li><span>1.5B</span><span>1.1 GB</span></li>
+        <div class="demo-act">
+          <button type="button" class="b b-honey b-sm" data-bor-run><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg>运行任务</button>
+          <button type="button" class="b b-ghost b-sm" data-bor-stop disabled><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-stop"/></svg>Ana 叫停</button>
+        </div>
+      </div>
+      <div class="bor-grid">
+        <article class="mach" data-mach="you">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><h3>你的电脑</h3><span class="mach-tag">6 GB GPU</span></header>
+          <div class="meter"><span class="m-lbl">显存</span><span class="m-bar"><i data-m="vram" style="--v:.30"></i></span><span class="m-val" data-mv="vram" translate="no">1.8 of 6.0 GB</span></div>
+          <div class="meter"><span class="m-lbl">GPU 负载</span><span class="m-bar"><i data-m="util" style="--v:.06"></i></span><span class="m-val" data-mv="util" translate="no">6%</span></div>
+          <div class="meter"><span class="m-lbl">CPU 负载</span><span class="m-bar"><i data-m="cpu" style="--v:.12"></i></span><span class="m-val" data-mv="cpu" translate="no">12%</span></div>
+          <div class="meter"><span class="m-lbl">可用内存</span><span class="m-bar"><i style="--v:.56"></i></span><span class="m-val" translate="no">9.0 of 16 GB</span></div>
+          <p class="mach-src">在这台机器上实测</p>
+        </article>
+        <article class="sched" aria-live="polite">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-compass"/></svg><h3>调度器</h3></header>
+          <ul class="cands" data-cands></ul>
+          <p class="reason" data-reason>选好任务需要的模型,然后运行。</p>
+          <div class="lease" data-lease hidden>
+            <span class="lease-row"><span>租约</span><b data-lease-left translate="no">15 s</b></span>
+            <span class="lease-row"><span>Token</span><b data-tok translate="no">0</b></span>
+            <span class="lease-row"><span>心跳</span><b data-hb>每 5 秒</b></span>
+          </div>
+          <div class="choices" data-choices hidden>
+            <p data-choice-msg>Ana 停止了这个作业。目前已写出的 112 个 token 会保留。</p>
+            <div class="b-row"><button type="button" class="b b-ghost b-xs" data-bor-reset>在本地重试</button><button type="button" class="b b-ghost b-xs" data-bor-reset>使用部分结果</button><button type="button" class="b b-ghost b-xs" data-bor-reset>取消</button></div>
+          </div>
+        </article>
+        <article class="mach" data-mach="ana">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>Ana 的电脑</h3><span class="mach-tag">12 GB GPU</span></header>
+          <div class="meter"><span class="m-lbl">显存</span><span class="m-bar"><i data-m="vram" style="--v:.13"></i><b class="m-cap" style="--c:.67" title="Ana 共享的上限"></b></span><span class="m-val" data-mv="vram" translate="no">1.6 of 12 GB</span></div>
+          <div class="meter"><span class="m-lbl">GPU 负载</span><span class="m-bar"><i data-m="util" style="--v:.03"></i></span><span class="m-val" data-mv="util" translate="no">3%</span></div>
+          <div class="meter"><span class="m-lbl">CPU 负载</span><span class="m-bar"><i data-m="cpu" style="--v:.08"></i></span><span class="m-val" data-mv="cpu" translate="no">8%</span></div>
+          <ul class="share-set">
+            <li><span>GPU 共享</span><b class="on">开</b></li>
+            <li><span>显存上限</span><b translate="no">8 GB</b></li>
+            <li><span>同时运行的作业</span><b translate="no">1</b></li>
+            <li><span>最长作业时长</span><b translate="no">120 s</b></li>
+            <li><span>CPU 共享</span><b>关</b></li>
           </ul>
-          <p class="pk-why">检测到 6 GB 显卡: 3B 编程模型,完全在 GPU 上运行。</p>
-        </div>
-      </article>
-
-      <article class="tile tilt t-collab reveal" aria-labelledby="t-collab">
-        <div class="tile-copy"><h3 id="t-collab">Code together</h3><p>邀请朋友进入 Code 窗口: 你们编辑同一批文件,能看到彼此的光标。朋友的保存会以 diff 的形式等你批准。</p></div>
-        <div class="viz collab" aria-hidden="true">
-          <div class="ed">
-            <div class="ed-top"><span>style.css</span><span class="peers"><i class="p-you">你</i><i class="p-ana">Ana</i></span></div>
-<pre class="ed-code"><span class="ln">1</span>.hero {
-<span class="ln">2</span>  padding: 64px 24px;<span class="cur c-you"><b>You</b></span>
-<span class="ln">3</span>  background: <span class="typing-ana">#FFF8EC</span>;<span class="cur c-ana"><b>Ana</b></span>
-<span class="ln">4</span>}</pre>
-          </div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-github reveal" aria-labelledby="t-github">
-        <div class="tile-copy"><h3 id="t-github">发布到 GitHub</h3><p>每项工作一个分支,提交、推送、拉取请求和 CI 状态。每一步都是由你确认的计划。Mel 起草更新日志条目;在你批准之前,什么都不会写入。</p></div>
-        <div class="viz gh-viz" aria-hidden="true">
-          <ol class="gh-steps">
-            <li><span class="dot"></span><code>git commit</code><span class="gh-msg">添加 Crumb 落地页</span></li>
-            <li><span class="dot"></span><code>git push</code><span class="gh-msg">hivedesk/crumb-landing</span></li>
-            <li><span class="dot"></span><span class="pr">PR #12</span><span class="gh-msg">Crumb 落地页</span></li>
-            <li><span class="dot"></span><span class="ci">检查</span><span class="gh-msg">3 项通过 3 项</span></li>
-          </ol>
-        </div>
-      </article>
-
-      <article class="tile tilt t-voice reveal" aria-labelledby="t-voice">
-        <div class="tile-copy"><h3 id="t-voice">和 Mel 对话</h3><p>按住 <kbd>Ctrl</kbd> <kbd>Space</kbd> 说话。在执行任何操作之前,比如提交或推送,Mel 会把计划读出来,等你明确说“好”。</p></div>
-        <div class="viz voice" aria-hidden="true">
-          <div class="orb"><span class="orb-core"></span><span class="hd-ring r1"></span><span class="hd-ring r2"></span></div>
-          <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <p class="said">“Mel,给页面加上营业时间”</p>
-          <p class="tile-note">语音识别由浏览器提供,可能会把音频发送到浏览器厂商的服务。</p>
-        </div>
-      </article>
-
-      <article class="tile tilt t-theme reveal" aria-labelledby="t-theme">
-        <div class="tile-copy"><h3 id="t-theme">八款主题,或者让团队做一款</h3><p>实时切换,参照对比度报告编辑,或者描述一款(“海边的日落”),团队就会把它设计出来。</p></div>
-        <div class="viz themes" aria-hidden="true">
-          <div class="mini">
-            <div class="mini-top"><i></i><i></i><i></i></div>
-            <div class="mini-body"><span class="mb-side"></span><span class="mb-main"><i></i><i></i><i class="acc"></i></span></div>
-          </div>
-          <span class="theme-name"><span>Mel</span><span>Meia-noite</span><span>Floresta</span><span>Neon</span></span>
-        </div>
-      </article>
-
-      <article class="tile tilt t-ext reveal" aria-labelledby="t-ext">
-        <div class="tile-copy"><h3 id="t-ext">扩展,也可以由团队来做</h3><p>从文件夹、zip 或 URL 安装,或者让团队做一个。每个扩展都会申请自己的权限,并在沙箱中运行。</p></div>
-        <div class="viz ext" aria-hidden="true">
-          <div class="ext-card">
-            <span class="ext-ic"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg></span>
-            <span class="ext-name"><b>字数统计</b><span>一个小组件窗口</span></span>
-            <svg class="hd-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><circle class="ring-p" cx="18" cy="18" r="15"/></svg>
-            <span class="ext-ok"><svg class="i"><use href="../assets/icons.svg#i-check"/></svg></span>
-          </div>
-          <div class="perms"><span>读取工作区</span><span>小组件窗口</span></div>
-        </div>
-      </article>
-
-      <article id="lend" class="tile tilt t-lend reveal" aria-labelledby="t-lend">
-        <div class="tile-copy"><h3 id="t-lend">借出你的电脑</h3><p>拥有更大 GPU 的朋友用六个词完成配对。传输的只有提示词和回答。</p></div>
-        <div class="viz lend" aria-hidden="true">
-          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span>你</span></div>
-          <div class="ln-wire"><span class="pk k1"></span><span class="pk k2"></span></div>
-          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-gpu"/></svg><span>朋友</span></div>
-          <div class="ln-words"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-lang reveal" aria-labelledby="t-lang">
-        <div class="tile-copy"><h3 id="t-lang">10 种语言</h3><p>Hive 跟随浏览器的语言,也可以在设置里选择。实时切换。</p></div>
-        <div class="viz langs" aria-hidden="true">
-          <span class="hello" data-hello>你好,团队!</span>
-          <ul class="lang-list"><li>English</li><li>Português</li><li>Español</li><li>Français</li><li>Deutsch</li><li>Italiano</li><li lang="ja">日本語</li><li lang="ko">한국어</li><li lang="zh-Hans">简体中文</li><li lang="ru">Русский</li></ul>
-        </div>
-      </article>
-
-      <article class="tile tilt t-priv reveal" aria-labelledby="t-priv">
-        <div class="tile-copy"><h3 id="t-priv">留在你的电脑上</h3><p>服务器只绑定 127.0.0.1,每次运行使用一个秘密令牌。没有账户,没有统计分析。</p></div>
-        <div class="viz priv" aria-hidden="true">
-          <div class="pv-lock"><svg class="i"><use href="../assets/icons.svg#i-lock"/></svg></div>
-          <code class="pv-host">127.0.0.1:51734/?t=<span class="pv-tok">a7f3c0e9</span></code>
-        </div>
-      </article>
-
-      <article class="tile tilt t-mem reveal" aria-labelledby="t-mem">
-        <div class="tile-copy"><h3 id="t-mem">会话记忆</h3><p>按项目、按人保存的小而有上限的笔记,外加每项工作一个会话文件。几条相关的记录会放进下一个提示词。每一条都可以置顶、编辑或忘掉。</p></div>
-        <div class="viz mem" aria-hidden="true">
-          <div class="mem-row"><span class="mem-tag">项目</span><span>面包店叫 Crumb;配色是温暖的面包皮色调。</span></div>
-          <div class="mem-row"><span class="mem-tag">你</span><span>偏好纯 HTML 和 CSS,不要构建步骤。</span></div>
-          <div class="mem-row mem-session"><span class="mem-tag">会话</span><span>工作完成: 5 个文件,6 项检查通过 6 项。</span></div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-prov reveal" aria-labelledby="t-prov">
-        <div class="tile-copy"><h3 id="t-prov">想用的话,也有云端大脑</h3><p>默认在本地运行。你可以为云端模型添加自己的 API 密钥,也可以按工作者分别设置。密钥保存在这台电脑的密钥库里;发送给该服务商的提示词和文件内容会离开你的电脑,窗口会明确告诉你。</p></div>
-        <div class="viz prov" aria-hidden="true">
-          <div class="prov-row on"><span class="prov-dot"></span><b>本地模型</b><span>3B 编程模型</span></div>
-          <div class="prov-row"><span class="prov-dot"></span><b>你已经在用的本地运行环境</b><span>在这台电脑上</span></div>
-          <div class="prov-row"><span class="prov-dot"></span><b>云服务商</b><span>你的密钥</span></div>
-        </div>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- ================= NEXT ================= -->
-<section id="next" class="sec next" aria-labelledby="next-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker"><span class="soon soon-ghost">下一个版本</span></p>
-      <h2 id="next-h" class="h2">正在开发中。<br><span>0.2.0 中还没有。</span></h2>
-      <p class="head-sub">团队正在为下一个版本开发的两件事。下面是它们预期的样子;正式发布前细节可能会有变化。</p>
-    </header>
-    <div class="next-grid">
-      <article class="hd-card next-card reveal" aria-labelledby="pb-h">
-        <h3 id="pb-h">剧本库</h3>
-        <p>目前,顺利完成的工作会保存为剧本,Mel 会在类似的需求中复用它。接下来,Mel 还会拥有一个约 500 份专家剧本的库(落地页、带校验的表单、README、测试计划等等),并在团队开工前为每个任务挑出最贴近的几份。</p>
-        <div class="pb-demo" aria-hidden="true">
-          <div class="pb-task"><span class="pb-k">任务</span>一个有三种套餐的价格页</div>
-          <ul class="pb-list">
-            <li><span>落地页、首屏和分区</span><b>0.62</b></li>
-            <li class="pb-hit"><span>带套餐的价格表</span><b>0.91</b></li>
-            <li><span>带校验的联系表单</span><b>0.38</b></li>
-            <li><span>无障碍的颜色对比度</span><b>0.55</b></li>
-            <li><span>静态网站的 README</span><b>0.21</b></li>
-          </ul>
-          <div class="pb-pick"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg>Mel 选择了: 带套餐的价格表</div>
-        </div>
-      </article>
-      <article class="hd-card next-card reveal" aria-labelledby="any-h">
-        <h3 id="any-h">和任何一只蜜蜂对话</h3>
-        <p>目前,在需求框里提的需求会启动一项工作,私信可以指导某个工作者。接下来,在任何聊天里提出工作请求,无论是 #general 还是发给 Dev、Designer 或 QA 的私信,也会启动真正的工作,同样有简报、计划、审批和报告。</p>
-        <div class="any-demo" aria-hidden="true">
-          <div class="any-msg any-you"><span class="any-who">你对 Designer 说</span>能把按钮做得更圆一点吗?</div>
-          <div class="any-msg any-bee"><img src="../assets/crew/designer.svg" width="24" height="24" alt=""><span><b>Designer</b> 马上: 一个任务,style.css。</span></div>
-          <div class="any-task"><span class="dot"></span>已创建任务: 把按钮改圆 <em>Design</em></div>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ================= OFFICE ================= -->
-<section id="office" class="sec office" aria-labelledby="office-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker">办公室模式</p>
-      <h2 id="office-h" class="h2" data-i18n="office.h2">看看团队在怎么干活。</h2>
-      <p class="head-sub">在顶栏切换到办公室模式,桌面就会变成一个小小的蜂巢办公室。每个姿态都来自引擎的真实事件: 谁在思考,谁在等待模型的轮次,一个任务被移交,测试通过了。把 Mel 看板上的便签拖到一只蜜蜂身上,就能把任务交给它。</p>
-    </header>
-    <figure class="office-live reveal" aria-label="演示工作期间 Hive 的办公室模式">
-      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>hivedesk &middot; 办公室</span></div>
-      <ol class="office-steps" aria-hidden="true"><li>工作中</li><li>等你处理</li><li>完成</li></ol>
-      <div class="office-frames">
-        <img class="of of1" src="../assets/shots/office-working.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="团队工作时的办公室模式: 坐在桌前的蜜蜂,在任务板旁的 Mel,进度 35% 的当前工作,以及模型的轮次。">
-        <img class="of of2" src="../assets/shots/office-approval.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="工作者等待你批准时的办公室模式。">
-        <img class="of of3" src="../assets/shots/office-celebrate.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="工作完成、团队庆祝时的办公室模式。">
-        <div class="office-fx" aria-hidden="true">
-          <span class="fx-bee ob1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
-          <span class="fx-bee ob2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
-          <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        </div>
+          <p class="mach-src">由 Ana 的电脑报告</p>
+        </article>
       </div>
-    </figure>
-    <p class="caption">使用 <code>npx hivedesk --demo</code> 的办公室模式真实截图。每个演示事件都标记为演示。</p>
+      <p class="demo-fine">这是使用示例数字的模拟。在应用中,每个数字都来自那台机器上的探测(GPU 厂商的工具、Windows 性能计数器或 Linux 内核),朋友的数字会标注为由对方报告,读取不到的值会显示未测量。</p>
+    </div>
   </div>
 </section>
 
-<!-- ================= SCREENS ================= -->
-<section id="screens" class="sec sec-tight" aria-labelledby="scr-h">
+<!-- ================= WORKBENCH ================= -->
+<section id="workbench" class="sec sec-line" aria-labelledby="wb-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker">Hive 内部</p>
-      <h2 id="scr-h" class="h2">为你的团队准备的桌面。<br><span>首次打开时有导览。</span></h2>
-      <p class="head-sub">Mel 会用聚光灯逐一照亮桌面的各个部分,带你熟悉。可以从帮助或命令面板中重新播放。</p>
+      <p class="kicker">工作台</p>
+      <h2 id="wb-h" class="h2">一个真正的代码工作台。<br><span>文件、搜索、终端和 git。</span></h2>
+      <p class="head-sub">在团队的工作区旁边打开你选择的文件夹。每个文件夹都是一项可以撤销的授权,团队只会在你允许的地方写入。</p>
     </header>
-    <div class="screens reveal" v-tabs>
-      <div class="tabs tabs-boxed shot-tabs" role="tablist" aria-label="界面">
-        <button type="button" class="tab" role="tab" aria-selected="true" v-tab="tour">导览</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="brief">简报和报告</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="code">Code together</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="github">GitHub</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="changelog">更新日志</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="themes">主题</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="ext">扩展</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="memory">记忆</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="lang">10 种语言</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="palette">命令面板</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="replay">回放</button>
-      </div>
-      <div class="shot" v-tab-panel="tour"><img src="../assets/shots/tour.webp" width="1440" height="900" loading="lazy" decoding="async" alt="导览 11 步中的第 1 步: Mel 指向需求框,旁边有一个启动演示工作的“试一试”按钮。"></div>
-      <div class="shot" v-tab-panel="brief"><img src="../assets/shots/brief.webp" width="1440" height="900" loading="lazy" decoding="async" alt="简报和报告窗口: 你的需求、Mel 改进后的简报(目标、构建内容、约束和验收标准),以及工作报告。"></div>
-      <div class="shot" v-tab-panel="code"><img src="../assets/shots/code-together.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Code together: 打开 index.html 的 Code 窗口,两个人同时编辑,访客的光标标着 Ana。"></div>
-      <div class="shot" v-tab-panel="github"><img src="../assets/shots/github.webp" width="1440" height="900" loading="lazy" decoding="async" alt="GitHub 窗口: 通过 gh 命令行、细粒度令牌或设备码登录;不会在 hivedesk 服务器上运行任何东西。"></div>
-      <div class="shot" v-tab-panel="changelog"><img src="../assets/shots/changelog.webp" width="1440" height="900" loading="lazy" decoding="async" alt="更新日志窗口: 根据工作报告起草的建议条目,带有“忽略”和“批准并写入”。"></div>
-      <div class="shot" v-tab-panel="themes"><img src="../assets/shots/themes.webp" width="1440" height="900" loading="lazy" decoding="async" alt="主题库: 八款内置主题、一个请 Mel 做新主题的输入框、导入和新建主题。"></div>
-      <div class="shot" v-tab-panel="ext"><img src="../assets/shots/extensions.webp" width="1440" height="900" loading="lazy" decoding="async" alt="扩展窗口: 已安装的扩展及其权限,每个都在等你批准,还有一个和团队一起创建扩展的标签页。"></div>
-      <div class="shot" v-tab-panel="memory"><img src="../assets/shots/memory.webp" width="1440" height="900" loading="lazy" decoding="async" alt="记忆窗口: 可以置顶、编辑和删除的项目记忆,在新工作中使用记忆的开关,以及会话列表。"></div>
-      <div class="shot" v-tab-panel="lang"><img src="../assets/shots/lang-ja.webp" width="1440" height="900" loading="lazy" decoding="async" alt="日语界面的 Hive。"></div>
-      <div class="shot" v-tab-panel="palette"><img src="../assets/shots/palette.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Hive 上方的 Ctrl K 命令面板。"></div>
-      <div class="shot" v-tab-panel="replay"><img src="../assets/shots/replay.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="回放滑块正在重建工作中较早的某个时刻。"></div>
+    <div class="grid-3 wb-grid reveal">
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-folder"/></svg><h3>资源管理器和编辑器</h3><p>创建、重命名、移动和删除。标签页最多可分成三个分组,支持诊断,以及 JavaScript 和 TypeScript 的转到定义和符号。删除文件夹时,会显示其中的文件数并请你确认。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><h3>搜索和替换</h3><p>在所有文件中搜索,支持正则表达式、区分大小写、全字匹配,以及包含或排除模式。替换前会先逐个文件显示 diff,并跳过此后有改动的文件。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg><h3>终端</h3><p>在 Windows 和 macOS 上是真正的终端。在 Linux 上需要编译它的原生部分,否则会是一个基于管道的基础终端,并会如实标注。智能体永远拿不到终端。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-branch"/></svg><h3>源代码管理</h3><p>状态、diff、暂存、取消暂存、丢弃、提交、分支、检出、储藏和日志,都在一个面板里。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>共享终端</h3><p>让朋友观看或输入 5、15 或 60 分钟。标签页会显示共享标记和一个终止按钮,审计日志只记录字节数,从不记录内容。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-code"/></svg><h3>Code together</h3><p>通过同一个加密会话共享文档,双方的光标都能看到。朋友的编辑会等待你批准,新文件也一样。</p></div>
     </div>
-    <p class="caption"><code>npx hivedesk --demo</code> 的真实截图,它回放一项脚本化的工作,并把每个事件标记为演示。Code together 的画面来自双浏览器端到端测试。</p>
+  </div>
+</section>
+
+<!-- ================= REMOTE ================= -->
+<section id="remote" class="sec sec-line" aria-labelledby="remote-h">
+  <div class="wrap">
+    <div class="split reveal">
+      <header class="head">
+        <p class="kicker">远程屏幕</p>
+        <h2 id="remote-h" class="h2">查看朋友的屏幕。<br><span>只有对方勾选后才能控制。</span></h2>
+        <p class="head-sub">一个 10 位数字的地址能找到一台机器,但它不是密码: 所有者会看到是谁在呼叫以及对方的核对词,而且每个选项一开始都是未勾选的。</p>
+      </header>
+      <div class="rem-card" aria-hidden="true">
+        <p class="rem-top"><span class="rem-dot"></span>Ana 想查看你的屏幕 <b class="rem-count" data-countdown translate="no">0:58</b></p>
+        <p class="rem-addr" translate="no">482 913 507 6</p>
+        <ul class="rem-boxes">
+          <li><span class="cb on"></span>查看屏幕</li>
+          <li><span class="cb"></span>控制鼠标和键盘</li>
+          <li><span class="cb"></span>剪贴板</li>
+          <li><span class="cb"></span>发送文件</li>
+        </ul>
+        <p class="rem-dur"><span>时长</span><b>5 分钟</b><b class="on">15 分钟</b><b>60 分钟</b></p>
+        <p class="rem-btns"><span class="rb">拒绝</span><span class="rb rb-ok">接受并选择屏幕</span></p>
+      </div>
+    </div>
+    <ul class="rem-list reveal">
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>在你允许之前一直关闭。</b> 只有开启“允许伙伴连接这台电脑”时,机器才会响应它的地址,而这个选项默认是关闭的。</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-clock"/></svg><span><b>每项授权都会过期。</b> 5、15 或 60 分钟,除非勾选了控制,否则只能查看,请求本身还带有 60 秒倒计时。</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-stop"/></svg><span><b>紧急停止开关。</b> 共享期间会显示一个带“停止”的横幅,在 Windows 上按 <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>K</kbd> 会结束一切。</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-offline"/></svg><span><b>锁屏时不接受输入。</b> 屏幕锁定时,观看方只会看到一张卡片,每个按键都会被丢弃。</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><span><b>多块屏幕、画质预设和聊天。</b> 剪贴板支持文本和图片,文件最大 2 GB,中断后可从断点继续传输。</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-key"/></svg><span><b>无人值守访问,前提是你设置了它。</b> 仅限已知节点,需要密码;连续输错 5 次会锁定 15 分钟。</span></li>
+    </ul>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-phone-remote"/></svg><span><b>手机也可以。</b> 用 hivedesk 窗口里的二维码配对手机,然后在手机上审批、聊天和跟进任务。每部手机都有自己的权限。</span></p>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><span><b>1.0 中可以控制的平台:</b> Windows,以及装有 xdotool 和 loginctl 的 X11 上的 Linux。macOS 只能查看,因为控制需要签名的应用,而下载包还没有签名。Wayland 也只能查看。</span></p>
+  </div>
+</section>
+
+<!-- ================= MODELS ================= -->
+<section id="models" class="sec sec-line" aria-labelledby="models-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">模型</p>
+      <h2 id="models-h" class="h2">为每台机器配上合适的模型。<br><span>还有一个给巨型模型的测算器。</span></h2>
+      <p class="head-sub">一个包含 57 个开源模型的目录,参数从 0.5B 到 72B,覆盖编程、推理和聊天,每个都提供 2 到 8 位的量化文件。hivedesk 会为你的硬件推荐一个,并在任何下载之前先征求你的同意,同时说明大小、许可证和来源。</p>
+    </header>
+    <div class="pool reveal" data-pool>
+      <div class="pool-head">
+        <div>
+          <h3>和朋友一起汇集资源,运行巨型模型</h3>
+          <p>一个 4 位的 70B 模型连同上下文大约需要 45 GB。没有哪台普通消费级电脑有这么多,但一座 City 也许有。</p>
+        </div>
+        <span class="hd-chip chip-exp">实验性,默认关闭</span>
+      </div>
+      <div class="pool-ctl">
+        <label for="pool-n">共享 GPU 的朋友</label>
+        <input id="pool-n" type="range" min="0" max="4" step="1" value="1" data-pool-n>
+        <output for="pool-n" data-pool-out translate="no">1</output>
+      </div>
+      <div class="pool-bar" aria-hidden="true"><i class="pv" data-pool-vram></i><i class="pr" data-pool-ram></i><b class="pool-need"></b></div>
+      <p class="pool-legend"><span class="lg lg-v">共享的显存</span><span class="lg lg-r">共享的内存</span><span class="lg lg-n">模型所需</span></p>
+      <p class="pool-read" data-pool-read aria-live="polite">已汇集 27 GB,需要 45 GB: 还差 18 GB。</p>
+      <p class="demo-fine">在应用中,这个测算器是真实的计算: 显存和内存分开计算,并计入 CPU 内存的速度,以及每个 token 在每台远程机器上的一次网络往返,只有达到每秒 1 个 token 或以上才会解锁。汇集模型已作为实验性开关加入 1.0,默认关闭: 模型通过加密的 p2p 连接,在授权了的朋友的机器上运行,速度取决于机器之间的网络连接。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAYBOOKS ================= -->
+<section id="playbooks" class="sec sec-line" aria-labelledby="pb-h">
+  <div class="wrap">
+    <div class="split split-rev reveal">
+      <header class="head">
+        <p class="kicker">剧本</p>
+        <h2 id="pb-h" class="h2">约 500 份专家剧本。<br><span>每个任务挑出最贴近的几份。</span></h2>
+        <p class="head-sub">落地页、带校验的表单、README、测试计划、无障碍组件、git 提交信息等等,每份都有步骤、质量标准、常见陷阱和检查项。任务开始之前,会按关键词相关度、角色和房间挑出最贴近的剧本,它们的检查项会在 QA 中运行。</p>
+        <p class="pb-cats" translate="no"><span>app-types 55</span><span>practices 65</span><span>ui-components 55</span><span>web-pages 51</span><span>stacks 50</span><span>review-qa 42</span><span>design 42</span><span>data 40</span><span>roles 35</span><span>planning 32</span><span>git-docs 30</span></p>
+      </header>
+      <div class="pb-demo" data-playbooks>
+        <label class="pb-in"><span class="sr">描述一个任务</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><input type="text" data-pb-q placeholder="描述一个任务,例如一个预约页面" autocomplete="off" spellcheck="false"></label>
+        <ol class="pb-list" data-pb-list aria-live="polite">
+          <li><span class="pb-t">输入一个任务,看看会挑出哪些剧本</span></li>
+        </ol>
+        <p class="pb-count" data-pb-count></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECURITY ================= -->
+<section id="security" class="sec sec-line" aria-labelledby="sec-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">安全</p>
+      <h2 id="sec-h" class="h2">默认拒绝。<br><span>每项权限都有名称、经过授权、有时限、有记录。</span></h2>
+      <p class="head-sub">由拥有资源的那台机器上的引擎来决定,而不是某个浏览器标签页。访客不能挑选你的模型,不能打开 shell,也看不到你没有共享的文件。</p>
+    </header>
+    <figure class="art-fig reveal"><img src="../assets/art/1.0/security.svg" width="1500" height="640" loading="lazy" decoding="async" alt="盾牌中的每次安装一个身份，除查看 City 外所有授权默认关闭，以及每一行都链接到上一行的审计日志。"></figure>
+    <div class="grid-3 sec-grid reveal">
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-key"/></svg><h3>每次安装一个身份</h3><p>一把 Ed25519 密钥,以六个指纹词的形式展示给人看。无法读取的密钥会报错,绝不会悄悄变成一个新身份。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>会作废的邀请</h3><p>六个词,66 位,一次性,10 分钟,在第一次发起的握手时作废。之后两边的屏幕显示核对词,再由你点击接受。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-shield"/></svg><h3>授权,默认关闭</h3><p>朋友加入时,只勾选了“查看 City”。GPU、CPU、内存、存储、终端、屏幕、剪贴板和文件都是带上限的独立授权;屏幕和终端授权会在 60 分钟内结束。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-clock"/></svg><h3>有截止时间的租约</h3><p>出借的作业持有一份由心跳续期的 15 秒租约、一个硬性截止时间和一个 token 上限。它只在出借方的本地模型上运行,绝不使用对方的云端密钥。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-log"/></svg><h3>哈希链式审计日志</h3><p>加入、授权、撤销、作业和远程会话,按月记录,每一行都链接到上一行。它从不保存邀请词、密钥、提示词或回答。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><h3>端到端加密</h3><p>密钥使用 X25519 和 HKDF,每一帧使用 ChaCha20-Poly1305,每 60 分钟更换一次密钥。中继始终只传输密文。</p></div>
+    </div>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><span><b>来自其他机器的回答不受信任。</b> 在由朋友的 GPU 处理的轮次中产生的任何工具调用,在每种审批模式下都需要你批准,新文件也一样。</span></p>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section id="compare" class="sec sec-line" aria-labelledby="cmp-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">桌面应用还是浏览器</p>
+      <h2 id="cmp-h" class="h2">哪里能用什么。<br><span>没有意外。</span></h2>
+      <p class="head-sub">桌面应用和 <code>npx hivedesk</code> 在你的机器上运行同一个引擎;区别只在于窗口。单独一个网页运行在浏览器的沙箱里,所以这些都做不到。</p>
+    </header>
+    <div class="tbl-wrap reveal">
+      <table class="tbl cmp">
+        <thead><tr><th scope="col">功能</th><th scope="col"><span class="cmp-h cmp-app">桌面应用</span></th><th scope="col"><span class="cmp-h">使用 <code>npx hivedesk</code> 的浏览器标签页</span></th><th scope="col"><span class="cmp-h">仅浏览器,不安装任何东西</span></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">GPU 上的本地模型</th><td class="y">可以</td><td class="y">可以。引擎在你机器上的 Node.js 中运行;标签页只负责显示。</td><td class="n">不可以。网页无法启动原生程序,也无法从你的磁盘加载几 GB 的模型文件。</td></tr>
+          <tr><th scope="row">共享你的 GPU 和 CPU</th><td class="y">可以,关闭窗口后也行: 它会在托盘中继续运行。</td><td class="p">可以,只要标签页保持打开。节点连接在窗口中运行,而浏览器会让后台标签页变慢或冻结。</td><td class="n">不可以。没有可以共享的引擎。</td></tr>
+          <tr><th scope="row">远程控制</th><td class="p">Windows,以及 X11 上的 Linux。在应用签名之前,macOS 只能查看。</td><td class="p">在基于 Chromium 的浏览器中可以查看。控制、原生剪贴板和粘贴文件由输入助手提供,和应用中一样。</td><td class="n">不可以。网页无法在你的系统上移动鼠标或按键。</td></tr>
+          <tr><th scope="row">切换显示器</th><td class="y">可以。观看方提出请求,主机选择屏幕。</td><td class="p">可以,但每次浏览器都会在自己的对话框中让主机选择屏幕: 网页永远不能自行选择屏幕。</td><td class="n">不可以</td></tr>
+          <tr><th scope="row">终端 (PTY)</th><td class="y">Windows 和 macOS 上可以。Linux 上在原生部分编译成功时可以,否则是一个带标注的基础终端。</td><td class="y">一样: 终端运行在引擎中。</td><td class="n">不可以。网页无法启动 shell。</td></tr>
+          <tr><th scope="row">文件系统访问</th><td class="y">你添加的文件夹,使用原生文件夹选择器。</td><td class="p">同样的文件夹。你需要输入路径,因为网页没有原生文件夹选择器。</td><td class="n">只能按浏览器的规则,一次选择或拖入一个文件。</td></tr>
+          <tr><th scope="row"><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Del</kbd></th><td class="n">从不发送到远程机器。Windows 把它留给安全登录界面,所以 hivedesk 会有意丢弃它,Win+L 也一样。</td><td class="n">从不发送。你自己的系统也会在任何网页看到它之前拦截它。</td><td class="n">不可以</td></tr>
+          <tr><th scope="row">通知</th><td class="y">来自应用的系统通知。</td><td class="p">在浏览器中允许后可用,且仅限标签页打开期间;否则显示在页面中。</td><td class="n">不可以</td></tr>
+          <tr><th scope="row">后台运行</th><td class="y">可以。关闭窗口后它会留在托盘中,提供打开、暂停和退出。</td><td class="p">引擎会在它的终端里继续运行,但节点需要标签页保持打开,休眠的标签页可能会让出借的作业停滞。</td><td class="n">不可以。关闭标签页就结束了。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption caption-center">推荐使用桌面应用获得完整体验。应用窗口使用系统的 Web 视图;在 macOS 和 Linux 上,屏幕共享会在你基于 Chromium 的浏览器中打开,因为这些 Web 视图无法可靠地捕获屏幕。</p>
   </div>
 </section>
 
@@ -780,169 +667,76 @@
 <section id="download" class="sec download" aria-labelledby="dl-h">
   <div class="wrap">
     <header class="head head-center reveal">
-      <p class="kicker" data-i18n="nav.download">下载</p>
-      <h2 id="dl-h" class="h2" data-i18n-2="dl.h2">获取 hivedesk。<br><span>免费、开源、在你的电脑上。</span></h2>
-      <p class="head-sub">适用于 Windows、macOS 和 Linux 的桌面应用。每个下载都自带 Node.js,不需要事先安装任何东西。</p>
-      <p class="first-release" data-first-release><span class="pulse-dot" aria-hidden="true"></span><span data-i18n="dl.first">首个版本今天发布。</span></p>
+      <p class="kicker">下载</p>
+      <h2 id="dl-h" class="h2">建造你的 City。<br><span>免费、开源、在你的机器上。</span></h2>
+      <p class="head-sub">桌面应用就是完整的 hivedesk: GPU 上的模型、从托盘出借、远程控制和系统通知。每个下载都自带 Node.js,不需要事先安装任何东西。</p>
     </header>
 
     <div class="os-grid">
-      <article class="os-card tilt reveal" data-os="win">
-        <span class="hd-chip chip-you" data-i18n="dl.you">你的系统</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-windows"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="win">
+        <span class="hd-chip chip-you">你的系统</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-windows"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-windows"/></svg></span>Windows</h3>
-        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 和 11,x64,约 47 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">下载 Windows 版</span></a>
-        <p class="os-note">解压后双击 <code>hivedesk.exe</code>。它还没有代码签名,所以 SmartScreen 会提示“Windows 已保护你的电脑”: 选择 <b>更多信息</b>,然后选择 <b>仍要运行</b>。</p>
+        <p class="os-meta"><code>hivedesk-setup.exe</code><span class="os-size" data-size="hivedesk-setup.exe">Windows 10 和 11,x64</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-setup.exe" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>下载 Windows 版</span></a>
+        <p class="os-note">运行它: 它会为你的用户安装,无需管理员权限,并下载应用。没有网络的机器请使用<a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-setup-offline.exe" rel="noopener">离线安装程序</a>。它没有用付费证书做代码签名,所以 SmartScreen 会提示“Windows 已保护你的电脑”: 选择 <b>更多信息</b>,然后选择 <b>仍要运行</b>。</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="挥手的 Mel" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">谢谢!请按以下步骤操作。</p>
-          <ol class="thanks-steps"><li>解压下载的文件。如果 Windows 阻止了这个 zip,右键点击它,选择 <b>属性</b>,勾选 <b>解除锁定</b>。</li><li>双击 <code>hivedesk.exe</code>。</li><li>SmartScreen 提示“Windows 已保护你的电脑”: 选择 <b>更多信息</b>,然后选择 <b>仍要运行</b>。</li><li>首次运行时,它会为你的电脑下载一个模型并打开 Hive。</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">返回</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">谢谢!请按以下步骤操作。</p>
+          <ol class="thanks-steps"><li>运行 <code>hivedesk-setup.exe</code>。</li><li>SmartScreen 提示“Windows 已保护你的电脑”: 选择 <b>更多信息</b>,然后选择 <b>仍要运行</b>。</li><li>按照安装程序操作: 它会下载应用,然后打开 hivedesk。</li><li>给你的 City 起个名字,然后选一个模型,或者先在演示里四处看看。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>返回</button>
         </div>
       </article>
-      <article class="os-card tilt reveal" data-os="mac">
-        <span class="hd-chip chip-you" data-i18n="dl.you">你的系统</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-macos"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="mac">
+        <span class="hd-chip chip-you">你的系统</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-macos"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-macos"/></svg></span>macOS</h3>
-        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon 和 Intel,约 89 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">下载 macOS 版</span></a>
-        <p class="os-note">解压后把 <code>hivedesk.app</code> 移到“应用程序”。它还没有经过公证: 第一次打开时,进入 <b>系统设置,隐私与安全性</b>,点击 <b>仍要打开</b>。</p>
+        <p class="os-meta"><code>hivedesk-macos.dmg</code><span class="os-size" data-size="hivedesk-macos.dmg">Apple Silicon 和 Intel</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos.dmg" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>下载 macOS 版</span></a>
+        <p class="os-note">打开 dmg,把 <code>hivedesk.app</code> 拖到“应用程序”。它没有用付费证书公证: 第一次打开时,进入 <b>系统设置,隐私与安全性</b>,点击 <b>仍要打开</b>。</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="挥手的 Mel" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">谢谢!请按以下步骤操作。</p>
-          <ol class="thanks-steps"><li>解压,然后把 <code>hivedesk.app</code> 移到“应用程序”。</li><li>打开它。macOS 会提示无法验证这个应用。</li><li>打开 <b>系统设置,隐私与安全性</b>,点击 hivedesk 旁边的 <b>仍要打开</b>。</li><li>首次运行时,它会为你的电脑下载一个模型并打开 Hive。</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">返回</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">谢谢!请按以下步骤操作。</p>
+          <ol class="thanks-steps"><li>打开 dmg,把 <code>hivedesk.app</code> 拖到“应用程序”。</li><li>打开它。macOS 会提示无法验证这个应用。</li><li>打开 <b>系统设置,隐私与安全性</b>,点击 hivedesk 旁边的 <b>仍要打开</b>。</li><li>给你的 City 起个名字,然后选一个模型,或者先在演示里四处看看。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>返回</button>
         </div>
       </article>
-      <article class="os-card tilt reveal" data-os="linux">
-        <span class="hd-chip chip-you" data-i18n="dl.you">你的系统</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-linux"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="linux">
+        <span class="hd-chip chip-you">你的系统</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-linux"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linux"/></svg></span>Linux</h3>
-        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64,约 55 MB,或 AppImage,约 52 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">下载 Linux 版</span></a>
-        <p class="os-note">运行 <code>tar -xzf hivedesk-linux-x64.tar.gz</code>,然后运行 <code>./hivedesk/hivedesk</code>。或者用 <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener">AppImage</a>: 先 <code>chmod +x</code>,再运行它。窗口需要 WebKitGTK;没有的话,hivedesk 会在浏览器中打开。</p>
+        <p class="os-meta"><code>hivedesk-linux-x86_64.AppImage</code><span class="os-size" data-size="hivedesk-linux-x86_64.AppImage">x64,或安装包</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>下载 Linux 版</span></a>
+        <p class="os-note">对文件运行 <code>chmod +x</code>,然后启动它。也可以用<a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-install.sh" rel="noopener">安装脚本</a>,它会校验 SHA-256 并安装到 <code>~/.local</code>,或者用<a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">发布页面</a>上的 <code>.deb</code> 和 <code>.rpm</code>。窗口需要 WebKitGTK;没有的话,hivedesk 会在浏览器中打开。</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="挥手的 Mel" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">谢谢!请按以下步骤操作。</p>
-          <ol class="thanks-steps"><li>运行 <code>tar -xzf hivedesk-linux-x64.tar.gz</code>。</li><li>启动 <code>./hivedesk/hivedesk</code>(或者 <code>chmod +x</code> 后运行 AppImage)。</li><li>首次运行时,它会为你的电脑下载一个模型并打开 Hive。</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">返回</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">谢谢!请按以下步骤操作。</p>
+          <ol class="thanks-steps"><li>运行 <code>chmod +x hivedesk-linux-x86_64.AppImage</code>。</li><li>启动 <code>./hivedesk-linux-x86_64.AppImage</code>(或运行 <code>sh hivedesk-linux-install.sh</code>)。</li><li>给你的 City 起个名字,然后选一个模型,或者先在演示里四处看看。</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>返回</button>
         </div>
       </article>
     </div>
 
     <div class="dl-alt reveal">
-      <span data-i18n="dl.or">或者运行</span>
+      <span>或者运行</span>
       <div class="pill pill-sm" role="group" aria-label="安装命令">
         <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
         <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="已复制" aria-label="复制命令 npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">已复制</span></button>
       </div>
-      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">查看所有版本</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span>查看所有版本</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="caption caption-center">下载包还没有签名,也不会自动更新;本地模型会在首次运行时下载。想要一个小脚本?<a href="../download/hivedesk-windows.cmd" download>Windows</a>、<a href="../download/hivedesk-macos.command" download>macOS</a> 和 <a href="../download/hivedesk-linux.sh" download>Linux</a> 的启动器会检查是否有 Node.js 20 或更高版本,然后运行 <code>npx hivedesk@latest</code>;如果没有 Node.js,它们会打开官方下载页面并说明原因。</p>
-
-    <article class="hd-card dl-cmd reveal">
-      <div class="dl-cmd-copy">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg></span><h3>命令</h3><span class="hd-chip">推荐</span></div>
-        <p>任何装有 Node.js 20 或更高版本的系统。向导会问几个问题,每个都有推荐的默认值,所以一路按回车也行。</p>
-        <div class="pill pill-block" role="group" aria-label="安装命令">
-          <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
-          <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="已复制" aria-label="复制命令 npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">已复制</span></button>
-        </div>
-      </div>
-      <div class="term" data-term role="img" aria-label="终端里的向导: 语言选简体中文,当前文件夹,3B 编程模型,每个有风险的步骤都要批准,然后打开 Hive。">
-        <p class="tl"><span class="c-a">$</span> npx hivedesk</p>
-        <p class="tl"><span class="c-q">?</span> 语言 <span class="c-v">简体中文</span></p>
-        <p class="tl"><span class="c-q">?</span> 项目文件夹 <span class="c-v">当前文件夹</span></p>
-        <p class="tl c-dim">你的电脑: GPU 6 GB,内存 16 GB,可用磁盘 212 GB</p>
-        <p class="tl"><span class="c-q">?</span> 团队用哪个大脑? <span class="c-v">编程模型 3B,2.1 GB</span> <span class="c-tag">推荐</span></p>
-        <p class="tl"><span class="c-q">?</span> 现在下载? <span class="c-v">是</span></p>
-        <p class="tl"><span class="c-q">?</span> 团队如何工作? <span class="c-v">每个有风险的步骤都要批准</span></p>
-        <p class="tl"><span class="c-q">?</span> 团队 <span class="c-v">Mel, Dev, Designer, QA, Writer</span></p>
-        <p class="tl c-ok">正在打开 Hive<span class="tcaret"></span></p>
-      </div>
-    </article>
+    <p class="caption caption-center">已安装的应用会自动更新: 先校验更新清单的 Ed25519 签名,再询问: 立即更新、关闭时或稍后提醒。安装程序没有用付费证书做代码签名,所以 SmartScreen 和 Gatekeeper 会询问一次;只有在你同意后才会下载模型。使用 <code>npx hivedesk</code> 需要 Node.js 20 或更高版本,窗口会在你的浏览器中打开。</p>
 
     <div class="grid-2">
       <article class="hd-card reveal">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg></span><h3>npm</h3></div>
-        <p>软件包页面及其版本。全局安装后即可使用简单的 <code>hivedesk</code> 命令。</p>
+        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg></span><h3>从终端</h3></div>
+        <p>City 的每个部分都有一条命令: <code>hivedesk invite</code>、<code>hivedesk join</code>、<code>hivedesk peers</code>、<code>hivedesk share</code>、<code>hivedesk city</code> 和 <code>hivedesk doctor --p2p</code>,最后一条会检查中继、你的端口和你的网络类型。</p>
         <div class="pill pill-block pill-sm" role="group" aria-label="全局安装命令"><span class="pill-p" aria-hidden="true">$</span><code>npm i -g hivedesk</code><button class="pill-copy" type="button" data-copy v-copy="npm i -g hivedesk" v-copy-label="已复制" aria-label="复制命令 npm i -g hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">已复制</span></button></div>
-        <a class="b b-ghost" href="https://www.npmjs.com/package/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg>npm 上的 hivedesk</a>
       </article>
       <article class="hd-card reveal">
         <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></span><h3>源代码</h3></div>
         <p>读每一行代码,提 issue,发拉取请求。点个星能帮更多人找到它。</p>
         <div class="b-row">
-          <a class="b b-light magnetic" href="https://github.com/kwy404/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg>在 GitHub 上点星</a>
-          <a class="b b-ghost" href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-tag"/></svg>最新版本</a>
+          <a class="b b-light" href="https://github.com/kwy404/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg>在 GitHub 上点星</a>
+          <a class="b b-ghost" href="https://www.npmjs.com/package/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg>npm 上的 hivedesk</a>
         </div>
-      </article>
-    </div>
-
-    <div class="req reveal">
-      <article class="hd-card">
-        <h3>系统要求</h3>
-        <ul class="ticks">
-          <li>Windows、macOS 或 Linux 上的 <b>Node.js 20 或更高版本</b>。</li>
-          <li><b>磁盘:</b> 模型需要 0.5 到 9.0 GB,运行环境另需最多约 0.7 GB,只需一次。</li>
-          <li><b>加载所需的空闲内存:</b> 模型放到 GPU 上时需要 2.5 GB;在 CPU 上需要模型大小再加 1.5 GB(至少 4 GB)。不够的话就不会加载,所以电脑不会卡死。</li>
-          <li><b>GPU 不是必需的:</b> 大多数现代显卡都可以,Apple Silicon 也可以。</li>
-          <li>首次运行需要 <b>网络</b>。已经有带模型的本地运行环境在运行?那就直接用它,跳过下载。</li>
-        </ul>
-      </article>
-      <article class="hd-card">
-        <h3>你会得到哪个模型</h3>
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th scope="col">你的硬件</th><th scope="col">模型</th><th scope="col" class="num">下载</th><th scope="col">运行在</th></tr></thead>
-            <tbody>
-              <tr><td>显存 10 GB 或以上的 GPU</td><td>14B</td><td class="num">9.0 GB</td><td>GPU</td></tr>
-              <tr><td>显存 7 到 10 GB 的 GPU</td><td>7B</td><td class="num">4.7 GB</td><td>GPU</td></tr>
-              <tr><td>显存 4 到 7 GB 的 GPU(例如 6 GB 显卡)</td><td>3B</td><td class="num">2.1 GB</td><td>GPU,所有层</td></tr>
-              <tr><td>没有可用 GPU,内存 16 GB 或以上</td><td>3B</td><td class="num">2.1 GB</td><td>CPU</td></tr>
-              <tr><td>没有可用 GPU,内存 8 到 16 GB</td><td>1.5B</td><td class="num">1.1 GB</td><td>CPU</td></tr>
-              <tr><td>内存低于 8 GB</td><td>0.5B</td><td class="num">0.5 GB</td><td>CPU,并提示结果会比较基础</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="fine">紧凑的量化开源编程模型,从官方仓库下载,并用公布的 SHA-256 校验。可以在设置中或用 <code>--model 14b|7b|3b|1.5b|0.5b</code> 更换。出自 <a href="https://github.com/kwy404/hivedesk/blob/main/FIRST-RUN.md" rel="noopener">FIRST-RUN.md</a>。</p>
       </article>
     </div>
   </div>
@@ -952,15 +746,17 @@
 <section id="limits" class="sec sec-line" aria-labelledby="limits-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker kicker-warn" data-i18n="limits.kicker">坦诚说明局限</p>
-      <h2 id="limits-h" class="h2" data-i18n-2="limits.h2">它擅长什么。<br><span>又不擅长什么。</span></h2>
-      <p class="head-sub">在你自己电脑上的小模型既私密又不花钱。但它也比数据中心里最大的模型更慢、能力更弱。以下是可以期待的效果。</p>
+      <p class="kicker kicker-warn">坦诚说明局限</p>
+      <h2 id="limits-h" class="h2">1.0 还做不到的事。<br><span>有的是暂时,有的是有意为之。</span></h2>
+      <p class="head-sub">每一项在应用中也有标注。这里没有任何东西是为了看起来已完成而伪造的。</p>
     </header>
-
     <div class="grid-3 reveal">
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-model"/></svg><h3>它需要一个模型</h3><p>没有模型就什么也生成不了。首次运行会下载一个,0.5 到 9.0 GB,除非你已经在用的本地运行环境正在运行,或者你添加了自己的 API 密钥。</p></div>
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-queue"/></svg><h3>它比这里看起来的要慢</h3><p>工作者轮流使用同一个模型,所以一项工作要花几分钟,而不是几秒。只用 CPU 时,模型每秒只能写出几个 token。</p></div>
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><h3>由你掌舵时效果最好</h3><p>一次只提一件事,读 diff,批准各个步骤。一口气做出大型应用,超出了小模型的能力。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><h3>节点需要一个窗口</h3><p>跨互联网时,节点连接在应用窗口或浏览器标签页中运行。无界面节点需要一个尚未构建的原生 WebRTC 组件;在同一网络中,<code>hivedesk invite --lan</code> 可以在终端里使用。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-offline"/></svg><h3>没有 TURN 中继</h3><p>两个非常严格的网络之间可能连不上。<code>hivedesk doctor --p2p</code> 会告诉你问题出在哪一边,而同一网络中的两个节点可以使用局域网。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><h3>还没有签名</h3><p>下载包还没有代码签名或公证。这就是 macOS 远程控制只能查看的原因,也是你的系统在首次运行前发出警告的原因。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-model"/></svg><h3>每个出借方一个模型</h3><p>朋友的机器只提供它已加载的模型。它从不替换所有者的模型,也从不为其他节点下载模型。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>巨型模型是实验性的</h3><p>通过加密的 p2p 连接,把一个模型汇集到朋友们的机器上运行,已经在 1.0 中,但默认关闭,速度取决于机器之间的网络连接。</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-queue"/></svg><h3>小模型很慢</h3><p>工作者轮流使用同一个模型,所以一项作业要花几分钟。只用 CPU 时,模型每秒只能写出几个 token。一口气做出大型应用,超出了它的能力。</p></div>
     </div>
 
     <h3 class="h3 reveal">你的硬件能做什么</h3>
@@ -970,25 +766,13 @@
         <tbody>
           <tr><th scope="row">没有 GPU</th><td>0.5B 或 1.5B 编程模型,内存 16 GB 时可用 3B</td><td><span class="lvl l1" aria-hidden="true"></span>慢,每秒几个 token</td><td>单个文件的小任务。需要耐心等待。</td></tr>
           <tr><th scope="row">4 到 7 GB 的 GPU</th><td>3B 编程模型,完全在 GPU 上</td><td><span class="lvl l2" aria-hidden="true"></span>能用</td><td>小任务、组件、脚本、文案。</td></tr>
-          <tr><th scope="row">7 到 10 GB 的 GPU</th><td>7B 编程模型</td><td><span class="lvl l3" aria-hidden="true"></span>不错</td><td>中小型任务,由你掌舵。</td></tr>
+          <tr><th scope="row">显存 7 到 10 GB 的 GPU,或朋友的 GPU</th><td>7B 编程模型</td><td><span class="lvl l3" aria-hidden="true"></span>不错</td><td>中小型任务,由你掌舵。</td></tr>
           <tr><th scope="row">10 GB 或以上,或者一个密钥</th><td>14B 编程模型、你已经在用的本地运行环境里更大的模型,或者用你自己的 API 密钥调用云端模型</td><td><span class="lvl l4" aria-hidden="true"></span>更快</td><td>更大的工作和更长的计划。</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="grid-2 reveal">
-      <div class="hd-card card-good">
-        <h3>擅长</h3>
-        <ul class="ticks"><li>落地页</li><li>小型 CRUD 应用</li><li>脚本和命令行工具</li><li>界面组件</li><li>为现有代码写测试</li><li>文档、README 和文案</li><li>修复你描述的 bug</li></ul>
-      </div>
-      <div class="hd-card">
-        <h3>不擅长</h3>
-        <ul class="crosses"><li>一口气做出大型或复杂的应用</li><li>你不读也不批准步骤的长时间工作</li><li>在没有 GPU 的电脑上追求速度</li><li>没有模型做任何事: 没有模型,就没有输出</li></ul>
-        <p class="fine">当你拆分工作、掌舵并批准时,它的效果最好。时间线和审批模式正是为此而设。</p>
-      </div>
-    </div>
-
-    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>你的文件留在你的电脑上。</b> 网络只用于首次运行时的下载,之后只用于你开启的功能: 借出模式和 Code together(与你配对的朋友)、GitHub、使用你自己密钥的云服务商、来自 URL 的扩展,以及语音模式下浏览器的语音识别。借出模式只发送模型的提示词和回答: 一次一个请求,每分钟最多 20 个,提示词最多 120,000 个字符,朋友可以随时停止。没有内置 TURN 中继,所以两个非常严格的网络之间可能连不上。</span></p>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>你的文件留在你的电脑上。</b> 朋友的 GPU 只能看到你发给它的作业的提示词和回答,永远看不到你的文件、工具或记忆。网络只用于你开启的功能: 朋友及其授权、GitHub、使用你自己密钥的云服务商、来自 URL 的扩展,以及语音模式下浏览器的语音识别。</span></p>
   </div>
 </section>
 
@@ -1000,15 +784,15 @@
       <h2 id="faq-h" class="h2">常见问题,<br><span>说得明明白白。</span></h2>
     </header>
     <div class="faq accordion accordion-flush collapse-arrow reveal">
-      <details class="collapse" name="faq" open><summary class="collapse-title">需要账户或 API 密钥吗?</summary><div class="collapse-content"><p>不需要。默认使用在你自己电脑上运行的模型。密钥是可选的,只在你想用自己的 API 密钥调用云端模型时才需要;它们保存在这台电脑的密钥库里。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">下载有多大,首次运行要多久?</summary><div class="collapse-content"><p>模型根据你的硬件在 0.5 GB 到 9.0 GB 之间,运行环境另需几百 MB。在 100 Mbit/s 下,3B 模型大约 3 分钟,7B 大约 6 分钟。只需一次;之后每次运行,加载完模型就能用。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">没有 GPU 的笔记本能运行吗?</summary><div class="collapse-content"><p>可以,在 CPU 上用小模型: 内存 16 GB 用 3B,8 到 16 GB 用 1.5B,更少的话用 0.5B。速度慢,每秒几个 token。小任务没问题,但需要耐心等待。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">提示词润色会改变什么?</summary><div class="collapse-content"><p>在规划之前,Mel 会把你的需求变成一份简报: 目标、要构建什么、约束、检查,以及待确认的问题。在你使用简报、编辑它或保留原文之前,工作会一直等待。你可以在设置里关闭它。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">语音模式会把我的音频发到别处吗?</summary><div class="collapse-content"><p>语音使用浏览器的语音识别,可能会把音频发送到浏览器厂商的服务。有本地语音时,Mel 的语音回复在你的电脑上生成。完全本地的语音识别目前还没有提供。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">工作者会弄坏我的电脑吗?</summary><div class="collapse-content"><p>工作者只拥有限定在工作区文件夹内的工具,试图跳出该文件夹的路径会被拒绝。命令默认带有超时、输出上限,并且不联网;审批模式会让有风险的步骤等你处理。扩展在沙箱中运行,只拥有你同意的权限。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">为什么启动器会触发安全警告?</summary><div class="collapse-content"><p>它们是没有代码签名的普通脚本,所以 Windows SmartScreen 和 macOS Gatekeeper 会在首次运行前询问。每个启动器只检查 Node.js 并运行 <code>npx hivedesk@latest</code>。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">不下载模型也能先看看吗?</summary><div class="collapse-content"><p>可以: <code>npx hivedesk --demo</code> 会回放一项脚本化的工作。它展示的一切都标记为演示。</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">怎么卸载?</summary><div class="collapse-content"><p>删除 <code>~/.hivedesk/</code>(运行环境、模型、你的设置)以及项目里的 <code>.hivedesk/</code> 文件夹。如果是用 npm 安装的,还要运行 <code>npm rm -g hivedesk</code>。</p></div></details>
+      <details class="collapse" name="faq" open><summary class="collapse-title">需要账户或 API 密钥吗?</summary><div class="collapse-content"><p>不需要。默认使用在你自己电脑上运行的模型,朋友会直接连接到你。密钥是可选的,只在你想用自己的 API 密钥调用云端模型时才需要;它们保存在你电脑上的密钥库里。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">朋友能看到我的文件吗?</summary><div class="collapse-content"><p>只有你为他勾选了“读取工作区”才可以。朋友加入时,只开启了“查看 City”。他提出的编辑会等待你批准,新文件也一样。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">我借用朋友的 GPU 时,它能看到什么?</summary><div class="collapse-content"><p>只有发给它的作业的提示词和回答,别的都没有: 没有文件、工具或记忆。它的所有者可以停止任何作业,而由它的回答引发的任何工具调用都需要你批准。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">我需要桌面应用吗?</summary><div class="collapse-content"><p>不需要。<code>npx hivedesk</code> 运行同一个引擎,并在你的浏览器中打开窗口。应用额外提供托盘、系统通知和文件夹选择器,并且在窗口关闭后也能继续出借。上面的表格列出了所有区别。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">有人能接管我的屏幕吗?</summary><div class="collapse-content"><p>没有你的点击就不能。在你允许自己的地址之前,远程屏幕一直关闭;每个请求都需要你接受,默认只能查看,每项授权都会过期,锁屏时不接受输入,一个快捷键或停止按钮就能结束一切。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">没有 GPU 的笔记本能运行吗?</summary><div class="collapse-content"><p>可以,在 CPU 上用小模型,但很慢: 每秒几个 token。小任务没问题。在朋友允许的情况下,借用他的 GPU 就能运行更大的模型。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">如果两个网络连不上怎么办?</summary><div class="collapse-content"><p>运行 <code>hivedesk doctor --p2p</code>。它会检查中继、你的端口和你的网络类型,并告诉你是哪一边阻断了连接。没有内置 TURN 中继;在同一网络中,请使用局域网选项。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">不下载模型也能先看看吗?</summary><div class="collapse-content"><p>可以: <code>npx hivedesk --demo</code> 会在它自己的临时文件夹里演示一座 City,每个脚本化事件都标记为演示。它从不碰你的项目。</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">怎么卸载?</summary><div class="collapse-content"><p>删除 <code>~/.hivedesk/</code>(你的身份、已知节点、运行环境、模型和你的设置)以及项目里的 <code>.hivedesk/</code> 文件夹。如果是用 npm 安装的,还要运行 <code>npm rm -g hivedesk</code>。</p></div></details>
     </div>
   </div>
 </section>
@@ -1018,15 +802,15 @@
   <div class="wrap">
     <div class="band-in reveal">
       <div class="band-copy">
-        <h2 id="band-h" class="h2" data-i18n="band.h2">你准备好了,Mel 就准备好了。</h2>
-        <p data-i18n="band.p">一条命令,团队就在你的桌面上。</p>
+        <h2 id="band-h" class="h2">只差一条命令,你的 City 就在眼前。</h2>
+        <p>先从你自己的电脑开始。准备好了再邀请朋友。</p>
       </div>
       <div class="band-act">
         <div class="pill" role="group" aria-label="安装命令">
           <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
           <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="已复制" aria-label="复制命令 npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">已复制</span></button>
         </div>
-        <a class="b b-light b-lg magnetic" href="#download" data-i18n="nav.download">下载</a>
+        <a class="b b-light b-lg" href="#download">建造你的 City</a>
       </div>
     </div>
   </div>
@@ -1039,17 +823,18 @@
     <label class="command-palette-search"><span class="sr">搜索本页</span><input class="command-palette-input" type="search" placeholder="跳到某个分区" autocomplete="off" spellcheck="false" :value="PAL.q" @input="PAL.setQ($event.target.value)" @keydown="PAL.key($event)" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list"></label>
     <div id="pal-list" class="command-palette-list" role="listbox" aria-label="分区">
       <p class="command-palette-heading">分区</p>
-        <a class="command-palette-item" href="#city" data-keywords="智能体 房间 朋友 gpu 城市 0.2.0" role="option" v-show="PAL.match('#city')" :aria-selected="PAL.sel === '#city' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#city'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Hive City</a>
-        <a class="command-palette-item" href="#film" data-keywords="视频 短片 75 秒" role="option" v-show="PAL.match('#film')" :aria-selected="PAL.sel === '#film' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#film'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>短片</a>
-        <a class="command-palette-item" href="#try" data-keywords="演示 需求 试用" role="option" v-show="PAL.match('#try')" :aria-selected="PAL.sel === '#try' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#try'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>试一试</a>
-        <a class="command-palette-item" href="#how" data-keywords="步骤 提需求 润色 规划 构建 检查 发布" role="option" v-show="PAL.match('#how')" :aria-selected="PAL.sel === '#how' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#how'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>工作原理</a>
-        <a class="command-palette-item" href="#features" data-keywords="润色 语音 主题 扩展 记忆" role="option" v-show="PAL.match('#features')" :aria-selected="PAL.sel === '#features' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#features'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>功能</a>
-        <a class="command-palette-item" href="#next" data-keywords="剧本 库 聊天 蜜蜂 下一个版本" role="option" v-show="PAL.match('#next')" :aria-selected="PAL.sel === '#next' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#next'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>下一个版本</a>
-        <a class="command-palette-item" href="#office" data-keywords="办公室 蜜蜂" role="option" v-show="PAL.match('#office')" :aria-selected="PAL.sel === '#office' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#office'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>办公室模式</a>
-        <a class="command-palette-item" href="#screens" data-keywords="截图 导览 code together github 更新日志" role="option" v-show="PAL.match('#screens')" :aria-selected="PAL.sel === '#screens' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#screens'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Hive 内部</a>
+        <a class="command-palette-item" href="#how" data-keywords="步骤 city 邀请 智能体 gpu" role="option" v-show="PAL.match('#how')" :aria-selected="PAL.sel === '#how' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#how'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>工作原理</a>
+        <a class="command-palette-item" href="#city" data-keywords="建筑 房间 智能体 任务 city" role="option" v-show="PAL.match('#city')" :aria-selected="PAL.sel === '#city' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#city'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>City</a>
+        <a class="command-palette-item" href="#invite" data-keywords="朋友 六个词 加入" role="option" v-show="PAL.match('#invite')" :aria-selected="PAL.sel === '#invite' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#invite'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>邀请朋友</a>
+        <a class="command-palette-item" href="#borrow" data-keywords="gpu 共享 租约 调度器" role="option" v-show="PAL.match('#borrow')" :aria-selected="PAL.sel === '#borrow' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#borrow'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>借用 GPU</a>
+        <a class="command-palette-item" href="#workbench" data-keywords="编辑器 终端 搜索 git" role="option" v-show="PAL.match('#workbench')" :aria-selected="PAL.sel === '#workbench' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#workbench'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>工作台</a>
+        <a class="command-palette-item" href="#remote" data-keywords="屏幕 控制 查看 地址" role="option" v-show="PAL.match('#remote')" :aria-selected="PAL.sel === '#remote' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#remote'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>远程屏幕</a>
+        <a class="command-palette-item" href="#models" data-keywords="目录 汇集 巨型模型" role="option" v-show="PAL.match('#models')" :aria-selected="PAL.sel === '#models' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#models'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>模型</a>
+        <a class="command-palette-item" href="#playbooks" data-keywords="剧本库 专家" role="option" v-show="PAL.match('#playbooks')" :aria-selected="PAL.sel === '#playbooks' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#playbooks'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>剧本</a>
+        <a class="command-palette-item" href="#security" data-keywords="身份 授权 审计 加密" role="option" v-show="PAL.match('#security')" :aria-selected="PAL.sel === '#security' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#security'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>安全</a>
+        <a class="command-palette-item" href="#compare" data-keywords="桌面应用 浏览器 表格" role="option" v-show="PAL.match('#compare')" :aria-selected="PAL.sel === '#compare' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#compare'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>桌面应用还是浏览器</a>
         <a class="command-palette-item" href="#download" data-keywords="windows macos linux npx 安装 下载" role="option" v-show="PAL.match('#download')" :aria-selected="PAL.sel === '#download' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#download'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>下载</a>
-        <a class="command-palette-item" href="#limits" data-keywords="硬件 gpu 模型 速度 局限" role="option" v-show="PAL.match('#limits')" :aria-selected="PAL.sel === '#limits' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#limits'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>坦诚说明局限</a>
-        <a class="command-palette-item" href="#lend" data-keywords="朋友 六个词 借出" role="option" v-show="PAL.match('#lend')" :aria-selected="PAL.sel === '#lend' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#lend'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>借出你的电脑</a>
+        <a class="command-palette-item" href="#limits" data-keywords="硬件 速度 局限 未发布" role="option" v-show="PAL.match('#limits')" :aria-selected="PAL.sel === '#limits' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#limits'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>坦诚说明局限</a>
         <a class="command-palette-item" href="#faq" data-keywords="问题 faq" role="option" v-show="PAL.match('#faq')" :aria-selected="PAL.sel === '#faq' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#faq'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>常见问题</a>
       <p class="command-palette-empty" v-show="PAL.none()">没有匹配的结果。</p>
     </div>
@@ -1067,9 +852,8 @@
 <footer class="foot">
   <div class="wrap foot-grid">
     <div class="foot-brand">
-      <img class="foot-mel" src="../assets/art/mel-wave.svg" width="96" height="96" alt="挥手的蜜蜂工头 Mel" loading="lazy" decoding="async">
       <a class="brand" href="../"><img src="../assets/art/logo.svg" width="24" height="24" alt=""><span>hivedesk</span></a>
-      <p>你自己的 AI 团队,在你自己的电脑上。</p>
+      <p>你的智能体。你的机器。你的 City。</p>
       <div class="author">
         <span>作者 <b>Alexandre Kohler</b></span>
         <span class="author-links">
@@ -1080,22 +864,22 @@
     </div>
     <div>
       <h2 class="foot-h">产品</h2>
-      <ul class="foot-list"><li><a href="#how">工作原理</a></li><li><a href="#features">功能</a></li><li><a href="#city">Hive City</a></li><li><a href="#office">办公室模式</a></li><li><a href="#download">下载</a></li><li><a href="#limits">局限</a></li><li><a href="#faq">常见问题</a></li></ul>
+      <ul class="foot-list"><li><a href="#how">工作原理</a></li><li><a href="#city">City</a></li><li><a href="#invite">邀请朋友</a></li><li><a href="#borrow">借用 GPU</a></li><li><a href="#security">安全</a></li><li><a href="#compare">应用还是浏览器</a></li><li><a href="#download">下载</a></li></ul>
     </div>
     <div>
       <h2 class="foot-h">项目</h2>
-      <ul class="foot-list"><li><a href="https://github.com/kwy404/hivedesk" rel="noopener">GitHub</a></li><li><a href="https://www.npmjs.com/package/hivedesk" rel="noopener">npm</a></li><li><a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">版本发布</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">更新日志</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">安全</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener" lang="pt-BR">Português</a></li></ul>
+      <ul class="foot-list"><li><a href="https://github.com/kwy404/hivedesk" rel="noopener">GitHub</a></li><li><a href="https://www.npmjs.com/package/hivedesk" rel="noopener">npm</a></li><li><a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">版本发布</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">更新日志</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">安全策略</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener" lang="pt-BR">Português</a></li></ul>
     </div>
     <div>
       <h2 class="foot-h">kwy404 的更多项目</h2>
-      <ul class="foot-list foot-more"><li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a></li><li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a></li><li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a></li><li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a></li><li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a></li><li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a></li><li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a></li><li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a></li><li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a></li></ul>
+      <ul class="foot-list foot-more" translate="no"><li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a></li><li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a></li><li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a></li><li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a></li><li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a></li><li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a></li><li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a></li><li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a></li><li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a></li></ul>
     </div>
   </div>
   <div class="wrap foot-legal">
     <p>MIT 许可证。无追踪。使用 <a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a> 构建。交互部分使用 <a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a> 构建。</p>
-    <p class="mono" translate="no">hivedesk 0.2.1</p>
+    <p class="mono" translate="no">hivedesk 1.0.0</p>
   </div>
 </footer>
-<script type="application/json" id="hd-t">{"toast.copied": "已复制到剪贴板", "toast.paste": "粘贴到终端里", "try.plan.game.build": "一个 canvas 游戏循环、键盘和触控操作、计分,以及重新开始按钮。", "try.plan.game.checks": "游戏能启动,分数会累计,重新开始可用。", "try.plan.look": "确定外观", "try.plan.game.loop": "编写游戏循环", "try.plan.game.howto": "编写玩法说明", "try.plan.game.test": "试玩测试操作", "try.plan.list.build": "一个可以添加、编辑、完成和删除的列表,保存在 localStorage 中。", "try.plan.list.checks": "刷新后条目还在,空输入会被拒绝。", "try.plan.list.style": "美化列表", "try.plan.list.crud": "实现添加、编辑和删除", "try.plan.list.save": "保存到 localStorage", "try.plan.list.edge": "检查边界情况", "try.plan.docs.build": "它做什么、怎么安装、怎么使用,再加一个示例。", "try.plan.docs.checks": "README 里的每条命令都能照着写的运行。", "try.plan.docs.outline": "列出 README 大纲", "try.plan.docs.write": "编写安装和用法", "try.plan.docs.cmds": "检查命令", "try.plan.docs.read": "像新手一样读一遍", "try.plan.page.build": "首屏、主要分区、联系表单和页脚。", "try.plan.page.checks": "图片有替代文本,表单有标签,在 375 px 下可用。", "try.plan.page.build2": "构建页面", "try.plan.page.copy": "编写文案", "try.plan.page.check": "检查页面", "try.writing": "Mel 正在写简报", "try.goal": "目标", "try.build": "构建", "try.constraints": "约束", "try.constraintsV": "纯 HTML、CSS 和 JavaScript,手机上可用。", "try.checks": "检查", "try.queued": "排队中", "try.running": "运行中", "try.done": "完成", "try.finished": "在这个预览里已完成。在 Hive 中,这会把真实文件写进你的文件夹。"}</script>
+<script type="application/json" id="hd-t">{"toast.copied": "已复制到剪贴板", "toast.paste": "粘贴到终端里", "try.plan.game.build": "一个 canvas 游戏循环、键盘和触控操作、计分,以及重新开始按钮。", "try.plan.game.checks": "游戏能启动,分数会累计,重新开始可用。", "try.plan.look": "确定外观", "try.plan.game.loop": "编写游戏循环", "try.plan.game.howto": "编写玩法说明", "try.plan.game.test": "试玩测试操作", "try.plan.list.build": "一个可以添加、编辑、完成和删除的列表,保存在 localStorage 中。", "try.plan.list.checks": "刷新后条目还在,空输入会被拒绝。", "try.plan.list.style": "美化列表", "try.plan.list.crud": "实现添加、编辑和删除", "try.plan.list.save": "保存到 localStorage", "try.plan.list.edge": "检查边界情况", "try.plan.docs.build": "它做什么、怎么安装、怎么使用,再加一个示例。", "try.plan.docs.checks": "README 里的每条命令都能照着写的运行。", "try.plan.docs.outline": "列出 README 大纲", "try.plan.docs.write": "编写安装和用法", "try.plan.docs.cmds": "检查命令", "try.plan.docs.read": "像新手一样读一遍", "try.plan.page.build": "首屏、主要分区、联系表单和页脚。", "try.plan.page.checks": "图片有替代文本,表单有标签,在 375 px 下可用。", "try.plan.page.build2": "构建页面", "try.plan.page.copy": "编写文案", "try.plan.page.check": "检查页面", "try.writing": "Mel 正在写简报", "try.goal": "目标", "try.build": "构建", "try.constraints": "约束", "try.constraintsV": "纯 HTML、CSS 和 JavaScript,手机上可用。", "try.checks": "检查", "try.queued": "排队中", "try.running": "运行中", "try.done": "完成", "try.finished": "在这个预览里已完成。在 Hive 中,这会把真实文件写进你的文件夹。", "inv.next": "下一步", "inv.match": "这些词一致", "inv.accept": "接受", "inv.again": "再来一次", "bor.gb": "{a} / {b} GB", "bor.youGpu": "你的 GPU", "bor.fits": "放得进可用的 {free} GB", "bor.noVram": "需要 {need} GB,可用 {free} GB", "bor.anaGpu": "Ana 的 GPU", "bor.fitsShare": "放得进她共享的 {share} GB", "bor.noShare": "需要 {need} GB,她最多共享 {share} GB", "bor.youCpu": "你的 CPU", "bor.ram": "需要 {need} GB 内存,可用 {free} GB", "bor.noRam": "需要 {need} GB 可用内存,目前可用 {free} GB", "bor.about": "约 {s} 秒", "bor.model": "{size}B 模型", "bor.none": "目前没有任何机器能运行 {model}。任务会等待资源,并列出以下原因;1.0 不支持汇集运行巨型模型。", "bor.why": "{target}: {model}{detail},约 {s} 秒。", "bor.whyLocal": "本地优先: 私密,而且不走网络。", "bor.whyNot": "{target}: {detail}。", "bor.whyNext": "{target} 大约需要 {s} 秒。", "bor.revoked": "Ana 停止了这个作业。目前已写出的 {n} 个 token 会保留。", "bor.done": "完成: {target} 写出了 {n} 个 token。", "pool.short": "已汇集 {have} GB,需要 {need} GB: 还差 {miss} GB。", "pool.ok": "已汇集 {have} GB,需要 {need} GB。速度估计: 每秒约 {tps} 个 token,足以让测算器解锁。", "pool.slow": "已汇集 {have} GB,需要 {need} GB,但每秒只有约 {tps} 个 token: 太慢,无法解锁。", "pb.hint": "输入一个任务,看看会挑出哪些剧本", "pb.none": "没有相近的剧本。团队只根据简报工作。", "pb.count": "来自 {n} 份剧本,均为英文。在应用中,角色、房间和文件类型也会计入。"}</script>
 </body>
 </html>

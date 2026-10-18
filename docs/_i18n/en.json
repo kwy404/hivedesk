@@ -1,9 +1,9 @@
 {
  "units": [
   {
-   "id": "acaa8fca13",
+   "id": "970e01b8fe",
    "kind": "html",
-   "text": "hivedesk: run AI agents on your own computer, free and open source"
+   "text": "hivedesk: AI agents across your own computers, peer to peer"
   },
   {
    "id": "0a4470d64e",
@@ -16,24 +16,24 @@
    "text": "hivedesk"
   },
   {
-   "id": "47418c7199",
-   "kind": "html",
-   "text": "Hive City"
-  },
-  {
-   "id": "7ddd66b689",
-   "kind": "html",
-   "text": "Try it"
-  },
-  {
    "id": "1dd6a17cb4",
    "kind": "html",
    "text": "How it works"
   },
   {
-   "id": "fc338f87a0",
+   "id": "af1de253ef",
    "kind": "html",
-   "text": "Features"
+   "text": "The City"
+  },
+  {
+   "id": "f25ce1b8a3",
+   "kind": "html",
+   "text": "Security"
+  },
+  {
+   "id": "e9baff67ea",
+   "kind": "html",
+   "text": "App or browser"
   },
   {
    "id": "a479c9c34e",
@@ -41,19 +41,9 @@
    "text": "Download"
   },
   {
-   "id": "61a0ae3b84",
-   "kind": "html",
-   "text": "Limits"
-  },
-  {
    "id": "03688ba6aa",
    "kind": "html",
    "text": "FAQ"
-  },
-  {
-   "id": "649df08a44",
-   "kind": "html",
-   "text": "English"
   },
   {
    "id": "11f440ccdd",
@@ -61,614 +51,554 @@
    "text": "Themes from the app"
   },
   {
-   "id": "689e139845",
+   "id": "cfba9ec92e",
    "kind": "html",
-   "text": "<x1/><x2></x2>Mel"
+   "text": "Agents, GPUs and screens, shared peer to peer"
   },
   {
-   "id": "d837e0ea1f",
+   "id": "d39234fd2b",
    "kind": "html",
-   "text": "<x1/><x2></x2>Meia-noite"
+   "text": "A peer-to-peer workspace where AI agents collaborate across your computers."
   },
   {
-   "id": "3853f5fdd3",
+   "id": "b5dfce67d8",
    "kind": "html",
-   "text": "<x1/><x2></x2>Floresta"
+   "text": "Build your City"
   },
   {
-   "id": "27ac6bfdb9",
+   "id": "f7b38f0719",
    "kind": "html",
-   "text": "<x1/><x2></x2>Neon"
+   "text": "See how it works"
   },
   {
-   "id": "40dc9efa54",
+   "id": "43eeabcb7b",
    "kind": "html",
-   "text": "<x1/><x2></x2>Pixel"
+   "text": "<x1>The desktop app is the full experience:</x1> models on your GPU, lending from the tray and remote control. <x2>What works in a browser tab</x2>"
   },
   {
-   "id": "d572ed131c",
+   "id": "d630673589",
    "kind": "html",
-   "text": "<x1/><x2></x2>Alto contraste"
+   "text": "<c1/>Your PC"
   },
   {
-   "id": "67704df3ea",
+   "id": "3577c7afc1",
    "kind": "html",
-   "text": "<x1/><x2></x2>Colmeia Clara"
+   "text": "<c1/>Encrypted P2P"
   },
   {
-   "id": "b5bc0745e9",
+   "id": "4ccff682fd",
    "kind": "html",
-   "text": "<x1/><x2></x2>Papel"
+   "text": "<c1/>Friend's PC with a GPU"
   },
   {
-   "id": "4316b64af9",
+   "id": "0b6176fa4c",
    "kind": "html",
-   "text": "Hive City: your crew becomes a little town"
+   "text": "<c1/>Your City"
   },
   {
-   "id": "b530680ca9",
+   "id": "456e7dd9af",
    "kind": "html",
-   "text": "A crew of AI workers that plans, talks and builds real files on your machine, with a local model."
+   "text": "One City.<x1/><x2>Every machine you trust.</x2>"
   },
   {
-   "id": "8e3df45a49",
+   "id": "0cc9cda662",
    "kind": "html",
-   "text": "Copied"
+   "text": "Your PC is the first building. Friends bring theirs. Agents live in the rooms, take the tasks and think on whichever machine the scheduler picks, always within what the owner allowed."
   },
   {
-   "id": "eae192773b",
+   "id": "1e744aa378",
    "kind": "html",
-   "text": "Made by"
+   "text": "Create your City"
   },
   {
-   "id": "4649989dca",
+   "id": "7db3de2634",
    "kind": "html",
-   "text": "Alexandre Kohler"
+   "text": "Start hivedesk. Your PC becomes a building with rooms where agents work: Design, Code, Review, Test, Ops and Library."
   },
   {
-   "id": "89690ac571",
+   "id": "3ee4fbeeb2",
    "kind": "html",
-   "text": "MIT"
+   "text": "Invite a friend"
   },
   {
-   "id": "63b513ee42",
+   "id": "72728b87c6",
    "kind": "html",
-   "text": "Windows, macOS, Linux"
+   "text": "Share six words. You both compare check words, you choose what they may do, and their machine rises next to yours."
   },
   {
-   "id": "8ad57a4c17",
+   "id": "8380bffe5a",
    "kind": "html",
-   "text": "127.0.0.1 &middot; hivedesk"
+   "text": "Agents take the tasks"
   },
   {
-   "id": "e9b450d14b",
+   "id": "7a6839b9ec",
    "kind": "html",
-   "text": "Done"
+   "text": "An Architect designs, a Developer writes, QA runs the tests and a Reviewer reads the diff. A failure loops back to the author, at most 3 times."
   },
   {
-   "id": "e246882c3e",
+   "id": "86c03e6f96",
    "kind": "html",
-   "text": "<x1>Dev</x1> index.html and app.js are written."
+   "text": "Borrow a GPU"
   },
   {
-   "id": "b3775ede7c",
+   "id": "aea03ece22",
    "kind": "html",
-   "text": "<x1>QA</x1> Found 1 issue: an image has no alt text."
+   "text": "When a model does not fit on your machine, the scheduler asks a friend's GPU for a lease, says why, and stops the moment either of you says so."
   },
   {
-   "id": "22b3c5253b",
+   "id": "8fc2c2b53e",
    "kind": "html",
-   "text": "<x1>Mel</x1> Finished, and QA passed."
+   "text": "The City is the system.<x1/><x2>Nothing on it is decoration.</x2>"
   },
   {
-   "id": "c249451761",
+   "id": "022c22947d",
    "kind": "html",
-   "text": "New in 0.2.0"
+   "text": "Buildings are machines, rooms are places with their own tools, and every task walks through the rooms on its way to done. Every number is measured, or the panel says it is not measured."
   },
   {
-   "id": "b0ccd047c3",
+   "id": "1d3f321594",
    "kind": "html",
-   "text": "Hive City.<x1/><x2>Your crew becomes a little town.</x2>"
+   "text": "Inside a room"
   },
   {
-   "id": "c54e91eac8",
+   "id": "874148e20a",
    "kind": "html",
-   "text": "hivedesk now opens on a small city: your PC is a building with rooms, the agents live in it, and every task walks through the rooms on its way to done. Friends can join with six words and bring their machine along."
+   "text": "The Office"
   },
   {
-   "id": "6e865d8051",
+   "id": "2940ff1e5f",
    "kind": "html",
-   "text": "The city"
+   "text": "Machines"
   },
   {
-   "id": "5bcfb77d8c",
+   "id": "2faee5210b",
    "kind": "html",
-   "text": "A friend joins"
+   "text": "Code editor"
   },
   {
-   "id": "6740567040",
+   "id": "423104dce5",
    "kind": "html",
-   "text": "Borrowing a GPU"
+   "text": "Remote screen"
   },
   {
-   "id": "77242fa75b",
+   "id": "8805fd6802",
    "kind": "html",
-   "text": "The review room"
+   "text": "<x1>Rooms with rules.</x1> While an agent works in a room, its tools are cut to that room's. The task board shows every task, its state and the loop it is on."
   },
   {
-   "id": "86850109cd",
+   "id": "6a4fa14c56",
    "kind": "html",
-   "text": "An agent card"
+   "text": "<x1>Every room says what it allows.</x1> The panel lists the tools allowed inside, who is there now and the tasks in the room."
   },
   {
-   "id": "899a290d3f",
+   "id": "d713b51353",
    "kind": "html",
-   "text": "<x1>The city is the state of the system.</x1> Each room is a real space with its own allowed tools. The task board shows every task and the loop it is on."
+   "text": "<x1>The same events, indoors.</x1> The Office shows the crew at work, the current job and a count of finished tasks."
   },
   {
-   "id": "0ad5754c82",
+   "id": "7599488892",
    "kind": "html",
-   "text": "<x1>Friends are buildings.</x1> A friend joins with the six words of Code together and their machine rises next to yours, with its GPU, model and the agents that live on it."
+   "text": "<x1>Every number has a source.</x1> Live samples say when they were taken, and what was not measured says not measured."
   },
   {
-   "id": "1e821eb867",
+   "id": "c687eb1d77",
    "kind": "html",
-   "text": "<x1>Borrow a GPU, with limits.</x1> An agent asks a friend's machine for a number of turns and minutes. The lender accepts, lowers the limits or refuses; every turn is counted, either side can stop, and only prompts and answers travel."
+   "text": "<x1>A real workbench.</x1> Explorer, tabs, format and save, and the commands the crew runs in the run log."
   },
   {
-   "id": "256bb9714d",
+   "id": "9c76d620f4",
    "kind": "html",
-   "text": "<x1>Design, Code, Review, Test.</x1> Another agent reviews the diff against the criteria, then the checks run. A failure goes back to the author with the issues, at most 3 times, then the task is blocked. You can approve or send back at any hop."
+   "text": "<x1>Nothing is allowed until it is ticked.</x1> The computer being reached always decides, and a red bar with Stop stays on top while someone is connected."
   },
   {
-   "id": "cb92904378",
+   "id": "26395e4002",
    "kind": "html",
-   "text": "<x1>Agents that stay.</x1> Each agent has a level and XP from finished work, its tools and a private memory you can edit and pin. They are saved on your machine, so tomorrow the same agents come back and unfinished tasks open again."
+   "text": "Screenshots of hivedesk 1.0 in demo mode, where every scripted event is labeled."
   },
   {
-   "id": "29dfdcc138",
+   "id": "6ca58abcba",
    "kind": "html",
-   "text": "Agents that stay"
+   "text": "Six words.<x1/><x2>Two checks. One click.</x2>"
   },
   {
-   "id": "16d7467c1a",
+   "id": "bd9b0531af",
    "kind": "html",
-   "text": "Every crew worker is an agent with a home room, a level and XP (10 for work, 4 for a review, 3 for a test, 5 more when a task needs no loop), tools and a memory of at most 40 short entries."
+   "text": "The words find each other through a relay and set up an encrypted session. Then both screens show the same check words, and nothing is shared until you accept."
   },
   {
-   "id": "d789cbb300",
+   "id": "b136609f06",
    "kind": "html",
-   "text": "Rooms with rules"
+   "text": "Invite"
   },
   {
-   "id": "1ad8e41c6d",
+   "id": "e0d73143de",
    "kind": "html",
-   "text": "Lobby, Design, Code, Review, Test, Ops and Library. While an agent works in a room its tools are cut to the room's. Ops is for the host only, and extensions can add rooms."
+   "text": "Join"
   },
   {
-   "id": "1d9408e347",
+   "id": "76ccff916d",
    "kind": "html",
-   "text": "A task bus"
+   "text": "Handshake"
   },
   {
-   "id": "53833359ac",
+   "id": "a1efbf647b",
    "kind": "html",
-   "text": "Tasks come from you, from Mel's plan or from agents sending work back. Idle agents bid by skill, level and machine load; every claim, hop and verdict is an event you can replay."
+   "text": "Check words"
   },
   {
-   "id": "08d15fc5de",
+   "id": "d06d555709",
    "kind": "html",
-   "text": "Safe with guests"
+   "text": "Permissions"
   },
   {
-   "id": "cc6effa722",
+   "id": "ca4f9dcf20",
    "kind": "html",
-   "text": "The owner of a machine, agent or task wins. A guest's tasks run with approval mode on, without commands or deletes, and never in Ops. Prefer the old desktop? Start with <c1/>."
+   "text": "Welcome"
   },
   {
-   "id": "412a7f46af",
+   "id": "51dd91dc98",
    "kind": "html",
-   "text": "Real screenshots of <c1/>, which plays a city scenario: a friend joins with six words, Dev borrows her GPU for three turns, and a task goes Design, Code, Review, Test, done. Every demo event is labeled. Not yet: Test runs the static checks (HTML, links, JS syntax, CSS, JSON), not your own test suite, and borrowing has limits per request, not a standing share."
+   "text": "Start over"
   },
   {
-   "id": "b9b15d8821",
+   "id": "5500eef9fd",
    "kind": "html",
-   "text": "The film"
+   "text": "Next step"
   },
   {
-   "id": "63adc94591",
+   "id": "48681bc28a",
    "kind": "html",
-   "text": "hivedesk in 75 seconds.<x1/><x2>From one sentence to a finished page.</x2>"
+   "text": "<c1/>Your screen"
   },
   {
-   "id": "6dc07e2640",
+   "id": "30b758c841",
    "kind": "html",
-   "text": "A short film of the real app: the wizard picks a model for the GPU, Mel writes a brief, the crew builds, you approve, and the job ends with a better prompt and a pull request. The narration is on screen, in Portuguese, with English captions."
+   "text": "Invite words"
   },
   {
-   "id": "3df6106dd0",
+   "id": "473acd5222",
    "kind": "html",
-   "text": "Play with sound"
+   "text": "Works once, for 10 minutes."
   },
   {
-   "id": "6b75bd2271",
+   "id": "949f44b7a6",
    "kind": "html",
-   "text": "The film shows the wizard, the brief, the crew at work, approvals, a pull request, themes, the 10 languages and the downloads."
+   "text": "<x1></x1>Checking keys"
   },
   {
-   "id": "12697556aa",
+   "id": "33f7739551",
    "kind": "html",
-   "text": "Command to start"
+   "text": "Do these words match on Ana's screen?"
   },
   {
-   "id": "b17d1241b0",
+   "id": "9300c1b539",
    "kind": "html",
-   "text": "Workers built in, plus any you hire"
+   "text": "What Ana may do"
   },
   {
-   "id": "8d8fc3dd89",
+   "id": "b98636d49c",
    "kind": "html",
-   "text": "Languages in the Hive"
+   "text": "See the City"
   },
   {
-   "id": "1370583134",
+   "id": "eb210ac044",
    "kind": "html",
-   "text": "Built-in themes"
+   "text": "Bring a building and agents"
   },
   {
-   "id": "45a3f58b98",
+   "id": "6ae4c9caf4",
    "kind": "html",
-   "text": "Accounts or API keys needed"
+   "text": "Use my GPU for jobs"
   },
   {
-   "id": "0bf5f5008b",
+   "id": "e9b8da68d3",
    "kind": "html",
-   "text": "Try it here"
+   "text": "Read the workspace"
   },
   {
-   "id": "164c64bd66",
+   "id": "ef997101ca",
    "kind": "html",
-   "text": "Ask for something small.<x1/><x2>Watch the crew react.</x2>"
+   "text": "<c1/>Ana joined your City"
   },
   {
-   "id": "9b850b78c0",
+   "id": "12d8f2702d",
    "kind": "html",
-   "text": "What should the crew build?"
+   "text": "<c1/>Ana's screen"
   },
   {
-   "id": "b78b858c2f",
+   "id": "e306b47b90",
    "kind": "html",
-   "text": "Run the crew"
+   "text": "Waiting for the words"
   },
   {
-   "id": "a8248511bd",
+   "id": "3f6cb16355",
    "kind": "html",
-   "text": "a landing page for my bakery"
+   "text": "Join with words"
   },
   {
-   "id": "f24030e0ec",
+   "id": "09553ca341",
    "kind": "html",
-   "text": "a todo app that saves to localStorage"
+   "text": "<x1></x1>Finding each other through the relay"
   },
   {
-   "id": "74d70380be",
+   "id": "71a810fad0",
    "kind": "html",
-   "text": "a snake game"
+   "text": "Waiting for you to accept"
   },
   {
-   "id": "289828dc87",
+   "id": "ba6c6aafab",
    "kind": "html",
-   "text": "a README for my script"
+   "text": "<c1/>You are in the City"
   },
   {
-   "id": "284d93d33e",
+   "id": "6baf24c165",
    "kind": "html",
-   "text": "Brief by Mel"
+   "text": "A simulation in this page: nothing is sent. In the app the invite is burned by the first handshake that starts on it, right or wrong, and a wrong word means a new invite."
   },
   {
-   "id": "9741b06bca",
+   "id": "68d07036ce",
    "kind": "html",
-   "text": "Type a request or pick one above."
+   "text": "A lease, a limit<x1/><x2>and a Stop button.</x2>"
   },
   {
-   "id": "e49b8679ad",
+   "id": "eae0f3ad5a",
    "kind": "html",
-   "text": "Tasks, one turn at a time"
+   "text": "Sharing is off until the owner turns it on, separately for the GPU and the CPU, with limits for memory, jobs and time. A lent job holds a 15 second lease that renews while tokens flow, and the owner's own turns always go first."
   },
   {
-   "id": "01053fae77",
+   "id": "be34169a42",
    "kind": "html",
-   "text": "A scripted preview that runs in this page. Nothing you type leaves your browser; the real crew runs on your machine with a local model."
+   "text": "The task needs"
   },
   {
-   "id": "b054c56c06",
+   "id": "12c2e3a43b",
    "kind": "html",
-   "text": "From one sentence to shipped.<x1/><x2>Six steps, all on your machine.</x2>"
+   "text": "3B model"
   },
   {
-   "id": "3e927b1856",
+   "id": "1ebb7b25e7",
    "kind": "html",
-   "text": "A landing page for my bakery, with a menu and a contact form"
+   "text": "7B model"
   },
   {
-   "id": "bbd80cf7e2",
+   "id": "d6fd1b6164",
    "kind": "html",
-   "text": "Build"
+   "text": "14B model"
   },
   {
-   "id": "8089f3fed6",
+   "id": "5717f6e8e7",
    "kind": "html",
-   "text": "<c1/>Brief by Mel"
+   "text": "<c1/>Run a task"
   },
   {
-   "id": "88eba0c8c9",
+   "id": "724985d313",
    "kind": "html",
-   "text": "<x1>Goal</x1>A one page site for Crumb, a neighborhood bakery."
+   "text": "<c1/>Ana stops it"
   },
   {
-   "id": "07ed5ee571",
+   "id": "e3058cac1f",
    "kind": "html",
-   "text": "<x1>Build</x1>Hero, menu with three breads, hours, contact form."
+   "text": "Your PC"
   },
   {
-   "id": "13c2cf67e4",
+   "id": "b18d333476",
    "kind": "html",
-   "text": "<x1>Constraints</x1>Plain HTML and CSS, works on phones."
+   "text": "6 GB GPU"
   },
   {
-   "id": "e46ccfb10a",
+   "id": "fee2506c23",
    "kind": "html",
-   "text": "<x1>Checks</x1>Alt text on images, labels on the form."
+   "text": "GPU memory"
   },
   {
-   "id": "b80ded59db",
+   "id": "dca3093d79",
    "kind": "html",
-   "text": "Use this"
+   "text": "GPU load"
   },
   {
-   "id": "5301648dcf",
+   "id": "01bd813d9d",
    "kind": "html",
-   "text": "Edit"
+   "text": "CPU load"
   },
   {
-   "id": "213e407584",
+   "id": "41fc6719a1",
    "kind": "html",
-   "text": "Keep mine"
+   "text": "Free RAM"
   },
   {
-   "id": "dc9ebc651a",
+   "id": "a7d0a38e53",
    "kind": "html",
-   "text": "Set the look"
+   "text": "Measured on this machine"
   },
   {
-   "id": "25183e2839",
+   "id": "dcc0046ad0",
    "kind": "html",
-   "text": "Build the page"
+   "text": "The scheduler"
   },
   {
-   "id": "d2fc1d5c26",
+   "id": "9480b05d61",
    "kind": "html",
-   "text": "Write the README"
+   "text": "Pick what the task needs and run it."
   },
   {
-   "id": "a2f821a88c",
+   "id": "b24ef8c7cc",
    "kind": "html",
-   "text": "Check the page"
+   "text": "Lease"
   },
   {
-   "id": "f6013a00b3",
+   "id": "c38c6c1f3a",
    "kind": "html",
-   "text": "index.html"
+   "text": "Tokens"
   },
   {
-   "id": "0fbabe4b71",
+   "id": "eb4d4196e7",
    "kind": "html",
-   "text": "<x1/>Dev is writing"
+   "text": "Heartbeat"
   },
   {
-   "id": "89d29b3305",
+   "id": "c28fc5b023",
    "kind": "html",
-   "text": "HTML is valid"
+   "text": "every 5 s"
   },
   {
-   "id": "79f2f3f71d",
+   "id": "a9f0fcdc83",
    "kind": "html",
-   "text": "An image has no alt text<x1>fix task sent to Dev</x1>"
+   "text": "Ana stopped the job. The 112 tokens written so far are kept."
   },
   {
-   "id": "8cdcc370a5",
+   "id": "b2efde02c1",
    "kind": "html",
-   "text": "The form has labels"
+   "text": "Retry locally"
   },
   {
-   "id": "2948d19e41",
+   "id": "11ffbe0ed8",
    "kind": "html",
-   "text": "Works at 375 px"
+   "text": "Use partial"
   },
   {
-   "id": "a4be1bd6a7",
+   "id": "77dfd2135f",
    "kind": "html",
-   "text": "All checks passed"
+   "text": "Cancel"
   },
   {
-   "id": "539afe2817",
+   "id": "5d91c2ce50",
    "kind": "html",
-   "text": "Ship to GitHub"
+   "text": "Ana's PC"
   },
   {
-   "id": "0ba5107910",
+   "id": "796e2a151a",
    "kind": "html",
-   "text": "you confirm each step"
+   "text": "12 GB GPU"
   },
   {
-   "id": "8b7ff540aa",
+   "id": "25b491cc3a",
    "kind": "html",
-   "text": "<x1></x1>Branch <c2/>"
+   "text": "GPU sharing"
   },
   {
-   "id": "b2686a407b",
+   "id": "e0049a6651",
    "kind": "html",
-   "text": "<x1></x1>Commit 5 files"
+   "text": "On"
   },
   {
-   "id": "57bd85c949",
+   "id": "849d68c989",
    "kind": "html",
-   "text": "<x1></x1>Push to origin"
+   "text": "Most GPU memory"
   },
   {
-   "id": "5a8f900ce2",
+   "id": "63ca86f24c",
    "kind": "html",
-   "text": "<x1></x1>Pull request opened"
+   "text": "Jobs at once"
   },
   {
-   "id": "0c11cbe466",
+   "id": "9d770f8307",
    "kind": "html",
-   "text": "<x1></x1>Checks passing"
+   "text": "Longest job"
   },
   {
-   "id": "3562777bc6",
+   "id": "67ebfaf6eb",
    "kind": "html",
-   "text": "Ask"
+   "text": "CPU sharing"
   },
   {
-   "id": "b9a0f95884",
+   "id": "e3de5ab0ca",
    "kind": "html",
-   "text": "Type what you want in the request box, the way it comes out. Or say it: voice mode listens while you hold <c1/> <c2/>."
+   "text": "Off"
   },
   {
-   "id": "e15760689d",
+   "id": "d33f30d75b",
    "kind": "html",
-   "text": "Refine"
+   "text": "Reported by Ana's PC"
   },
   {
-   "id": "3f15732501",
+   "id": "ebcbebc03c",
    "kind": "html",
-   "text": "Mel turns it into a brief: the goal, what to build, the constraints, the checks and any open question. The job waits until you use it, edit it or keep your own words."
+   "text": "A simulation with example numbers. In the app every number comes from a probe on that machine (the GPU vendor's tool, Windows performance counters or the Linux kernel), a friend's numbers are labeled as reported by them, and a value that cannot be read says not measured."
   },
   {
-   "id": "ae2f98a099",
+   "id": "1c5ec427d5",
    "kind": "html",
-   "text": "Plan"
+   "text": "The workbench"
   },
   {
-   "id": "6b68b9a99c",
+   "id": "9af9ff38db",
    "kind": "html",
-   "text": "Mel splits the brief into a task graph and hands each task to a worker. Jobs that went well become playbooks Mel reuses."
+   "text": "A real code workbench.<x1/><x2>Files, search, terminal and git.</x2>"
   },
   {
-   "id": "5e29855e36",
+   "id": "91c5833508",
    "kind": "html",
-   "text": "Workers take turns on one local model and write real files in your workspace. Every write is a diff; commands and deletes wait for your approval."
+   "text": "Open the folders you choose, next to the crew's workspace. Each folder is a grant you can remove, and the crew writes only where you allow it."
   },
   {
-   "id": "4b5e84be0e",
+   "id": "6de729d34a",
    "kind": "html",
-   "text": "Check"
+   "text": "Explorer and editors"
   },
   {
-   "id": "2329218e4d",
+   "id": "1aebfc5cd1",
    "kind": "html",
-   "text": "QA runs the checks and sends what fails back as fix tasks, until the page passes."
+   "text": "Create, rename, move and delete. Tabs in up to three split groups, diagnostics, go to definition and symbols for JavaScript and TypeScript. Deleting a folder asks you to confirm how many files it holds."
   },
   {
-   "id": "323d4fc733",
+   "id": "0425f1949b",
    "kind": "html",
-   "text": "Ship"
+   "text": "Search and replace"
   },
   {
-   "id": "0c3bc5f340",
+   "id": "26c603f1c6",
    "kind": "html",
-   "text": "Connect GitHub and the crew can make a branch per job, commit, push and open a pull request with its CI status. Each action is shown as a plan first and runs only when you confirm it."
+   "text": "Across every file, with regular expressions, case, whole word and include or exclude patterns. Replace shows a diff per file first, and skips a file that changed since."
   },
   {
-   "id": "2042ea6918",
+   "id": "a1f52cdcb3",
    "kind": "html",
-   "text": "Everything the crew needs.<x1/><x2>Nothing it should not touch.</x2>"
+   "text": "Terminal"
   },
   {
-   "id": "dd88717351",
+   "id": "f2bdcfdb18",
    "kind": "html",
-   "text": "The prompt refiner"
+   "text": "A real terminal on Windows and macOS. On Linux it needs a build of its native part, otherwise a basic terminal over pipes, labeled as such. Agents never get a terminal."
   },
   {
-   "id": "e6e85b448b",
+   "id": "8dd183cb1b",
    "kind": "html",
-   "text": "A rough request becomes a structured brief before any work starts. At the end, the job report suggests an improved prompt for next time."
+   "text": "Source control"
   },
   {
-   "id": "905cb326c7",
+   "id": "021acaba01",
    "kind": "html",
-   "text": "You"
+   "text": "Status, diff, stage, unstage, discard, commit, branches, checkout, stashes and the log, in one panel."
   },
   {
-   "id": "205bda3c8f",
+   "id": "3f5e10d1db",
    "kind": "html",
-   "text": "site for my bakery crumb, menu + contact pls"
+   "text": "Share a terminal"
   },
   {
-   "id": "eace80f5f3",
+   "id": "4d88d2c37e",
    "kind": "html",
-   "text": "<c1/>Brief"
-  },
-  {
-   "id": "1c25970331",
-   "kind": "html",
-   "text": "<x1>Build</x1>Hero, a menu with three breads and prices, hours, a contact form."
-  },
-  {
-   "id": "8361052468",
-   "kind": "html",
-   "text": "<x1>Checks</x1>Every image has alt text, the form has labels."
-  },
-  {
-   "id": "01a828b069",
-   "kind": "html",
-   "text": "Picks the model for you"
-  },
-  {
-   "id": "61505efba3",
-   "kind": "html",
-   "text": "It reads your VRAM and RAM and says why, in one line."
-  },
-  {
-   "id": "5ca61a6943",
-   "kind": "html",
-   "text": "VRAM"
-  },
-  {
-   "id": "ca3389aabc",
-   "kind": "html",
-   "text": "10 GB"
-  },
-  {
-   "id": "dbcd3e4fda",
-   "kind": "html",
-   "text": "9.0 GB"
-  },
-  {
-   "id": "f3cc44ea13",
-   "kind": "html",
-   "text": "4.7 GB"
-  },
-  {
-   "id": "13941e1954",
-   "kind": "html",
-   "text": "recommended"
-  },
-  {
-   "id": "6d10c60ff4",
-   "kind": "html",
-   "text": "2.1 GB"
-  },
-  {
-   "id": "dd77061f5c",
-   "kind": "html",
-   "text": "1.1 GB"
-  },
-  {
-   "id": "6a933e81a1",
-   "kind": "html",
-   "text": "A 6 GB graphics card found: the 3B coding model, fully on the GPU."
+   "text": "Let a friend watch or type for 5, 15 or 60 minutes. The tab shows a shared badge and a kill button, and the audit log counts the bytes, never the text."
   },
   {
    "id": "20f69208b4",
@@ -676,529 +606,489 @@
    "text": "Code together"
   },
   {
-   "id": "308f2b2c26",
+   "id": "8728b4fb02",
    "kind": "html",
-   "text": "Invite a friend into the Code window: you edit the same files and see each other's cursors. Their saves wait for your approval, as a diff."
+   "text": "Shared documents with both cursors over the same encrypted session. A friend's edits wait for your approval, new files included."
   },
   {
-   "id": "46e3381e95",
+   "id": "9424f424cd",
    "kind": "html",
-   "text": "style.css"
+   "text": "See a friend's screen.<x1/><x2>Control only when they tick it.</x2>"
   },
   {
-   "id": "c96634ae11",
+   "id": "6816bc7d68",
    "kind": "html",
-   "text": "Ana"
+   "text": "A 10 digit address finds a machine, but it is not a password: the owner sees who is calling, with their check words, and every box starts unticked."
   },
   {
-   "id": "5b178d1f77",
+   "id": "6d104c9841",
    "kind": "html",
-   "text": "A branch per job, commit, push, pull request and CI status. Every step is a plan you confirm. Mel drafts the changelog entry; nothing is written until you approve it."
+   "text": "<x1></x1>Ana wants to see your screen <x2>0:58</x2>"
   },
   {
-   "id": "e2ee635bdd",
+   "id": "8df86fd129",
    "kind": "html",
-   "text": "Add the Crumb landing page"
+   "text": "<x1></x1>See the screen"
   },
   {
-   "id": "69465d8ac9",
+   "id": "1714d74f98",
    "kind": "html",
-   "text": "hivedesk/crumb-landing"
+   "text": "<x1></x1>Control the mouse and keyboard"
   },
   {
-   "id": "3ab66e2c8f",
+   "id": "7ee1b2ffa7",
    "kind": "html",
-   "text": "PR #12"
+   "text": "<x1></x1>Clipboard"
   },
   {
-   "id": "bca8b97a13",
+   "id": "b47b82f635",
    "kind": "html",
-   "text": "Crumb landing page"
+   "text": "<x1></x1>Send files"
   },
   {
-   "id": "5098dd1999",
+   "id": "f788060034",
    "kind": "html",
-   "text": "Checks"
+   "text": "For"
   },
   {
-   "id": "1981e16b8f",
+   "id": "b45ebd80de",
    "kind": "html",
-   "text": "3 of 3 passing"
+   "text": "5 min"
   },
   {
-   "id": "60bdb31b91",
+   "id": "1028d69a2f",
    "kind": "html",
-   "text": "Talk to Mel"
+   "text": "15 min"
   },
   {
-   "id": "6ec65044b3",
+   "id": "b4bfffeb61",
    "kind": "html",
-   "text": "Hold <c1/> <c2/> and speak. Before anything that acts, like a commit or a push, Mel reads the plan out loud and waits for a clear yes."
+   "text": "60 min"
   },
   {
-   "id": "bf4a942712",
+   "id": "3eb80c1e86",
    "kind": "html",
-   "text": "&ldquo;Mel, add opening hours to the page&rdquo;"
+   "text": "Refuse"
   },
   {
-   "id": "5bd05209e9",
+   "id": "9156643f4c",
    "kind": "html",
-   "text": "Speech recognition is the browser's, which may send audio to the browser maker's service."
+   "text": "Accept and choose a screen"
   },
   {
-   "id": "a1f5f0988a",
+   "id": "e30d46f3a0",
    "kind": "html",
-   "text": "Eight themes, or the crew makes one"
+   "text": "<x1>Off until you allow it.</x1> A machine answers its address only while \"Let partners reach this computer\" is on, and that is off by default."
   },
   {
-   "id": "7bf8af3f42",
+   "id": "16d8084cb1",
    "kind": "html",
-   "text": "Switch live, edit with a contrast report, or describe one (&ldquo;a sunset on the beach&rdquo;) and the crew designs it."
+   "text": "<x1>Every grant expires.</x1> 5, 15 or 60 minutes, view only unless control is ticked, with a 60 second countdown on the question."
   },
   {
-   "id": "8292dec0ad",
+   "id": "56c7e762b6",
    "kind": "html",
-   "text": "Mel"
+   "text": "<x1>A kill switch.</x1> A banner with Stop while shared, and <c2/> <c3/> <c4/> <c5/> ends everything on Windows."
   },
   {
-   "id": "4d70bbbe98",
+   "id": "15c0e9c77b",
    "kind": "html",
-   "text": "Meia-noite"
+   "text": "<x1>No input on a locked screen.</x1> While the screen is locked, the viewer sees a card and every key is dropped."
   },
   {
-   "id": "fb16eac02b",
+   "id": "92e566fb5a",
    "kind": "html",
-   "text": "Floresta"
+   "text": "<x1>Several screens, quality presets and chat.</x1> Clipboard text and images, and files up to 2 GB that resume where they stopped."
   },
   {
-   "id": "00706b5e9e",
+   "id": "def6729001",
    "kind": "html",
-   "text": "Neon"
+   "text": "<x1>Unattended access, if you set it.</x1> For known peers with a password; 5 wrong tries lock it for 15 minutes."
   },
   {
-   "id": "4b9240cc51",
+   "id": "d2dbfdbd27",
    "kind": "html",
-   "text": "Extensions, also made by the crew"
+   "text": "<x1>From your phone, too.</x1> Pair a phone with the QR code in the hivedesk window, then approve, chat and follow jobs from it. Each phone has its own grants."
   },
   {
-   "id": "3545b9288d",
+   "id": "103e0c41f9",
    "kind": "html",
-   "text": "Install from a folder, a zip or a URL, or ask the crew to create one. Each asks for its permissions and runs in a sandbox."
+   "text": "<x1>Where control works in 1.0:</x1> Windows, and Linux on X11 with xdotool and loginctl installed. macOS is view only, because control needs a signed app and the downloads are not signed yet. Wayland is view only too."
   },
   {
-   "id": "bf3205f039",
+   "id": "f3798f81c7",
    "kind": "html",
-   "text": "Word count"
+   "text": "Models"
   },
   {
-   "id": "b657bacab4",
+   "id": "f8d8f3b207",
    "kind": "html",
-   "text": "A widget window"
+   "text": "The right model for each machine.<x1/><x2>And a meter for the giant ones.</x2>"
   },
   {
-   "id": "1c9379e7b7",
+   "id": "e463250a7b",
    "kind": "html",
-   "text": "read workspace"
+   "text": "A catalog of 57 open source models from 0.5B to 72B parameters, for coding, reasoning and chat, each in quantized files from 2 to 8 bits. hivedesk recommends one for your hardware and asks before any download, with its size, license and source."
   },
   {
-   "id": "1f35114047",
+   "id": "39aabc1f53",
    "kind": "html",
-   "text": "widget window"
+   "text": "Pool a giant model with friends"
   },
   {
-   "id": "d3d92ad6e4",
+   "id": "94c26d053e",
    "kind": "html",
-   "text": "Lend your PC"
+   "text": "A 70B model at 4 bits needs about 45 GB with its context. No single consumer PC has that, but a City might."
   },
   {
-   "id": "175e7be264",
+   "id": "0d80000dd4",
    "kind": "html",
-   "text": "A friend with a bigger GPU pairs with six words. Only prompts and answers travel."
+   "text": "Experimental, off by default"
   },
   {
-   "id": "2394299d6f",
+   "id": "2a322b2426",
    "kind": "html",
-   "text": "Friend"
+   "text": "Friends sharing a GPU"
   },
   {
-   "id": "9d75342c10",
+   "id": "a30e4ae5ff",
    "kind": "html",
-   "text": "honey"
+   "text": "Shared GPU memory"
   },
   {
-   "id": "db4baacb8d",
+   "id": "5068fa20ad",
    "kind": "html",
-   "text": "orbit"
+   "text": "Shared RAM"
   },
   {
-   "id": "bc4edcce8a",
+   "id": "ed745574e9",
    "kind": "html",
-   "text": "lamp"
+   "text": "What the model needs"
   },
   {
-   "id": "08fbe5a2e4",
+   "id": "b0fbce0108",
    "kind": "html",
-   "text": "river"
+   "text": "27 GB pooled, 45 GB needed: 18 GB missing."
   },
   {
-   "id": "b1ade53105",
+   "id": "0e1cb1c93b",
    "kind": "html",
-   "text": "garden"
+   "text": "The meter is real math in the app: GPU memory and RAM counted apart, the speed of CPU memory and one network round trip per remote machine per token, and it unlocks only at 1 token per second or more. Pooling is in 1.0 as an experimental switch, off by default: one model runs across the machines of friends who granted it, over the encrypted p2p link, and its speed depends on the network link between them."
   },
   {
-   "id": "9c5c72058d",
+   "id": "01e7c6132c",
    "kind": "html",
-   "text": "copper"
+   "text": "Playbooks"
   },
   {
-   "id": "0a88c78a6c",
+   "id": "30bea840f5",
    "kind": "html",
-   "text": "10 languages"
+   "text": "About 500 expert playbooks.<x1/><x2>The closest ones, for each task.</x2>"
   },
   {
-   "id": "001a836f59",
+   "id": "67309bed73",
    "kind": "html",
-   "text": "The Hive follows your browser, or pick one in Settings. It switches live."
+   "text": "Landing pages, forms with validation, READMEs, test plans, accessible components, git messages and many more, each with steps, a quality bar, pitfalls and checks. Before a task starts, the closest playbooks are picked by keyword relevance, the role and the room, and their checks run in QA."
   },
   {
-   "id": "7985b73f02",
+   "id": "4dda0dbcec",
    "kind": "html",
-   "text": "Hello, crew!"
+   "text": "Describe a task"
   },
   {
-   "id": "053aa1d851",
+   "id": "ac99e34f07",
    "kind": "html",
-   "text": "Português"
+   "text": "Type a task to see what would be picked"
   },
   {
-   "id": "2001ca082b",
+   "id": "dc1be637b6",
    "kind": "html",
-   "text": "Español"
+   "text": "Default deny.<x1/><x2>Every power is named, granted, timed and logged.</x2>"
   },
   {
-   "id": "2ca514ebd7",
+   "id": "10cbd6350d",
    "kind": "html",
-   "text": "Français"
+   "text": "The engine of the machine that owns a resource decides, not a browser tab. A guest cannot pick your model, open a shell or see a file you did not share."
   },
   {
-   "id": "a6a7709266",
+   "id": "755a2ee9a8",
    "kind": "html",
-   "text": "Deutsch"
+   "text": "An identity per install"
   },
   {
-   "id": "21df73947a",
+   "id": "63988de7b6",
    "kind": "html",
-   "text": "Italiano"
+   "text": "An Ed25519 key, shown to people as six fingerprint words. A key that cannot be read is an error, never a silent new identity."
   },
   {
-   "id": "c12140a0ff",
+   "id": "65c8a8229a",
    "kind": "html",
-   "text": "日本語"
+   "text": "Invites that burn"
   },
   {
-   "id": "6e081b5948",
+   "id": "81506ce165",
    "kind": "html",
-   "text": "한국어"
+   "text": "Six words, 66 bits, one use, 10 minutes, burned by the first handshake that starts. Then check words on both screens and your Accept."
   },
   {
-   "id": "93659150d0",
+   "id": "0e7f36f5ab",
    "kind": "html",
-   "text": "简体中文"
+   "text": "Grants, off by default"
   },
   {
-   "id": "5537fc8e69",
+   "id": "77cb911e12",
    "kind": "html",
-   "text": "Русский"
+   "text": "When a friend joins, only See the City is ticked. GPU, CPU, RAM, storage, terminal, screen, clipboard and files are separate grants with limits; screen and terminal grants end within 60 minutes."
   },
   {
-   "id": "1f8899e4d1",
+   "id": "0bd186d990",
    "kind": "html",
-   "text": "Stays on your machine"
+   "text": "Leases with deadlines"
   },
   {
-   "id": "67eee7ca7f",
+   "id": "dabab3b5ca",
    "kind": "html",
-   "text": "The server binds 127.0.0.1 with a secret token per run. No account, no analytics."
+   "text": "A lent job holds a 15 second lease renewed by heartbeats, a hard deadline and a token limit. It runs only on the lender's local model, never on their cloud key."
   },
   {
-   "id": "726206a550",
+   "id": "b64d071f7f",
    "kind": "html",
-   "text": "Session memory"
+   "text": "A hash chained audit log"
   },
   {
-   "id": "1b27dacec0",
+   "id": "a4fe921305",
    "kind": "html",
-   "text": "Small, capped notes per project and per person, plus one session file per job. A few relevant entries go into the next prompt. Pin, edit or forget any of them."
+   "text": "Joins, grants, revokes, jobs and remote sessions, month by month, each line chained to the last. It never stores words, keys, prompts or answers."
   },
   {
-   "id": "98f54143ab",
+   "id": "87cefe132f",
    "kind": "html",
-   "text": "project"
+   "text": "Encrypted end to end"
   },
   {
-   "id": "63a18e4e3f",
+   "id": "764cb8095b",
    "kind": "html",
-   "text": "The bakery is called Crumb; colors are warm crust tones."
+   "text": "X25519 and HKDF for the keys, ChaCha20-Poly1305 for every frame, rekeyed every 60 minutes. Relays only ever carry ciphertext."
   },
   {
-   "id": "8af56de682",
+   "id": "b4ee2d1217",
    "kind": "html",
-   "text": "you"
+   "text": "<x1>Answers from another machine are untrusted.</x1> Any tool call that comes from a turn a friend's GPU served needs your approval in every approval mode, new files included."
   },
   {
-   "id": "b2f631e29b",
+   "id": "b7a3e506a3",
    "kind": "html",
-   "text": "Prefer plain HTML and CSS, no build step."
+   "text": "Desktop app or browser"
   },
   {
-   "id": "fcbdc4c271",
+   "id": "eb7fdf3245",
    "kind": "html",
-   "text": "session"
+   "text": "What works where.<x1/><x2>No surprises.</x2>"
   },
   {
-   "id": "670f181962",
+   "id": "adf2b267aa",
    "kind": "html",
-   "text": "Job done: 5 files, 6 of 6 checks passed."
+   "text": "The desktop app and <c1/> run the same engine on your machine; the difference is the window. A web page on its own runs inside the browser's sandbox, so it cannot do any of this."
   },
   {
-   "id": "b56489d537",
+   "id": "ad565d9d01",
    "kind": "html",
-   "text": "Cloud brains, if you want them"
+   "text": "Feature"
   },
   {
-   "id": "9dacb9b54c",
+   "id": "f7a44c6b88",
    "kind": "html",
-   "text": "Local by default. Add your own API key for a cloud model, per worker if you like. Keys stay in a key store on this machine; the prompts and file contents sent to that provider leave your machine, and the window says so."
+   "text": "Desktop app"
   },
   {
-   "id": "42d52c32ea",
+   "id": "12a0830a1d",
    "kind": "html",
-   "text": "Local model"
+   "text": "Browser tab with <c1/>"
   },
   {
-   "id": "846b281b5b",
+   "id": "68685f7e59",
    "kind": "html",
-   "text": "3B coding model"
+   "text": "Browser only, nothing installed"
   },
   {
-   "id": "77e6c5c51b",
+   "id": "60c48ffe01",
    "kind": "html",
-   "text": "A local runtime you already use"
+   "text": "The local model on your GPU"
   },
   {
-   "id": "b44be58819",
+   "id": "5397e0583f",
    "kind": "html",
-   "text": "on this machine"
+   "text": "Yes"
   },
   {
-   "id": "db9bd808b3",
+   "id": "7641c71ac9",
    "kind": "html",
-   "text": "Cloud provider"
+   "text": "Yes. The engine runs in Node.js on your machine; the tab only shows it."
   },
   {
-   "id": "15c67a7ba6",
+   "id": "1d1341cb8d",
    "kind": "html",
-   "text": "your key"
+   "text": "No. A web page cannot start a native program or load a model file of several GB from your disk."
   },
   {
-   "id": "a1aa91018e",
+   "id": "8406aea3d2",
    "kind": "html",
-   "text": "In the next version"
+   "text": "Sharing your GPU and CPU"
   },
   {
-   "id": "2c6fc45a7a",
+   "id": "91436e7a71",
    "kind": "html",
-   "text": "Being built right now.<x1/><x2>Not in 0.2.0 yet.</x2>"
+   "text": "Yes, also with the window closed: it keeps running in the tray."
   },
   {
-   "id": "957202c230",
+   "id": "9cd53dcd85",
    "kind": "html",
-   "text": "Two things the crew is working on for the next release. This is what they are meant to do; the details may change before they ship."
+   "text": "Yes, while the tab stays open. The peer link runs in the window, and browsers slow down or freeze background tabs."
   },
   {
-   "id": "abaeaca160",
+   "id": "57a97312a4",
    "kind": "html",
-   "text": "The Playbook library"
+   "text": "No. There is no engine to share."
   },
   {
-   "id": "611bf70955",
+   "id": "12406980a1",
    "kind": "html",
-   "text": "Today a job that ends well is saved as a playbook, and Mel reuses it for similar requests. Next, Mel also gets a library of about 500 expert playbooks (a landing page, a form with validation, a README, a test plan and many more) and picks the closest ones for each task before the crew starts."
+   "text": "Remote control"
   },
   {
-   "id": "9a52533e78",
+   "id": "24faf3c6d3",
    "kind": "html",
-   "text": "<x1>Task</x1>A pricing page with three plans"
+   "text": "Windows, and Linux on X11. macOS is view only until the app is signed."
   },
   {
-   "id": "5bac7b31ef",
+   "id": "2ad6d4571b",
    "kind": "html",
-   "text": "Landing page, hero and sections"
+   "text": "Viewing works in Chromium based browsers. Control, the native clipboard and pasted files come from the input helper, the same as in the app."
   },
   {
-   "id": "133ad191ce",
+   "id": "59d4d1c2b3",
    "kind": "html",
-   "text": "Pricing table with plans"
+   "text": "No. A page cannot move the mouse or press keys on your system."
   },
   {
-   "id": "0fbbdf9942",
+   "id": "6fedbe00f8",
    "kind": "html",
-   "text": "Contact form with validation"
+   "text": "Switching monitors"
   },
   {
-   "id": "2019550236",
+   "id": "0e0ab6cf24",
    "kind": "html",
-   "text": "Accessible color contrast"
+   "text": "Yes. The viewer asks, the host picks the screen."
   },
   {
-   "id": "15fd4aa7b8",
+   "id": "19d3c2fa8c",
    "kind": "html",
-   "text": "README for a static site"
+   "text": "Yes, but the browser asks the host to pick the screen in its own dialog each time: a page may never choose a screen by itself."
   },
   {
-   "id": "b801959040",
+   "id": "816c52fd2b",
    "kind": "html",
-   "text": "<c1/>Mel picked: Pricing table with plans"
+   "text": "No"
   },
   {
-   "id": "ffdec0d54c",
+   "id": "4e4a9499a8",
    "kind": "html",
-   "text": "Talk to any bee"
+   "text": "Terminal (PTY)"
   },
   {
-   "id": "029c8b98a9",
+   "id": "1878b82f44",
    "kind": "html",
-   "text": "Today a request in the request box starts a job, and a direct message steers a worker. Next, asking for work in any chat, #general or a direct message to Dev, Designer or QA, starts real work too, with the same brief, plan, approvals and report."
+   "text": "Yes on Windows and macOS. On Linux when its native part builds, else a basic labeled terminal."
   },
   {
-   "id": "d840a8194f",
+   "id": "aeb747e498",
    "kind": "html",
-   "text": "<x1>You to Designer</x1>Can you make the buttons rounder?"
+   "text": "The same: the terminal runs in the engine."
   },
   {
-   "id": "31f3b9065e",
+   "id": "9b37e2b0eb",
    "kind": "html",
-   "text": "<x1>Designer</x1> On it: one task, style.css."
+   "text": "No. A page cannot start a shell."
   },
   {
-   "id": "45d35ffab3",
+   "id": "06ef66c84e",
    "kind": "html",
-   "text": "<x1></x1>Task created: Round the buttons <x2>Design</x2>"
+   "text": "File system access"
   },
   {
-   "id": "5e128fbbc8",
+   "id": "46a644c5c1",
    "kind": "html",
-   "text": "Office mode"
+   "text": "The folders you add, with a native folder picker."
   },
   {
-   "id": "a4789fef05",
+   "id": "e18cd26396",
    "kind": "html",
-   "text": "Watch the crew at work."
+   "text": "The same folders. You type the path, because a page gets no native folder picker."
   },
   {
-   "id": "10f203b954",
+   "id": "28233f962a",
    "kind": "html",
-   "text": "Toggle Office mode in the top bar and the desktop becomes a little honeycomb office. Every pose comes from a real engine event: who is thinking, who waits for a turn on the model, a task handed over, the tests passing. Drag a sticky note from Mel's board onto a bee to hand it the task."
+   "text": "Only files you pick or drop one at a time, as the browser rules say."
   },
   {
-   "id": "8b75c4b0b4",
+   "id": "4d2ae36e6c",
    "kind": "html",
-   "text": "hivedesk &middot; Office"
+   "text": "Never sent to a remote machine. Windows reserves it for the secure sign in screen, so hivedesk drops it, and Win+L, on purpose."
   },
   {
-   "id": "3b4dfc9713",
+   "id": "c75fd62192",
    "kind": "html",
-   "text": "Working"
+   "text": "Never sent. Your own system also catches it before any page sees it."
   },
   {
-   "id": "e235e19c7e",
+   "id": "753a22b2eb",
    "kind": "html",
-   "text": "Waiting for you"
+   "text": "Notifications"
   },
   {
-   "id": "3258900137",
+   "id": "7978c7d6c4",
    "kind": "html",
-   "text": "Real screenshots of Office mode with <c1/>. Every demo event is labeled as a demo."
+   "text": "System notifications from the app."
   },
   {
-   "id": "ed9afb2a3e",
+   "id": "41a51ae61f",
    "kind": "html",
-   "text": "Inside the Hive"
+   "text": "After you allow them in the browser, and only while the tab is open; otherwise in the page."
   },
   {
-   "id": "2a3ac1257c",
+   "id": "3da4c59c3d",
    "kind": "html",
-   "text": "A desktop for your crew.<x1/><x2>A guided tour on the first open.</x2>"
+   "text": "Running in the background"
   },
   {
-   "id": "b2018d38c4",
+   "id": "09e7ea97b8",
    "kind": "html",
-   "text": "Mel walks you through the desktop with a spotlight on each part. Replay it from Help or the command palette."
+   "text": "Yes. Close the window and it stays in the tray, with Open, Pause and Quit."
   },
   {
-   "id": "5a0d3068b7",
+   "id": "99606ea3af",
    "kind": "html",
-   "text": "Guided tour"
+   "text": "The engine keeps running in its terminal, but peers need the tab open, and a sleeping tab may stall a lent job."
   },
   {
-   "id": "9d2e3a325e",
+   "id": "ee989e4a61",
    "kind": "html",
-   "text": "Brief and report"
+   "text": "No. Closing the tab ends it."
   },
   {
-   "id": "5442e2b64f",
+   "id": "df79116aee",
    "kind": "html",
-   "text": "GitHub"
+   "text": "The desktop app is recommended for the full experience. The app's window uses the system web view, and on macOS and Linux a screen share opens in your Chromium based browser, because those web views cannot capture the screen reliably."
   },
   {
-   "id": "164b3d4809",
+   "id": "54866b8783",
    "kind": "html",
-   "text": "Changelog"
+   "text": "Build your City.<x1/><x2>Free, open source, on your machines.</x2>"
   },
   {
-   "id": "94d5186ba3",
+   "id": "fd0e36f555",
    "kind": "html",
-   "text": "Themes"
-  },
-  {
-   "id": "656bcfe284",
-   "kind": "html",
-   "text": "Extensions"
-  },
-  {
-   "id": "89c8a2851d",
-   "kind": "html",
-   "text": "Memory"
-  },
-  {
-   "id": "bd6f1035d2",
-   "kind": "html",
-   "text": "Palette"
-  },
-  {
-   "id": "c0f85d6679",
-   "kind": "html",
-   "text": "Replay"
-  },
-  {
-   "id": "af2bb11f2e",
-   "kind": "html",
-   "text": "Real screenshots of <c1/>, which replays a scripted job and labels every event as a demo. Code together comes from the two browser end to end test."
-  },
-  {
-   "id": "ff8ac7e415",
-   "kind": "html",
-   "text": "Get hivedesk.<x1/><x2>Free, open source, on your machine.</x2>"
-  },
-  {
-   "id": "9fcbec0869",
-   "kind": "html",
-   "text": "The desktop app for Windows, macOS and Linux. Each download carries its own Node.js, so there is nothing to install first."
-  },
-  {
-   "id": "1344f71224",
-   "kind": "html",
-   "text": "First release coming out today."
+   "text": "The desktop app is the full hivedesk: models on your GPU, lending from the tray, remote control and system notifications. Each download carries its own Node.js, so there is nothing to install first."
   },
   {
    "id": "4c6d0e1d75",
@@ -1211,9 +1101,9 @@
    "text": "<x1><c2/></x1>Windows"
   },
   {
-   "id": "bad8eb6730",
+   "id": "120729ff04",
    "kind": "html",
-   "text": "Windows 10 and 11, x64, about 47 MB"
+   "text": "Windows 10 and 11, x64"
   },
   {
    "id": "e03d007c92",
@@ -1221,9 +1111,9 @@
    "text": "Download for Windows"
   },
   {
-   "id": "feae40f045",
+   "id": "1400db0ab9",
    "kind": "html",
-   "text": "Unzip and double click <c1/>. It is not code signed yet, so SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <x2>More info</x2>, then <x3>Run anyway</x3>."
+   "text": "Run it: it installs for your user, without administrator rights, and downloads the app. For a machine without a network, take the <x1>offline installer</x1>. It is not code signed with a paid certificate, so SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <x2>More info</x2>, then <x3>Run anyway</x3>."
   },
   {
    "id": "b89436375f",
@@ -1231,14 +1121,9 @@
    "text": "Thanks! Follow these steps."
   },
   {
-   "id": "a32b6c017d",
+   "id": "384d9abce2",
    "kind": "html",
-   "text": "Unzip the download. If Windows blocks the zip, right click it, <x1>Properties</x1>, tick <x2>Unblock</x2>."
-  },
-  {
-   "id": "69b34c6e56",
-   "kind": "html",
-   "text": "Double click <c1/>."
+   "text": "Run <c1/>."
   },
   {
    "id": "7ea536f1e1",
@@ -1246,9 +1131,14 @@
    "text": "SmartScreen says &ldquo;Windows protected your PC&rdquo;: choose <x1>More info</x1>, then <x2>Run anyway</x2>."
   },
   {
-   "id": "15d386f556",
+   "id": "df31678fce",
    "kind": "html",
-   "text": "On the first run it downloads a model for your machine and opens the Hive."
+   "text": "Follow the installer: it downloads the app, then opens hivedesk."
+  },
+  {
+   "id": "3e6dfd6d38",
+   "kind": "html",
+   "text": "Name your City, then pick a model or look around the demo first."
   },
   {
    "id": "b52b36b726",
@@ -1261,9 +1151,9 @@
    "text": "<x1><c2/></x1>macOS"
   },
   {
-   "id": "8acc67d413",
+   "id": "86b0ddfafa",
    "kind": "html",
-   "text": "Apple Silicon and Intel, about 89 MB"
+   "text": "Apple Silicon and Intel"
   },
   {
    "id": "239dce2972",
@@ -1271,14 +1161,14 @@
    "text": "Download for macOS"
   },
   {
-   "id": "f3b447be57",
+   "id": "2806cc798c",
    "kind": "html",
-   "text": "Unzip and move <c1/> to Applications. It is not notarized yet: the first time, open <x2>System Settings, Privacy and Security</x2> and click <x3>Open Anyway</x3>."
+   "text": "Open the dmg and drag <c1/> to Applications. It is not notarized with a paid certificate: the first time, open <x2>System Settings, Privacy and Security</x2> and click <x3>Open Anyway</x3>."
   },
   {
-   "id": "1afaa89ba9",
+   "id": "6ee283df31",
    "kind": "html",
-   "text": "Unzip it and move <c1/> to Applications."
+   "text": "Open the dmg and drag <c1/> to Applications."
   },
   {
    "id": "4d4d3f309e",
@@ -1296,9 +1186,9 @@
    "text": "<x1><c2/></x1>Linux"
   },
   {
-   "id": "cc43b74310",
+   "id": "323ee61f33",
    "kind": "html",
-   "text": "x64, about 55 MB, or the AppImage, about 52 MB"
+   "text": "x64, or a package"
   },
   {
    "id": "f56d77981b",
@@ -1306,19 +1196,14 @@
    "text": "Download for Linux"
   },
   {
-   "id": "b4740f437c",
+   "id": "3a45afd639",
    "kind": "html",
-   "text": "Run <c1/>, then <c2/>. Or the <x3>AppImage</x3>: <c4/>, then run it. The window needs WebKitGTK; without it, hivedesk opens in your browser."
+   "text": "Run <c1/> on it, then start it. Or use the <x2>install script</x2>, which checks the SHA-256 and installs into <c3/>, or the <c4/> and <c5/> on the <x6>releases page</x6>. The window needs WebKitGTK; without it, hivedesk opens in your browser."
   },
   {
-   "id": "384d9abce2",
+   "id": "519b9e01cc",
    "kind": "html",
-   "text": "Run <c1/>."
-  },
-  {
-   "id": "4932fc0654",
-   "kind": "html",
-   "text": "Start <c1/> (or <c2/> and run the AppImage)."
+   "text": "Start <c1/> (or run <c2/>)."
   },
   {
    "id": "d291918093",
@@ -1326,89 +1211,29 @@
    "text": "or run"
   },
   {
+   "id": "8e3df45a49",
+   "kind": "html",
+   "text": "Copied"
+  },
+  {
    "id": "01d3f4582a",
    "kind": "html",
    "text": "See all versions"
   },
   {
-   "id": "d543e4e348",
+   "id": "fd54de94a5",
    "kind": "html",
-   "text": "The downloads are not signed yet and do not update themselves; the local model is downloaded on the first run. Prefer a tiny script? The <x1>Windows</x1>, <x2>macOS</x2> and <x3>Linux</x3> launchers check for Node.js 20 or newer and run <c4/>; if Node.js is missing, they open the official download page and say why."
+   "text": "Installed apps update themselves: they check the Ed25519 signature of the update manifest first, then ask: Update now, When I close or Remind me later. The installers are not code signed with paid certificates, so SmartScreen and Gatekeeper ask once; a model is downloaded only after you say yes. With <c1/> you need Node.js 20 or newer, and the window opens in your browser."
   },
   {
-   "id": "062e4ea98a",
+   "id": "3ad870d31a",
    "kind": "html",
-   "text": "The command"
+   "text": "From a terminal"
   },
   {
-   "id": "9ef937556e",
+   "id": "781d86713e",
    "kind": "html",
-   "text": "Recommended"
-  },
-  {
-   "id": "8d5af4372a",
-   "kind": "html",
-   "text": "Any system with Node.js 20 or newer. The wizard asks a few questions, each with a recommended default, so pressing Enter all the way works."
-  },
-  {
-   "id": "eb2cc1b0fb",
-   "kind": "html",
-   "text": "<x1>$</x1> npx hivedesk"
-  },
-  {
-   "id": "dc97357db8",
-   "kind": "html",
-   "text": "<x1>?</x1> Language <x2>English</x2>"
-  },
-  {
-   "id": "d949c3e557",
-   "kind": "html",
-   "text": "<x1>?</x1> Project folder <x2>This folder</x2>"
-  },
-  {
-   "id": "ab832f4033",
-   "kind": "html",
-   "text": "Your machine: GPU 6 GB, RAM 16 GB, 212 GB free disk"
-  },
-  {
-   "id": "dfab346831",
-   "kind": "html",
-   "text": "<x1>?</x1> Which brain should the crew use? <x2>Coding model 3B, 2.1 GB</x2> <x3>recommended</x3>"
-  },
-  {
-   "id": "b7d9837e11",
-   "kind": "html",
-   "text": "<x1>?</x1> Download it now? <x2>Yes</x2>"
-  },
-  {
-   "id": "4d6f2f6928",
-   "kind": "html",
-   "text": "<x1>?</x1> How should the crew work? <x2>Approve each risky step</x2>"
-  },
-  {
-   "id": "8bf0357e12",
-   "kind": "html",
-   "text": "<x1>?</x1> Crew <x2>Mel, Dev, Designer, QA, Writer</x2>"
-  },
-  {
-   "id": "0dd22c6d36",
-   "kind": "html",
-   "text": "Opening the Hive<x1></x1>"
-  },
-  {
-   "id": "660051d15a",
-   "kind": "html",
-   "text": "npm"
-  },
-  {
-   "id": "acedc29300",
-   "kind": "html",
-   "text": "The package page and its versions. Install it globally for a plain <c1/> command."
-  },
-  {
-   "id": "456db2a0aa",
-   "kind": "html",
-   "text": "<c1/>hivedesk on npm"
+   "text": "Every part of the City has a command: <c1/>, <c2/>, <c3/>, <c4/>, <c5/> and <c6/>, which checks the relays, your ports and your network type."
   },
   {
    "id": "6da13addb0",
@@ -1426,119 +1251,9 @@
    "text": "<c1/>Star on GitHub"
   },
   {
-   "id": "883da20390",
+   "id": "456db2a0aa",
    "kind": "html",
-   "text": "<c1/>Latest release"
-  },
-  {
-   "id": "09a428f93e",
-   "kind": "html",
-   "text": "Requirements"
-  },
-  {
-   "id": "2e849452c1",
-   "kind": "html",
-   "text": "<x1>Node.js 20 or newer</x1> on Windows, macOS or Linux."
-  },
-  {
-   "id": "f501391b15",
-   "kind": "html",
-   "text": "<x1>Disk:</x1> 0.5 to 9.0 GB for the model, plus up to about 0.7 GB for the runtime, once."
-  },
-  {
-   "id": "f30951c504",
-   "kind": "html",
-   "text": "<x1>Free RAM to load it:</x1> 2.5 GB when the model goes to the GPU; on the CPU, the model size plus 1.5 GB (at least 4 GB). With less it does not load, so the machine never freezes."
-  },
-  {
-   "id": "4d5be3c0ee",
-   "kind": "html",
-   "text": "<x1>A GPU is optional:</x1> most modern graphics cards work, and so does Apple Silicon."
-  },
-  {
-   "id": "36a4e32584",
-   "kind": "html",
-   "text": "<x1>Network</x1> on the first run. Already running a local runtime with a model? It uses that and skips the download."
-  },
-  {
-   "id": "a2a7272e83",
-   "kind": "html",
-   "text": "Which model you get"
-  },
-  {
-   "id": "08a557101e",
-   "kind": "html",
-   "text": "Your hardware"
-  },
-  {
-   "id": "68c2cc7f0c",
-   "kind": "html",
-   "text": "Model"
-  },
-  {
-   "id": "5703321d0e",
-   "kind": "html",
-   "text": "Runs on"
-  },
-  {
-   "id": "6f55c7b948",
-   "kind": "html",
-   "text": "GPU with 10 GB of VRAM or more"
-  },
-  {
-   "id": "a6a6318544",
-   "kind": "html",
-   "text": "GPU"
-  },
-  {
-   "id": "7351fc9952",
-   "kind": "html",
-   "text": "GPU with 7 to 10 GB of VRAM"
-  },
-  {
-   "id": "9c6e051c91",
-   "kind": "html",
-   "text": "GPU with 4 to 7 GB of VRAM (for example a 6 GB card)"
-  },
-  {
-   "id": "959abe8b02",
-   "kind": "html",
-   "text": "GPU, every layer"
-  },
-  {
-   "id": "a2ce4dc4ae",
-   "kind": "html",
-   "text": "No usable GPU, 16 GB of RAM or more"
-  },
-  {
-   "id": "ff221d4752",
-   "kind": "html",
-   "text": "CPU"
-  },
-  {
-   "id": "0bf0cc0dc3",
-   "kind": "html",
-   "text": "No usable GPU, 8 to 16 GB of RAM"
-  },
-  {
-   "id": "cbba261240",
-   "kind": "html",
-   "text": "Under 8 GB of RAM"
-  },
-  {
-   "id": "6ba8925635",
-   "kind": "html",
-   "text": "0.5 GB"
-  },
-  {
-   "id": "f50864f751",
-   "kind": "html",
-   "text": "CPU, with a warning that results will be basic"
-  },
-  {
-   "id": "cfa32e2c02",
-   "kind": "html",
-   "text": "Compact quantized open source coding models, downloaded from their official repositories and checked against the published SHA-256. Change it in Settings or with <c1/>. From <x2>FIRST-RUN.md</x2>."
+   "text": "<c1/>hivedesk on npm"
   },
   {
    "id": "d4660cb43b",
@@ -1546,44 +1261,74 @@
    "text": "Honest about the limits"
   },
   {
-   "id": "6ccd7b68c3",
+   "id": "7031709598",
    "kind": "html",
-   "text": "What it is great at.<x1/><x2>And what it is not.</x2>"
+   "text": "What 1.0 does not do.<x1/><x2>Yet, or on purpose.</x2>"
   },
   {
-   "id": "b020e6b40f",
+   "id": "cccb79a4c6",
    "kind": "html",
-   "text": "A small model on your own machine is private and free to run. It is also slower and less capable than the biggest models in a data center. Here is what to expect."
+   "text": "Each item is marked in the app too. Nothing here is faked to look finished."
   },
   {
-   "id": "bd454e010e",
+   "id": "e49ed51694",
    "kind": "html",
-   "text": "It needs a model"
+   "text": "Peers need a window"
   },
   {
-   "id": "4a0c7d634a",
+   "id": "fb20d1be28",
    "kind": "html",
-   "text": "Without one, nothing is generated. The first run downloads one, 0.5 to 9.0 GB, unless a local runtime you already use is running or you add your own API key."
+   "text": "Across the internet the peer link runs in the app window or a browser tab. A headless peer needs a native WebRTC part that is not built yet; on the same network, <c1/> works from a terminal."
   },
   {
-   "id": "479b65ec16",
+   "id": "d5f29c75ea",
    "kind": "html",
-   "text": "It is slower than it looks here"
+   "text": "No TURN relay"
   },
   {
-   "id": "9192bef588",
+   "id": "ec54ffd678",
    "kind": "html",
-   "text": "Workers take turns on one model, so a job takes minutes, not seconds. On the CPU only, the model writes a few tokens per second."
+   "text": "Two very strict networks may not connect. <c1/> tells which side is the problem, and both peers on one network can use the LAN."
   },
   {
-   "id": "ac096ff449",
+   "id": "e0b18808ad",
    "kind": "html",
-   "text": "It works best with you steering"
+   "text": "Not signed yet"
   },
   {
-   "id": "739a689c5f",
+   "id": "c3c964bb44",
    "kind": "html",
-   "text": "Ask for one thing at a time, read the diffs, approve the steps. Big apps in one go are out of reach for a small model."
+   "text": "The downloads are not code signed or notarized. That is why macOS remote control is view only, and why your system warns before the first run."
+  },
+  {
+   "id": "5593be943c",
+   "kind": "html",
+   "text": "One model per lender"
+  },
+  {
+   "id": "09d705567e",
+   "kind": "html",
+   "text": "A friend's machine serves only the model it has loaded. It never swaps the owner's model and never downloads one for a peer."
+  },
+  {
+   "id": "ee07442830",
+   "kind": "html",
+   "text": "Giant models are experimental"
+  },
+  {
+   "id": "ea4e6f237c",
+   "kind": "html",
+   "text": "Pooling one model across friends' machines over the encrypted p2p link is in 1.0, but off by default, and its speed depends on the network link between the machines."
+  },
+  {
+   "id": "117c2ba185",
+   "kind": "html",
+   "text": "Small models are slow"
+  },
+  {
+   "id": "6ba7f2ae5a",
+   "kind": "html",
+   "text": "Workers take turns on one model, so a job takes minutes. On the CPU only, a model writes a few tokens per second. Big apps in one go are out of reach."
   },
   {
    "id": "7bffbd7062",
@@ -1651,9 +1396,9 @@
    "text": "Small tasks, components, scripts, copy."
   },
   {
-   "id": "cf19488758",
+   "id": "849fd5d93b",
    "kind": "html",
-   "text": "GPU with 7 to 10 GB"
+   "text": "GPU with 7 to 10 GB, or a friend's"
   },
   {
    "id": "535969a983",
@@ -1691,79 +1436,9 @@
    "text": "Bigger jobs and longer plans."
   },
   {
-   "id": "3bf1e6ae5d",
+   "id": "efe84b7485",
    "kind": "html",
-   "text": "Great at"
-  },
-  {
-   "id": "9cbf644b19",
-   "kind": "html",
-   "text": "Landing pages"
-  },
-  {
-   "id": "f9ab9c41ff",
-   "kind": "html",
-   "text": "Small CRUD apps"
-  },
-  {
-   "id": "4a82357e7e",
-   "kind": "html",
-   "text": "Scripts and command line tools"
-  },
-  {
-   "id": "c82392d4c0",
-   "kind": "html",
-   "text": "UI components"
-  },
-  {
-   "id": "493e4ae4e2",
-   "kind": "html",
-   "text": "Tests for code you already have"
-  },
-  {
-   "id": "de0e0a7490",
-   "kind": "html",
-   "text": "Docs, READMEs and copy"
-  },
-  {
-   "id": "c14ebecfb9",
-   "kind": "html",
-   "text": "Fixing a bug you describe"
-  },
-  {
-   "id": "08c38c78bc",
-   "kind": "html",
-   "text": "Not great at"
-  },
-  {
-   "id": "38b6d9e470",
-   "kind": "html",
-   "text": "Large or complex apps in one go"
-  },
-  {
-   "id": "4c70946bd7",
-   "kind": "html",
-   "text": "Long jobs without you reading and approving the steps"
-  },
-  {
-   "id": "ae92e92e0c",
-   "kind": "html",
-   "text": "Speed on a machine without a GPU"
-  },
-  {
-   "id": "334785ffe8",
-   "kind": "html",
-   "text": "Anything at all without a model: no model, no output"
-  },
-  {
-   "id": "91d216e9cb",
-   "kind": "html",
-   "text": "It works best when you split the work, steer and approve. That is what the timeline and approval mode are for."
-  },
-  {
-   "id": "3c42281176",
-   "kind": "html",
-   "text": "<x1>Your files stay on your machine.</x1> The network is used for the first run download, and then only for what you turn on: Lend mode and Code together (with a friend you paired with), GitHub, cloud providers with your own key, extensions from a URL, and the browser's speech recognition in voice mode. Lend mode sends only model prompts and answers: one request at a time, at most 20 per minute, prompts up to 120,000 characters, and the friend can stop at any time. There is no TURN relay built in, so two very strict networks may not connect."
+   "text": "<x1>Your files stay on your machine.</x1> A friend's GPU sees only the prompts and answers of the jobs you send it, never your files, tools or memory. The network is used only for what you turn on: friends and their grants, GitHub, cloud providers with your own key, extensions from a URL, and the browser's speech recognition in voice mode."
   },
   {
    "id": "54d33803c5",
@@ -1776,19 +1451,49 @@
    "text": "Do I need an account or an API key?"
   },
   {
-   "id": "47c2f5dc4c",
+   "id": "de99678c52",
    "kind": "html",
-   "text": "No. The default is a model that runs on your own machine. Keys are optional, only to use your own API key for a cloud model; they are kept in a key store on this machine."
+   "text": "No. The default is a model that runs on your own machine, and friends connect to you directly. Keys are optional, only to use your own API key for a cloud model; they stay in a key store on your machine."
   },
   {
-   "id": "1a330f4ec3",
+   "id": "3044b5825c",
    "kind": "html",
-   "text": "How big is the download, and how long does the first run take?"
+   "text": "Can a friend see my files?"
   },
   {
-   "id": "fbeece42a0",
+   "id": "22a76ad395",
    "kind": "html",
-   "text": "The model is 0.5 GB to 9.0 GB depending on your hardware, plus a few hundred MB for the runtime. At 100 Mbit/s the 3B model takes about 3 minutes and the 7B about 6. It happens once; after that a run is ready in the time it takes to load the model."
+   "text": "Only if you tick Read the workspace for them. When a friend joins, only See the City is on. Edits they propose wait for your approval, new files included."
+  },
+  {
+   "id": "1ab922ee87",
+   "kind": "html",
+   "text": "What does a friend's GPU see when I borrow it?"
+  },
+  {
+   "id": "1eeb42ed3b",
+   "kind": "html",
+   "text": "The prompts and answers of the jobs sent to it, nothing else: no files, tools or memory. Its owner can stop any job, and any tool call that comes from its answer needs your approval."
+  },
+  {
+   "id": "e348ddbf3a",
+   "kind": "html",
+   "text": "Do I need the desktop app?"
+  },
+  {
+   "id": "4e27c22955",
+   "kind": "html",
+   "text": "No. <c1/> runs the same engine and opens the window in your browser. The app adds the tray, system notifications and a folder picker, and keeps lending with the window closed. The table above lists every difference."
+  },
+  {
+   "id": "2492c27919",
+   "kind": "html",
+   "text": "Can someone take over my screen?"
+  },
+  {
+   "id": "f8723d53b0",
+   "kind": "html",
+   "text": "Not without your click. Remote screen is off until you allow your address, every request needs your Accept, view only is the default, every grant expires, a locked screen takes no input, and one hotkey or the Stop button ends it all."
   },
   {
    "id": "4467354072",
@@ -1796,49 +1501,19 @@
    "text": "Will it run on a laptop without a GPU?"
   },
   {
-   "id": "348a0fd525",
+   "id": "614b59f438",
    "kind": "html",
-   "text": "Yes, on the CPU with a small model: 3B with 16 GB of RAM, 1.5B with 8 to 16 GB, 0.5B below that. It is slow, a few tokens per second. Small tasks work; expect to wait."
+   "text": "Yes, on the CPU with a small model, slowly: a few tokens per second. Small tasks work. A friend's GPU, with their permission, makes bigger models possible."
   },
   {
-   "id": "47e466f4fb",
+   "id": "eee6ebf808",
    "kind": "html",
-   "text": "What does the prompt refiner change?"
+   "text": "What if two networks cannot connect?"
   },
   {
-   "id": "111a454f4e",
+   "id": "d2b884de8a",
    "kind": "html",
-   "text": "Before planning, Mel turns your request into a brief: the goal, what to build, the constraints, the checks and any open questions. The job waits until you use the brief, edit it or keep your original. You can turn it off in Settings."
-  },
-  {
-   "id": "c2a3dae5f0",
-   "kind": "html",
-   "text": "Does voice mode send my audio anywhere?"
-  },
-  {
-   "id": "8b6ca2e992",
-   "kind": "html",
-   "text": "Voice uses the browser's speech recognition, which may send audio to the browser maker's service. Mel's spoken replies are made on your computer when a local voice exists. A fully local recognizer is not shipped yet."
-  },
-  {
-   "id": "8e8594238f",
-   "kind": "html",
-   "text": "Can a worker break my computer?"
-  },
-  {
-   "id": "89ffd384e1",
-   "kind": "html",
-   "text": "Workers only have tools scoped to the workspace folder, and paths that try to escape it are refused. Commands run with a timeout, an output cap and no network by default, and approval mode makes risky steps wait for you. Extensions run in a sandbox with the permissions you accept."
-  },
-  {
-   "id": "480faaa9a5",
-   "kind": "html",
-   "text": "Why do the launchers trigger a security warning?"
-  },
-  {
-   "id": "7612bede30",
-   "kind": "html",
-   "text": "They are plain scripts that are not code signed, so Windows SmartScreen and macOS Gatekeeper ask before the first run. Each one only checks for Node.js and runs <c1/>."
+   "text": "Run <c1/>. It checks the relays, your ports and your network type and says which side blocks the link. There is no TURN relay built in; on one network, use the LAN option."
   },
   {
    "id": "c5756ae3d2",
@@ -1846,9 +1521,9 @@
    "text": "Can I look around without downloading a model?"
   },
   {
-   "id": "f31d812aa8",
+   "id": "c57bab509f",
    "kind": "html",
-   "text": "Yes: <c1/> replays a scripted job. Everything it shows is labeled as a demo."
+   "text": "Yes: <c1/> plays a City in its own temporary folder, and every scripted event is labeled as a demo. It never touches your projects."
   },
   {
    "id": "7b3bab2976",
@@ -1856,19 +1531,19 @@
    "text": "How do I remove it?"
   },
   {
-   "id": "3180b4e4c2",
+   "id": "d0e4b6eaa1",
    "kind": "html",
-   "text": "Delete <c1/> (the runtime, the models, your settings) and the <c2/> folder in your project. If you installed it with npm, also run <c3/>."
+   "text": "Delete <c1/> (your identity, known peers, the runtime, the models and your settings) and the <c2/> folder in your project. If you installed it with npm, also run <c3/>."
   },
   {
-   "id": "1e96bc3b98",
+   "id": "1cc5c2a0e2",
    "kind": "html",
-   "text": "Mel is ready when you are."
+   "text": "Your City is one command away."
   },
   {
-   "id": "5761e34688",
+   "id": "5ac4760f22",
    "kind": "html",
-   "text": "One command, and the crew is on your desk."
+   "text": "Start with your own PC. Invite a friend when you are ready."
   },
   {
    "id": "4086449e74",
@@ -1881,44 +1556,54 @@
    "text": "Sections"
   },
   {
-   "id": "a22859c9b9",
-   "kind": "html",
-   "text": "<c1/>Hive City"
-  },
-  {
-   "id": "c64222a91d",
-   "kind": "html",
-   "text": "<c1/>The film"
-  },
-  {
-   "id": "f7ce1754d2",
-   "kind": "html",
-   "text": "<c1/>Try it"
-  },
-  {
    "id": "6054a0d21b",
    "kind": "html",
    "text": "<c1/>How it works"
   },
   {
-   "id": "0c89c0eba3",
+   "id": "4288cb5f33",
    "kind": "html",
-   "text": "<c1/>Features"
+   "text": "<c1/>The City"
   },
   {
-   "id": "2ea3cc073f",
+   "id": "65529d8721",
    "kind": "html",
-   "text": "<c1/>In the next version"
+   "text": "<c1/>Invite a friend"
   },
   {
-   "id": "aa53ef5d55",
+   "id": "efc7ce474a",
    "kind": "html",
-   "text": "<c1/>Office mode"
+   "text": "<c1/>Borrow a GPU"
   },
   {
-   "id": "63c0d692e1",
+   "id": "b479320514",
    "kind": "html",
-   "text": "<c1/>Inside the Hive"
+   "text": "<c1/>The workbench"
+  },
+  {
+   "id": "92e025da65",
+   "kind": "html",
+   "text": "<c1/>Remote screen"
+  },
+  {
+   "id": "dc6503dd29",
+   "kind": "html",
+   "text": "<c1/>Models"
+  },
+  {
+   "id": "bfaf7693d9",
+   "kind": "html",
+   "text": "<c1/>Playbooks"
+  },
+  {
+   "id": "2f2f0d5974",
+   "kind": "html",
+   "text": "<c1/>Security"
+  },
+  {
+   "id": "46f9ffd492",
+   "kind": "html",
+   "text": "<c1/>Desktop app or browser"
   },
   {
    "id": "ce7fc7309c",
@@ -1929,11 +1614,6 @@
    "id": "7eb5e34dc0",
    "kind": "html",
    "text": "<c1/>Honest about the limits"
-  },
-  {
-   "id": "caf6868863",
-   "kind": "html",
-   "text": "<c1/>Lend your PC"
   },
   {
    "id": "dbe5c6384c",
@@ -1961,9 +1641,9 @@
    "text": "<c1/> to close"
   },
   {
-   "id": "b77faab615",
+   "id": "2dc0ef4fa6",
    "kind": "html",
-   "text": "Your own AI crew, on your own machine."
+   "text": "Your agents. Your machines. Your city."
   },
   {
    "id": "55c5084654",
@@ -1991,14 +1671,34 @@
    "text": "Project"
   },
   {
+   "id": "5442e2b64f",
+   "kind": "html",
+   "text": "GitHub"
+  },
+  {
+   "id": "660051d15a",
+   "kind": "html",
+   "text": "npm"
+  },
+  {
    "id": "8fa41d59c2",
    "kind": "html",
    "text": "Releases"
   },
   {
-   "id": "f25ce1b8a3",
+   "id": "164b3d4809",
    "kind": "html",
-   "text": "Security"
+   "text": "Changelog"
+  },
+  {
+   "id": "42026996c9",
+   "kind": "html",
+   "text": "Security policy"
+  },
+  {
+   "id": "053aa1d851",
+   "kind": "html",
+   "text": "Português"
   },
   {
    "id": "7705791090",
@@ -2006,69 +1706,24 @@
    "text": "More from kwy404"
   },
   {
-   "id": "eb967160ce",
-   "kind": "html",
-   "text": "Monsoon"
-  },
-  {
-   "id": "9270001030",
-   "kind": "html",
-   "text": "Voodoo.js"
-  },
-  {
-   "id": "b100aa6999",
-   "kind": "html",
-   "text": "kastor"
-  },
-  {
-   "id": "85389c9fc6",
-   "kind": "html",
-   "text": "fontsketch"
-  },
-  {
-   "id": "a4c10171f7",
-   "kind": "html",
-   "text": "filefinch"
-  },
-  {
-   "id": "9c79328bb7",
-   "kind": "html",
-   "text": "howlden"
-  },
-  {
-   "id": "9e5b207796",
-   "kind": "html",
-   "text": "installkite"
-  },
-  {
-   "id": "cefdccc140",
-   "kind": "html",
-   "text": "a11ymedic"
-  },
-  {
-   "id": "5f45ef01c5",
-   "kind": "html",
-   "text": "cookieowl"
-  },
-  {
    "id": "3ceabd21f0",
    "kind": "html",
    "text": "MIT License. No tracking. Built with <x1>Monsoon</x1>. Interactive parts built with <x2>Voodoo.js</x2>."
   },
   {
-   "id": "e8300b029e",
+   "id": "611c60ba3f",
    "kind": "attr",
-   "text": "hivedesk is a free multi agent workspace: a crew of AI agents that plans and builds real files on your own computer with open source models. Invite a friend peer to peer and share a GPU. No account, no API key."
+   "text": "hivedesk is a free, open source peer-to-peer workspace where AI agents work together across your computers. Invite a friend, borrow a GPU, share a screen."
   },
   {
-   "id": "5c7a852d80",
+   "id": "e32569ebc4",
    "kind": "attr",
-   "text": "A crew of AI agents that plans and builds real files on your own computer with open source models. Invite a friend peer to peer and share a GPU."
+   "text": "Your agents. Your machines. Your city. A peer-to-peer workspace where AI agents collaborate across your computers."
   },
   {
-   "id": "b7cefc28f0",
+   "id": "7deb413a6e",
    "kind": "attr",
-   "text": "hivedesk: Mel the bee foreman next to the words one command, a whole AI crew on your own machine"
+   "text": "hivedesk: two computers linked peer to peer, a GPU shared between them and the City where the agents work"
   },
   {
    "id": "db281c6b09",
@@ -2121,9 +1776,64 @@
    "text": "Menu"
   },
   {
-   "id": "a9dbd57076",
+   "id": "665d71faab",
    "kind": "attr",
-   "text": "Your own AI crew. One command away."
+   "text": "Your PC and a friend's PC as two buildings on floating islands of your City, joined by a bridge that carries encrypted tasks, with the friend's GPU lending turns."
+  },
+  {
+   "id": "47b73fa061",
+   "kind": "attr",
+   "text": "The City in demo mode: your building on a floating island with the Design, Code, Review, Test, Ops, Library and Lobby rooms, a friend's tower across a bridge, the task board and the event feed."
+  },
+  {
+   "id": "c1306b0412",
+   "kind": "attr",
+   "text": "Inside the Code room: the room panel with its rules, the tools allowed inside and the agent working there."
+  },
+  {
+   "id": "7c0078ad92",
+   "kind": "attr",
+   "text": "The Office view: the crew at their desks around Mel, the current job and its progress."
+  },
+  {
+   "id": "b1cd1df78e",
+   "kind": "attr",
+   "text": "The Machines panel next to the City: GPU, VRAM, CPU and RAM of this PC, each with the source of its number."
+  },
+  {
+   "id": "7ff6eec127",
+   "kind": "attr",
+   "text": "The code editor with the explorer, an open file and the run log."
+  },
+  {
+   "id": "484fd40343",
+   "kind": "attr",
+   "text": "The Remote screen window: how it works, your address, the partner address and what to ask for."
+  },
+  {
+   "id": "cdde4f20ba",
+   "kind": "attr",
+   "text": "Steps"
+  },
+  {
+   "id": "06c52fef57",
+   "kind": "attr",
+   "text": "Model the task needs"
+  },
+  {
+   "id": "55132075df",
+   "kind": "attr",
+   "text": "The most Ana shares"
+  },
+  {
+   "id": "0960769e88",
+   "kind": "attr",
+   "text": "Describe a task, for example a booking page"
+  },
+  {
+   "id": "0f222bdd15",
+   "kind": "attr",
+   "text": "An identity per install in a shield, every grant off by default except seeing the City, and an audit log where each line is chained to the last."
   },
   {
    "id": "d277ab8fcf",
@@ -2134,151 +1844,6 @@
    "id": "1d3d276d1b",
    "kind": "attr",
    "text": "Copy the command npx hivedesk"
-  },
-  {
-   "id": "c4306067c3",
-   "kind": "attr",
-   "text": "Alexandre Kohler on GitHub"
-  },
-  {
-   "id": "f41269e3a8",
-   "kind": "attr",
-   "text": "Alexandre Kohler on LinkedIn"
-  },
-  {
-   "id": "4a152c7105",
-   "kind": "attr",
-   "text": "The Hive in demo mode: the timeline of a bakery landing page job, the crew chat, a live preview of the page, the Files window with a diff and the Dev worker after a turn, with the worker dock at the bottom."
-  },
-  {
-   "id": "d73971fa4c",
-   "kind": "attr",
-   "text": "Hive City in demo mode: your building on a floating island with the Design, Code, Review, Test, Ops, Library and Lobby rooms, a friend's tower across a bridge, the task board with three tasks and the event feed."
-  },
-  {
-   "id": "08892971b9",
-   "kind": "attr",
-   "text": "A friend's building rising next to yours after they joined with six words."
-  },
-  {
-   "id": "55cac76218",
-   "kind": "attr",
-   "text": "The bridge lit up while Dev borrows the friend's GPU, and the Machines panel with 2 of 3 turns used and a Stop the borrow button."
-  },
-  {
-   "id": "1b7ae3845f",
-   "kind": "attr",
-   "text": "Inside the Review room: an agent reads the diff of a task against its criteria."
-  },
-  {
-   "id": "a2cef4c564",
-   "kind": "attr",
-   "text": "An agent card: name, home room, level and XP, stats, tools and the agent's private memory."
-  },
-  {
-   "id": "96a6e81ec7",
-   "kind": "attr",
-   "text": "The hivedesk film, 75 seconds, with music and on screen text"
-  },
-  {
-   "id": "03f3d50996",
-   "kind": "attr",
-   "text": "hivedesk in numbers"
-  },
-  {
-   "id": "4515ffa63b",
-   "kind": "attr",
-   "text": "What should the crew build today?"
-  },
-  {
-   "id": "2a5b615135",
-   "kind": "attr",
-   "text": "Office mode in the Hive, during a demo job"
-  },
-  {
-   "id": "53549d60af",
-   "kind": "attr",
-   "text": "Office mode while the crew works: bees at their desks, Mel at the task board, the current job at 35 percent and the turn on the model."
-  },
-  {
-   "id": "01e025144f",
-   "kind": "attr",
-   "text": "Office mode while a worker waits for your approval."
-  },
-  {
-   "id": "0efc347fd6",
-   "kind": "attr",
-   "text": "Office mode when the job is done and the crew celebrates."
-  },
-  {
-   "id": "ac0c7c727e",
-   "kind": "attr",
-   "text": "Screens"
-  },
-  {
-   "id": "4d0f6301f1",
-   "kind": "attr",
-   "text": "Step 1 of 11 of the guided tour: Mel points at the request box, with a Try it button that runs the demo job."
-  },
-  {
-   "id": "01fbd7a0ea",
-   "kind": "attr",
-   "text": "The Brief and report window: your request, the improved brief by Mel with goal, build, constraints and acceptance criteria, and the job report."
-  },
-  {
-   "id": "87ef3f8de2",
-   "kind": "attr",
-   "text": "Code together: the Code window with index.html, two people editing at the same time, and the guest's cursor labeled Ana."
-  },
-  {
-   "id": "a80d687a4e",
-   "kind": "attr",
-   "text": "The GitHub window: sign in with the gh command line, a fine grained token or a device code; nothing runs on a hivedesk server."
-  },
-  {
-   "id": "6576a8b189",
-   "kind": "attr",
-   "text": "The Changelog window: a proposed entry drafted from the job report, with Dismiss and Approve and write."
-  },
-  {
-   "id": "b688feb325",
-   "kind": "attr",
-   "text": "The Theme gallery: eight built in themes, a box to ask Mel for a new theme, import and new theme."
-  },
-  {
-   "id": "a53ad2e532",
-   "kind": "attr",
-   "text": "The Extensions window: installed extensions with their permissions, each waiting for your approval, and a tab to create one with the crew."
-  },
-  {
-   "id": "14d29f20a8",
-   "kind": "attr",
-   "text": "The Memory window: a project memory with Pin, Edit and Delete, the switch to use memory in new jobs, and the session list."
-  },
-  {
-   "id": "0e319af25d",
-   "kind": "attr",
-   "text": "The Hive in Japanese."
-  },
-  {
-   "id": "a22c067cab",
-   "kind": "attr",
-   "text": "The Ctrl K command palette over the Hive."
-  },
-  {
-   "id": "10d7a43190",
-   "kind": "attr",
-   "text": "The replay scrubber rebuilding an earlier moment of the job."
-  },
-  {
-   "id": "0ec62e874d",
-   "kind": "attr",
-   "text": "Mel, waving"
-  },
-  {
-   "id": "2377094ed4",
-   "kind": "attr",
-   "text": "The wizard in a terminal: language English, this folder, the 3B coding model, approve each risky step, then the Hive opens."
   },
   {
    "id": "5eceb21dc3",
@@ -2296,44 +1861,54 @@
    "text": "Jump to a section"
   },
   {
-   "id": "0ec6abe55b",
+   "id": "8ef94ed386",
    "kind": "attr",
-   "text": "agents rooms friends gpu 0.2.0"
+   "text": "steps city invite agents gpu"
   },
   {
-   "id": "fe1f114748",
+   "id": "aece758ee4",
    "kind": "attr",
-   "text": "video 75 seconds"
+   "text": "buildings rooms agents tasks"
   },
   {
-   "id": "961ca0783f",
+   "id": "8b1a0db88a",
    "kind": "attr",
-   "text": "demo request"
+   "text": "friend six words join"
   },
   {
-   "id": "4cef171cc8",
+   "id": "9542e8a190",
    "kind": "attr",
-   "text": "steps ask refine plan build check ship"
+   "text": "gpu share lease scheduler"
   },
   {
-   "id": "f18c52f125",
+   "id": "9dea2c90c5",
    "kind": "attr",
-   "text": "refiner voice themes extensions memory"
+   "text": "editor terminal search git"
   },
   {
-   "id": "abc544eb4b",
+   "id": "e6b68edf99",
    "kind": "attr",
-   "text": "playbook library chat any bee next version"
+   "text": "screen control view address"
   },
   {
-   "id": "1ee50a77c8",
+   "id": "1ecb08d200",
    "kind": "attr",
-   "text": "office bees"
+   "text": "catalog pool giant"
   },
   {
-   "id": "e25b0985c7",
+   "id": "494757e7c8",
    "kind": "attr",
-   "text": "screenshots tour code together github changelog"
+   "text": "library expert"
+  },
+  {
+   "id": "8794d77dcb",
+   "kind": "attr",
+   "text": "identity grants audit encryption"
+  },
+  {
+   "id": "50da77ed4f",
+   "kind": "attr",
+   "text": "desktop app browser table"
   },
   {
    "id": "b3604dbe43",
@@ -2341,61 +1916,47 @@
    "text": "windows macos linux npx install"
   },
   {
-   "id": "bc7f49e8d7",
+   "id": "b3b60250f9",
    "kind": "attr",
-   "text": "hardware gpu model speed"
-  },
-  {
-   "id": "8dc7379a6b",
-   "kind": "attr",
-   "text": "friend six words"
+   "text": "hardware speed not shipped"
   },
   {
    "id": "ff3d39b625",
    "kind": "attr",
    "text": "questions"
-  },
-  {
-   "id": "ff06accb20",
-   "kind": "attr",
-   "text": "Mel, the bee foreman, waving"
   }
  ],
  "js": {
   "toast.copied": "Copied to the clipboard",
   "toast.paste": "paste it in a terminal",
-  "try.plan.game.build": "A canvas game loop, keyboard and touch controls, a score and a restart button.",
-  "try.plan.game.checks": "The game starts, the score counts, restart works.",
-  "try.plan.look": "Set the look",
-  "try.plan.game.loop": "Write the game loop",
-  "try.plan.game.howto": "Write how to play",
-  "try.plan.game.test": "Play test the controls",
-  "try.plan.list.build": "A list with add, edit, done and delete, saved in localStorage.",
-  "try.plan.list.checks": "Items survive a reload, empty input is refused.",
-  "try.plan.list.style": "Style the list",
-  "try.plan.list.crud": "Build add, edit and delete",
-  "try.plan.list.save": "Save to localStorage",
-  "try.plan.list.edge": "Check the edge cases",
-  "try.plan.docs.build": "What it does, how to install it, how to use it, and an example.",
-  "try.plan.docs.checks": "Every command in the README runs as written.",
-  "try.plan.docs.outline": "Outline the README",
-  "try.plan.docs.write": "Write install and usage",
-  "try.plan.docs.cmds": "Check the commands",
-  "try.plan.docs.read": "Read it like a newcomer",
-  "try.plan.page.build": "A hero, the main sections, a contact form and a footer.",
-  "try.plan.page.checks": "Images have alt text, the form has labels, it works at 375 px.",
-  "try.plan.page.build2": "Build the page",
-  "try.plan.page.copy": "Write the copy",
-  "try.plan.page.check": "Check the page",
-  "try.writing": "Mel is writing the brief",
-  "try.goal": "Goal",
-  "try.build": "Build",
-  "try.constraints": "Constraints",
-  "try.constraintsV": "Plain HTML, CSS and JavaScript, works on phones.",
-  "try.checks": "Checks",
-  "try.queued": "queued",
-  "try.running": "running",
-  "try.done": "done",
-  "try.finished": "Done in this preview. In the Hive, this writes real files in your folder."
+  "inv.next": "Next step",
+  "inv.match": "The words match",
+  "inv.accept": "Accept",
+  "inv.again": "Again",
+  "bor.gb": "{a} of {b} GB",
+  "bor.youGpu": "Your GPU",
+  "bor.fits": "fits in {free} GB free",
+  "bor.noVram": "needs {need} GB, {free} GB free",
+  "bor.anaGpu": "Ana's GPU",
+  "bor.fitsShare": "fits in the {share} GB she shares",
+  "bor.noShare": "needs {need} GB, she shares at most {share} GB",
+  "bor.youCpu": "Your CPU",
+  "bor.ram": "needs {need} GB of RAM, {free} GB free",
+  "bor.noRam": "needs {need} GB of free RAM, {free} GB free",
+  "bor.about": "about {s} s",
+  "bor.model": "the {size}B model",
+  "bor.none": "No machine can run {model} now. The task waits for a resource and lists these reasons; a pooled giant model is not in 1.0.",
+  "bor.why": "{target}: {model} {detail}, about {s} s.",
+  "bor.whyLocal": "Local goes first: private and no network.",
+  "bor.whyNot": "{target} {detail}.",
+  "bor.whyNext": "{target} would take about {s} s.",
+  "bor.revoked": "Ana stopped the job. The {n} tokens written so far are kept.",
+  "bor.done": "Done: {n} tokens on {target}.",
+  "pool.short": "{have} GB pooled, {need} GB needed: {miss} GB missing.",
+  "pool.ok": "{have} GB pooled, {need} GB needed. Speed estimate: about {tps} tokens per second, enough for the meter to unlock.",
+  "pool.slow": "{have} GB pooled, {need} GB needed, but only about {tps} tokens per second: too slow to unlock.",
+  "pb.hint": "Type a task to see what would be picked",
+  "pb.none": "No close playbook. The crew works from the brief alone.",
+  "pb.count": "From {n} playbooks, in English. In the app the role, the room and the file types count too."
  }
 }

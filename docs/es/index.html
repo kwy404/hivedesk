@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>hivedesk: agentes de IA en tu PC, gratis y de código abierto</title>
-<meta name="description" content="Espacio multiagente gratis: agentes de IA que crean archivos reales en tu PC con modelos abiertos. Comparte una GPU con un amigo. Sin cuenta ni clave de API.">
+<title>hivedesk: agentes de IA entre tus máquinas, de igual a igual</title>
+<meta name="description" content="hivedesk es un espacio P2P gratis y de código abierto donde agentes de IA colaboran entre tus máquinas. Invita a un amigo, usa su GPU, comparte pantalla.">
 <meta name="author" content="Alexandre Kohler">
 <meta name="theme-color" content="#0B0A09">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="hivedesk">
-<meta property="og:title" content="hivedesk: agentes de IA en tu PC, gratis y de código abierto">
-<meta property="og:description" content="Un equipo de agentes de IA que planifica y crea archivos reales en tu PC con modelos de código abierto. Invita a un amigo de igual a igual y comparte una GPU.">
+<meta property="og:title" content="hivedesk: agentes de IA entre tus máquinas, de igual a igual">
+<meta property="og:description" content="Tus agentes. Tus máquinas. Tu City. Un espacio de trabajo de igual a igual donde agentes de IA colaboran entre tus máquinas.">
 <meta property="og:image" content="https://kwy404.github.io/hivedesk/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="hivedesk: Mel, la abeja capataz, junto a las palabras un comando, todo un equipo de IA en tu propia máquina">
+<meta property="og:image:alt" content="hivedesk: dos máquinas conectadas de igual a igual, una GPU compartida entre ellas y la City donde trabajan los agentes">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="hivedesk: agentes de IA en tu PC, gratis y de código abierto">
-<meta name="twitter:description" content="Un equipo de agentes de IA que planifica y crea archivos reales en tu PC con modelos de código abierto. Invita a un amigo de igual a igual y comparte una GPU.">
+<meta name="twitter:title" content="hivedesk: agentes de IA entre tus máquinas, de igual a igual">
+<meta name="twitter:description" content="Tus agentes. Tus máquinas. Tu City. Un espacio de trabajo de igual a igual donde agentes de IA colaboran entre tus máquinas.">
 <meta name="twitter:image" content="https://kwy404.github.io/hivedesk/og.png">
 <!-- seo:start -->
 <link rel="canonical" href="https://kwy404.github.io/hivedesk/es/">
@@ -53,17 +53,17 @@
    "@id": "https://kwy404.github.io/hivedesk/#app",
    "name": "hivedesk",
    "url": "https://kwy404.github.io/hivedesk/es/",
-   "description": "Espacio multiagente gratis: agentes de IA que crean archivos reales en tu PC con modelos abiertos. Comparte una GPU con un amigo. Sin cuenta ni clave de API.",
+   "description": "hivedesk es un espacio P2P gratis y de código abierto donde agentes de IA colaboran entre tus máquinas. Invita a un amigo, usa su GPU, comparte pantalla.",
    "inLanguage": "es",
    "applicationCategory": "DeveloperApplication",
    "operatingSystem": "Windows, macOS, Linux",
-   "softwareVersion": "0.2.1",
+   "softwareVersion": "1.0.0",
    "license": "https://opensource.org/licenses/MIT",
    "isAccessibleForFree": true,
    "downloadUrl": "https://github.com/kwy404/hivedesk/releases/latest",
    "installUrl": "https://www.npmjs.com/package/hivedesk",
    "image": "https://kwy404.github.io/hivedesk/og.png",
-   "screenshot": "https://kwy404.github.io/hivedesk/assets/shots/city-overview.webp",
+   "screenshot": "https://kwy404.github.io/hivedesk/media/1.0/city-1920.webp",
    "offers": {
     "@type": "Offer",
     "price": "0",
@@ -87,8 +87,8 @@
    "@type": "WebPage",
    "@id": "https://kwy404.github.io/hivedesk/es/#page",
    "url": "https://kwy404.github.io/hivedesk/es/",
-   "name": "hivedesk: agentes de IA en tu PC, gratis y de código abierto",
-   "description": "Espacio multiagente gratis: agentes de IA que crean archivos reales en tu PC con modelos abiertos. Comparte una GPU con un amigo. Sin cuenta ni clave de API.",
+   "name": "hivedesk: agentes de IA entre tus máquinas, de igual a igual",
+   "description": "hivedesk es un espacio P2P gratis y de código abierto donde agentes de IA colaboran entre tus máquinas. Invita a un amigo, usa su GPU, comparte pantalla.",
    "inLanguage": "es",
    "isPartOf": {
     "@type": "WebSite",
@@ -109,15 +109,39 @@
      "name": "¿Necesito una cuenta o una clave de API?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "No. Por defecto se usa un modelo que se ejecuta en tu propia máquina. Las claves son opcionales, solo para usar tu propia clave de API con un modelo en la nube; se guardan en un almacén de claves en esta máquina."
+      "text": "No. Por defecto se usa un modelo que se ejecuta en tu propia máquina, y los amigos se conectan contigo directamente. Las claves son opcionales, solo para usar tu propia clave de API con un modelo en la nube; se guardan en un almacén de claves en tu máquina."
      }
     },
     {
      "@type": "Question",
-     "name": "¿Cuánto ocupa la descarga y cuánto tarda la primera ejecución?",
+     "name": "¿Puede un amigo ver mis archivos?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "El modelo ocupa de 0.5 GB a 9.0 GB según tu hardware, más unos cientos de MB para el runtime. A 100 Mbit/s, el modelo 3B tarda unos 3 minutos y el 7B unos 6. Ocurre una sola vez; después, una ejecución está lista en lo que tarda en cargarse el modelo."
+      "text": "Solo si marcas Leer el espacio de trabajo para él. Cuando un amigo se une, solo está activado Ver la City. Las ediciones que propone esperan tu aprobación, también los archivos nuevos."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Qué ve la GPU de un amigo cuando la tomo prestada?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Los prompts y las respuestas de los trabajos que se le envían, nada más: ni archivos, ni herramientas, ni memoria. Su dueño puede detener cualquier trabajo, y cualquier llamada a herramienta que venga de su respuesta necesita tu aprobación."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Necesito la app de escritorio?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. npx hivedesk ejecuta el mismo motor y abre la ventana en tu navegador. La app añade la bandeja del sistema, las notificaciones del sistema y un selector de carpetas, y sigue prestando con la ventana cerrada. La tabla de arriba enumera todas las diferencias."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Alguien puede tomar el control de mi pantalla?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No sin tu clic. La pantalla remota está desactivada hasta que permitas tu dirección, cada petición necesita tu Aceptar, solo ver es lo predeterminado, cada permiso caduca, una pantalla bloqueada no acepta entrada, y un atajo de teclado o el botón Detener lo terminan todo."
      }
     },
     {
@@ -125,39 +149,15 @@
      "name": "¿Funciona en un portátil sin GPU?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Sí, en la CPU con un modelo pequeño: 3B con 16 GB de RAM, 1.5B con 8 a 16 GB, 0.5B por debajo de eso. Es lento, unos pocos tokens por segundo. Las tareas pequeñas funcionan; toca esperar."
+      "text": "Sí, en la CPU con un modelo pequeño, despacio: unos pocos tokens por segundo. Las tareas pequeñas funcionan. La GPU de un amigo, con su permiso, hace posibles modelos más grandes."
      }
     },
     {
      "@type": "Question",
-     "name": "¿Qué cambia el refinador de prompts?",
+     "name": "¿Y si dos redes no pueden conectarse?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Antes de planificar, Mel convierte tu petición en un brief: el objetivo, qué construir, las restricciones, las comprobaciones y cualquier pregunta abierta. El trabajo espera hasta que uses el brief, lo edites o te quedes con tu texto original. Puedes desactivarlo en Ajustes."
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "¿El modo de voz envía mi audio a alguna parte?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "La voz usa el reconocimiento de voz del navegador, que puede enviar el audio al servicio del fabricante del navegador. Las respuestas habladas de Mel se generan en tu PC cuando hay una voz local. Todavía no se incluye un reconocedor totalmente local."
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "¿Puede un trabajador dañar mi PC?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Los trabajadores solo tienen herramientas limitadas a la carpeta del espacio de trabajo, y se rechazan las rutas que intentan salir de ella. Los comandos se ejecutan con un tiempo límite, un tope de salida y sin red por defecto, y el modo de aprobación hace que los pasos arriesgados te esperen. Las extensiones se ejecutan en un sandbox con los permisos que aceptes."
-     }
-    },
-    {
-     "@type": "Question",
-     "name": "¿Por qué los lanzadores muestran un aviso de seguridad?",
-     "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Son scripts simples sin firma de código, así que Windows SmartScreen y macOS Gatekeeper preguntan antes de la primera ejecución. Cada uno solo comprueba que haya Node.js y ejecuta npx hivedesk@latest ."
+      "text": "Ejecuta hivedesk doctor --p2p . Comprueba los relays, tus puertos y tu tipo de red, y dice qué lado bloquea el enlace. No incluye un relay TURN; en una misma red, usa la opción LAN."
      }
     },
     {
@@ -165,7 +165,7 @@
      "name": "¿Puedo echar un vistazo sin descargar un modelo?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Sí: npx hivedesk --demo repite un trabajo con guion. Todo lo que muestra está etiquetado como demo."
+      "text": "Sí: npx hivedesk --demo reproduce una City en su propia carpeta temporal, y cada evento con guion está etiquetado como demo. Nunca toca tus proyectos."
      }
     },
     {
@@ -173,7 +173,7 @@
      "name": "¿Cómo lo desinstalo?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Borra ~/.hivedesk/ (el runtime, los modelos, tus ajustes) y la carpeta .hivedesk/ de tu proyecto. Si lo instalaste con npm, ejecuta también npm rm -g hivedesk ."
+      "text": "Borra ~/.hivedesk/ (tu identidad, los pares conocidos, el runtime, los modelos y tus ajustes) y la carpeta .hivedesk/ de tu proyecto. Si lo instalaste con npm, ejecuta también npm rm -g hivedesk ."
      }
     }
    ]
@@ -204,12 +204,13 @@
 </script>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../assets/shots/hive.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="../assets/monsoon.css">
 <link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/v1.css">
 <script>document.documentElement.classList.add('hd-js')</script>
 <script type="module" src="../assets/site.js"></script>
+<script type="module" src="../assets/v1.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Saltar al contenido</a>
@@ -221,24 +222,23 @@
       <span>hivedesk</span>
     </a>
     <nav id="nav" class="nav" :class="open ? 'is-open' : ''" aria-label="Principal">
-      <a href="#city" @click="open = false">Hive City</a>
-      <a href="#try" @click="open = false" data-i18n="nav.try">Pruébalo</a>
-      <a href="#how" @click="open = false" data-i18n="nav.how">Cómo funciona</a>
-      <a href="#features" @click="open = false" data-i18n="nav.features">Funciones</a>
-      <a href="#download" @click="open = false" data-i18n="nav.download">Descargar</a>
-      <a href="#limits" @click="open = false" data-i18n="nav.limits">Límites</a>
+      <a href="#how" @click="open = false">Cómo funciona</a>
+      <a href="#city" @click="open = false">La City</a>
+      <a href="#security" @click="open = false">Seguridad</a>
+      <a href="#compare" @click="open = false">App o navegador</a>
+      <a href="#download" @click="open = false">Descargar</a>
       <a href="#faq" @click="open = false">Preguntas</a>
     </nav>
     <div class="top-act">
       <span class="tooltip tooltip-bottom" data-tip="Ir a una sección (Ctrl K)">
         <button class="icon-btn search-btn" type="button" v-hotkey="mod+k" @click="PAL.show()" aria-label="Buscar en la página (Ctrl K)" aria-haspopup="dialog" aria-controls="palette">
-          <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><kbd class="kbd-hint">Ctrl K</kbd>
+          <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><kbd class="kbd-hint" aria-hidden="true">Ctrl K</kbd>
         </button>
       </span>
       <div class="lang" v-data="{ }" v-click-outside="LANGSEL.close(false)">
         <span class="tooltip tooltip-bottom" data-tip="Idioma">
           <button id="lang-btn" class="lang-btn" type="button" aria-label="Idioma: Español" aria-haspopup="listbox" aria-controls="lang-list" :aria-expanded="LANGSEL.open ? 'true' : 'false'" @click="LANGSEL.toggle()" @keydown="LANGSEL.btnKey($event)">
-            <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-globe"/></svg><span class="lang-cur" data-lang-label>Español</span><svg class="i chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-globe"/></svg><span class="lang-cur" data-lang-label translate="no">Español</span><svg class="i chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
           </button>
         </span>
         <ul id="lang-list" class="menu lang-menu" role="listbox" tabindex="-1" aria-label="Idioma" style="display:none" v-show="LANGSEL.open" v-transition="pop" :aria-activedescendant="'lang-opt-' + LANGSEL.active" @keydown="LANGSEL.key($event)">
@@ -252,7 +252,7 @@
       </span>
       <div id="theme-pop" popover class="popover popover-end theme-pop">
         <p class="popover-title">Temas de la app</p>
-        <div class="segmented theme-seg" role="radiogroup" aria-label="Tema" data-theme-seg>
+        <div class="segmented theme-seg" role="radiogroup" aria-label="Tema" data-theme-seg translate="no">
             <label class="segmented-item"><input type="radio" name="site-theme" value="mel" checked><i class="sw" style="--a:#FFB531;--b:#0E0D0B" aria-hidden="true"></i>Mel</label>
             <label class="segmented-item"><input type="radio" name="site-theme" value="meia-noite"><i class="sw" style="--a:#8FA8FF;--b:#0A0D14" aria-hidden="true"></i>Meia-noite</label>
             <label class="segmented-item"><input type="radio" name="site-theme" value="floresta"><i class="sw" style="--a:#8BCF7A;--b:#0C120E" aria-hidden="true"></i>Floresta</label>
@@ -266,7 +266,7 @@
       <span class="tooltip tooltip-bottom" data-tip="Código fuente en GitHub">
         <a class="icon-btn" href="https://github.com/kwy404/hivedesk" rel="noopener" aria-label="hivedesk en GitHub"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
       </span>
-      <a class="b b-light b-sm magnetic top-dl" href="#download" data-i18n="nav.download">Descargar</a>
+      <a class="b b-light b-sm top-dl" href="#download">Descargar</a>
       <button class="menu-btn" type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'" aria-controls="nav" aria-label="Menú">
         <span></span><span></span>
       </button>
@@ -277,502 +277,389 @@
 <main id="main">
 
 <!-- ================= HERO ================= -->
-<section class="hd-hero" aria-labelledby="hero-h">
-  <div class="hero-bg" aria-hidden="true"><div class="comb"></div><div class="cursor-glow"></div></div>
+<section class="hd-hero v1-hero" aria-labelledby="hero-h">
+  <div class="hero-bg" aria-hidden="true"><div class="grid-bg"></div></div>
   <div class="wrap hero-in">
-    <a class="eyebrow" href="#city"><span class="eb-tag">0.2.0</span><span data-i18n="hero.eyebrow">Hive City: tu equipo se convierte en un pequeño pueblo</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
-    <h1 id="hero-h" class="display display-long" aria-label="Tu propio equipo de IA. A un comando de distancia." data-i18n-h1>
-      <span class="w" style="--i:0" aria-hidden="true">Tu</span> <span class="w" style="--i:1" aria-hidden="true">propio</span> <span class="w" style="--i:2" aria-hidden="true">equipo</span> <span class="w" style="--i:3" aria-hidden="true">de</span> <span class="w" style="--i:4" aria-hidden="true">IA.</span><br><span class="w hl" style="--i:5" aria-hidden="true">A</span> <span class="w hl" style="--i:6" aria-hidden="true">un</span> <span class="w hl" style="--i:7" aria-hidden="true">comando</span> <span class="w hl" style="--i:8" aria-hidden="true">de</span> <span class="w hl" style="--i:9" aria-hidden="true">distancia.</span>
+    <a class="eyebrow" href="#how"><span class="eb-tag">1.0</span><span>Agentes, GPU y pantallas, compartidos de igual a igual</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+    <h1 id="hero-h" class="display display-caps" aria-label="Tus agentes. Tus máquinas. Tu City." data-i18n-h1>
+      <span class="w" style="--i:0" aria-hidden="true">Tus</span> <span class="w" style="--i:1" aria-hidden="true">agentes.</span><br><span class="w" style="--i:2" aria-hidden="true">Tus</span> <span class="w" style="--i:3" aria-hidden="true">máquinas.</span><br><span class="w hl" style="--i:4" aria-hidden="true">Tu</span> <span class="w hl" style="--i:5" aria-hidden="true">City.</span>
     </h1>
-    <p class="lede" data-i18n="hero.lede">Un equipo de trabajadores de IA que planifican, conversan y crean archivos reales en tu máquina, con un modelo local.</p>
+    <p class="lede">Un espacio de trabajo de igual a igual donde agentes de IA colaboran entre tus máquinas.</p>
     <div class="cta-row">
-      <div class="pill pill-hero" role="group" aria-label="Comando de instalación">
-        <span class="pill-p" aria-hidden="true">$</span>
-        <code class="typed">npx hivedesk</code><span class="caret" aria-hidden="true"></span>
-        <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copiado" aria-label="Copiar el comando npx hivedesk">
-          <svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>
-          <span class="copied-tip" aria-hidden="true">Copiado</span>
-        </button>
-      </div>
-      <a class="b b-light b-lg magnetic" href="#download">
-        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="nav.download">Descargar</span>
-      </a>
+      <a class="b b-honey b-lg" href="#download"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg><span>Construye tu City</span></a>
+      <a class="b b-ghost b-lg" href="#how"><span>Mira cómo funciona</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="byline">
-      <span><span data-i18n="hero.madeby">Hecho por</span> <b>Alexandre Kohler</b></span>
-      <a href="https://github.com/kwy404" rel="me noopener" aria-label="Alexandre Kohler en GitHub"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></a>
-      <a href="https://www.linkedin.com/in/alexandre-silva-173687256/" rel="me noopener" aria-label="Alexandre Kohler en LinkedIn"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linkedin"/></svg></a>
-      <span class="dot-sep" aria-hidden="true"></span><span>MIT</span><span class="dot-sep" aria-hidden="true"></span><span>Windows, macOS, Linux</span>
-    </p>
+    <p class="hero-rec"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg><span><b>La app de escritorio es la experiencia completa:</b> modelos en tu GPU, préstamo desde la bandeja del sistema y control remoto. <a href="#compare">Qué funciona en una pestaña del navegador</a></span></p>
   </div>
 
-  <div class="stage" data-parallax>
-    <figure class="window">
-      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>127.0.0.1 &middot; hivedesk</span></div>
-      <div class="window-body live">
-        <img src="../assets/shots/hive.webp" width="1920" height="1080" alt="La Colmena en modo demo: la línea de tiempo de un trabajo de landing page para una panadería, el chat del equipo, una vista previa en vivo de la página, la ventana Archivos con un diff y el trabajador Dev tras un turno, con el dock de trabajadores abajo." fetchpriority="high" decoding="async">
-        <div class="fx" aria-hidden="true">
-          <span class="fx-progress"></span>
-          <span class="fx-done d1">Listo</span><span class="fx-done d2">Listo</span><span class="fx-done d3">Listo</span><span class="fx-done d4">Listo</span>
-          <span class="fx-diff"></span>
-          <div class="fx-chat c1"><img src="../assets/crew/dev.svg" width="24" height="24" alt=""><span><b>Dev</b> index.html y app.js ya están escritos.</span></div>
-          <div class="fx-chat c2"><img src="../assets/crew/qa.svg" width="24" height="24" alt=""><span><b>QA</b> Encontré 1 problema: una imagen no tiene texto alternativo.</span></div>
-          <div class="fx-chat c3"><img src="../assets/crew/mel.svg" width="24" height="24" alt=""><span><b>Mel</b> Terminado, y QA lo aprobó.</span></div>
-          <span class="fx-bee b1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
-          <span class="fx-bee b2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
-          <span class="fx-bee b3"><img src="../assets/art/bee.svg" width="24" height="18" alt=""></span>
-        </div>
-      </div>
-    </figure>
-  </div>
-</section>
-
-<!-- ================= HIVE CITY ================= -->
-<section id="city" class="sec city" aria-labelledby="city-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker"><span class="soon" data-i18n="city.soon">Novedades de 0.2.0</span></p>
-      <h2 id="city-h" class="h2" data-i18n-2="city.h2">Hive City.<br><span>Tu equipo se convierte en un pequeño pueblo.</span></h2>
-      <p class="head-sub">hivedesk ahora se abre en una pequeña ciudad: tu PC es un edificio con salas, los agentes viven en él y cada tarea recorre las salas hasta quedar terminada. Tus amigos pueden unirse con seis palabras y traer su máquina.</p>
-    </header>
-
-    <div class="city-show reveal" data-city>
-      <div class="tabs tabs-boxed city-tabs" role="tablist" aria-label="Hive City">
-        <button type="button" class="tab" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">La ciudad</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">Se une un amigo</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">Pedir prestada una GPU</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">La sala de revisión</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">Una tarjeta de agente</button>
-      </div>
-      <div class="city-stage">
-        <div class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
-          <img src="../assets/shots/city-overview.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Hive City en modo demo: tu edificio en una isla flotante con las salas Design, Code, Review, Test, Ops, Library y Lobby, la torre de un amigo al otro lado de un puente, el tablero de tareas con tres tareas y el feed de eventos.">
-          <p class="city-cap"><b>La ciudad es el estado del sistema.</b> Cada sala es un espacio real con sus propias herramientas permitidas. El tablero de tareas muestra cada tarea y el ciclo en el que está.</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
-          <img src="../assets/shots/city-friend-rising.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El edificio de un amigo se levanta junto al tuyo después de que se uniera con seis palabras.">
-          <p class="city-cap"><b>Los amigos son edificios.</b> Un amigo se une con las seis palabras de Code together y su máquina se levanta junto a la tuya, con su GPU, su modelo y los agentes que viven en ella.</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
-          <img src="../assets/shots/city-bridge-gpu-borrow.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El puente iluminado mientras Dev usa la GPU prestada del amigo, y el panel Máquinas con 2 de 3 turnos usados y un botón Detener el préstamo.">
-          <p class="city-cap"><b>Pide prestada una GPU, con límites.</b> Un agente pide a la máquina de un amigo un número de turnos y de minutos. Quien presta acepta, baja los límites o rechaza; cada turno se cuenta, cualquiera de los dos puede pararlo y solo viajan prompts y respuestas.</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
-          <img src="../assets/shots/city-review-room.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Dentro de la sala Review: un agente lee el diff de una tarea según sus criterios.">
-          <p class="city-cap"><b>Design, Code, Review, Test.</b> Otro agente revisa el diff según los criterios y luego se ejecutan las comprobaciones. Un fallo vuelve al autor con los problemas, como máximo 3 veces, y después la tarea queda bloqueada. Puedes aprobar o devolver en cualquier paso.</p>
-        </div>
-        <div class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
-          <img src="../assets/shots/city-agent-card.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="Una tarjeta de agente: nombre, sala propia, nivel y XP, estadísticas, herramientas y la memoria privada del agente.">
-          <p class="city-cap"><b>Agentes que se quedan.</b> Cada agente tiene un nivel y XP por el trabajo terminado, sus herramientas y una memoria privada que puedes editar y fijar. Se guardan en tu máquina, así que mañana vuelven los mismos agentes y las tareas sin terminar se abren de nuevo.</p>
-        </div>
-        <div class="city-progress" aria-hidden="true"><span></span></div>
-      </div>
-    </div>
-
-    <div class="city-grid reveal">
-      <div class="hd-card"><h3>Agentes que se quedan</h3><p>Cada trabajador del equipo es un agente con una sala propia, un nivel y XP (10 por trabajo, 4 por una revisión, 3 por una prueba, 5 más cuando una tarea no necesita ningún ciclo), herramientas y una memoria de 40 entradas breves como máximo.</p></div>
-      <div class="hd-card"><h3>Salas con reglas</h3><p>Lobby, Design, Code, Review, Test, Ops y Library. Mientras un agente trabaja en una sala, sus herramientas se reducen a las de esa sala. Ops es solo para el anfitrión, y las extensiones pueden añadir salas.</p></div>
-      <div class="hd-card"><h3>Un bus de tareas</h3><p>Las tareas vienen de ti, del plan de Mel o de agentes que devuelven trabajo. Los agentes libres pujan según habilidad, nivel y carga de la máquina; cada asignación, paso y veredicto es un evento que puedes repetir.</p></div>
-      <div class="hd-card"><h3>Seguro con invitados</h3><p>Gana el dueño de la máquina, del agente o de la tarea. Las tareas de un invitado se ejecutan con el modo de aprobación activado, sin comandos ni borrados, y nunca en Ops. ¿Prefieres el escritorio de antes? Empieza con <code>--no-city</code>.</p></div>
-    </div>
-    <p class="caption caption-center">Capturas reales de <code>npx hivedesk --demo</code>, que reproduce un escenario de ciudad: un amigo se une con seis palabras, Dev pide prestada su GPU por tres turnos y una tarea pasa por Design, Code, Review y Test hasta quedar terminada. Cada evento de la demo está etiquetado. Aún no: Test ejecuta las comprobaciones estáticas (HTML, enlaces, sintaxis JS, CSS, JSON), no tu propia batería de pruebas, y el préstamo tiene límites por petición, no es un uso compartido permanente.</p>
-  </div>
+  <figure class="hero-art" data-anim>
+    <img class="ha-img" src="../assets/art/1.0/hero.svg" width="1220" height="640" fetchpriority="high" decoding="async" alt="Tu PC y el PC de un amigo como dos edificios en islas flotantes de tu City, unidos por un puente que lleva tareas cifradas, con la GPU del amigo prestando turnos.">
+    <figcaption class="ha-labels">
+      <span class="ha-l l-a"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>Tu PC</span>
+      <span class="ha-l l-p"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg>P2P cifrado</span>
+      <span class="ha-l l-b"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg>El PC de un amigo con GPU</span>
+      <span class="ha-l l-c"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg>Tu City</span>
+    </figcaption>
+  </figure>
 </section>
 
 <!-- ================= FILM ================= -->
-<section id="film" class="film" aria-labelledby="film-h">
-  <div class="wrap film-in">
-    <div class="film-copy reveal">
-      <p class="kicker" data-i18n="film.kicker">La película</p>
-      <h2 id="film-h" class="h2" data-i18n-2="film.h2">hivedesk en 75 segundos.<br><span>De una frase a una página terminada.</span></h2>
-      <p class="head-sub">Una película corta de la app real: el asistente elige un modelo para la GPU, Mel escribe un brief, el equipo construye, tú apruebas, y el trabajo termina con un prompt mejor y un pull request. La narración aparece en pantalla, en portugués, con subtítulos en inglés.</p>
-    </div>
-    <figure class="film-frame reveal" data-film>
-      <video class="film-video" width="1080" height="1350" preload="none" muted playsinline loop poster="../media/hivedesk-poster.webp" aria-label="La película de hivedesk, 75 segundos, con música y texto en pantalla">
-        <source src="../media/hivedesk.mp4" type="video/mp4">
-        <track kind="captions" src="../media/hivedesk.en.vtt" srclang="en" label="English" default>
-        <track kind="captions" src="../media/hivedesk.pt-BR.vtt" srclang="pt-BR" label="Português">
+<section id="film" class="sec film" aria-labelledby="film-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <h2 id="film-h" class="h2">La película de la 1.0</h2>
+      <p class="head-sub">Todo lo de la 1.0 en menos de cuatro minutos, grabado de la app real. El texto en pantalla está en portugués.</p>
+    </header>
+    <div class="film-frame reveal">
+      <video width="1280" height="720" poster="../media/hivedesk-1.0-poster.webp" controls preload="none" playsinline aria-label="Mira la película de lanzamiento de hivedesk 1.0">
+        <source src="../media/hivedesk-1.0.mp4" type="video/mp4">
       </video>
-      <button class="film-play" type="button" data-film-play>
-        <span class="film-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
-        <span class="film-label"><b data-i18n="film.play">Reproducir con sonido</b><span>1:15</span></span>
-      </button>
-      <figcaption class="sr">La película muestra el asistente, el brief, el equipo trabajando, las aprobaciones, un pull request, los temas, los 10 idiomas y las descargas.</figcaption>
-    </figure>
+    </div>
   </div>
 </section>
 
-<!-- ================= NUMBERS ================= -->
-<section class="numbers" aria-label="hivedesk en cifras">
-  <div class="wrap">
-    <dl class="num-grid">
-      <div><dt>Comando para empezar</dt><dd>1</dd></div>
-      <div><dt>Trabajadores incluidos, más los que contrates</dt><dd>5</dd></div>
-      <div><dt>Idiomas en la Colmena</dt><dd>10</dd></div>
-      <div><dt>Temas incluidos</dt><dd>8</dd></div>
-      <div><dt>Cuentas o claves de API necesarias</dt><dd>0</dd></div>
-    </dl>
-  </div>
-</section>
-
-<!-- ================= TRY IT ================= -->
-<section id="try" class="sec try" aria-labelledby="try-h">
+<!-- ================= HOW ================= -->
+<section id="how" class="sec how" aria-labelledby="how-h">
   <div class="wrap">
     <header class="head head-center reveal">
-      <p class="kicker" data-i18n="try.kicker">Pruébalo aquí</p>
-      <h2 id="try-h" class="h2" data-i18n-2="try.h2">Pide algo pequeño.<br><span>Mira cómo reacciona el equipo.</span></h2>
+      <p class="kicker">Cómo funciona</p>
+      <h2 id="how-h" class="h2">Una City.<br><span>Todas las máquinas en las que confías.</span></h2>
+      <p class="head-sub">Tu PC es el primer edificio. Tus amigos traen los suyos. Los agentes viven en las salas, toman las tareas y piensan en la máquina que elija el planificador, siempre dentro de lo que el dueño permitió.</p>
     </header>
-    <div class="try-box reveal" data-try>
-      <form class="try-form" data-try-form>
-        <label class="sr" for="try-in" data-i18n="try.label">¿Qué debería construir el equipo?</label>
-        <svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-hive"/></svg>
-        <input id="try-in" name="q" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="¿Qué debería construir hoy el equipo?" data-i18n-ph="try.ph">
-        <button class="b b-honey" type="submit"><span data-i18n="try.run">Poner en marcha</span></button>
-      </form>
-      <div class="try-chips" data-try-chips>
-        <button type="button">una landing page para mi panadería</button>
-        <button type="button">una app de tareas que guarde en localStorage</button>
-        <button type="button">un juego de la serpiente</button>
-        <button type="button">un README para mi script</button>
+    <ol class="steps4 reveal">
+      <li class="hd-card"><span class="step-n">1</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-city"/></svg><h3>Crea tu City</h3><p>Inicia hivedesk. Tu PC se convierte en un edificio con salas donde trabajan los agentes: Design, Code, Review, Test, Ops y Library.</p></li>
+      <li class="hd-card"><span class="step-n">2</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>Invita a un amigo</h3><p>Comparte seis palabras. Ambos comparan las palabras de verificación, tú eliges qué puede hacer y su máquina se levanta junto a la tuya.</p></li>
+      <li class="hd-card"><span class="step-n">3</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg><h3>Los agentes toman las tareas</h3><p>Un arquitecto diseña, un desarrollador escribe, QA ejecuta las pruebas y un revisor lee el diff. Un fallo vuelve al autor, como máximo 3 veces.</p></li>
+      <li class="hd-card"><span class="step-n">4</span><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>Pide prestada una GPU</h3><p>Cuando un modelo no cabe en tu máquina, el planificador pide una concesión a la GPU de un amigo, explica por qué y se detiene en cuanto cualquiera de los dos lo diga.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= CITY ================= -->
+<section id="city" class="sec sec-line city" aria-labelledby="city-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">La City</p>
+      <h2 id="city-h" class="h2">La City es el sistema.<br><span>Nada en ella es decoración.</span></h2>
+      <p class="head-sub">Los edificios son máquinas, las salas son lugares con sus propias herramientas y cada tarea recorre las salas hasta quedar terminada. Cada número está medido, o el panel dice que no está medido.</p>
+    </header>
+
+    <div class="city-show reveal" data-city>
+      <div class="tabs tabs-boxed city-tabs" role="tablist" aria-label="La City">
+        <button type="button" class="tab" role="tab" aria-selected="true" aria-controls="cp-0" id="ct-0" data-i="0">La City</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-1" id="ct-1" data-i="1" tabindex="-1">Dentro de una sala</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-2" id="ct-2" data-i="2" tabindex="-1">La Office</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-3" id="ct-3" data-i="3" tabindex="-1">Máquinas</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-4" id="ct-4" data-i="4" tabindex="-1">Editor de código</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="cp-5" id="ct-5" data-i="5" tabindex="-1">Pantalla remota</button>
       </div>
-      <div class="try-stage" aria-live="polite">
-        <div class="try-col">
-          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-sparkle"/></svg><span data-i18n="try.brief">Brief de Mel</span></p>
-          <div class="try-brief" data-try-brief><p class="try-empty" data-i18n="try.empty">Escribe una petición o elige una de arriba.</p></div>
+      <div class="city-stage">
+        <div class="city-slide is-on" role="tabpanel" id="cp-0" aria-labelledby="ct-0">
+          <img src="../media/1.0/city-1920.webp" srcset="../media/1.0/city-1440.webp 1440w, ../media/1.0/city-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="La City en modo demo: tu edificio en una isla flotante con las salas Design, Code, Review, Test, Ops, Library y Lobby, la torre de un amigo al otro lado de un puente, el tablero de tareas y el feed de eventos.">
+          <p class="city-cap"><b>Salas con reglas.</b> Mientras un agente trabaja en una sala, sus herramientas se reducen a las de esa sala. El tablero de tareas muestra cada tarea, su estado y el ciclo en el que está.</p>
         </div>
-        <div class="try-col">
-          <p class="try-h"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg><span data-i18n="try.tasks">Tareas, un turno cada vez</span></p>
-          <ol class="try-tasks" data-try-tasks></ol>
-          <p class="try-done" data-try-done hidden></p>
+        <div class="city-slide" role="tabpanel" id="cp-1" aria-labelledby="ct-1" hidden>
+          <img src="../media/1.0/city-room-1920.webp" srcset="../media/1.0/city-room-1440.webp 1440w, ../media/1.0/city-room-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="Dentro de la sala Code: el panel de la sala con sus reglas, las herramientas permitidas y el agente que trabaja allí.">
+          <p class="city-cap"><b>Cada sala dice lo que permite.</b> El panel muestra las herramientas permitidas dentro, quién está ahora y las tareas de la sala.</p>
         </div>
-        <div class="try-bees" aria-hidden="true" data-try-bees></div>
+        <div class="city-slide" role="tabpanel" id="cp-2" aria-labelledby="ct-2" hidden>
+          <img src="../media/1.0/office-1920.webp" srcset="../media/1.0/office-1440.webp 1440w, ../media/1.0/office-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="La vista Office: el equipo en sus mesas alrededor de Mel, el trabajo actual y su progreso.">
+          <p class="city-cap"><b>Los mismos eventos, por dentro.</b> La Office muestra al equipo trabajando, el trabajo actual y cuántas tareas están terminadas.</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-3" aria-labelledby="ct-3" hidden>
+          <img src="../media/1.0/machines-1920.webp" srcset="../media/1.0/machines-1440.webp 1440w, ../media/1.0/machines-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="El panel Máquinas junto a la City: GPU, VRAM, CPU y RAM de este PC, cada número con su origen.">
+          <p class="city-cap"><b>Cada número tiene un origen.</b> Las muestras en vivo dicen cuándo se tomaron, y lo que no se midió dice que no se midió.</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-4" aria-labelledby="ct-4" hidden>
+          <img src="../media/1.0/editor-1920.webp" srcset="../media/1.0/editor-1440.webp 1440w, ../media/1.0/editor-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="El editor de código con el explorador, un archivo abierto y el registro de ejecución.">
+          <p class="city-cap"><b>Un banco de trabajo real.</b> Explorador, pestañas, formatear y guardar, y los comandos que ejecuta el equipo en el registro de ejecución.</p>
+        </div>
+        <div class="city-slide" role="tabpanel" id="cp-5" aria-labelledby="ct-5" hidden>
+          <img src="../media/1.0/remote-1920.webp" srcset="../media/1.0/remote-1440.webp 1440w, ../media/1.0/remote-1920.webp 1920w" sizes="(max-width: 1200px) 100vw, 1120px" width="1920" height="1080" loading="lazy" decoding="async" alt="La ventana Pantalla remota: cómo funciona, tu dirección, la dirección del compañero y qué pedir.">
+          <p class="city-cap"><b>Nada está permitido hasta que se marca.</b> El equipo al que se accede siempre decide, y una barra roja con Detener queda arriba mientras alguien está conectado.</p>
+        </div>
       </div>
-      <p class="try-fine"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span data-i18n="try.fine">Una vista previa con guion que se ejecuta en esta página. Nada de lo que escribes sale de tu navegador; el equipo real trabaja en tu máquina con un modelo local.</span></p>
+      <p class="caption caption-center">Capturas de hivedesk 1.0 en modo demo, donde cada evento guionizado está etiquetado.</p>
     </div>
   </div>
 </section>
 
-<!-- ================= STORY ================= -->
-<section id="how" class="sec story" aria-labelledby="how-h">
+<!-- ================= INVITE ================= -->
+<section id="invite" class="sec sec-line" aria-labelledby="invite-h">
   <div class="wrap">
-    <header class="head reveal">
-      <p class="kicker" data-i18n="nav.how">Cómo funciona</p>
-      <h2 id="how-h" class="h2" data-i18n-2="how.h2">De una frase a publicado.<br><span>Seis pasos, todos en tu máquina.</span></h2>
+    <header class="head head-center reveal">
+      <p class="kicker">Invita a un amigo</p>
+      <h2 id="invite-h" class="h2">Seis palabras.<br><span>Dos comprobaciones. Un clic.</span></h2>
+      <p class="head-sub">Las palabras se encuentran a través de un relay y establecen una sesión cifrada. Luego ambas pantallas muestran las mismas palabras de verificación, y no se comparte nada hasta que aceptas.</p>
     </header>
-    <div class="story-grid" data-story>
-      <div class="story-visual" aria-hidden="true">
-        <div class="sv-frame">
-          <div class="sv" data-v="0">
-            <div class="sv-ask"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span class="sv-typing">Una landing page para mi panadería, con un menú y un formulario de contacto</span><span class="sv-build">Construir</span></div>
-          </div>
-          <div class="sv" data-v="1">
-            <div class="sv-brief">
-              <span class="sv-label"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>Brief de Mel</span>
-              <p><b>Objetivo</b>Un sitio de una sola página para Crumb, una panadería de barrio.</p>
-              <p><b>Construir</b>Portada, menú con tres panes, horario, formulario de contacto.</p>
-              <p><b>Restricciones</b>HTML y CSS simples, funciona en móviles.</p>
-              <p><b>Comprobaciones</b>Texto alternativo en las imágenes, etiquetas en el formulario.</p>
-              <div class="sv-acts"><span class="on">Usar este</span><span>Editar</span><span>Usar la mía</span></div>
-            </div>
-          </div>
-          <div class="sv" data-v="2">
-            <div class="sv-plan">
-              <div class="node n1"><img src="../assets/crew/designer.svg" width="28" height="28" alt=""><span>Definir el estilo</span></div>
-              <div class="node n2"><img src="../assets/crew/dev.svg" width="28" height="28" alt=""><span>Construir la página</span></div>
-              <div class="node n3"><img src="../assets/crew/writer.svg" width="28" height="28" alt=""><span>Escribir el README</span></div>
-              <div class="node n4"><img src="../assets/crew/qa.svg" width="28" height="28" alt=""><span>Revisar la página</span></div>
-              <svg class="edges" viewBox="0 0 400 240" preserveAspectRatio="none"><path d="M120 50 C 190 50, 190 120, 260 120"/><path d="M120 190 C 190 190, 190 120, 260 120"/><path d="M120 50 L 120 190"/></svg>
-            </div>
-          </div>
-          <div class="sv" data-v="3">
-            <div class="sv-code">
-              <div class="code-top"><span>index.html</span><span class="who-chip"><img src="../assets/crew/dev.svg" width="18" height="18" alt="">Dev está escribiendo</span></div>
-              <pre><span class="ln">1</span><span class="cl add">&lt;header class="hero"&gt;</span>
-<span class="ln">2</span><span class="cl add">  &lt;h1&gt;Bread worth waking up for.&lt;/h1&gt;</span>
-<span class="ln">3</span><span class="cl add">  &lt;a href="#order"&gt;Order for tomorrow&lt;/a&gt;</span>
-<span class="ln">4</span><span class="cl add">&lt;/header&gt;</span>
-<span class="ln">5</span><span class="cl add">&lt;section id="menu"&gt;&hellip;&lt;/section&gt;</span></pre>
-            </div>
-          </div>
-          <div class="sv" data-v="4">
-            <ul class="sv-checks">
-              <li class="ok">El HTML es válido</li>
-              <li class="bad">Una imagen no tiene texto alternativo<em>tarea de corrección enviada a Dev</em></li>
-              <li class="ok">El formulario tiene etiquetas</li>
-              <li class="ok">Funciona a 375 px</li>
-              <li class="ok final">Todas las comprobaciones superadas</li>
-            </ul>
-          </div>
-          <div class="sv" data-v="5">
-            <div class="sv-ship">
-              <div class="gh-row"><svg class="i"><use href="../assets/icons.svg#i-github"/></svg><b>Publicar en GitHub</b><span class="muted">tú confirmas cada paso</span></div>
-              <ol>
-                <li><span class="tick"></span>Rama <code>hivedesk/crumb-landing</code></li>
-                <li><span class="tick"></span>Commit de 5 archivos</li>
-                <li><span class="tick"></span>Push a origin</li>
-                <li><span class="tick"></span>Pull request abierto</li>
-                <li><span class="tick"></span>Comprobaciones superadas</li>
-              </ol>
-            </div>
-          </div>
+
+    <div class="demo inv reveal" data-invite>
+      <div class="demo-bar">
+        <ol class="demo-steps" aria-label="Pasos">
+          <li data-s="0">Invitar</li><li data-s="1">Unirse</li><li data-s="2">Conexión</li><li data-s="3">Verificación</li><li data-s="4">Permisos</li><li data-s="5">Bienvenida</li>
+        </ol>
+        <div class="demo-act">
+          <button type="button" class="b b-ghost b-sm" data-inv-reset>Empezar de nuevo</button>
+          <button type="button" class="b b-honey b-sm" data-inv-next>Siguiente paso</button>
         </div>
-        <ol class="sv-dots"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
       </div>
-      <ol class="story-steps">
-        <li class="st-step" data-step="0"><span class="step-n">01</span><h3>Pedir</h3><p>Escribe lo que quieres en el cuadro de petición, tal como te salga. O dilo: el modo de voz escucha mientras mantienes <kbd>Ctrl</kbd> <kbd>Space</kbd>.</p></li>
-        <li class="st-step" data-step="1"><span class="step-n">02</span><h3>Refinar</h3><p>Mel lo convierte en un brief: el objetivo, qué construir, las restricciones, las comprobaciones y cualquier pregunta abierta. El trabajo espera hasta que lo uses, lo edites o te quedes con tus propias palabras.</p></li>
-        <li class="st-step" data-step="2"><span class="step-n">03</span><h3>Planificar</h3><p>Mel divide el brief en un grafo de tareas y entrega cada tarea a un trabajador. Los trabajos que salieron bien se convierten en playbooks que Mel reutiliza.</p></li>
-        <li class="st-step" data-step="3"><span class="step-n">04</span><h3>Construir</h3><p>Los trabajadores se turnan en un único modelo local y escriben archivos reales en tu espacio de trabajo. Cada escritura es un diff; los comandos y los borrados esperan tu aprobación.</p></li>
-        <li class="st-step" data-step="4"><span class="step-n">05</span><h3>Comprobar</h3><p>QA ejecuta las comprobaciones y devuelve lo que falla como tareas de corrección, hasta que la página pasa.</p></li>
-        <li class="st-step" data-step="5"><span class="step-n">06</span><h3>Publicar</h3><p>Conecta GitHub y el equipo puede crear una rama por trabajo, hacer commit y push y abrir un pull request con su estado de CI. Cada acción se muestra primero como un plan y solo se ejecuta cuando la confirmas.</p></li>
-      </ol>
+      <div class="inv-grid">
+        <article class="inv-pc">
+          <p class="inv-who"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>Tu pantalla</p>
+          <div class="inv-panel" data-pane="you">
+            <div class="inv-v" data-v="0 1 2"><p class="inv-lbl">Palabras de invitación</p><p class="words" translate="no"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></p><p class="inv-note">Sirve una sola vez, durante 10 minutos.</p></div>
+            <div class="inv-v" data-v="2"><p class="inv-status"><span class="spin" aria-hidden="true"></span>Comprobando claves</p></div>
+            <div class="inv-v" data-v="3 4"><p class="inv-lbl">Verificación</p><p class="words words-sas" translate="no"><span>tiger</span><span>velvet</span><span>anchor</span><span>maple</span><span>ribbon</span><span>ocean</span></p><p class="inv-q">¿Coinciden estas palabras en la pantalla de Ana?</p></div>
+            <div class="inv-v" data-v="4">
+              <p class="inv-lbl">Qué puede hacer Ana</p>
+              <ul class="perm">
+                <li><label><input type="checkbox" checked data-perm="view"><span>Ver la City</span></label></li>
+                <li><label><input type="checkbox" data-perm="member"><span>Traer un edificio y agentes</span></label></li>
+                <li><label><input type="checkbox" data-perm="gpu"><span>Usar mi GPU para trabajos</span></label></li>
+                <li><label><input type="checkbox" data-perm="read"><span>Leer el espacio de trabajo</span></label></li>
+              </ul>
+            </div>
+            <div class="inv-v" data-v="5"><p class="inv-status ok"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>Ana se unió a tu City</p><p class="inv-log" data-inv-log translate="no">p2p.join accepted, grants: city.view</p></div>
+          </div>
+        </article>
+        <div class="inv-mid" aria-hidden="true"><span class="inv-wire"></span><span class="inv-lock"><svg class="i"><use href="../assets/icons.svg#i-lock"/></svg></span></div>
+        <article class="inv-pc">
+          <p class="inv-who"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg>Pantalla de Ana</p>
+          <div class="inv-panel" data-pane="ana">
+            <div class="inv-v" data-v="0"><p class="inv-status dim">Esperando las palabras</p></div>
+            <div class="inv-v" data-v="1 2"><p class="inv-lbl">Unirse con palabras</p><p class="words words-typed" translate="no"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></p><p class="inv-status" data-v-only="1"><span class="spin" aria-hidden="true"></span>Buscándose a través del relay</p></div>
+            <div class="inv-v" data-v="3 4"><p class="inv-lbl">Verificación</p><p class="words words-sas" translate="no"><span>tiger</span><span>velvet</span><span>anchor</span><span>maple</span><span>ribbon</span><span>ocean</span></p><p class="inv-q">Esperando a que aceptes</p></div>
+            <div class="inv-v" data-v="5"><p class="inv-status ok"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg>Estás en la City</p></div>
+          </div>
+        </article>
+        <div class="inv-city" aria-hidden="true">
+          <svg viewBox="0 0 360 150">
+            <path d="M40 104 L180 52 L320 104 L180 156 Z" fill="#121418" stroke="#FFFFFF" stroke-opacity=".1"/>
+            <g><path d="M140 52 L170 67 L140 82 L110 67 Z" fill="#3A3D44"/><path d="M110 67 L140 82 L140 122 L110 107 Z" fill="#17191D"/><path d="M140 82 L170 67 L170 107 L140 122 Z" fill="#1E2126"/><path d="M110 67 L140 82 L170 67" fill="none" stroke="#E3A447" stroke-opacity=".7"/></g>
+            <g class="inv-rise"><path d="M226 48 L254 62 L226 76 L198 62 Z" fill="#2A313B"/><path d="M198 62 L226 76 L226 124 L198 110 Z" fill="#17202A"/><path d="M226 76 L254 62 L254 110 L226 124 Z" fill="#1E2C3A"/></g>
+          </svg>
+        </div>
+      </div>
+      <p class="demo-fine">Una simulación en esta página: no se envía nada. En la app, la invitación queda anulada con el primer intento de conexión que empieza con ella, salga bien o mal, y una palabra equivocada significa una invitación nueva.</p>
     </div>
   </div>
 </section>
 
-<!-- ================= BENTO ================= -->
-<section id="features" class="sec" aria-labelledby="feat-h">
+<!-- ================= BORROW ================= -->
+<section id="borrow" class="sec sec-line" aria-labelledby="borrow-h">
   <div class="wrap">
-    <header class="head reveal">
-      <p class="kicker" data-i18n="nav.features">Funciones</p>
-      <h2 id="feat-h" class="h2" data-i18n-2="feat.h2">Todo lo que el equipo necesita.<br><span>Nada que no deba tocar.</span></h2>
+    <header class="head head-center reveal">
+      <p class="kicker">Pide prestada una GPU</p>
+      <h2 id="borrow-h" class="h2">Una concesión, un límite<br><span>y un botón Detener.</span></h2>
+      <p class="head-sub">Compartir está desactivado hasta que el dueño lo activa, por separado para la GPU y la CPU, con límites de memoria, trabajos y tiempo. Un trabajo prestado tiene una concesión de 15 segundos que se renueva mientras fluyen tokens, y los turnos del propio dueño siempre van primero.</p>
     </header>
 
-    <div class="bento">
-      <article class="tile tilt t-refine reveal" aria-labelledby="t-refine">
-        <div class="tile-copy"><h3 id="t-refine">El refinador de prompts</h3><p>Una petición a medio pensar se convierte en un brief estructurado antes de empezar. Al final, el informe del trabajo sugiere un prompt mejorado para la próxima vez.</p></div>
-        <div class="viz refine" aria-hidden="true">
-          <div class="rf-raw"><span class="rf-who">Tú</span><span class="rf-text">sitio para mi panadería crumb, menú + contacto porfa</span></div>
-          <div class="rf-arrow"><svg class="i"><use href="../assets/icons.svg#i-wand"/></svg></div>
-          <div class="rf-brief">
-            <span class="rf-who rf-hl"><svg class="i"><use href="../assets/icons.svg#i-sparkle"/></svg>Brief</span>
-            <p class="rf-l"><b>Objetivo</b>Un sitio de una sola página para Crumb, una panadería de barrio.</p>
-            <p class="rf-l"><b>Construir</b>Portada, un menú con tres panes y precios, horario, un formulario de contacto.</p>
-            <p class="rf-l"><b>Restricciones</b>HTML y CSS simples, funciona en móviles.</p>
-            <p class="rf-l"><b>Comprobaciones</b>Cada imagen tiene texto alternativo, el formulario tiene etiquetas.</p>
-          </div>
+    <div class="demo bor reveal" data-borrow>
+      <div class="demo-bar">
+        <div class="seg-row" role="radiogroup" aria-label="Modelo que necesita la tarea">
+          <span class="seg-lbl">La tarea necesita</span>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="3" checked><span>Modelo 3B</span></label>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="7"><span>Modelo 7B</span></label>
+          <label class="seg-opt"><input type="radio" name="bor-model" value="14"><span>Modelo 14B</span></label>
         </div>
-      </article>
-
-      <article class="tile tilt t-model reveal" aria-labelledby="t-model">
-        <div class="tile-copy"><h3 id="t-model">Elige el modelo por ti</h3><p>Lee tu VRAM y tu RAM y te dice por qué, en una línea.</p></div>
-        <div class="viz picker" aria-hidden="true">
-          <div class="vram"><span class="vram-label">VRAM</span><div class="vram-bar"><span class="vram-fill"></span><i style="left:40%">4</i><i style="left:70%">7</i><i style="left:100%">10 GB</i></div></div>
-          <ul class="pk-list">
-            <li><span>14B</span><span>9.0 GB</span></li>
-            <li><span>7B</span><span>4.7 GB</span></li>
-            <li class="pick"><span>3B<em>recomendado</em></span><span>2.1 GB</span></li>
-            <li><span>1.5B</span><span>1.1 GB</span></li>
+        <div class="demo-act">
+          <button type="button" class="b b-honey b-sm" data-bor-run><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-plan"/></svg>Ejecutar una tarea</button>
+          <button type="button" class="b b-ghost b-sm" data-bor-stop disabled><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-stop"/></svg>Ana lo detiene</button>
+        </div>
+      </div>
+      <div class="bor-grid">
+        <article class="mach" data-mach="you">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><h3>Tu PC</h3><span class="mach-tag">GPU de 6 GB</span></header>
+          <div class="meter"><span class="m-lbl">Memoria de GPU</span><span class="m-bar"><i data-m="vram" style="--v:.30"></i></span><span class="m-val" data-mv="vram" translate="no">1.8 of 6.0 GB</span></div>
+          <div class="meter"><span class="m-lbl">Carga de GPU</span><span class="m-bar"><i data-m="util" style="--v:.06"></i></span><span class="m-val" data-mv="util" translate="no">6%</span></div>
+          <div class="meter"><span class="m-lbl">Carga de CPU</span><span class="m-bar"><i data-m="cpu" style="--v:.12"></i></span><span class="m-val" data-mv="cpu" translate="no">12%</span></div>
+          <div class="meter"><span class="m-lbl">RAM libre</span><span class="m-bar"><i style="--v:.56"></i></span><span class="m-val" translate="no">9.0 of 16 GB</span></div>
+          <p class="mach-src">Medido en esta máquina</p>
+        </article>
+        <article class="sched" aria-live="polite">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-compass"/></svg><h3>El planificador</h3></header>
+          <ul class="cands" data-cands></ul>
+          <p class="reason" data-reason>Elige lo que necesita la tarea y ejecútala.</p>
+          <div class="lease" data-lease hidden>
+            <span class="lease-row"><span>Concesión</span><b data-lease-left translate="no">15 s</b></span>
+            <span class="lease-row"><span>Tokens</span><b data-tok translate="no">0</b></span>
+            <span class="lease-row"><span>Latido</span><b data-hb>cada 5 s</b></span>
+          </div>
+          <div class="choices" data-choices hidden>
+            <p data-choice-msg>Ana detuvo el trabajo. Se conservan los 112 tokens escritos hasta ahora.</p>
+            <div class="b-row"><button type="button" class="b b-ghost b-xs" data-bor-reset>Reintentar en local</button><button type="button" class="b b-ghost b-xs" data-bor-reset>Usar lo parcial</button><button type="button" class="b b-ghost b-xs" data-bor-reset>Cancelar</button></div>
+          </div>
+        </article>
+        <article class="mach" data-mach="ana">
+          <header><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>PC de Ana</h3><span class="mach-tag">GPU de 12 GB</span></header>
+          <div class="meter"><span class="m-lbl">Memoria de GPU</span><span class="m-bar"><i data-m="vram" style="--v:.13"></i><b class="m-cap" style="--c:.67" title="Lo máximo que comparte Ana"></b></span><span class="m-val" data-mv="vram" translate="no">1.6 of 12 GB</span></div>
+          <div class="meter"><span class="m-lbl">Carga de GPU</span><span class="m-bar"><i data-m="util" style="--v:.03"></i></span><span class="m-val" data-mv="util" translate="no">3%</span></div>
+          <div class="meter"><span class="m-lbl">Carga de CPU</span><span class="m-bar"><i data-m="cpu" style="--v:.08"></i></span><span class="m-val" data-mv="cpu" translate="no">8%</span></div>
+          <ul class="share-set">
+            <li><span>Compartir GPU</span><b class="on">Activado</b></li>
+            <li><span>Memoria de GPU máxima</span><b translate="no">8 GB</b></li>
+            <li><span>Trabajos a la vez</span><b translate="no">1</b></li>
+            <li><span>Trabajo más largo</span><b translate="no">120 s</b></li>
+            <li><span>Compartir CPU</span><b>Desactivado</b></li>
           </ul>
-          <p class="pk-why">Tarjeta gráfica de 6 GB detectada: el modelo de código 3B, entero en la GPU.</p>
-        </div>
-      </article>
-
-      <article class="tile tilt t-collab reveal" aria-labelledby="t-collab">
-        <div class="tile-copy"><h3 id="t-collab">Code together</h3><p>Invita a un amigo a la ventana Código: los dos editan los mismos archivos y cada uno ve el cursor del otro. Lo que guarda tu amigo espera tu aprobación, como un diff.</p></div>
-        <div class="viz collab" aria-hidden="true">
-          <div class="ed">
-            <div class="ed-top"><span>style.css</span><span class="peers"><i class="p-you">Tú</i><i class="p-ana">Ana</i></span></div>
-<pre class="ed-code"><span class="ln">1</span>.hero {
-<span class="ln">2</span>  padding: 64px 24px;<span class="cur c-you"><b>You</b></span>
-<span class="ln">3</span>  background: <span class="typing-ana">#FFF8EC</span>;<span class="cur c-ana"><b>Ana</b></span>
-<span class="ln">4</span>}</pre>
-          </div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-github reveal" aria-labelledby="t-github">
-        <div class="tile-copy"><h3 id="t-github">Publicar en GitHub</h3><p>Una rama por trabajo, commit, push, pull request y estado de CI. Cada paso es un plan que confirmas. Mel redacta la entrada del changelog; no se escribe nada hasta que la apruebes.</p></div>
-        <div class="viz gh-viz" aria-hidden="true">
-          <ol class="gh-steps">
-            <li><span class="dot"></span><code>git commit</code><span class="gh-msg">Añadir la landing page de Crumb</span></li>
-            <li><span class="dot"></span><code>git push</code><span class="gh-msg">hivedesk/crumb-landing</span></li>
-            <li><span class="dot"></span><span class="pr">PR #12</span><span class="gh-msg">Landing page de Crumb</span></li>
-            <li><span class="dot"></span><span class="ci">Comprobaciones</span><span class="gh-msg">3 de 3 superadas</span></li>
-          </ol>
-        </div>
-      </article>
-
-      <article class="tile tilt t-voice reveal" aria-labelledby="t-voice">
-        <div class="tile-copy"><h3 id="t-voice">Habla con Mel</h3><p>Mantén <kbd>Ctrl</kbd> <kbd>Space</kbd> y habla. Antes de cualquier cosa que actúe, como un commit o un push, Mel lee el plan en voz alta y espera un sí claro.</p></div>
-        <div class="viz voice" aria-hidden="true">
-          <div class="orb"><span class="orb-core"></span><span class="hd-ring r1"></span><span class="hd-ring r2"></span></div>
-          <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <p class="said">&ldquo;Mel, añade el horario de apertura a la página&rdquo;</p>
-          <p class="tile-note">El reconocimiento de voz es el del navegador, que puede enviar el audio al servicio del fabricante del navegador.</p>
-        </div>
-      </article>
-
-      <article class="tile tilt t-theme reveal" aria-labelledby="t-theme">
-        <div class="tile-copy"><h3 id="t-theme">Ocho temas, o el equipo crea uno</h3><p>Cámbialo en vivo, edítalo con un informe de contraste o describe uno (&ldquo;un atardecer en la playa&rdquo;) y el equipo lo diseña.</p></div>
-        <div class="viz themes" aria-hidden="true">
-          <div class="mini">
-            <div class="mini-top"><i></i><i></i><i></i></div>
-            <div class="mini-body"><span class="mb-side"></span><span class="mb-main"><i></i><i></i><i class="acc"></i></span></div>
-          </div>
-          <span class="theme-name"><span>Mel</span><span>Meia-noite</span><span>Floresta</span><span>Neon</span></span>
-        </div>
-      </article>
-
-      <article class="tile tilt t-ext reveal" aria-labelledby="t-ext">
-        <div class="tile-copy"><h3 id="t-ext">Extensiones, también hechas por el equipo</h3><p>Instala desde una carpeta, un zip o una URL, o pide al equipo que cree una. Cada una pide sus permisos y se ejecuta en un sandbox.</p></div>
-        <div class="viz ext" aria-hidden="true">
-          <div class="ext-card">
-            <span class="ext-ic"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg></span>
-            <span class="ext-name"><b>Contador de palabras</b><span>Una ventana de widget</span></span>
-            <svg class="hd-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><circle class="ring-p" cx="18" cy="18" r="15"/></svg>
-            <span class="ext-ok"><svg class="i"><use href="../assets/icons.svg#i-check"/></svg></span>
-          </div>
-          <div class="perms"><span>leer el espacio de trabajo</span><span>ventana de widget</span></div>
-        </div>
-      </article>
-
-      <article id="lend" class="tile tilt t-lend reveal" aria-labelledby="t-lend">
-        <div class="tile-copy"><h3 id="t-lend">Presta tu PC</h3><p>Un amigo con una GPU más grande se empareja con seis palabras. Solo viajan prompts y respuestas.</p></div>
-        <div class="viz lend" aria-hidden="true">
-          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-hive"/></svg><span>Tú</span></div>
-          <div class="ln-wire"><span class="pk k1"></span><span class="pk k2"></span></div>
-          <div class="ln-node"><svg class="i"><use href="../assets/icons.svg#i-gpu"/></svg><span>Amigo</span></div>
-          <div class="ln-words"><span>honey</span><span>orbit</span><span>lamp</span><span>river</span><span>garden</span><span>copper</span></div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-lang reveal" aria-labelledby="t-lang">
-        <div class="tile-copy"><h3 id="t-lang">10 idiomas</h3><p>La Colmena sigue el idioma de tu navegador, o elige uno en Ajustes. Cambia al instante.</p></div>
-        <div class="viz langs" aria-hidden="true">
-          <span class="hello" data-hello>¡Hola, equipo!</span>
-          <ul class="lang-list"><li>English</li><li>Português</li><li>Español</li><li>Français</li><li>Deutsch</li><li>Italiano</li><li lang="ja">日本語</li><li lang="ko">한국어</li><li lang="zh-Hans">简体中文</li><li lang="ru">Русский</li></ul>
-        </div>
-      </article>
-
-      <article class="tile tilt t-priv reveal" aria-labelledby="t-priv">
-        <div class="tile-copy"><h3 id="t-priv">Se queda en tu máquina</h3><p>El servidor escucha en 127.0.0.1 con un token secreto en cada ejecución. Sin cuenta, sin analíticas.</p></div>
-        <div class="viz priv" aria-hidden="true">
-          <div class="pv-lock"><svg class="i"><use href="../assets/icons.svg#i-lock"/></svg></div>
-          <code class="pv-host">127.0.0.1:51734/?t=<span class="pv-tok">a7f3c0e9</span></code>
-        </div>
-      </article>
-
-      <article class="tile tilt t-mem reveal" aria-labelledby="t-mem">
-        <div class="tile-copy"><h3 id="t-mem">Memoria de sesión</h3><p>Notas pequeñas y limitadas por proyecto y por persona, más un archivo de sesión por trabajo. Algunas entradas relevantes pasan al siguiente prompt. Fija, edita u olvida cualquiera de ellas.</p></div>
-        <div class="viz mem" aria-hidden="true">
-          <div class="mem-row"><span class="mem-tag">proyecto</span><span>La panadería se llama Crumb; los colores son tonos cálidos de corteza.</span></div>
-          <div class="mem-row"><span class="mem-tag">tú</span><span>Prefiere HTML y CSS simples, sin paso de compilación.</span></div>
-          <div class="mem-row mem-session"><span class="mem-tag">sesión</span><span>Trabajo hecho: 5 archivos, 6 de 6 comprobaciones superadas.</span></div>
-        </div>
-      </article>
-
-      <article class="tile tilt t-prov reveal" aria-labelledby="t-prov">
-        <div class="tile-copy"><h3 id="t-prov">Cerebros en la nube, si los quieres</h3><p>Local por defecto. Añade tu propia clave de API para un modelo en la nube, por trabajador si quieres. Las claves se quedan en un almacén de claves en esta máquina; los prompts y el contenido de los archivos que se envían a ese proveedor salen de tu máquina, y la ventana lo indica.</p></div>
-        <div class="viz prov" aria-hidden="true">
-          <div class="prov-row on"><span class="prov-dot"></span><b>Modelo local</b><span>Modelo de código 3B</span></div>
-          <div class="prov-row"><span class="prov-dot"></span><b>Un runtime local que ya usas</b><span>en esta máquina</span></div>
-          <div class="prov-row"><span class="prov-dot"></span><b>Proveedor en la nube</b><span>tu clave</span></div>
-        </div>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- ================= NEXT ================= -->
-<section id="next" class="sec next" aria-labelledby="next-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker"><span class="soon soon-ghost">En la próxima versión</span></p>
-      <h2 id="next-h" class="h2">En construcción ahora mismo.<br><span>Aún no está en 0.2.0.</span></h2>
-      <p class="head-sub">Dos cosas en las que el equipo trabaja para la próxima versión. Esto es lo que deberían hacer; los detalles pueden cambiar antes de que salgan.</p>
-    </header>
-    <div class="next-grid">
-      <article class="hd-card next-card reveal" aria-labelledby="pb-h">
-        <h3 id="pb-h">La biblioteca de playbooks</h3>
-        <p>Hoy, un trabajo que termina bien se guarda como playbook, y Mel lo reutiliza para peticiones parecidas. Después, Mel tendrá además una biblioteca de unos 500 playbooks expertos (una landing page, un formulario con validación, un README, un plan de pruebas y muchos más) y elegirá los más cercanos para cada tarea antes de que empiece el equipo.</p>
-        <div class="pb-demo" aria-hidden="true">
-          <div class="pb-task"><span class="pb-k">Tarea</span>Una página de precios con tres planes</div>
-          <ul class="pb-list">
-            <li><span>Landing page, portada y secciones</span><b>0.62</b></li>
-            <li class="pb-hit"><span>Tabla de precios con planes</span><b>0.91</b></li>
-            <li><span>Formulario de contacto con validación</span><b>0.38</b></li>
-            <li><span>Contraste de color accesible</span><b>0.55</b></li>
-            <li><span>README para un sitio estático</span><b>0.21</b></li>
-          </ul>
-          <div class="pb-pick"><svg class="i"><use href="../assets/icons.svg#i-playbook"/></svg>Mel eligió: Tabla de precios con planes</div>
-        </div>
-      </article>
-      <article class="hd-card next-card reveal" aria-labelledby="any-h">
-        <h3 id="any-h">Habla con cualquier abeja</h3>
-        <p>Hoy, una petición en el cuadro de petición inicia un trabajo, y un mensaje directo orienta a un trabajador. Después, pedir trabajo en cualquier chat, #general o un mensaje directo a Dev, Designer o QA, también iniciará trabajo real, con el mismo brief, plan, aprobaciones e informe.</p>
-        <div class="any-demo" aria-hidden="true">
-          <div class="any-msg any-you"><span class="any-who">Tú a Designer</span>¿Puedes hacer los botones más redondeados?</div>
-          <div class="any-msg any-bee"><img src="../assets/crew/designer.svg" width="24" height="24" alt=""><span><b>Designer</b> Me pongo: una tarea, style.css.</span></div>
-          <div class="any-task"><span class="dot"></span>Tarea creada: Redondear los botones <em>Design</em></div>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ================= OFFICE ================= -->
-<section id="office" class="sec office" aria-labelledby="office-h">
-  <div class="wrap">
-    <header class="head head-center reveal">
-      <p class="kicker">Modo oficina</p>
-      <h2 id="office-h" class="h2" data-i18n="office.h2">Mira al equipo trabajando.</h2>
-      <p class="head-sub">Activa el modo oficina en la barra superior y el escritorio se convierte en una pequeña oficina con forma de panal. Cada postura viene de un evento real del motor: quién está pensando, quién espera su turno en el modelo, una tarea entregada, las pruebas que pasan. Arrastra una nota adhesiva del tablero de Mel a una abeja para entregarle la tarea.</p>
-    </header>
-    <figure class="office-live reveal" aria-label="El modo oficina en la Colmena, durante un trabajo de demo">
-      <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><span>hivedesk &middot; Oficina</span></div>
-      <ol class="office-steps" aria-hidden="true"><li>Trabajando</li><li>Esperándote</li><li>Listo</li></ol>
-      <div class="office-frames">
-        <img class="of of1" src="../assets/shots/office-working.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El modo oficina mientras el equipo trabaja: abejas en sus mesas, Mel en el tablero de tareas, el trabajo actual al 35 por ciento y el turno en el modelo.">
-        <img class="of of2" src="../assets/shots/office-approval.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El modo oficina mientras un trabajador espera tu aprobación.">
-        <img class="of of3" src="../assets/shots/office-celebrate.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El modo oficina cuando el trabajo termina y el equipo lo celebra.">
-        <div class="office-fx" aria-hidden="true">
-          <span class="fx-bee ob1"><img src="../assets/art/bee.svg" width="34" height="26" alt=""></span>
-          <span class="fx-bee ob2"><img src="../assets/art/bee.svg" width="28" height="22" alt=""></span>
-          <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        </div>
+          <p class="mach-src">Informado por el PC de Ana</p>
+        </article>
       </div>
-    </figure>
-    <p class="caption">Capturas reales del modo oficina con <code>npx hivedesk --demo</code>. Cada evento de la demo está etiquetado como demo.</p>
+      <p class="demo-fine">Una simulación con números de ejemplo. En la app, cada número viene de una sonda en esa máquina (la herramienta del fabricante de la GPU, los contadores de rendimiento de Windows o el kernel de Linux), los números de un amigo se etiquetan como informados por él, y un valor que no se puede leer dice no medido.</p>
+    </div>
   </div>
 </section>
 
-<!-- ================= SCREENS ================= -->
-<section id="screens" class="sec sec-tight" aria-labelledby="scr-h">
+<!-- ================= WORKBENCH ================= -->
+<section id="workbench" class="sec sec-line" aria-labelledby="wb-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker">Dentro de la Colmena</p>
-      <h2 id="scr-h" class="h2">Un escritorio para tu equipo.<br><span>Un recorrido guiado la primera vez que lo abres.</span></h2>
-      <p class="head-sub">Mel te enseña el escritorio con un foco sobre cada parte. Repítelo desde Ayuda o la paleta de comandos.</p>
+      <p class="kicker">El banco de trabajo</p>
+      <h2 id="wb-h" class="h2">Un banco de trabajo de código de verdad.<br><span>Archivos, búsqueda, terminal y git.</span></h2>
+      <p class="head-sub">Abre las carpetas que elijas, junto al espacio de trabajo del equipo. Cada carpeta es un permiso que puedes retirar, y el equipo solo escribe donde se lo permites.</p>
     </header>
-    <div class="screens reveal" v-tabs>
-      <div class="tabs tabs-boxed shot-tabs" role="tablist" aria-label="Pantallas">
-        <button type="button" class="tab" role="tab" aria-selected="true" v-tab="tour">Recorrido guiado</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="brief">Brief e informe</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="code">Code together</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="github">GitHub</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="changelog">Changelog</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="themes">Temas</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="ext">Extensiones</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="memory">Memoria</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="lang">10 idiomas</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="palette">Paleta</button>
-        <button type="button" class="tab" role="tab" aria-selected="false" tabindex="-1" v-tab="replay">Repetición</button>
-      </div>
-      <div class="shot" v-tab-panel="tour"><img src="../assets/shots/tour.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Paso 1 de 11 del recorrido guiado: Mel señala el cuadro de petición, con un botón Pruébalo que ejecuta el trabajo de demo."></div>
-      <div class="shot" v-tab-panel="brief"><img src="../assets/shots/brief.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La ventana Brief e informe: tu petición, el brief mejorado por Mel con objetivo, qué construir, restricciones y criterios de aceptación, y el informe del trabajo."></div>
-      <div class="shot" v-tab-panel="code"><img src="../assets/shots/code-together.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Code together: la ventana Código con index.html, dos personas editando a la vez y el cursor del invitado con la etiqueta Ana."></div>
-      <div class="shot" v-tab-panel="github"><img src="../assets/shots/github.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La ventana GitHub: inicia sesión con la línea de comandos gh, un token de acceso detallado o un código de dispositivo; nada se ejecuta en un servidor de hivedesk."></div>
-      <div class="shot" v-tab-panel="changelog"><img src="../assets/shots/changelog.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La ventana Changelog: una entrada propuesta redactada a partir del informe del trabajo, con Descartar y Aprobar y escribir."></div>
-      <div class="shot" v-tab-panel="themes"><img src="../assets/shots/themes.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La galería de temas: ocho temas incluidos, un cuadro para pedirle a Mel un tema nuevo, importar y tema nuevo."></div>
-      <div class="shot" v-tab-panel="ext"><img src="../assets/shots/extensions.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La ventana Extensiones: extensiones instaladas con sus permisos, cada una a la espera de tu aprobación, y una pestaña para crear una con el equipo."></div>
-      <div class="shot" v-tab-panel="memory"><img src="../assets/shots/memory.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La ventana Memoria: una memoria de proyecto con Fijar, Editar y Borrar, el interruptor para usar la memoria en trabajos nuevos y la lista de sesiones."></div>
-      <div class="shot" v-tab-panel="lang"><img src="../assets/shots/lang-ja.webp" width="1440" height="900" loading="lazy" decoding="async" alt="La Colmena en japonés."></div>
-      <div class="shot" v-tab-panel="palette"><img src="../assets/shots/palette.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="La paleta de comandos Ctrl K sobre la Colmena."></div>
-      <div class="shot" v-tab-panel="replay"><img src="../assets/shots/replay.webp" width="1920" height="1080" loading="lazy" decoding="async" alt="El control de repetición reconstruyendo un momento anterior del trabajo."></div>
+    <div class="grid-3 wb-grid reveal">
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-folder"/></svg><h3>Explorador y editores</h3><p>Crea, renombra, mueve y borra. Pestañas en hasta tres grupos divididos, diagnósticos, ir a la definición y símbolos para JavaScript y TypeScript. Al borrar una carpeta te pide confirmar cuántos archivos contiene.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><h3>Buscar y reemplazar</h3><p>En todos los archivos, con expresiones regulares, mayúsculas y minúsculas, palabra completa y patrones para incluir o excluir. Reemplazar muestra primero un diff por archivo, y se salta un archivo que haya cambiado desde entonces.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg><h3>Terminal</h3><p>Un terminal real en Windows y macOS. En Linux necesita compilar su parte nativa; si no, un terminal básico sobre tuberías, etiquetado como tal. Los agentes nunca reciben un terminal.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-branch"/></svg><h3>Control de código fuente</h3><p>Estado, diff, preparar, quitar de preparados, descartar, commit, ramas, checkout, stashes y el historial, en un solo panel.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>Comparte un terminal</h3><p>Deja que un amigo mire o escriba durante 5, 15 o 60 minutos. La pestaña muestra una insignia de compartido y un botón para cortarlo, y el registro de auditoría cuenta los bytes, nunca el texto.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-code"/></svg><h3>Code together</h3><p>Documentos compartidos con los dos cursores sobre la misma sesión cifrada. Las ediciones de un amigo esperan tu aprobación, también los archivos nuevos.</p></div>
     </div>
-    <p class="caption">Capturas reales de <code>npx hivedesk --demo</code>, que repite un trabajo con guion y etiqueta cada evento como demo. Code together viene de la prueba de extremo a extremo con dos navegadores.</p>
+  </div>
+</section>
+
+<!-- ================= REMOTE ================= -->
+<section id="remote" class="sec sec-line" aria-labelledby="remote-h">
+  <div class="wrap">
+    <div class="split reveal">
+      <header class="head">
+        <p class="kicker">Pantalla remota</p>
+        <h2 id="remote-h" class="h2">Mira la pantalla de un amigo.<br><span>Contrólala solo cuando él lo marque.</span></h2>
+        <p class="head-sub">Una dirección de 10 dígitos encuentra una máquina, pero no es una contraseña: el dueño ve quién llama, con sus palabras de verificación, y todas las casillas empiezan sin marcar.</p>
+      </header>
+      <div class="rem-card" aria-hidden="true">
+        <p class="rem-top"><span class="rem-dot"></span>Ana quiere ver tu pantalla <b class="rem-count" data-countdown translate="no">0:58</b></p>
+        <p class="rem-addr" translate="no">482 913 507 6</p>
+        <ul class="rem-boxes">
+          <li><span class="cb on"></span>Ver la pantalla</li>
+          <li><span class="cb"></span>Controlar el ratón y el teclado</li>
+          <li><span class="cb"></span>Portapapeles</li>
+          <li><span class="cb"></span>Enviar archivos</li>
+        </ul>
+        <p class="rem-dur"><span>Durante</span><b>5 min</b><b class="on">15 min</b><b>60 min</b></p>
+        <p class="rem-btns"><span class="rb">Rechazar</span><span class="rb rb-ok">Aceptar y elegir una pantalla</span></p>
+      </div>
+    </div>
+    <ul class="rem-list reveal">
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>Desactivado hasta que lo permitas.</b> Una máquina solo responde a su dirección mientras "Permitir que los contactos lleguen a este equipo" está activado, y viene desactivado por defecto.</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-clock"/></svg><span><b>Cada permiso caduca.</b> 5, 15 o 60 minutos, solo para ver salvo que se marque el control, con una cuenta atrás de 60 segundos en la pregunta.</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-stop"/></svg><span><b>Un interruptor de emergencia.</b> Un aviso con Detener mientras se comparte, y <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>K</kbd> lo corta todo en Windows.</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-offline"/></svg><span><b>Sin entrada en una pantalla bloqueada.</b> Mientras la pantalla está bloqueada, quien mira ve una tarjeta y se descarta cada tecla.</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><span><b>Varias pantallas, ajustes de calidad y chat.</b> Texto e imágenes del portapapeles, y archivos de hasta 2 GB que se reanudan donde se quedaron.</span></li>
+      <li><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-key"/></svg><span><b>Acceso desatendido, si lo configuras.</b> Para pares conocidos con contraseña; 5 intentos fallidos lo bloquean durante 15 minutos.</span></li>
+    </ul>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-phone-remote"/></svg><span><b>También desde tu móvil.</b> Empareja un móvil con el código QR de la ventana de hivedesk y luego aprueba, chatea y sigue los trabajos desde él. Cada móvil tiene sus propios permisos.</span></p>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><span><b>Dónde funciona el control en 1.0:</b> Windows, y Linux en X11 con xdotool y loginctl instalados. En macOS es solo para ver, porque el control necesita una app firmada y las descargas aún no están firmadas. En Wayland también es solo para ver.</span></p>
+  </div>
+</section>
+
+<!-- ================= MODELS ================= -->
+<section id="models" class="sec sec-line" aria-labelledby="models-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">Modelos</p>
+      <h2 id="models-h" class="h2">El modelo adecuado para cada máquina.<br><span>Y un medidor para los gigantes.</span></h2>
+      <p class="head-sub">Un catálogo de 57 modelos de código abierto de 0.5B a 72B parámetros, para programar, razonar y conversar, cada uno en archivos cuantizados de 2 a 8 bits. hivedesk te recomienda uno para tu hardware y pregunta antes de cualquier descarga, con su tamaño, licencia y origen.</p>
+    </header>
+    <div class="pool reveal" data-pool>
+      <div class="pool-head">
+        <div>
+          <h3>Junta un modelo gigante con tus amigos</h3>
+          <p>Un modelo 70B a 4 bits necesita unos 45 GB con su contexto. Ningún PC doméstico tiene eso por sí solo, pero una City podría tenerlo.</p>
+        </div>
+        <span class="hd-chip chip-exp">Experimental, desactivado por defecto</span>
+      </div>
+      <div class="pool-ctl">
+        <label for="pool-n">Amigos que comparten una GPU</label>
+        <input id="pool-n" type="range" min="0" max="4" step="1" value="1" data-pool-n>
+        <output for="pool-n" data-pool-out translate="no">1</output>
+      </div>
+      <div class="pool-bar" aria-hidden="true"><i class="pv" data-pool-vram></i><i class="pr" data-pool-ram></i><b class="pool-need"></b></div>
+      <p class="pool-legend"><span class="lg lg-v">Memoria de GPU compartida</span><span class="lg lg-r">RAM compartida</span><span class="lg lg-n">Lo que necesita el modelo</span></p>
+      <p class="pool-read" data-pool-read aria-live="polite">27 GB reunidos, 45 GB necesarios: faltan 18 GB.</p>
+      <p class="demo-fine">El medidor hace cálculos reales en la app: memoria de GPU y RAM contadas por separado, la velocidad de la memoria de la CPU y un viaje de ida y vuelta por la red por cada máquina remota y cada token, y solo se desbloquea a partir de 1 token por segundo. Reunir un modelo entre máquinas está en 1.0 como una opción experimental, desactivada por defecto: el modelo se ejecuta en las máquinas de los amigos que lo permitieron, por el enlace p2p cifrado, y su velocidad depende del enlace de red entre ellas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAYBOOKS ================= -->
+<section id="playbooks" class="sec sec-line" aria-labelledby="pb-h">
+  <div class="wrap">
+    <div class="split split-rev reveal">
+      <header class="head">
+        <p class="kicker">Playbooks</p>
+        <h2 id="pb-h" class="h2">Unos 500 playbooks expertos.<br><span>Los más cercanos, para cada tarea.</span></h2>
+        <p class="head-sub">Landing pages, formularios con validación, READMEs, planes de pruebas, componentes accesibles, mensajes de git y muchos más, cada uno con pasos, un nivel de calidad, errores típicos y comprobaciones. Antes de que empiece una tarea, se eligen los playbooks más cercanos por relevancia de palabras clave, el rol y la sala, y sus comprobaciones se ejecutan en QA.</p>
+        <p class="pb-cats" translate="no"><span>app-types 55</span><span>practices 65</span><span>ui-components 55</span><span>web-pages 51</span><span>stacks 50</span><span>review-qa 42</span><span>design 42</span><span>data 40</span><span>roles 35</span><span>planning 32</span><span>git-docs 30</span></p>
+      </header>
+      <div class="pb-demo" data-playbooks>
+        <label class="pb-in"><span class="sr">Describe una tarea</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-search"/></svg><input type="text" data-pb-q placeholder="Describe una tarea, por ejemplo una página de reservas" autocomplete="off" spellcheck="false"></label>
+        <ol class="pb-list" data-pb-list aria-live="polite">
+          <li><span class="pb-t">Escribe una tarea para ver qué se elegiría</span></li>
+        </ol>
+        <p class="pb-count" data-pb-count></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECURITY ================= -->
+<section id="security" class="sec sec-line" aria-labelledby="sec-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">Seguridad</p>
+      <h2 id="sec-h" class="h2">Denegado por defecto.<br><span>Cada poder tiene nombre, permiso, plazo y registro.</span></h2>
+      <p class="head-sub">Decide el motor de la máquina dueña del recurso, no una pestaña del navegador. Un invitado no puede elegir tu modelo, abrir un shell ni ver un archivo que no compartiste.</p>
+    </header>
+    <figure class="art-fig reveal"><img src="../assets/art/1.0/security.svg" width="1500" height="640" loading="lazy" decoding="async" alt="Una identidad por instalación en un escudo, todos los permisos apagados por defecto salvo ver la City, y un registro de auditoría donde cada línea se encadena a la anterior."></figure>
+    <div class="grid-3 sec-grid reveal">
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-key"/></svg><h3>Una identidad por instalación</h3><p>Una clave Ed25519, que las personas ven como seis palabras de huella. Una clave que no se puede leer es un error, nunca una identidad nueva en silencio.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-words"/></svg><h3>Invitaciones de un solo uso</h3><p>Seis palabras, 66 bits, un solo uso, 10 minutos, anulada por el primer intento de conexión que empieza. Luego, palabras de verificación en ambas pantallas y tu Aceptar.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-shield"/></svg><h3>Permisos, desactivados por defecto</h3><p>Cuando un amigo se une, solo está marcado Ver la City. GPU, CPU, RAM, almacenamiento, terminal, pantalla, portapapeles y archivos son permisos separados con límites; los permisos de pantalla y de terminal terminan en 60 minutos como máximo.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-clock"/></svg><h3>Concesiones con plazos</h3><p>Un trabajo prestado tiene una concesión de 15 segundos renovada por latidos, un plazo límite estricto y un límite de tokens. Solo se ejecuta en el modelo local de quien presta, nunca con su clave de la nube.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-log"/></svg><h3>Un registro de auditoría encadenado con hash</h3><p>Uniones, permisos, revocaciones, trabajos y sesiones remotas, mes a mes, cada línea encadenada a la anterior. Nunca guarda palabras, claves, prompts ni respuestas.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><h3>Cifrado de extremo a extremo</h3><p>X25519 y HKDF para las claves, ChaCha20-Poly1305 para cada trama, con claves nuevas cada 60 minutos. Los relays solo transportan texto cifrado.</p></div>
+    </div>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><span><b>Las respuestas de otra máquina no son de confianza.</b> Cualquier llamada a herramienta que venga de un turno servido por la GPU de un amigo necesita tu aprobación en todos los modos de aprobación, también los archivos nuevos.</span></p>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section id="compare" class="sec sec-line" aria-labelledby="cmp-h">
+  <div class="wrap">
+    <header class="head head-center reveal">
+      <p class="kicker">App de escritorio o navegador</p>
+      <h2 id="cmp-h" class="h2">Qué funciona y dónde.<br><span>Sin sorpresas.</span></h2>
+      <p class="head-sub">La app de escritorio y <code>npx hivedesk</code> ejecutan el mismo motor en tu máquina; la diferencia es la ventana. Una página web por sí sola se ejecuta dentro del sandbox del navegador, así que no puede hacer nada de esto.</p>
+    </header>
+    <div class="tbl-wrap reveal">
+      <table class="tbl cmp">
+        <thead><tr><th scope="col">Función</th><th scope="col"><span class="cmp-h cmp-app">App de escritorio</span></th><th scope="col"><span class="cmp-h">Pestaña del navegador con <code>npx hivedesk</code></span></th><th scope="col"><span class="cmp-h">Solo navegador, sin instalar nada</span></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">El modelo local en tu GPU</th><td class="y">Sí</td><td class="y">Sí. El motor se ejecuta en Node.js en tu máquina; la pestaña solo lo muestra.</td><td class="n">No. Una página web no puede iniciar un programa nativo ni cargar desde tu disco un archivo de modelo de varios GB.</td></tr>
+          <tr><th scope="row">Compartir tu GPU y tu CPU</th><td class="y">Sí, también con la ventana cerrada: sigue funcionando en la bandeja del sistema.</td><td class="p">Sí, mientras la pestaña siga abierta. El enlace con los pares funciona en la ventana, y los navegadores ralentizan o congelan las pestañas en segundo plano.</td><td class="n">No. No hay ningún motor que compartir.</td></tr>
+          <tr><th scope="row">Control remoto</th><td class="p">Windows, y Linux en X11. En macOS es solo para ver hasta que la app esté firmada.</td><td class="p">Ver funciona en navegadores basados en Chromium. El control, el portapapeles nativo y los archivos pegados vienen del ayudante de entrada, igual que en la app.</td><td class="n">No. Una página no puede mover el ratón ni pulsar teclas en tu sistema.</td></tr>
+          <tr><th scope="row">Cambiar de monitor</th><td class="y">Sí. Quien mira lo pide y el anfitrión elige la pantalla.</td><td class="p">Sí, pero el navegador pide al anfitrión que elija la pantalla en su propio diálogo cada vez: una página nunca puede elegir una pantalla por sí misma.</td><td class="n">No</td></tr>
+          <tr><th scope="row">Terminal (PTY)</th><td class="y">Sí en Windows y macOS. En Linux, cuando se compila su parte nativa; si no, un terminal básico etiquetado.</td><td class="y">Igual: el terminal se ejecuta en el motor.</td><td class="n">No. Una página no puede iniciar un shell.</td></tr>
+          <tr><th scope="row">Acceso al sistema de archivos</th><td class="y">Las carpetas que añadas, con un selector de carpetas nativo.</td><td class="p">Las mismas carpetas. Escribes la ruta, porque una página no tiene selector de carpetas nativo.</td><td class="n">Solo los archivos que elijas o sueltes, de uno en uno, como dictan las reglas del navegador.</td></tr>
+          <tr><th scope="row"><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Del</kbd></th><td class="n">Nunca se envía a una máquina remota. Windows lo reserva para la pantalla segura de inicio de sesión, así que hivedesk lo descarta a propósito, igual que Win+L.</td><td class="n">Nunca se envía. Tu propio sistema también lo captura antes de que lo vea cualquier página.</td><td class="n">No</td></tr>
+          <tr><th scope="row">Notificaciones</th><td class="y">Notificaciones del sistema desde la app.</td><td class="p">Después de que las permitas en el navegador, y solo mientras la pestaña esté abierta; si no, dentro de la página.</td><td class="n">No</td></tr>
+          <tr><th scope="row">Funcionar en segundo plano</th><td class="y">Sí. Cierra la ventana y se queda en la bandeja del sistema, con Abrir, Pausar y Salir.</td><td class="p">El motor sigue funcionando en su terminal, pero los pares necesitan la pestaña abierta, y una pestaña dormida puede atascar un trabajo prestado.</td><td class="n">No. Al cerrar la pestaña, termina.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption caption-center">Se recomienda la app de escritorio para la experiencia completa. La ventana de la app usa la vista web del sistema, y en macOS y Linux una pantalla compartida se abre en tu navegador basado en Chromium, porque esas vistas web no pueden capturar la pantalla de forma fiable.</p>
   </div>
 </section>
 
@@ -780,169 +667,76 @@
 <section id="download" class="sec download" aria-labelledby="dl-h">
   <div class="wrap">
     <header class="head head-center reveal">
-      <p class="kicker" data-i18n="nav.download">Descargar</p>
-      <h2 id="dl-h" class="h2" data-i18n-2="dl.h2">Consigue hivedesk.<br><span>Gratis, de código abierto, en tu máquina.</span></h2>
-      <p class="head-sub">La app de escritorio para Windows, macOS y Linux. Cada descarga lleva su propio Node.js, así que no hay que instalar nada antes.</p>
-      <p class="first-release" data-first-release><span class="pulse-dot" aria-hidden="true"></span><span data-i18n="dl.first">La primera versión sale hoy.</span></p>
+      <p class="kicker">Descargar</p>
+      <h2 id="dl-h" class="h2">Construye tu City.<br><span>Gratis, de código abierto, en tus máquinas.</span></h2>
+      <p class="head-sub">La app de escritorio es hivedesk completo: modelos en tu GPU, préstamo desde la bandeja del sistema, control remoto y notificaciones del sistema. Cada descarga lleva su propio Node.js, así que no hay que instalar nada antes.</p>
     </header>
 
     <div class="os-grid">
-      <article class="os-card tilt reveal" data-os="win">
-        <span class="hd-chip chip-you" data-i18n="dl.you">Tu sistema</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-windows"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="win">
+        <span class="hd-chip chip-you">Tu sistema</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-windows"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-windows"/></svg></span>Windows</h3>
-        <p class="os-meta"><code>hivedesk-windows-x64.zip</code><span class="os-size" data-size="hivedesk-windows-x64.zip">Windows 10 y 11, x64, unos 47 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-windows-x64.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.win">Descargar para Windows</span></a>
-        <p class="os-note">Descomprime y haz doble clic en <code>hivedesk.exe</code>. Aún no tiene firma de código, así que SmartScreen dice &ldquo;Windows protegió su PC&rdquo;: elige <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</p>
+        <p class="os-meta"><code>hivedesk-setup.exe</code><span class="os-size" data-size="hivedesk-setup.exe">Windows 10 y 11, x64</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-setup.exe" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>Descargar para Windows</span></a>
+        <p class="os-note">Ejecútalo: se instala para tu usuario, sin permisos de administrador, y descarga la app. Para una máquina sin red, usa el <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-setup-offline.exe" rel="noopener">instalador sin conexión</a>. No tiene firma de código con un certificado de pago, así que SmartScreen dice &ldquo;Windows protegió su PC&rdquo;: elige <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="Mel saludando" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">¡Gracias! Sigue estos pasos.</p>
-          <ol class="thanks-steps"><li>Descomprime la descarga. Si Windows bloquea el zip, haz clic derecho en él, <b>Propiedades</b>, y marca <b>Desbloquear</b>.</li><li>Haz doble clic en <code>hivedesk.exe</code>.</li><li>SmartScreen dice &ldquo;Windows protegió su PC&rdquo;: elige <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</li><li>En la primera ejecución descarga un modelo para tu máquina y abre la Colmena.</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Volver</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">¡Gracias! Sigue estos pasos.</p>
+          <ol class="thanks-steps"><li>Ejecuta <code>hivedesk-setup.exe</code>.</li><li>SmartScreen dice &ldquo;Windows protegió su PC&rdquo;: elige <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</li><li>Sigue el instalador: descarga la app y luego abre hivedesk.</li><li>Ponle nombre a tu City y luego elige un modelo, o echa antes un vistazo a la demo.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>Volver</button>
         </div>
       </article>
-      <article class="os-card tilt reveal" data-os="mac">
-        <span class="hd-chip chip-you" data-i18n="dl.you">Tu sistema</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-macos"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="mac">
+        <span class="hd-chip chip-you">Tu sistema</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-macos"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-macos"/></svg></span>macOS</h3>
-        <p class="os-meta"><code>hivedesk-macos-universal.zip</code><span class="os-size" data-size="hivedesk-macos-universal.zip">Apple Silicon e Intel, unos 89 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos-universal.zip" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.mac">Descargar para macOS</span></a>
-        <p class="os-note">Descomprime y mueve <code>hivedesk.app</code> a Aplicaciones. Aún no está notarizada: la primera vez, abre <b>Ajustes del Sistema, Privacidad y seguridad</b> y haz clic en <b>Abrir igualmente</b>.</p>
+        <p class="os-meta"><code>hivedesk-macos.dmg</code><span class="os-size" data-size="hivedesk-macos.dmg">Apple Silicon e Intel</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-macos.dmg" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>Descargar para macOS</span></a>
+        <p class="os-note">Abre el dmg y arrastra <code>hivedesk.app</code> a Aplicaciones. No está notarizada con un certificado de pago: la primera vez, abre <b>Ajustes del Sistema, Privacidad y seguridad</b> y haz clic en <b>Abrir igualmente</b>.</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="Mel saludando" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">¡Gracias! Sigue estos pasos.</p>
-          <ol class="thanks-steps"><li>Descomprímela y mueve <code>hivedesk.app</code> a Aplicaciones.</li><li>Ábrela. macOS dice que no puede verificar la app.</li><li>Abre <b>Ajustes del Sistema, Privacidad y seguridad</b> y haz clic en <b>Abrir igualmente</b> junto a hivedesk.</li><li>En la primera ejecución descarga un modelo para tu máquina y abre la Colmena.</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Volver</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">¡Gracias! Sigue estos pasos.</p>
+          <ol class="thanks-steps"><li>Abre el dmg y arrastra <code>hivedesk.app</code> a Aplicaciones.</li><li>Ábrela. macOS dice que no puede verificar la app.</li><li>Abre <b>Ajustes del Sistema, Privacidad y seguridad</b> y haz clic en <b>Abrir igualmente</b> junto a hivedesk.</li><li>Ponle nombre a tu City y luego elige un modelo, o echa antes un vistazo a la demo.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>Volver</button>
         </div>
       </article>
-      <article class="os-card tilt reveal" data-os="linux">
-        <span class="hd-chip chip-you" data-i18n="dl.you">Tu sistema</span>
-        <div class="os-art" aria-hidden="true">
-          <img class="os-mel" src="../assets/art/mascot-dark.svg" width="168" height="168" alt="" loading="lazy" decoding="async">
-          <svg class="box" viewBox="0 0 120 100">
-            <g class="box-hex"><path d="M60 22l13 7.5v15L60 52l-13-7.5v-15z"/><path class="hex-shine" d="M54 30l6-3.5 6 3.5"/></g>
-            <path class="box-back" d="M14 40h92v8H14z"/>
-            <path class="box-body" d="M12 44h96v44a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z"/>
-            <path class="box-tape" d="M54 44h12v50H54z"/>
-            <g class="box-lid"><path d="M8 32h104a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z"/></g>
-            <svg class="box-logo" x="24" y="56" width="28" height="28" viewBox="0 0 24 24"><use href="../assets/icons.svg#i-linux"/></svg>
-          </svg>
-          <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
-        </div>
+      <article class="os-card reveal" data-os="linux">
+        <span class="hd-chip chip-you">Tu sistema</span>
+        <div class="os-mark" aria-hidden="true"><svg class="i"><use href="../assets/icons.svg#i-linux"/></svg></div>
         <h3><span class="os-ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-linux"/></svg></span>Linux</h3>
-        <p class="os-meta"><code>hivedesk-linux-x64.tar.gz</code><span class="os-size" data-size="hivedesk-linux-x64.tar.gz">x64, unos 55 MB, o la AppImage, unos 52 MB</span></p>
-        <a class="b b-honey b-lg magnetic os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x64.tar.gz" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span data-i18n="dl.linux">Descargar para Linux</span></a>
-        <p class="os-note">Ejecuta <code>tar -xzf hivedesk-linux-x64.tar.gz</code> y luego <code>./hivedesk/hivedesk</code>. O la <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener">AppImage</a>: <code>chmod +x</code> y luego ejecútala. La ventana necesita WebKitGTK; sin él, hivedesk se abre en tu navegador.</p>
+        <p class="os-meta"><code>hivedesk-linux-x86_64.AppImage</code><span class="os-size" data-size="hivedesk-linux-x86_64.AppImage">x64, o un paquete</span></p>
+        <a class="b b-honey b-lg os-dl" href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-x86_64.AppImage" rel="noopener" target="_blank"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-download"/></svg><span>Descargar para Linux</span></a>
+        <p class="os-note">Ejecuta <code>chmod +x</code> sobre el archivo y luego ábrelo. O usa el <a href="https://github.com/kwy404/hivedesk/releases/latest/download/hivedesk-linux-install.sh" rel="noopener">script de instalación</a>, que comprueba el SHA-256 e instala en <code>~/.local</code>, o el <code>.deb</code> y el <code>.rpm</code> de la <a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">página de versiones</a>. La ventana necesita WebKitGTK; sin él, hivedesk se abre en tu navegador.</p>
         <div class="os-thanks" role="status" hidden>
-          <img src="../assets/art/mel-wave.svg" width="96" height="96" alt="Mel saludando" loading="lazy" decoding="async">
-          <p class="thanks-h" data-i18n="dl.thanks">¡Gracias! Sigue estos pasos.</p>
-          <ol class="thanks-steps"><li>Ejecuta <code>tar -xzf hivedesk-linux-x64.tar.gz</code>.</li><li>Inicia <code>./hivedesk/hivedesk</code> (o <code>chmod +x</code> y ejecuta la AppImage).</li><li>En la primera ejecución descarga un modelo para tu máquina y abre la Colmena.</li></ol>
-          <button type="button" class="b b-ghost b-sm" data-thanks-close data-i18n="dl.back">Volver</button>
-          <div class="burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="thanks-h">¡Gracias! Sigue estos pasos.</p>
+          <ol class="thanks-steps"><li>Ejecuta <code>chmod +x hivedesk-linux-x86_64.AppImage</code>.</li><li>Inicia <code>./hivedesk-linux-x86_64.AppImage</code> (o ejecuta <code>sh hivedesk-linux-install.sh</code>).</li><li>Ponle nombre a tu City y luego elige un modelo, o echa antes un vistazo a la demo.</li></ol>
+          <button type="button" class="b b-ghost b-sm" data-thanks-close>Volver</button>
         </div>
       </article>
     </div>
 
     <div class="dl-alt reveal">
-      <span data-i18n="dl.or">o ejecuta</span>
+      <span>o ejecuta</span>
       <div class="pill pill-sm" role="group" aria-label="Comando de instalación">
         <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
         <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copiado" aria-label="Copiar el comando npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copiado</span></button>
       </div>
-      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span data-i18n="dl.all">Ver todas las versiones</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
+      <a class="dl-all" href="https://github.com/kwy404/hivedesk/releases" rel="noopener"><span>Ver todas las versiones</span><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg></a>
     </div>
-    <p class="caption caption-center">Las descargas aún no están firmadas y no se actualizan solas; el modelo local se descarga en la primera ejecución. ¿Prefieres un script mínimo? Los lanzadores para <a href="../download/hivedesk-windows.cmd" download>Windows</a>, <a href="../download/hivedesk-macos.command" download>macOS</a> y <a href="../download/hivedesk-linux.sh" download>Linux</a> comprueban que haya Node.js 20 o posterior y ejecutan <code>npx hivedesk@latest</code>; si falta Node.js, abren la página oficial de descarga y explican por qué.</p>
-
-    <article class="hd-card dl-cmd reveal">
-      <div class="dl-cmd-copy">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg></span><h3>El comando</h3><span class="hd-chip">Recomendado</span></div>
-        <p>Cualquier sistema con Node.js 20 o posterior. El asistente hace unas pocas preguntas, cada una con un valor recomendado por defecto, así que basta con pulsar Enter hasta el final.</p>
-        <div class="pill pill-block" role="group" aria-label="Comando de instalación">
-          <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
-          <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copiado" aria-label="Copiar el comando npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copiado</span></button>
-        </div>
-      </div>
-      <div class="term" data-term role="img" aria-label="El asistente en un terminal: idioma español, esta carpeta, el modelo de código 3B, aprobar cada paso arriesgado, y luego se abre la Colmena.">
-        <p class="tl"><span class="c-a">$</span> npx hivedesk</p>
-        <p class="tl"><span class="c-q">?</span> Idioma <span class="c-v">Español</span></p>
-        <p class="tl"><span class="c-q">?</span> Carpeta del proyecto <span class="c-v">Esta carpeta</span></p>
-        <p class="tl c-dim">Tu máquina: GPU 6 GB, RAM 16 GB, 212 GB libres en disco</p>
-        <p class="tl"><span class="c-q">?</span> ¿Qué cerebro debe usar el equipo? <span class="c-v">Modelo de código 3B, 2.1 GB</span> <span class="c-tag">recomendado</span></p>
-        <p class="tl"><span class="c-q">?</span> ¿Descargarlo ahora? <span class="c-v">Sí</span></p>
-        <p class="tl"><span class="c-q">?</span> ¿Cómo debe trabajar el equipo? <span class="c-v">Aprobar cada paso arriesgado</span></p>
-        <p class="tl"><span class="c-q">?</span> Equipo <span class="c-v">Mel, Dev, Designer, QA, Writer</span></p>
-        <p class="tl c-ok">Abriendo la Colmena<span class="tcaret"></span></p>
-      </div>
-    </article>
+    <p class="caption caption-center">Las apps instaladas se actualizan solas: primero comprueban la firma Ed25519 del manifiesto de actualización y luego preguntan: Actualizar ahora, Al cerrar o Recordar después. Los instaladores no tienen firma de código con certificados de pago, así que SmartScreen y Gatekeeper preguntan una vez; un modelo solo se descarga después de que digas que sí. Con <code>npx hivedesk</code> necesitas Node.js 20 o posterior, y la ventana se abre en tu navegador.</p>
 
     <div class="grid-2">
       <article class="hd-card reveal">
-        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg></span><h3>npm</h3></div>
-        <p>La página del paquete y sus versiones. Instálalo de forma global para tener un comando <code>hivedesk</code> a secas.</p>
+        <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-terminal"/></svg></span><h3>Desde un terminal</h3></div>
+        <p>Cada parte de la City tiene un comando: <code>hivedesk invite</code>, <code>hivedesk join</code>, <code>hivedesk peers</code>, <code>hivedesk share</code>, <code>hivedesk city</code> y <code>hivedesk doctor --p2p</code>, que comprueba los relays, tus puertos y tu tipo de red.</p>
         <div class="pill pill-block pill-sm" role="group" aria-label="Comando de instalación global"><span class="pill-p" aria-hidden="true">$</span><code>npm i -g hivedesk</code><button class="pill-copy" type="button" data-copy v-copy="npm i -g hivedesk" v-copy-label="Copiado" aria-label="Copiar el comando npm i -g hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copiado</span></button></div>
-        <a class="b b-ghost" href="https://www.npmjs.com/package/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg>hivedesk en npm</a>
       </article>
       <article class="hd-card reveal">
         <div class="card-head"><span class="ic"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-github"/></svg></span><h3>Código fuente</h3></div>
         <p>Lee cada línea, abre issues, envía pull requests. Una estrella ayuda a que otras personas lo encuentren.</p>
         <div class="b-row">
-          <a class="b b-light magnetic" href="https://github.com/kwy404/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg>Estrella en GitHub</a>
-          <a class="b b-ghost" href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-tag"/></svg>Última versión</a>
+          <a class="b b-light" href="https://github.com/kwy404/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-star"/></svg>Estrella en GitHub</a>
+          <a class="b b-ghost" href="https://www.npmjs.com/package/hivedesk" rel="noopener"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-npm"/></svg>hivedesk en npm</a>
         </div>
-      </article>
-    </div>
-
-    <div class="req reveal">
-      <article class="hd-card">
-        <h3>Requisitos</h3>
-        <ul class="ticks">
-          <li><b>Node.js 20 o posterior</b> en Windows, macOS o Linux.</li>
-          <li><b>Disco:</b> de 0.5 a 9.0 GB para el modelo, más hasta unos 0.7 GB para el runtime, una sola vez.</li>
-          <li><b>RAM libre para cargarlo:</b> 2.5 GB cuando el modelo va a la GPU; en la CPU, el tamaño del modelo más 1.5 GB (4 GB como mínimo). Con menos no se carga, así la máquina nunca se congela.</li>
-          <li><b>La GPU es opcional:</b> funcionan la mayoría de las tarjetas gráficas modernas, y también Apple Silicon.</li>
-          <li><b>Red</b> en la primera ejecución. ¿Ya tienes en marcha un runtime local con un modelo? Lo usa y se salta la descarga.</li>
-        </ul>
-      </article>
-      <article class="hd-card">
-        <h3>Qué modelo te toca</h3>
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th scope="col">Tu hardware</th><th scope="col">Modelo</th><th scope="col" class="num">Descargar</th><th scope="col">Se ejecuta en</th></tr></thead>
-            <tbody>
-              <tr><td>GPU con 10 GB de VRAM o más</td><td>14B</td><td class="num">9.0 GB</td><td>GPU</td></tr>
-              <tr><td>GPU con 7 a 10 GB de VRAM</td><td>7B</td><td class="num">4.7 GB</td><td>GPU</td></tr>
-              <tr><td>GPU con 4 a 7 GB de VRAM (por ejemplo, una tarjeta de 6 GB)</td><td>3B</td><td class="num">2.1 GB</td><td>GPU, todas las capas</td></tr>
-              <tr><td>Sin GPU utilizable, 16 GB de RAM o más</td><td>3B</td><td class="num">2.1 GB</td><td>CPU</td></tr>
-              <tr><td>Sin GPU utilizable, de 8 a 16 GB de RAM</td><td>1.5B</td><td class="num">1.1 GB</td><td>CPU</td></tr>
-              <tr><td>Menos de 8 GB de RAM</td><td>0.5B</td><td class="num">0.5 GB</td><td>CPU, con un aviso de que los resultados serán básicos</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="fine">Modelos de programación compactos, cuantizados y de código abierto, descargados de sus repositorios oficiales y verificados con el SHA-256 publicado. Cámbialo en Ajustes o con <code>--model 14b|7b|3b|1.5b|0.5b</code>. Según <a href="https://github.com/kwy404/hivedesk/blob/main/FIRST-RUN.md" rel="noopener">FIRST-RUN.md</a>.</p>
       </article>
     </div>
   </div>
@@ -952,15 +746,17 @@
 <section id="limits" class="sec sec-line" aria-labelledby="limits-h">
   <div class="wrap">
     <header class="head reveal">
-      <p class="kicker kicker-warn" data-i18n="limits.kicker">Sinceros sobre los límites</p>
-      <h2 id="limits-h" class="h2" data-i18n-2="limits.h2">En qué destaca.<br><span>Y en qué no.</span></h2>
-      <p class="head-sub">Un modelo pequeño en tu propia máquina es privado y no cuesta nada usarlo. También es más lento y menos capaz que los modelos más grandes de un centro de datos. Esto es lo que puedes esperar.</p>
+      <p class="kicker kicker-warn">Sinceros sobre los límites</p>
+      <h2 id="limits-h" class="h2">Lo que 1.0 no hace.<br><span>Todavía, o a propósito.</span></h2>
+      <p class="head-sub">Cada punto también está marcado en la app. Nada de esto está fingido para parecer terminado.</p>
     </header>
-
     <div class="grid-3 reveal">
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-model"/></svg><h3>Necesita un modelo</h3><p>Sin uno, no se genera nada. La primera ejecución descarga uno, de 0.5 a 9.0 GB, salvo que tengas en marcha un runtime local que ya usas o añadas tu propia clave de API.</p></div>
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-queue"/></svg><h3>Es más lento de lo que parece aquí</h3><p>Los trabajadores se turnan en un solo modelo, así que un trabajo tarda minutos, no segundos. Solo con la CPU, el modelo escribe unos pocos tokens por segundo.</p></div>
-      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-approval"/></svg><h3>Funciona mejor si tú llevas el timón</h3><p>Pide una cosa cada vez, lee los diffs, aprueba los pasos. Las apps grandes de una sola vez están fuera del alcance de un modelo pequeño.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-screen"/></svg><h3>Los pares necesitan una ventana</h3><p>A través de internet, el enlace con los pares funciona en la ventana de la app o en una pestaña del navegador. Un par sin interfaz necesita una parte nativa de WebRTC que aún no está hecha; en la misma red, <code>hivedesk invite --lan</code> funciona desde un terminal.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-offline"/></svg><h3>Sin relay TURN</h3><p>Dos redes muy estrictas pueden no llegar a conectarse. <code>hivedesk doctor --p2p</code> indica qué lado es el problema, y dos pares en la misma red pueden usar la LAN.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><h3>Aún sin firmar</h3><p>Las descargas no tienen firma de código ni están notarizadas. Por eso el control remoto en macOS es solo para ver, y por eso tu sistema avisa antes de la primera ejecución.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-model"/></svg><h3>Un modelo por cada prestador</h3><p>La máquina de un amigo solo sirve el modelo que tiene cargado. Nunca cambia el modelo del dueño y nunca descarga uno para un par.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-gpu"/></svg><h3>Los modelos gigantes son experimentales</h3><p>Reunir un modelo entre las máquinas de tus amigos por el enlace p2p cifrado está en 1.0, pero desactivado por defecto, y su velocidad depende del enlace de red entre las máquinas.</p></div>
+      <div class="hd-card"><svg class="i ic-lg" aria-hidden="true"><use href="../assets/icons.svg#i-queue"/></svg><h3>Los modelos pequeños son lentos</h3><p>Los trabajadores se turnan en un solo modelo, así que un trabajo tarda minutos. Solo con la CPU, un modelo escribe unos pocos tokens por segundo. Las apps grandes de una sola vez están fuera de alcance.</p></div>
     </div>
 
     <h3 class="h3 reveal">Lo que puede hacer tu hardware</h3>
@@ -970,25 +766,13 @@
         <tbody>
           <tr><th scope="row">Sin GPU</th><td>Un modelo de código 0.5B o 1.5B, o 3B con 16 GB de RAM</td><td><span class="lvl l1" aria-hidden="true"></span>Lenta, unos pocos tokens por segundo</td><td>Tareas pequeñas de un solo archivo. Toca esperar.</td></tr>
           <tr><th scope="row">GPU de 4 a 7 GB</th><td>Un modelo de código 3B, entero en la GPU</td><td><span class="lvl l2" aria-hidden="true"></span>Usable</td><td>Tareas pequeñas, componentes, scripts, textos.</td></tr>
-          <tr><th scope="row">GPU de 7 a 10 GB</th><td>Un modelo de código 7B</td><td><span class="lvl l3" aria-hidden="true"></span>Buena</td><td>Tareas pequeñas y medianas, contigo al timón.</td></tr>
+          <tr><th scope="row">GPU con 7 a 10 GB, o la de un amigo</th><td>Un modelo de código 7B</td><td><span class="lvl l3" aria-hidden="true"></span>Buena</td><td>Tareas pequeñas y medianas, contigo al timón.</td></tr>
           <tr><th scope="row">10 GB o más, o una clave</th><td>Un modelo de código 14B, uno más grande en un runtime local que ya usas, o un modelo en la nube con tu propia clave de API</td><td><span class="lvl l4" aria-hidden="true"></span>Más rápida</td><td>Trabajos más grandes y planes más largos.</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="grid-2 reveal">
-      <div class="hd-card card-good">
-        <h3>Destaca en</h3>
-        <ul class="ticks"><li>Landing pages</li><li>Apps CRUD pequeñas</li><li>Scripts y herramientas de línea de comandos</li><li>Componentes de interfaz</li><li>Pruebas para código que ya tienes</li><li>Documentación, READMEs y textos</li><li>Corregir un bug que describas</li></ul>
-      </div>
-      <div class="hd-card">
-        <h3>No destaca en</h3>
-        <ul class="crosses"><li>Apps grandes o complejas de una sola vez</li><li>Trabajos largos sin que leas y apruebes los pasos</li><li>Velocidad en una máquina sin GPU</li><li>Cualquier cosa sin un modelo: sin modelo, no hay resultado</li></ul>
-        <p class="fine">Funciona mejor cuando divides el trabajo, guías y apruebas. Para eso están la línea de tiempo y el modo de aprobación.</p>
-      </div>
-    </div>
-
-    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>Tus archivos se quedan en tu máquina.</b> La red se usa para la descarga de la primera ejecución y, después, solo para lo que actives: el modo préstamo y Code together (con un amigo con el que te emparejaste), GitHub, proveedores en la nube con tu propia clave, extensiones desde una URL y el reconocimiento de voz del navegador en el modo de voz. El modo préstamo solo envía prompts y respuestas del modelo: una petición cada vez, 20 por minuto como máximo, prompts de hasta 120 000 caracteres, y el amigo puede pararlo en cualquier momento. No incluye un relay TURN, así que dos redes muy estrictas pueden no llegar a conectarse.</span></p>
+    <p class="note-line reveal"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-lock"/></svg><span><b>Tus archivos se quedan en tu máquina.</b> La GPU de un amigo solo ve los prompts y las respuestas de los trabajos que le envías, nunca tus archivos, herramientas ni memoria. La red se usa solo para lo que actives: amigos y sus permisos, GitHub, proveedores en la nube con tu propia clave, extensiones desde una URL y el reconocimiento de voz del navegador en el modo de voz.</span></p>
   </div>
 </section>
 
@@ -1000,15 +784,15 @@
       <h2 id="faq-h" class="h2">Preguntas,<br><span>respuestas claras.</span></h2>
     </header>
     <div class="faq accordion accordion-flush collapse-arrow reveal">
-      <details class="collapse" name="faq" open><summary class="collapse-title">¿Necesito una cuenta o una clave de API?</summary><div class="collapse-content"><p>No. Por defecto se usa un modelo que se ejecuta en tu propia máquina. Las claves son opcionales, solo para usar tu propia clave de API con un modelo en la nube; se guardan en un almacén de claves en esta máquina.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Cuánto ocupa la descarga y cuánto tarda la primera ejecución?</summary><div class="collapse-content"><p>El modelo ocupa de 0.5 GB a 9.0 GB según tu hardware, más unos cientos de MB para el runtime. A 100 Mbit/s, el modelo 3B tarda unos 3 minutos y el 7B unos 6. Ocurre una sola vez; después, una ejecución está lista en lo que tarda en cargarse el modelo.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Funciona en un portátil sin GPU?</summary><div class="collapse-content"><p>Sí, en la CPU con un modelo pequeño: 3B con 16 GB de RAM, 1.5B con 8 a 16 GB, 0.5B por debajo de eso. Es lento, unos pocos tokens por segundo. Las tareas pequeñas funcionan; toca esperar.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Qué cambia el refinador de prompts?</summary><div class="collapse-content"><p>Antes de planificar, Mel convierte tu petición en un brief: el objetivo, qué construir, las restricciones, las comprobaciones y cualquier pregunta abierta. El trabajo espera hasta que uses el brief, lo edites o te quedes con tu texto original. Puedes desactivarlo en Ajustes.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿El modo de voz envía mi audio a alguna parte?</summary><div class="collapse-content"><p>La voz usa el reconocimiento de voz del navegador, que puede enviar el audio al servicio del fabricante del navegador. Las respuestas habladas de Mel se generan en tu PC cuando hay una voz local. Todavía no se incluye un reconocedor totalmente local.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Puede un trabajador dañar mi PC?</summary><div class="collapse-content"><p>Los trabajadores solo tienen herramientas limitadas a la carpeta del espacio de trabajo, y se rechazan las rutas que intentan salir de ella. Los comandos se ejecutan con un tiempo límite, un tope de salida y sin red por defecto, y el modo de aprobación hace que los pasos arriesgados te esperen. Las extensiones se ejecutan en un sandbox con los permisos que aceptes.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Por qué los lanzadores muestran un aviso de seguridad?</summary><div class="collapse-content"><p>Son scripts simples sin firma de código, así que Windows SmartScreen y macOS Gatekeeper preguntan antes de la primera ejecución. Cada uno solo comprueba que haya Node.js y ejecuta <code>npx hivedesk@latest</code>.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Puedo echar un vistazo sin descargar un modelo?</summary><div class="collapse-content"><p>Sí: <code>npx hivedesk --demo</code> repite un trabajo con guion. Todo lo que muestra está etiquetado como demo.</p></div></details>
-      <details class="collapse" name="faq"><summary class="collapse-title">¿Cómo lo desinstalo?</summary><div class="collapse-content"><p>Borra <code>~/.hivedesk/</code> (el runtime, los modelos, tus ajustes) y la carpeta <code>.hivedesk/</code> de tu proyecto. Si lo instalaste con npm, ejecuta también <code>npm rm -g hivedesk</code>.</p></div></details>
+      <details class="collapse" name="faq" open><summary class="collapse-title">¿Necesito una cuenta o una clave de API?</summary><div class="collapse-content"><p>No. Por defecto se usa un modelo que se ejecuta en tu propia máquina, y los amigos se conectan contigo directamente. Las claves son opcionales, solo para usar tu propia clave de API con un modelo en la nube; se guardan en un almacén de claves en tu máquina.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Puede un amigo ver mis archivos?</summary><div class="collapse-content"><p>Solo si marcas Leer el espacio de trabajo para él. Cuando un amigo se une, solo está activado Ver la City. Las ediciones que propone esperan tu aprobación, también los archivos nuevos.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Qué ve la GPU de un amigo cuando la tomo prestada?</summary><div class="collapse-content"><p>Los prompts y las respuestas de los trabajos que se le envían, nada más: ni archivos, ni herramientas, ni memoria. Su dueño puede detener cualquier trabajo, y cualquier llamada a herramienta que venga de su respuesta necesita tu aprobación.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Necesito la app de escritorio?</summary><div class="collapse-content"><p>No. <code>npx hivedesk</code> ejecuta el mismo motor y abre la ventana en tu navegador. La app añade la bandeja del sistema, las notificaciones del sistema y un selector de carpetas, y sigue prestando con la ventana cerrada. La tabla de arriba enumera todas las diferencias.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Alguien puede tomar el control de mi pantalla?</summary><div class="collapse-content"><p>No sin tu clic. La pantalla remota está desactivada hasta que permitas tu dirección, cada petición necesita tu Aceptar, solo ver es lo predeterminado, cada permiso caduca, una pantalla bloqueada no acepta entrada, y un atajo de teclado o el botón Detener lo terminan todo.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Funciona en un portátil sin GPU?</summary><div class="collapse-content"><p>Sí, en la CPU con un modelo pequeño, despacio: unos pocos tokens por segundo. Las tareas pequeñas funcionan. La GPU de un amigo, con su permiso, hace posibles modelos más grandes.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Y si dos redes no pueden conectarse?</summary><div class="collapse-content"><p>Ejecuta <code>hivedesk doctor --p2p</code>. Comprueba los relays, tus puertos y tu tipo de red, y dice qué lado bloquea el enlace. No incluye un relay TURN; en una misma red, usa la opción LAN.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Puedo echar un vistazo sin descargar un modelo?</summary><div class="collapse-content"><p>Sí: <code>npx hivedesk --demo</code> reproduce una City en su propia carpeta temporal, y cada evento con guion está etiquetado como demo. Nunca toca tus proyectos.</p></div></details>
+      <details class="collapse" name="faq"><summary class="collapse-title">¿Cómo lo desinstalo?</summary><div class="collapse-content"><p>Borra <code>~/.hivedesk/</code> (tu identidad, los pares conocidos, el runtime, los modelos y tus ajustes) y la carpeta <code>.hivedesk/</code> de tu proyecto. Si lo instalaste con npm, ejecuta también <code>npm rm -g hivedesk</code>.</p></div></details>
     </div>
   </div>
 </section>
@@ -1018,15 +802,15 @@
   <div class="wrap">
     <div class="band-in reveal">
       <div class="band-copy">
-        <h2 id="band-h" class="h2" data-i18n="band.h2">Mel está lista cuando tú lo estés.</h2>
-        <p data-i18n="band.p">Un comando, y el equipo está en tu escritorio.</p>
+        <h2 id="band-h" class="h2">Tu City está a un comando de distancia.</h2>
+        <p>Empieza con tu propio PC. Invita a un amigo cuando estés listo.</p>
       </div>
       <div class="band-act">
         <div class="pill" role="group" aria-label="Comando de instalación">
           <span class="pill-p" aria-hidden="true">$</span><code>npx hivedesk</code>
           <button class="pill-copy" type="button" data-copy v-copy="npx hivedesk" v-copy-label="Copiado" aria-label="Copiar el comando npx hivedesk"><svg class="i ic-copy" aria-hidden="true"><use href="../assets/icons.svg#i-copy"/></svg><svg class="i ic-ok" aria-hidden="true"><use href="../assets/icons.svg#i-check"/></svg><span class="copied-tip" aria-hidden="true">Copiado</span></button>
         </div>
-        <a class="b b-light b-lg magnetic" href="#download" data-i18n="nav.download">Descargar</a>
+        <a class="b b-light b-lg" href="#download">Construye tu City</a>
       </div>
     </div>
   </div>
@@ -1039,17 +823,18 @@
     <label class="command-palette-search"><span class="sr">Buscar en la página</span><input class="command-palette-input" type="search" placeholder="Ir a una sección" autocomplete="off" spellcheck="false" :value="PAL.q" @input="PAL.setQ($event.target.value)" @keydown="PAL.key($event)" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list"></label>
     <div id="pal-list" class="command-palette-list" role="listbox" aria-label="Secciones">
       <p class="command-palette-heading">Secciones</p>
-        <a class="command-palette-item" href="#city" data-keywords="agentes salas amigos gpu 0.2.0 ciudad" role="option" v-show="PAL.match('#city')" :aria-selected="PAL.sel === '#city' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#city'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Hive City</a>
-        <a class="command-palette-item" href="#film" data-keywords="película vídeo video 75 segundos" role="option" v-show="PAL.match('#film')" :aria-selected="PAL.sel === '#film' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#film'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>La película</a>
-        <a class="command-palette-item" href="#try" data-keywords="petición demo" role="option" v-show="PAL.match('#try')" :aria-selected="PAL.sel === '#try' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#try'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Pruébalo</a>
-        <a class="command-palette-item" href="#how" data-keywords="pasos pedir refinar planificar construir comprobar publicar" role="option" v-show="PAL.match('#how')" :aria-selected="PAL.sel === '#how' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#how'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Cómo funciona</a>
-        <a class="command-palette-item" href="#features" data-keywords="refinador voz temas extensiones memoria" role="option" v-show="PAL.match('#features')" :aria-selected="PAL.sel === '#features' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#features'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Funciones</a>
-        <a class="command-palette-item" href="#next" data-keywords="biblioteca playbook chat cualquier abeja próxima versión" role="option" v-show="PAL.match('#next')" :aria-selected="PAL.sel === '#next' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#next'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>En la próxima versión</a>
-        <a class="command-palette-item" href="#office" data-keywords="oficina abejas" role="option" v-show="PAL.match('#office')" :aria-selected="PAL.sel === '#office' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#office'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Modo oficina</a>
-        <a class="command-palette-item" href="#screens" data-keywords="capturas recorrido code together github changelog" role="option" v-show="PAL.match('#screens')" :aria-selected="PAL.sel === '#screens' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#screens'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Dentro de la Colmena</a>
+        <a class="command-palette-item" href="#how" data-keywords="pasos city invitar agentes gpu" role="option" v-show="PAL.match('#how')" :aria-selected="PAL.sel === '#how' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#how'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Cómo funciona</a>
+        <a class="command-palette-item" href="#city" data-keywords="edificios salas agentes tareas" role="option" v-show="PAL.match('#city')" :aria-selected="PAL.sel === '#city' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#city'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>La City</a>
+        <a class="command-palette-item" href="#invite" data-keywords="amigo seis palabras unirse" role="option" v-show="PAL.match('#invite')" :aria-selected="PAL.sel === '#invite' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#invite'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Invita a un amigo</a>
+        <a class="command-palette-item" href="#borrow" data-keywords="gpu compartir concesión planificador" role="option" v-show="PAL.match('#borrow')" :aria-selected="PAL.sel === '#borrow' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#borrow'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Pide prestada una GPU</a>
+        <a class="command-palette-item" href="#workbench" data-keywords="editor terminal buscar git" role="option" v-show="PAL.match('#workbench')" :aria-selected="PAL.sel === '#workbench' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#workbench'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>El banco de trabajo</a>
+        <a class="command-palette-item" href="#remote" data-keywords="pantalla control ver dirección" role="option" v-show="PAL.match('#remote')" :aria-selected="PAL.sel === '#remote' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#remote'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Pantalla remota</a>
+        <a class="command-palette-item" href="#models" data-keywords="catálogo grupo gigante" role="option" v-show="PAL.match('#models')" :aria-selected="PAL.sel === '#models' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#models'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Modelos</a>
+        <a class="command-palette-item" href="#playbooks" data-keywords="biblioteca experto" role="option" v-show="PAL.match('#playbooks')" :aria-selected="PAL.sel === '#playbooks' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#playbooks'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Playbooks</a>
+        <a class="command-palette-item" href="#security" data-keywords="identidad permisos auditoría cifrado" role="option" v-show="PAL.match('#security')" :aria-selected="PAL.sel === '#security' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#security'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Seguridad</a>
+        <a class="command-palette-item" href="#compare" data-keywords="app escritorio navegador tabla" role="option" v-show="PAL.match('#compare')" :aria-selected="PAL.sel === '#compare' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#compare'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>App de escritorio o navegador</a>
         <a class="command-palette-item" href="#download" data-keywords="windows macos linux npx instalar" role="option" v-show="PAL.match('#download')" :aria-selected="PAL.sel === '#download' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#download'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Descargar</a>
-        <a class="command-palette-item" href="#limits" data-keywords="hardware gpu modelo velocidad" role="option" v-show="PAL.match('#limits')" :aria-selected="PAL.sel === '#limits' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#limits'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Sinceros sobre los límites</a>
-        <a class="command-palette-item" href="#lend" data-keywords="amigo seis palabras" role="option" v-show="PAL.match('#lend')" :aria-selected="PAL.sel === '#lend' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#lend'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Presta tu PC</a>
+        <a class="command-palette-item" href="#limits" data-keywords="hardware velocidad pendiente" role="option" v-show="PAL.match('#limits')" :aria-selected="PAL.sel === '#limits' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#limits'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Sinceros sobre los límites</a>
         <a class="command-palette-item" href="#faq" data-keywords="preguntas frecuentes" role="option" v-show="PAL.match('#faq')" :aria-selected="PAL.sel === '#faq' ? 'true' : 'false'" @click="PAL.hide()" @pointermove="PAL.sel = '#faq'"><svg class="i" aria-hidden="true"><use href="../assets/icons.svg#i-arrow"/></svg>Preguntas frecuentes</a>
       <p class="command-palette-empty" v-show="PAL.none()">No hay resultados.</p>
     </div>
@@ -1067,9 +852,8 @@
 <footer class="foot">
   <div class="wrap foot-grid">
     <div class="foot-brand">
-      <img class="foot-mel" src="../assets/art/mel-wave.svg" width="96" height="96" alt="Mel, la abeja capataz, saludando" loading="lazy" decoding="async">
       <a class="brand" href="../"><img src="../assets/art/logo.svg" width="24" height="24" alt=""><span>hivedesk</span></a>
-      <p>Tu propio equipo de IA, en tu propia máquina.</p>
+      <p>Tus agentes. Tus máquinas. Tu City.</p>
       <div class="author">
         <span>Hecho por <b>Alexandre Kohler</b></span>
         <span class="author-links">
@@ -1080,22 +864,22 @@
     </div>
     <div>
       <h2 class="foot-h">Producto</h2>
-      <ul class="foot-list"><li><a href="#how">Cómo funciona</a></li><li><a href="#features">Funciones</a></li><li><a href="#city">Hive City</a></li><li><a href="#office">Modo oficina</a></li><li><a href="#download">Descargar</a></li><li><a href="#limits">Límites</a></li><li><a href="#faq">Preguntas</a></li></ul>
+      <ul class="foot-list"><li><a href="#how">Cómo funciona</a></li><li><a href="#city">La City</a></li><li><a href="#invite">Invita a un amigo</a></li><li><a href="#borrow">Pide prestada una GPU</a></li><li><a href="#security">Seguridad</a></li><li><a href="#compare">App o navegador</a></li><li><a href="#download">Descargar</a></li></ul>
     </div>
     <div>
       <h2 class="foot-h">Proyecto</h2>
-      <ul class="foot-list"><li><a href="https://github.com/kwy404/hivedesk" rel="noopener">GitHub</a></li><li><a href="https://www.npmjs.com/package/hivedesk" rel="noopener">npm</a></li><li><a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">Versiones</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">Seguridad</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener" lang="pt-BR">Português</a></li></ul>
+      <ul class="foot-list"><li><a href="https://github.com/kwy404/hivedesk" rel="noopener">GitHub</a></li><li><a href="https://www.npmjs.com/package/hivedesk" rel="noopener">npm</a></li><li><a href="https://github.com/kwy404/hivedesk/releases/latest" rel="noopener">Versiones</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/SECURITY.md" rel="noopener">Política de seguridad</a></li><li><a href="https://github.com/kwy404/hivedesk/blob/main/i18n/README.pt-BR.md" rel="noopener" lang="pt-BR">Português</a></li></ul>
     </div>
     <div>
       <h2 class="foot-h">Más de kwy404</h2>
-      <ul class="foot-list foot-more"><li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a></li><li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a></li><li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a></li><li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a></li><li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a></li><li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a></li><li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a></li><li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a></li><li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a></li></ul>
+      <ul class="foot-list foot-more" translate="no"><li><a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a></li><li><a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a></li><li><a href="https://kwy404.github.io/kastor/" rel="noopener">kastor</a></li><li><a href="https://kwy404.github.io/fontsketch/" rel="noopener">fontsketch</a></li><li><a href="https://kwy404.github.io/filefinch/" rel="noopener">filefinch</a></li><li><a href="https://kwy404.github.io/howlden/" rel="noopener">howlden</a></li><li><a href="https://kwy404.github.io/installkite/" rel="noopener">installkite</a></li><li><a href="https://kwy404.github.io/a11ymedic/" rel="noopener">a11ymedic</a></li><li><a href="https://kwy404.github.io/cookieowl/" rel="noopener">cookieowl</a></li></ul>
     </div>
   </div>
   <div class="wrap foot-legal">
     <p>Licencia MIT. Sin rastreo. Hecho con <a href="https://kwy404.github.io/monsoon/" rel="noopener">Monsoon</a>. Partes interactivas hechas con <a href="https://kwy404.github.io/Voodoo.js/" rel="noopener">Voodoo.js</a>.</p>
-    <p class="mono" translate="no">hivedesk 0.2.1</p>
+    <p class="mono" translate="no">hivedesk 1.0.0</p>
   </div>
 </footer>
-<script type="application/json" id="hd-t">{"toast.copied": "Copiado al portapapeles", "toast.paste": "pégalo en un terminal", "try.plan.game.build": "Un bucle de juego en canvas, controles de teclado y táctiles, una puntuación y un botón de reinicio.", "try.plan.game.checks": "El juego arranca, la puntuación cuenta, el reinicio funciona.", "try.plan.look": "Definir el estilo", "try.plan.game.loop": "Escribir el bucle del juego", "try.plan.game.howto": "Escribir cómo se juega", "try.plan.game.test": "Probar los controles jugando", "try.plan.list.build": "Una lista para añadir, editar, completar y borrar, guardada en localStorage.", "try.plan.list.checks": "Los elementos sobreviven a una recarga, una entrada vacía se rechaza.", "try.plan.list.style": "Dar estilo a la lista", "try.plan.list.crud": "Crear añadir, editar y borrar", "try.plan.list.save": "Guardar en localStorage", "try.plan.list.edge": "Revisar los casos límite", "try.plan.docs.build": "Qué hace, cómo se instala, cómo se usa y un ejemplo.", "try.plan.docs.checks": "Cada comando del README funciona tal como está escrito.", "try.plan.docs.outline": "Esbozar el README", "try.plan.docs.write": "Escribir instalación y uso", "try.plan.docs.cmds": "Comprobar los comandos", "try.plan.docs.read": "Leerlo como alguien nuevo", "try.plan.page.build": "Una portada, las secciones principales, un formulario de contacto y un pie de página.", "try.plan.page.checks": "Las imágenes tienen texto alternativo, el formulario tiene etiquetas, funciona a 375 px.", "try.plan.page.build2": "Construir la página", "try.plan.page.copy": "Escribir los textos", "try.plan.page.check": "Revisar la página", "try.writing": "Mel está escribiendo el brief", "try.goal": "Objetivo", "try.build": "Construir", "try.constraints": "Restricciones", "try.constraintsV": "HTML, CSS y JavaScript simples, funciona en móviles.", "try.checks": "Comprobaciones", "try.queued": "en cola", "try.running": "en curso", "try.done": "hecho", "try.finished": "Hecho en esta vista previa. En la Colmena, esto escribe archivos reales en tu carpeta."}</script>
+<script type="application/json" id="hd-t">{"toast.copied": "Copiado al portapapeles", "toast.paste": "pégalo en un terminal", "try.plan.game.build": "Un bucle de juego en canvas, controles de teclado y táctiles, una puntuación y un botón de reinicio.", "try.plan.game.checks": "El juego arranca, la puntuación cuenta, el reinicio funciona.", "try.plan.look": "Definir el estilo", "try.plan.game.loop": "Escribir el bucle del juego", "try.plan.game.howto": "Escribir cómo se juega", "try.plan.game.test": "Probar los controles jugando", "try.plan.list.build": "Una lista para añadir, editar, completar y borrar, guardada en localStorage.", "try.plan.list.checks": "Los elementos sobreviven a una recarga, una entrada vacía se rechaza.", "try.plan.list.style": "Dar estilo a la lista", "try.plan.list.crud": "Crear añadir, editar y borrar", "try.plan.list.save": "Guardar en localStorage", "try.plan.list.edge": "Revisar los casos límite", "try.plan.docs.build": "Qué hace, cómo se instala, cómo se usa y un ejemplo.", "try.plan.docs.checks": "Cada comando del README funciona tal como está escrito.", "try.plan.docs.outline": "Esbozar el README", "try.plan.docs.write": "Escribir instalación y uso", "try.plan.docs.cmds": "Comprobar los comandos", "try.plan.docs.read": "Leerlo como alguien nuevo", "try.plan.page.build": "Una portada, las secciones principales, un formulario de contacto y un pie de página.", "try.plan.page.checks": "Las imágenes tienen texto alternativo, el formulario tiene etiquetas, funciona a 375 px.", "try.plan.page.build2": "Construir la página", "try.plan.page.copy": "Escribir los textos", "try.plan.page.check": "Revisar la página", "try.writing": "Mel está escribiendo el brief", "try.goal": "Objetivo", "try.build": "Construir", "try.constraints": "Restricciones", "try.constraintsV": "HTML, CSS y JavaScript simples, funciona en móviles.", "try.checks": "Comprobaciones", "try.queued": "en cola", "try.running": "en curso", "try.done": "hecho", "try.finished": "Hecho en esta vista previa. En la Colmena, esto escribe archivos reales en tu carpeta.", "inv.next": "Siguiente paso", "inv.match": "Las palabras coinciden", "inv.accept": "Aceptar", "inv.again": "Otra vez", "bor.gb": "{a} de {b} GB", "bor.youGpu": "Tu GPU", "bor.fits": "cabe en {free} GB libres", "bor.noVram": "necesita {need} GB, {free} GB libres", "bor.anaGpu": "La GPU de Ana", "bor.fitsShare": "cabe en los {share} GB que comparte", "bor.noShare": "necesita {need} GB, ella comparte como máximo {share} GB", "bor.youCpu": "Tu CPU", "bor.ram": "necesita {need} GB de RAM, {free} GB libres", "bor.noRam": "necesita {need} GB de RAM libre, {free} GB libres", "bor.about": "unos {s} s", "bor.model": "el modelo {size}B", "bor.none": "Ninguna máquina puede ejecutar {model} ahora. La tarea espera un recurso y enumera estos motivos; un modelo gigante reunido no está en 1.0.", "bor.why": "{target}: {model} {detail}, unos {s} s.", "bor.whyLocal": "Lo local va primero: privado y sin red.", "bor.whyNot": "{target}: {detail}.", "bor.whyNext": "{target} tardaría unos {s} s.", "bor.revoked": "Ana detuvo el trabajo. Se conservan los {n} tokens escritos hasta ahora.", "bor.done": "Hecho: {n} tokens en {target}.", "pool.short": "{have} GB reunidos, {need} GB necesarios: faltan {miss} GB.", "pool.ok": "{have} GB reunidos, {need} GB necesarios. Velocidad estimada: unos {tps} tokens por segundo, suficiente para que el medidor se desbloquee.", "pool.slow": "{have} GB reunidos, {need} GB necesarios, pero solo unos {tps} tokens por segundo: demasiado lento para desbloquearse.", "pb.hint": "Escribe una tarea para ver qué se elegiría", "pb.none": "Ningún playbook cercano. El equipo trabaja solo con el brief.", "pb.count": "De {n} playbooks, en inglés. En la app también cuentan el rol, la sala y los tipos de archivo."}</script>
 </body>
 </html>
