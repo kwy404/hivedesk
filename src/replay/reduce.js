@@ -50,12 +50,11 @@ function upsert(list, item, key = 'id') {
 export function reduce(state, event) {
   if (!event || typeof event.seq !== 'number') return state;
   if (event.seq > state.lastSeq) state.lastSeq = event.seq;
-  if (event.demo) state.demo = true;
   const d = event.data || {};
   switch (event.type) {
     case 'session.started':
       state.version = d.version || state.version;
-      // Each run says whether it is a demo; an older demo run in the same log does not stick.
+      // Not sticky (1.0): a demo session in an old log does not label the runs after it.
       state.demo = !!d.demo;
       state.lend = !!d.lend;
       break;
@@ -230,8 +229,30 @@ export function reduce(state, event) {
     case 'chat.message': {
       const ch = d.channel || 'general';
       if (!state.chat[ch]) state.chat[ch] = [];
-      state.chat[ch].push({ id: d.id, from: d.from, text: d.text, taskId: d.taskId, ts: event.ts, seq: event.seq });
+      const m = { id: d.id, from: d.from, text: d.text, taskId: d.taskId, ts: event.ts, seq: event.seq };
+      // A crew message keeps its i18n key (shown in the desktop's language) and any choice buttons.
+      if (d.i18n) m.i18n = d.i18n;
+      if (d.choices) m.choices = d.choices;
+      if (d.replyTo) m.replyTo = d.replyTo;
+      // The question card this line announces (src/crew/domains/, docs/1.0/DOMAINS.md).
+      if (d.question) m.question = String(d.question).slice(0, 80);
+      state.chat[ch].push(m);
       if (state.chat[ch].length > CHAT_LIMIT) state.chat[ch].splice(0, state.chat[ch].length - CHAT_LIMIT);
+      break;
+    }
+    // Open question cards, so a reloaded window does not need crew.questions (docs/1.0/DOMAINS.md).
+    case 'crew.question':
+      if (d.id) {
+        state.questions = state.questions || {};
+        state.questions[d.id] = { id: d.id, jobId: event.jobId, questions: d.questions || [], defaults: d.defaults, domain: d.domain, subject: d.subject, lang: d.lang, labels: d.labels, ts: event.ts };
+      }
+      break;
+    case 'crew.answered':
+      if (state.questions && d.id) delete state.questions[d.id];
+      break;
+    case 'chat.chosen': {
+      const m = (state.chat[d.channel] || []).find((x) => x.replyTo === d.messageId && x.choices);
+      if (m) m.chosen = d.choice;
       break;
     }
     case 'file.changed':

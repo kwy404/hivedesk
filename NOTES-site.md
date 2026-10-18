@@ -96,3 +96,35 @@ FIRST-RUN.md is rewritten and is the source to quote. New, all shipped and teste
    edit files), set by the host; guests never get a shell and every guest command goes through the host's engine and
    its approval rules; edits merge with a small text CRDT and are saved on the host's disk; a guest may also lend its
    model. The editor is served locally and loads only when the Code window opens.
+
+## Language pages (site), 2026-10-17
+
+- The site now has a static page per language: `docs/<lang>/index.html` for pt-BR, es, fr, de, it, ja, ko, zh-Hans
+  and ru, built from `docs/index.html` (English source) by `python docs/_i18n/build.py`. Translations live in
+  `docs/_i18n/<lang>.json`; `python docs/_i18n/build.py --export` refreshes `docs/_i18n/en.json` after the English
+  page changes. The build also writes the SEO block of every page (canonical, hreflang, JSON-LD), `sitemap.xml` and
+  `robots.txt`, and reads the version from package.json.
+- Test: `python docs/_i18n/check.py` fails on a missing translation, placeholders that differ, an en or em dash, an
+  AI product name, English sentences left on a language page, or a broken SEO block. Please wire it into CI next to
+  scripts/check-site.mjs (scripts/ and test/ are not my area). Standard library Python only.
+- If you edit text in `docs/index.html` (for example the version line), run the export and the build; units that are
+  new show up as missing in check.py until they are translated.
+
+## The 1.0 site and READMEs (next/site), 2026-10-17
+
+- `docs/index.html` is the 1.0 landing (English source), with `docs/assets/v1.css` and `docs/assets/v1.js` on top of
+  site.css and site.js. Sections: hero (two PCs, the encrypted link, the GPU and the City as an inline SVG), how it
+  works, the City, Invite a friend (a step demo), Borrow a GPU (a scheduler demo with reasons, lease and Stop),
+  workbench, remote screen, models with the pool meter (marked experimental, not in 1.0), playbooks (a picker over
+  `docs/assets/playbooks.json`, built from `src/crew/library/entries/` by `docs/_i18n/build.py`), security, the
+  Desktop app or browser table, download, limits, FAQ. All 10 languages are built by `docs/_i18n/build.py`.
+- Facts come from docs/1.0/protocol/*.md in the stream worktrees and their code (p2p, compute, city, workbench,
+  remote, the model catalog). If a stream changes a number (lease 15 s, invite 10 minutes, grant lengths 5/15/60,
+  2 GB files, 41 models, 497 playbooks, control on Windows and X11 only), please note it here.
+- Design: graphite surfaces, amber only for the main action and accents, hairlines, small radii, mono labels, short
+  motion, no mascot or bursts on this page, per the coordinator's direction. When docs/1.0/DESIGN.md lands in
+  hivedesk-design, the tokens at the end of v1.css are the place to align.
+- Screenshots: the City shots are still the 0.2.0 demo captures; no 1.0 captures exist in ui/screenshots yet. New
+  ones of the Machines panel, the workbench and the remote screen should replace or join them before the release.
+- README.md and i18n/README.pt-BR.md are the 1.0 versions, with the same table near the top of Quick Start and
+  `assets/illustrations/city-p2p.svg` (`city-p2p-pt.svg`) made from the hero art.

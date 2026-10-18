@@ -6,3 +6,5 @@ coverage/
 *.part
 .DS_Store
 Thumbs.db
+*.pem
+.hivedesk-release/

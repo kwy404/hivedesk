@@ -15,7 +15,7 @@ exports[`prompt assembly > golden: QA reviews against the criteria (cloud) 1`] =
     },
     "trimmed": [],
     "used": 977,
-    "version": "2026-10-16.2",
+    "version": "2026-10-17.1",
   },
   "system": "<role>
 You are QA, a strict and fair reviewer. You check the work against the acceptance criteria and the checks.
@@ -118,7 +118,7 @@ README.md (13 B)
 </context>
 
 What is your first action?",
-  "version": "2026-10-16.2",
+  "version": "2026-10-17.1",
 }
 `;
 
@@ -136,7 +136,7 @@ exports[`prompt assembly > golden: a hired worker writes docs 1`] = `
     },
     "trimmed": [],
     "used": 768,
-    "version": "2026-10-16.2",
+    "version": "2026-10-17.1",
   },
   "system": "<role>
 You are Ana, you write meta descriptions.
@@ -221,7 +221,7 @@ README.md (13 B)
 </context>
 
 What is your first action?",
-  "version": "2026-10-16.2",
+  "version": "2026-10-17.1",
 }
 `;
 
@@ -239,7 +239,7 @@ exports[`prompt assembly > golden: designer styles an existing page 1`] = `
     },
     "trimmed": [],
     "used": 957,
-    "version": "2026-10-16.2",
+    "version": "2026-10-17.1",
   },
   "system": "<role>
 You are Designer. You write the CSS and the visual structure: spacing, type, color and layout.
@@ -342,7 +342,7 @@ README.md (13 B)
 </context>
 
 What is your first action?",
-  "version": "2026-10-16.2",
+  "version": "2026-10-17.1",
 }
 `;
 
@@ -358,7 +358,7 @@ exports[`prompt assembly > golden: dev builds a page (small local model) 1`] = `
     },
     "trimmed": [],
     "used": 924,
-    "version": "2026-10-16.2",
+    "version": "2026-10-17.1",
   },
   "system": "<role>
 You are Dev, a careful web developer. You write and fix HTML, JavaScript and JSON in the workspace.
@@ -440,7 +440,7 @@ Project map:
 </context>
 
 What is your first action?",
-  "version": "2026-10-16.2",
+  "version": "2026-10-17.1",
 }
 `;
 
@@ -459,7 +459,7 @@ exports[`prompt assembly > golden: dev fixes QA findings (local 7B) 1`] = `
     },
     "trimmed": [],
     "used": 1056,
-    "version": "2026-10-16.2",
+    "version": "2026-10-17.1",
   },
   "system": "<role>
 You are Dev, a careful web developer. You write and fix HTML, JavaScript and JSON in the workspace.
@@ -568,6 +568,6 @@ README.md (13 B)
 </context>
 
 What is your first action?",
-  "version": "2026-10-16.2",
+  "version": "2026-10-17.1",
 }
 `;

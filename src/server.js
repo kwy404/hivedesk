@@ -6,8 +6,12 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { acceptUpgrade, rejectUpgrade } from './ws.js';
 import { createRelayBrain } from './brain/relay.js';
+import { registerModelCommands } from './brain/catalog/commands.js';
+import { registerPoolCommands } from './brain/pool/index.js';
 import { PROTOCOL } from './replay/reduce.js';
 import { marks } from './replay/index.js';
+import { createRouter, CommandError } from './core/router.js';
+import { USER } from './core/origin.js';
 import { guestOf, checkGuest } from './collab/policy.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -22,13 +26,10 @@ const TYPES = {
 };
 
 const PWA_FILES = new Set(['/manifest.webmanifest', '/sw.js', '/offline.html', '/pwa.js', '/icon-192.png', '/icon-512.png', '/favicon.svg']);
+// Body types a cookie only POST may carry: none of them can be sent by a plain cross site form or a no-cors fetch.
+const WRITE_TYPES = new Set(['application/json', 'application/octet-stream', 'audio/wav']);
 
-export class CommandError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.code = code;
-  }
-}
+export { CommandError };
 
 function safeJoin(root, rel) {
   let decoded;
@@ -73,7 +74,10 @@ export function createServer(opts) {
   const version = opts.version || '0.0.0';
   const clients = new Set();
   const routes = [];
-  const commands = new Map();
+  // Every command goes through the router (src/core/router.js): it checks who asks before the handler runs.
+  const router = opts.router || createRouter();
+  // Fields a plug-in adds to hello (the engine's peerId once src/p2p/ has an identity).
+  let helloExtra = () => ({});
   let port = 0;
   let clientSeq = 0;
 
@@ -84,14 +88,26 @@ export function createServer(opts) {
     return h === `127.0.0.1:${port}` || h === `localhost:${port}` || h === `[::1]:${port}`;
   }
 
+  const cookieName = () => `hivedesk_token_${port}`;
+
   function authed(req, url) {
     const q = url.searchParams.get('t');
     if (q && tokenEquals(q, token)) return 'query';
     const auth = String(req.headers.authorization || '');
     if (auth.startsWith('Bearer ') && tokenEquals(auth.slice(7), token)) return 'header';
-    const c = readCookie(req, 'hivedesk_token');
+    // One cookie per engine port: two engines on this PC (two projects, or a lender and a borrower) share the
+    // 127.0.0.1 cookie jar, and one name would make each window lose the other's. The 0.x name is still read.
+    const c = readCookie(req, cookieName()) || readCookie(req, 'hivedesk_token');
     if (c && tokenEquals(c, token)) return 'cookie';
     return null;
+  }
+
+  /** A cookie only write: the exact engine Origin (same host and port) and a non form content type. */
+  function sameOriginWrite(req) {
+    const origin = String(req.headers.origin || '');
+    if (!origin || origin !== `http://${String(req.headers.host || '')}`) return false;
+    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    return WRITE_TYPES.has(type);
   }
 
   function send(res, status, body, headers = {}) {
@@ -146,18 +162,20 @@ export function createServer(opts) {
   }
 
   // ---- commands ----
-  function command(type, handler) {
-    commands.set(type, handler);
+  /** @param {string} type @param {Function} handler @param {import('./core/router.js').CommandSpec} [spec] */
+  function command(type, handler, spec) {
+    router.register(type, handler, spec);
   }
 
-  async function runCommand(type, data, client) {
-    const handler = commands.get(type);
-    if (!handler) throw new CommandError('bad_request', `unknown command: ${type}`);
-    const d = data && typeof data === 'object' ? data : {};
-    // A guest command (forwarded by the host's browser with `as`) is checked against its role here,
-    // whatever the browser decided (src/collab/policy.js).
-    checkGuest(guestOf(d), type, (code, message) => new CommandError(code, message));
-    return handler(d, client);
+  /**
+   * Runs a command. Local token holders (the WebSocket and REST paths) are the user; src/p2p/ passes a verified peer origin.
+   * @param {{ kind: string, peerId?: string }} [origin]
+   */
+  async function runCommand(type, data, client, origin = USER, extra = {}) {
+    // A 0.2 Code together guest command (forwarded by the host's browser with `as`) is checked against its
+    // role here, whatever the browser decided (src/collab/policy.js, 0.2.1). Peers come with a verified origin.
+    if ((origin?.kind || 'user') === 'user' && data && typeof data === 'object') checkGuest(guestOf(data), type, (code, message) => new CommandError(code, message));
+    return router.dispatch(type, data, { origin, client, ...extra });
   }
 
   const need = (cond, msg) => { if (!cond) throw new CommandError('bad_request', msg); };
@@ -168,17 +186,25 @@ export function createServer(opts) {
     const guest = guestOf(d);
     // A guest's job runs with approval on, and every write or run in it waits for the host.
     const approval = guest ? true : typeof d.approval === 'boolean' ? d.approval : undefined;
-    const { jobId } = hive.createJob({ request: d.request, approval, refine: typeof d.refine === 'boolean' ? d.refine : undefined, playbookId: d.playbookId });
+    const { jobId } = hive.createJob({ request: d.request, approval, refine: typeof d.refine === 'boolean' ? d.refine : undefined, playbookId: d.playbookId, lang: guest ? undefined : typeof d.lang === 'string' ? d.lang : undefined });
     if (guest) toolbox.markOrigin?.(jobId, { kind: 'guest', id: guest.id, label: guest.name });
     return { jobId };
   });
   command('job.cancel', (d) => { hive.cancelJob(d.jobId); return {}; });
-  command('chat.send', (d) => ({ id: hive.userChat(d.channel, d.text) }));
+  // jobs: the host's desktop may start jobs from the chat. A Code together guest's chat.send is rebuilt
+  // by ui/lend/collab/roles.js with only channel and text, so a viewer's message can never start one.
+  // owner: only the person at this computer (no guest `as`, no peer origin) steers running jobs with chat.
+  command('chat.send', (d, client, ctx) => ({ id: hive.userChat(d.channel, d.text, { lang: typeof d.lang === 'string' ? d.lang : undefined, jobs: d.jobs === true && !d.as, owner: !d.as && (ctx?.origin?.kind || 'user') === 'user' }) }));
+  command('chat.choose', (d) => {
+    need(typeof d.messageId === 'string', 'messageId is required');
+    return hive.chooseChat(d.messageId, d.choice, { lang: typeof d.lang === 'string' ? d.lang : undefined });
+  });
   command('approval.resolve', (d) => {
     need(typeof d.approvalId === 'string', 'approvalId is required');
     const guest = guestOf(d);
     // Actions that come from a guest or a friend's model are answered by the host only.
-    if (guest && approvals.get?.(d.approvalId)?.strict) throw new CommandError('forbidden', 'only the host can answer this approval');
+    const ap = approvals.get?.(d.approvalId);
+    if (guest && (ap?.strict || ap?.origin || ap?.remoteOrigin)) throw new CommandError('forbidden', 'only the host can answer this approval');
     if (!approvals.resolve(d.approvalId, !!d.approved, d.note, guest ? 'guest' : 'user')) throw new CommandError('not_found', 'no pending approval with that id');
     return {};
   });
@@ -242,6 +268,10 @@ export function createServer(opts) {
     opts.brains.download(d.model);
     return {};
   });
+  // models.*: the catalog, the analysis, consent before any download, switch and delete (src/brain/catalog/commands.js).
+  registerModelCommands(command, () => opts.brains || null, CommandError, bus);
+  // pool.*: pooled giant models over llama.cpp RPC, experimental and off by default (src/brain/pool/).
+  const pool = opts.brains ? registerPoolCommands(command, { bus, scheduler, CommandError, home: opts.brains.home, brains: opts.brains, log: opts.brains.log }) : null;
   command('brain.attach', (d, client) => {
     if (!client) throw new CommandError('bad_request', 'brain.attach needs a WebSocket');
     const id = `b_remote_${++clientSeq}`;
@@ -375,8 +405,13 @@ export function createServer(opts) {
       const how = authed(req, url);
       if (!how) return sendError(res, 401, 'unauthorized', 'missing or wrong token; open the URL printed by hivedesk');
       // A year long cookie, so an installed app window (PWA) opens without the token in the URL while the token stays the same.
-      const cookie = how === 'query' ? { 'set-cookie': `hivedesk_token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=31536000` } : {};
+      const cookie = how === 'query' ? { 'set-cookie': `${cookieName()}=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=31536000` } : {};
       if (url.pathname.startsWith('/api/')) {
+        // CSRF: the cookie alone never changes anything. A POST needs the token itself (header or query), or the
+        // engine's exact Origin plus a content type a plain cross site form cannot send.
+        if (req.method !== 'GET' && req.method !== 'HEAD' && how === 'cookie' && !sameOriginWrite(req)) {
+          return sendError(res, 403, 'forbidden', 'this request needs the token header or the engine Origin with a JSON body');
+        }
         for (const [k, v] of Object.entries(cookie)) res.setHeader(k, v);
         return await handleApi(req, res, url);
       }
@@ -384,6 +419,8 @@ export function createServer(opts) {
       if (url.pathname === '/lib/reduce.js') return serveFile(res, path.join(HERE, 'replay', 'reduce.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
       // The Hive City reducer (CITY-PROTOCOL.md section 1), pure and import free like reduce.js.
       if (url.pathname === '/lib/city.js') return serveFile(res, path.join(HERE, 'city', 'state.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
+      // The 1.0 task board reducer (src/tasks/state.js), pure and import free.
+      if (url.pathname === '/lib/tasks.js') return serveFile(res, path.join(HERE, 'tasks', 'state.js'), cookie) || sendError(res, 404, 'not_found', 'missing');
       if (url.pathname.startsWith('/i18n/')) {
         // Shared UI strings and the message formatter (i18n/<locale>.json, i18n/index.js).
         const rel = url.pathname.slice('/i18n/'.length);
@@ -420,7 +457,11 @@ export function createServer(opts) {
     if (!conn) return;
     const client = { id: `c${++clientSeq}`, conn, brains: new Map() };
     clients.add(client);
-    conn.sendJson({ kind: 'hello', ...meta(), lastSeq: bus.seq, state: bus.state });
+    let extra = {};
+    try { extra = helloExtra() || {}; } catch { /* a plug-in must not break the hello */ }
+    // A plug-in may add to the state in hello (the share settings, the last resource sample, the peers).
+    const { state: extraState, ...extraTop } = extra;
+    conn.sendJson({ kind: 'hello', ...meta(), ...extraTop, lastSeq: bus.seq, state: extraState && typeof extraState === 'object' ? { ...bus.state, ...extraState } : bus.state });
     conn.on('message', async (text) => {
       let msg;
       try { msg = JSON.parse(text); } catch { return conn.sendJson({ kind: 'reply', id: null, ok: false, error: { code: 'bad_request', message: 'invalid JSON' } }); }
@@ -435,6 +476,7 @@ export function createServer(opts) {
     });
     conn.on('close', () => {
       clients.delete(client);
+      pool?.clientGone(client);
       for (const id of client.brains.keys()) scheduler.removeBrain(id, 'disconnected');
       client.brains.clear();
     });
@@ -458,6 +500,11 @@ export function createServer(opts) {
     route,
     command,
     runCommand,
+    router,
+    /** Pooled models (src/brain/pool/): the engine attaches the p2p port once its node exists. */
+    pool,
+    /** @param {() => object} fn fields for every hello frame, for example { peerId } */
+    setHelloExtra(fn) { helloExtra = typeof fn === 'function' ? fn : () => ({}); },
     clients,
     get port() { return port; },
     get url() { return `http://127.0.0.1:${port}/?t=${token}`; },
@@ -474,6 +521,7 @@ export function createServer(opts) {
     },
     async close() {
       clearInterval(pinger);
+      pool?.close();
       offEvent();
       offLive();
       for (const c of clients) c.conn.close(1001, 'server stopping');
@@ -501,6 +549,7 @@ function statusFor(err) {
     case 'busy': return 429;
     case 'unauthorized': return 401;
     case 'forbidden': return 403;
+    case 'not_granted': return 403;
     case 'internal': return 500;
     case 'rate_limited': return 429;
     default: return 400;

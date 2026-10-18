@@ -8,6 +8,7 @@ import { merge, proposeEntry, suggestBump, renderSections, entryFromMarkdown, la
 import { activityFrom, filterActivity, people, exportActivity, KINDS } from './activity.js';
 import { melAsk } from './mel.js';
 import { unifiedDiff, diffStats } from '../tools/diff.js';
+import { say } from '../crew/say.js';
 
 export const CHANGELOG_FILE = 'CHANGELOG.md';
 const SEMVER = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
@@ -94,7 +95,8 @@ export default function register(ctx) {
         const p = await propose(e.jobId);
         if (isEmpty(p.entry)) return;
         bus.emit('changelog.proposed', { proposalId: p.proposalId, entry: p.entry, markdown: p.markdown, suggestion: p.suggestion, by: p.by }, { jobId: e.jobId });
-        hive?.chat?.('mel', `I drafted a changelog entry for this job (suggested version ${p.suggestion.version}, ${p.suggestion.bump}: ${p.suggestion.reason}) Open the Changelog window to edit and approve it. Nothing is written until you do.`, undefined, 'general', e.jobId);
+        const lang = bus.state.jobs?.find((j) => j.id === e.jobId)?.lang;
+        speak(hive, 'mel', 'crew.say.changelog', { version: p.suggestion.version, bump: p.suggestion.bump, reason: p.suggestion.reason }, { jobId: e.jobId, lang });
       } catch { /* a missing report is not an error here */ }
     }, 0);
   });
@@ -145,4 +147,10 @@ export default function register(ctx) {
   });
 
   return { propose, write, proposals, currentVersion, close: off };
+}
+
+/** A crew line in the user's language (src/crew/say.js); a host without say() gets the English one. */
+function speak(hive, who, key, params, o = {}) {
+  if (typeof hive?.say === 'function') return hive.say(who, key, params, o);
+  return hive?.chat?.(who, say('en', key, params), undefined, o.channel || 'general', o.jobId);
 }

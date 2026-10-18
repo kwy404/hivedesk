@@ -208,6 +208,17 @@ describe('model choice and download', () => {
     const bad = { ...model, file: 'bad.gguf', sha256: '0'.repeat(64) };
     await expect(downloadModel(bad, { home })).rejects.toMatchObject({ code: 'checksum' });
     expect(fs.existsSync(path.join(home, 'models', 'bad.gguf.part'))).toBe(false);
+
+    // A part without a SHA-256, or without a size, is never downloaded.
+    const fetched = [];
+    const spy = async (u) => { fetched.push(u); throw new Error('must not fetch'); };
+    await expect(downloadModel({ ...model, file: 'nosha.gguf', sha256: null }, { home, fetchImpl: spy })).rejects.toMatchObject({ code: 'checksum' });
+    await expect(downloadModel({ name: 'Split', files: [{ file: 'a.gguf', bytes: 10, sha256: model.sha256, url: model.url }, { file: 'b.gguf', bytes: 10, url: model.url }] }, { home, fetchImpl: spy })).rejects.toMatchObject({ code: 'checksum' });
+    await expect(downloadModel({ ...model, file: 'nosize.gguf', bytes: 0 }, { home, fetchImpl: spy })).rejects.toMatchObject({ code: 'too_big' });
+    expect(fetched).toEqual([]);
+    // A server that sends more than the named size is cut off and the part dropped.
+    await expect(downloadModel({ ...model, file: 'short.gguf', bytes: 500 }, { home, freeBytes: 1e12 })).rejects.toMatchObject({ code: 'checksum' });
+    expect(fs.existsSync(path.join(home, 'models', 'short.gguf.part'))).toBe(false);
     s.close();
   });
 
@@ -292,14 +303,16 @@ describe('brain manager (first run pipeline)', () => {
   it('with --no-download it says a download is needed and waits', async () => {
     const t = make({ flags: { noDownload: true } });
     await t.m.start();
-    expect(t.bus.state.brain).toMatchObject({ state: 'needs_download', model: MODELS[2].name });
-    expect(t.bus.events.find((e) => e.type === 'brain.download.required').data).toMatchObject({ bytes: MODELS[2].bytes, source: 'https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF' });
-    expect(t.bus.events.find((e) => e.type === 'brain.choice').data.reason).toMatch(/Test GPU \(6\.4 GB VRAM\) found: using Qwen2\.5-Coder 3B/);
+    const choice = t.bus.events.find((e) => e.type === 'brain.choice').data;
+    expect(t.bus.state.brain).toMatchObject({ state: 'needs_download', model: choice.model });
+    expect(t.bus.events.find((e) => e.type === 'brain.download.required').data).toMatchObject({ bytes: choice.bytes, source: expect.stringMatching(/^https:\/\/huggingface\.co\/(Qwen|bartowski)\/Qwen2\.5-Coder-/) });
+    expect(t.bus.events.find((e) => e.type === 'models.consent.required').data.reason).toBe('no_download');
+    expect(choice.reason).toMatch(/Test GPU \(6\.4 GB VRAM\) found: using \d+B /);
     expect(t.scheduler.hasBrain).toBe(false);
   });
 
-  it('reports no network with a hint, and no disk by stepping down', async () => {
-    const t = make();
+  it('reports no network with a hint, and picks a model that fits the free disk', async () => {
+    const t = make({ flags: { model: '3b' } });
     await t.m.start();
     expect(t.bus.state.brain.state).toBe('error');
     expect(t.bus.state.brain.hint).toMatch(/Retry/);
@@ -307,13 +320,13 @@ describe('brain manager (first run pipeline)', () => {
 
     const small = make({ hardware: { ...hw, diskFreeBytes: 1.5 * GB } });
     await small.m.start();
-    const fb = small.bus.events.find((e) => e.type === 'brain.fallback');
-    expect(fb.data.to.model).toBe(MODELS[1].name);
+    expect(small.bus.events.find((e) => e.type === 'brain.choice').data.bytes).toBeLessThan(1.4 * GB);
 
     const none = make({ hardware: { ...hw, diskFreeBytes: 0.5 * GB } });
     // The real free disk is read from the home folder, so this one only checks the message path when it applies.
     await none.m.start();
-    expect(['error']).toContain(none.bus.state.brain.state);
+    expect(['error', 'needs_download']).toContain(none.bus.state.brain.state);
+    if (none.bus.state.brain.state === 'needs_download') expect(none.bus.events.find((e) => e.type === 'brain.choice').data.bytes).toBeLessThan(0.4 * GB);
   });
 
   it('uses a --model file directly', async () => {
@@ -332,8 +345,9 @@ describe('brain manager (first run pipeline)', () => {
   it('probes the options', async () => {
     const t = make();
     const p = await t.m.probe();
-    expect(p.recommended.model).toBe('qwen2.5-coder-3b');
-    expect(p.options.find((o) => o.recommended).model).toBe('qwen2.5-coder-3b');
+    expect(p.recommended.model).toMatch(/^qwen2\.5-coder-7b:/);
+    expect(p.options.find((o) => o.recommended).model).toBe(p.recommended.model);
+    expect(p.options.filter((o) => o.backend === 'local').length).toBeGreaterThanOrEqual(5);
     expect(p.options.find((o) => o.backend === 'ollama').available).toBe(false);
   });
 });
@@ -357,6 +371,10 @@ describe('runtime install', () => {
     await expect(installRuntime(tmpDir(), { spawnImpl: fakeSpawn })).rejects.toMatchObject({ code: 'no_network' });
     expect(calls).toHaveLength(2);
     expect(calls[1]).toContain('--cache');
+    for (const a of calls) {
+      expect(a).toContain('--ignore-scripts');
+      expect(a.find((x) => x.startsWith('node-llama-cpp@'))).toMatch(/^node-llama-cpp@\d+\.\d+\.\d+$/);
+    }
   });
 });
 

@@ -7,6 +7,7 @@ import { startHive } from '../src/index.js';
 import { createFakeBrain } from '../src/brain/fake.js';
 import { isVague, answerBrief, normalizeBrief, briefText } from '../src/crew/brief.js';
 import { tmpDir, waitFor } from './helpers.js';
+import { answerQuestion } from '../src/crew/domains/flow.js';
 
 const DAY = 86_400_000;
 
@@ -98,6 +99,10 @@ describe('memory in jobs', () => {
     app.memory.add({ text: 'The notes app should feel calm and minimal' });
     app.hive.setSettings({ approvalMode: false });
     const { jobId, done } = app.hive.createJob({ request: 'crie um app de notas' });
+    // 1.0: an app of no named kind first gets the question card (src/crew/domains/); Decide for me goes on to the brief.
+    const card = await waitFor(() => app.bus.events.find((e) => e.type === 'crew.question'));
+    expect(card.data.questions[0].id).toBe('platform');
+    answerQuestion(app.hive, card.data.id, { decide: true });
     const proposed = await waitFor(() => app.bus.events.find((e) => e.type === 'brief.proposed'));
     expect(proposed.data.vague).toBe(true);
     expect(proposed.data.brief.questions[0]).toMatchObject({ options: ['to-do list', 'notes'], answer: 'to-do list' });
@@ -117,6 +122,9 @@ describe('memory in jobs', () => {
     const sessions = await app.server.runCommand('session.list', {}, null);
     expect(sessions.sessions[0]).toMatchObject({ id: 'j_1', status: 'done' });
     const cont = app.hive.continueSession('j_1', 'add a search box');
+    // A card for the continuation too, when it misses a decision: Decide for me.
+    const next = await waitFor(() => app.bus.events.filter((e) => e.type === 'brief.proposed')[1] || app.bus.events.filter((e) => e.type === 'crew.question')[1]);
+    if (next.type === 'crew.question') answerQuestion(app.hive, next.data.id, { decide: true });
     const proposed2 = await waitFor(() => app.bus.events.filter((e) => e.type === 'brief.proposed')[1]);
     expect(proposed2.data.original).toContain('Last time the goal was:\nBuild a dark notes app in index.html.');
     expect(proposed2.data.original).toContain('Now: add a search box');

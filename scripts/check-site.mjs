@@ -23,10 +23,12 @@ const walk = (d) => {
 walk(DOCS);
 
 for (const page of pages) {
-  const text = fs.readFileSync(page, 'utf8');
+  // HTML comments are not links: a marked slot may describe markup for a file that is added later
+  const text = fs.readFileSync(page, 'utf8').replace(/<!--[\s\S]*?-->/g, '');
   const refs = [];
   for (const m of text.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)) refs.push(m[1]);
   for (const m of text.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) refs.push(m[1]);
+  for (const m of text.matchAll(/srcset=["']([^"']+)["']/gi)) for (const c of m[1].split(',')) refs.push(c.trim().split(/\s+/)[0]);
   for (const m of text.matchAll(/<script\b[^>]*\bsrc=["'](https?:[^"']+)["']/gi)) {
     if (!ALLOWED.some((a) => a.test(m[1]))) problems.push(`${rel(page)}: script from a host that is not allowed: ${m[1]}`);
   }

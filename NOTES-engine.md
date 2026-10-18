@@ -330,3 +330,88 @@ hooks (about 8 lines), keeping your `openApp` as the fallback:
    and `node scripts/vendor-monaco.mjs --check` in CI.
 4. Please add `'.ttf': 'font/ttf'` to TYPES in src/server.js (the editor icon font is served as octet-stream today; it works,
    but the right type is better).
+
+## From models (src/brain/catalog/, src/brain/manager.js, ui/models/)
+
+What landed, and what the other streams need to know:
+
+1. **Catalog.** `src/brain/catalog/catalog.json` (41 models, 391 GGUF files, exact repo, pinned revision,
+   size, SHA-256, license, context, VRAM per context), rebuilt by `node src/brain/catalog/refresh.mjs`
+   from `families.js` and the Hugging Face API. Only publishers and well known quantizers are linked
+   (`TRUSTED` in families.js). The legacy `MODELS` table in models.js stays (wizard, doctor) and points
+   at the same files and checksums.
+2. **Consent before any download.** The manager no longer downloads by itself. An automatic start that
+   needs a file emits `models.consent.required { id, model, bytes, source, license, reason, trigger }`
+   and sets `brain.status` to `needs_download` with `consent: true`. A yes comes from `models.consent
+   { id, yes: true, via, answer }` (the first launch dialog, the Models window, the consent card), from a
+   model named on the command line (`--model 7b`, `--model qwen2.5-coder-7b:IQ4_XS`) or from the
+   wizard's "Download it now?". Choosing a model in Settings is not a yes: it opens the consent card.
+   The yes is kept per file (its checksums) in `~/.hivedesk/models/consent.json`. Step downs after a
+   GPU or VRAM failure also ask (trigger `fallback`). `brain.download` still exists and now goes through
+   the same gate. **For the wizard (src/wizard/):** the download step could show the license line
+   (`pickInfo(...).license`); not changed here.
+3. **New commands** (`src/brain/catalog/commands.js`, registered with one line in src/server.js):
+   `models.catalog`, `models.analyze`, `models.consent`, `models.later`, `models.cancel`,
+   `models.switch`, `models.delete`, `models.pool`, `models.install` (a background queue), `models.disk`,
+   `models.router.get` and `models.router.set`. Guests cannot send them (the 0.2.1 policy
+   allowlist does not list them; please keep it that way).
+4. **New events:** `models.consent.required`, `models.consent.given`, `models.consent.declined`,
+   `models.deleted`. `brain.download.progress` (live) now carries `id`, and `part`/`parts` for split files.
+5. **Hardware:** `detectHardware({ home })` adds `cpu { cores, threads, avx2, avx512, ramMts,
+   ramModules, featuresFrom }`, the NVIDIA driver and CUDA version, AMD and Intel Arc GPUs for Vulkan,
+   and the Apple chip name. The OS probe (PowerShell on Windows, /proc on Linux, sysctl on macOS) is
+   cached in `~/.hivedesk/hardware.json`; without `home` it is skipped (the wizard stays fast).
+6. **UI:** `ui/models/` (own strings in 10 languages, like ui/github/). One import line in
+   `ui/js/main.js`, and a two line hook in `ui/js/widgets/settings.js`:
+   `globalThis.hivedeskSettingsSections` lets a module add a Settings section (Models uses it).
+7. **Shared working copy:** src/brain/local.js and the `gpuLayers: 'max'` lines in manager.js were
+   changed by another stream while this one worked; they are kept as they are.
+
+### Automatic model rotation (src/brain/catalog/router.js, src/brain/rotation.js)
+
+8. **On by default** ("Automático" in Models, Rotation; off in the same place or `models.router.set
+   { auto: false }`). The scheduler sees one local brain ("Local: automatic"); for every turn it asks the
+   router which installed model fits the role (Mel plans with the strongest reasoning model, Dev and
+   Designer code, QA reviews fast, Writer writes, a turn outside a job is chat), the context the turn
+   needs, the memory free now and what is loaded. It never downloads: only installed models are candidates.
+9. **Scheduler hook (src/crew/scheduler.js, two lines):** `brain.chat(messages, { ...options, turn:
+   { turnId, workerId, taskId, jobId } })`. Brains that do not route ignore it. The router picks the
+   model; the scheduler (and later the compute plane's ResourceScheduler) picks the machine: a model only
+   a friend can run comes back as `where: 'peer'` for the scheduler, never chosen here.
+10. **Events for the UI streams:** `model.routed { turnId, workerId, profile, id, model, where, reason, why }`
+    on every turn ("Dev used Qwen2.5-Coder 7B (IQ4_XS): best for code and fits on the GPU."), and
+    `model.rotated { from, cause }` (oom, load, error, timeout, invalid_json twice). **For ui/ (timeline,
+    worker cards):** please show `reason` next to the turn; the Models window keeps a log of the last 40.
+11. **Load management:** at most N models loaded (default 2), within the VRAM and RAM budget, the least
+    recently used unloaded first, never a busy one; the next queued turn's model is warmed only when it fits
+    without unloading anything. Pins per role and overrides per task live in `~/.hivedesk/models/router.json`.
+
+### Pooled giant models over llama.cpp RPC (src/brain/pool/), experimental and off by default
+
+Built after the 0.2.1 release, on its rules (lease, allowlist, no lender cloud keys, consent and limits,
+remote output untrusted):
+
+* **Build:** the official llama.cpp release b11716 (pinned in `llama-release.json` with the GitHub SHA-256
+  digests of each asset: Windows CPU, Vulkan, CUDA with cudart, macOS arm64 and x64, Linux CPU, Vulkan and
+  arm64), installed into `~/.hivedesk/runtime/llama-b11716-<platform>/` only with a yes. Every peer must run
+  the same build.
+* **Lender:** `ggml-rpc-server` starts only for a peer on the allowlist, under a share the person turned on
+  (GPU and CPU separate; VRAM; threads and RAM; minutes; concurrent jobs), on 127.0.0.1, with a lease that
+  expires, a watchdog that kills it over its memory limit, and revoke (`pool.*` commands, guests cannot
+  send them). Shares are saved in `~/.hivedesk/pool/share.json` and read the compute plane field names too.
+* **Tunnel:** RPC bytes travel as `{ kind: 'pool', frame }` on the engine's WebSocket and come back as the
+  command `pool.frame`; both ends are TCP on 127.0.0.1 only, with flow control.
+* **Borrower:** `llama-server --rpc` to the tunnel ends, used through the OpenAI compatible brain, marked
+  `kind: 'remote'` so its tool calls wait for the host. Cancel aborts the HTTP request (llama-server stops
+  the turn); stopping the session kills llama-server.
+* **Proven:** `node test/pool/e2e-pool.mjs` runs two engines on this PC with a relay standing in for the
+  browsers: the shares are off by default, a stranger and a disabled share are refused, the 0.5B model
+  loads through the tunnel (29 s, 12,435 frames), answers, a cancel stops a turn at once, and a revoke kills
+  rpc-server and the next turn fails.
+* **Between friends' PCs (1.0, branch next/pool):** the RPC bytes travel inside the encrypted p2p
+  session (`src/p2p/pool-port.js`), gated by the new `compute.pool` capability beside `compute.gpu`, or
+  `compute.cpu` and `compute.ram`; see `docs/1.0/protocol/pool.md`. `test/pool/p2p-pool.test.js` runs two
+  engines over ws-lan with half of the layers on the lender. The old engine relay path (`pool.frame`,
+  share settings and allowlist) stays for a single machine.
+* **Meter:** with the p2p plane, `models.pool` counts the online peers that granted `compute.pool` (their
+  held grants) and their measured round trip; without it, City machines' `share` and `network`.

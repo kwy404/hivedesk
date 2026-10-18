@@ -9,7 +9,7 @@ the update manifest (`latest.json`) with the public key built into the app.
 The key pair already exists. The private key is outside the repository:
 
 ```text
-C:\Users\Hadouken Game Center\.hivedesk-release\update-key.pem      (Ed25519, PKCS8, readable only by you)
+%USERPROFILE%\.hivedesk-release\update-key.pem      (Ed25519, PKCS8, readable only by you)
 ```
 
 Its public half is in `desktop/update/pubkey.js` (`IOUmwMSYcKVyZeXELVHUwwH/RMC/searO2JlbByp+lY=`) and ships in

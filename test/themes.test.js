@@ -70,7 +70,7 @@ describe('theme schema', () => {
   it('maps tokens to the custom properties hive.css reads', () => {
     const vars = themeVars(validateTheme(BASE).theme);
     for (const k of ['--bg', '--panel', '--text', '--muted-t', '--honey', '--honey-ink', '--r-win', '--t', '--shadow-win', '--font-sans', '--hd-pattern', '--primary', '--hd-topbar']) expect(vars[k], k).toBeTruthy();
-    expect(vars['--r-win']).toBe('14px');
+    expect(vars['--r-win']).toBe('10px'); // 1.0 design: 10, 6 and 4 px radii (docs/1.0/DESIGN.md)
     expect(patternUrl({ kind: 'none', color: '#FFFFFF', opacity: 0.1, size: 56 }).url).toBe('none');
     expect(patternUrl(BASE.pattern).url).toMatch(/^url\("data:image\/svg\+xml,/);
     // No quote or parenthesis from the pattern can end the url() early.

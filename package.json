@@ -1,6 +1,6 @@
 {
   "name": "hivedesk",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "A crew of AI workers that plan, talk and build real files on your machine with a local model.",
   "type": "module",
   "bin": {
@@ -15,6 +15,7 @@
   "files": [
     "src",
     "ui",
+    "!ui/screenshots",
     "desktop",
     "assets",
     "i18n",
@@ -37,7 +38,9 @@
     "e2e:lend": "node test/lend/e2e-lend.mjs",
     "e2e:ui": "node test/e2e-ui.mjs",
     "e2e:local": "node test/e2e-local.mjs",
-    "smoke:desktop": "node desktop/scripts/smoke.mjs"
+    "smoke:desktop": "node desktop/scripts/smoke.mjs",
+    "e2e:phone": "node test/phone/e2e-phone.mjs",
+    "e2e:two": "node test/e2e-two-engines.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -61,8 +64,13 @@
     "url": "https://github.com/kwy404/hivedesk/issues"
   },
   "devDependencies": {
+    "@xterm/addon-fit": "0.10.0",
+    "@xterm/xterm": "5.5.0",
     "monaco-editor": "0.52.2",
     "playwright-core": "1.63.0",
     "vitest": "^3.2.4"
+  },
+  "optionalDependencies": {
+    "node-pty": "1.1.0"
   }
 }

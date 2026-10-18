@@ -33,7 +33,7 @@ describe('cli', () => {
     expect(h.status).toBe(0);
     expect(h.stdout).toContain('--doctor');
     const v = spawnSync(process.execPath, [CLI, '--version'], { encoding: 'utf8' });
-    expect(v.stdout.trim()).toBe('0.2.1');
+    expect(v.stdout.trim()).toBe('1.0.0');
     const bad = spawnSync(process.execPath, [CLI, '--nope'], { encoding: 'utf8' });
     expect(bad.status).toBe(2);
   });

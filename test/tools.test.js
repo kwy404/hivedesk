@@ -37,6 +37,14 @@ describe('workspace sandbox', () => {
     for (const p of ['.git', '.git/config', '.git/hooks/pre-commit', '.GIT/config', './.git/HEAD']) {
       expect(() => ws.resolve(p)).toThrow(/off limits/);
     }
+    // 8.3 short names, trailing dots and spaces, and the real path behind them.
+    for (const p of ['GIT~1/config', 'git~2/hooks/pre-commit', 'src/GIT~1/x', '.git /config', '.git. /HEAD']) {
+      expect(() => ws.resolve(p)).toThrow(/off limits/);
+    }
+    fs.mkdirSync(path.join(ws.root, '.git', 'hooks'), { recursive: true });
+    expect(ws._inGit(path.join(ws.root, '.git', 'hooks'))).toBe(true);
+    expect(ws._inGit(path.join(ws.root, 'src'))).toBe(false);
+    fs.rmSync(path.join(ws.root, '.git'), { recursive: true, force: true });
     expect(ws.resolve('.gitignore')).toBe(path.join(ws.root, '.gitignore'));
     expect(ws.resolve('src/.git-notes.md')).toBe(path.join(ws.root, 'src', '.git-notes.md'));
   });
@@ -92,10 +100,24 @@ describe('run tool', () => {
     ['node a.js && echo hi'],
     ['node --allow-fs-read=* a.js'],
     ['node -r ./evil.js a.js'],
+    ['node --no-experimental-permission a.js'],
+    ['node --no-warnings a.js'],
+    ['node --permission-audit a.js'],
+    ['node --env-file=.env a.js'],
+    ['node --experimental-default-config-file a.js'],
+    ['node --experimental-loader=./x.mjs a.js'],
+    ['node --test-reporter=./evil.mjs --test'],
+    ['node -e 1'],
     ['powershell -c x'],
     ['']
   ])('refuses %j', (cmd) => {
     expect(() => planCommand(cmd, process.cwd())).toThrow();
+  });
+
+  it('allows only listed node flags before the script, anything after it', () => {
+    for (const cmd of ['node a.js', 'node --check app.js', 'node --test', 'node --test --test-reporter=tap', 'node --enable-source-maps a.js --no-color --permission']) {
+      expect(() => planCommand(cmd, process.cwd())).not.toThrow();
+    }
   });
 
   it('runs node in the workspace with a timeout and an output cap', async () => {
@@ -238,5 +260,19 @@ describe('inline styles', () => {
   it('checks the braces of a style block', () => {
     const page = '<!doctype html><html lang="en"><head><meta name="viewport" content="x"><title>T</title><style>body { a: b; }\n c: d; }</style></head><body></body></html>';
     expect(checkHtml('a.html', page, () => true)).toEqual(['a.html <style>: unexpected }']);
+  });
+});
+
+describe('tool.result.passed', () => {
+  it('carries the verdict of the check tool as a boolean beside ok', async () => {
+    const bus = new EventBus();
+    const tb = new ToolBox({ bus, workspace: new Workspace(tmpDir()), approvals: new Approvals(bus) });
+    await tb.execute('write_file', { path: 'a.json', content: '{"ok": true}' }, { approval: false });
+    await tb.execute('check', {}, {});
+    await tb.execute('write_file', { path: 'b.json', content: '{broken' }, { approval: false });
+    await tb.execute('check', {}, {});
+    const results = bus.events.filter((e) => e.type === 'tool.result' && typeof e.data.passed === 'boolean').map((e) => e.data.passed);
+    expect(results).toEqual([true, false]);
+    expect(bus.events.filter((e) => e.type === 'tool.result' && 'passed' in e.data)).toHaveLength(2);
   });
 });

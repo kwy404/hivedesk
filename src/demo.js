@@ -1,6 +1,7 @@
 // --demo: a scripted job that runs the real loop (planner, task graph, scheduler, tools, QA) with a fake brain.
 // No model is involved. Every event is labeled demo: true by the bus.
 import { createFakeBrain } from './brain/fake.js';
+import { keywordIntent } from './crew/talk.js';
 
 export const DEMO_REQUEST = 'A tiny landing page for Crumb, a neighborhood bakery: hero, three breads, opening hours and a contact link.';
 export const DEMO_NOTICE = 'This is a demo. No model is running; the crew follows a script.';
@@ -193,7 +194,7 @@ const SCRIPTS = {
   'Check the page': [
     { tool: 'check', args: {} },
     { tool: 'run', args: { command: 'node --check app.js' } },
-    { tool: 'report', args: { passed: false, issues: ['index.html: the footer has no way to reach the bakery. Fix: add the email link hello@crumb.example to the footer.'] } }
+    { tool: 'report', args: { passed: false, findings: [{ severity: 'medium', file: 'index.html', problem: 'the footer has no way to reach the bakery', fix: 'add the email link hello@crumb.example to the footer' }] } }
   ],
   'Fix the QA issues (round 1)': [
     { tool: 'read_file', args: { path: 'index.html' } },
@@ -202,7 +203,7 @@ const SCRIPTS = {
   ],
   'Check the fixes': [
     { tool: 'check', args: {} },
-    { tool: 'report', args: { passed: true, issues: [] } }
+    { tool: 'report', args: { passed: true, findings: [] } }
   ]
 };
 
@@ -217,7 +218,7 @@ const BRIEF = {
   build: ['index.html: a hero with a call to order, the three breads, opening hours and a contact link', 'style.css: warm bakery colors, cards for the breads, a layout that stacks on phones', 'bread.svg: a simple picture for the hero', 'README.md: what the site is and how to open it'],
   constraints: ['Plain HTML and CSS, a tiny app.js at most', 'No network access, no build step', 'Readable text with good contrast'],
   acceptance: ['index.html shows the bakery name, three breads, the opening hours and a way to contact the bakery', 'The page passes the static checks (doctype, lang, viewport, title, alt text, links)', 'The layout works at 375 px wide', 'README.md lists the files'],
-  questions: [{ question: 'Online orders?', answer: 'No, an email link is enough' }, { question: 'Photos?', answer: 'One drawn bread picture, no photos' }]
+  questions: [{ question: 'Online orders?', options: ['No, an email link is enough', 'Yes, an order form'], answer: 'No, an email link is enough' }, { question: 'Photos?', options: ['One drawn bread picture, no photos', 'Real photos'], answer: 'One drawn bread picture, no photos' }]
 };
 
 const REPORT = {
@@ -227,6 +228,12 @@ const REPORT = {
 
 /** The demo responder: the brief and the plan for Mel, a fixed list of actions per task, then the report. */
 export function demoRespond(messages, options) {
+  // Chat outside the top bar: the keyword rules sort the message, and the script has no answers of its own.
+  if (options.schema?.properties?.intent && options.schema?.properties?.confidence) {
+    const kw = keywordIntent(String(messages.find((m) => m.role === 'user')?.content || '').replace(/^Message: /, ''));
+    return kw.intent ? { intent: kw.intent, confidence: kw.strong ? 'high' : 'low' } : { intent: 'request', confidence: 'low' };
+  }
+  if (options.talk) return '';
   if (options.schema?.properties?.spec) return DESIGN;
   if (options.schema?.properties?.approved) return { approved: true, issues: [] };
   if (options.schema?.properties?.goal) return BRIEF;
@@ -236,7 +243,7 @@ export function demoRespond(messages, options) {
   const step = messages.filter((m) => m.role === 'assistant').length;
   const script = SCRIPTS[title];
   const isQa = !!options.schema?.oneOf?.some((o) => o.properties?.tool?.const === 'report');
-  if (!script) return isQa ? { tool: 'report', args: { passed: true, issues: [] } } : { tool: 'done', args: { summary: 'Done.' } };
+  if (!script) return isQa ? { tool: 'report', args: { passed: true, findings: [] } } : { tool: 'done', args: { summary: 'Done.' } };
   return script[Math.min(step, script.length - 1)];
 }
 

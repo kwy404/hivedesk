@@ -1,13 +1,16 @@
 // --doctor: checks Node, the GPU, RAM, disk, the runtime and the models present.
+// With p2p: true (hivedesk doctor --p2p) also the control plane: identity, peers, audit chain,
+// ports, the rendezvous relays and the NAT type (src/p2p/doctor.js).
 import path from 'node:path';
 import { detectHardware, formatBytes } from './brain/hardware.js';
 import { pickModel, listModelFiles, modelsDir, isCached, MODELS } from './brain/models.js';
 import { findRuntime, RUNTIME_VERSION } from './brain/runtime.js';
 import { probeOllama, probeLmStudio } from './brain/http.js';
 import { permissionFlag } from './tools/run.js';
+import { runP2PChecks } from './p2p/doctor.js';
 
 /**
- * @param {{ home: string, model?: string, hardware?: any, fetchImpl?: typeof fetch }} opts
+ * @param {{ home: string, model?: string, hardware?: any, fetchImpl?: typeof fetch, p2p?: boolean | object }} opts
  */
 export async function runDoctor(opts) {
   const hw = opts.hardware || (await detectHardware({ dir: opts.home }));
@@ -47,6 +50,8 @@ export async function runDoctor(opts) {
   const [ollama, lms] = await Promise.all([probeOllama(undefined, f), probeLmStudio(undefined, f)]);
   add('ollama', 'Ollama', true, ollama ? `running, ${ollama.length} models${ollama.length ? ': ' + ollama.slice(0, 4).join(', ') : ''}` : 'not running (optional)');
   add('lmstudio', 'LM Studio', true, lms ? `running, ${lms.length} models` : 'not running (optional)');
+
+  if (opts.p2p) checks.push(...(await runP2PChecks({ home: opts.home, fetchImpl: opts.fetchImpl, ...(typeof opts.p2p === 'object' ? opts.p2p : {}) })));
 
   const known = new Set(MODELS.map((m) => m.file));
   return {

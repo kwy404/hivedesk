@@ -60,7 +60,7 @@ describe('server', () => {
     expect(ok.status).toBe(200);
     expect(ok.text).toContain('Hive');
     const cookie = ok.headers['set-cookie'][0];
-    expect(cookie).toMatch(/hivedesk_token=.*HttpOnly; SameSite=Strict/);
+    expect(cookie).toMatch(/hivedesk_token_\d+=.*HttpOnly; SameSite=Strict/);
     expect((await request(port, '/api/health', { headers: { cookie: cookie.split(';')[0] } })).json).toMatchObject({ ok: true, protocol: 1 });
     expect((await request(port, '/api/health', { headers: { authorization: `Bearer ${token}` } })).status).toBe(200);
   });

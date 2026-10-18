@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.0.0 (2026-10-18)
+
+hivedesk becomes a peer to peer environment where AI agents, people and machines work together as one City. Your agents. Your machines. Your City.
+
+### P2P and the City
+* Every install has an Ed25519 identity. A friend joins with a six word invite, both screens show the same check words, and nothing is shared until you accept. Sessions are end to end encrypted, every grant is explicit, off by default, has an expiry and can be revoked at once, and every grant, refusal and revoke goes to a hash chained audit log.
+* The City reads the real state: machines, agents, tasks, jobs and peers, with the Machines panel and the Activity stream. Demo data is labeled and never mixed with real data.
+
+### Compute: GPU and CPU with friends
+* Borrow a friend's GPU or CPU as remote inference jobs with a lease, limits, heartbeats, cancel and revoke. A whole crew job can think on a friend's machine; every write or run that comes from there waits for your approval.
+* The scheduler picks local GPU, local CPU or a friend's machine and says why, with an honest speed estimate. A failed job offers Retry locally, Retry another peer, Use partial or Cancel.
+* Pooled giant models (experimental, off by default): a model too big for one PC runs split across friends' GPUs and CPUs over the encrypted session, only when the granted memory really fits it.
+
+### Models
+* A catalog of 57 models with quantized variants, pinned by SHA-256, with the memory each one needs. hivedesk reads your GPU, RAM and disk, recommends one and asks before any download. Works on CPU only machines too.
+* Automatic model rotation: the router picks an installed model for each role and task and keeps a few loaded within your memory budget.
+
+### The crew
+* Not only websites: mobile apps (installable PWA plus a Capacitor project), desktop apps, APIs, CLI tools, browser extensions, games and data scripts, with tested offline skeletons and specialists for mobile, desktop, backend, security, data and DevOps.
+* When a request is unclear, Mel asks: at most four questions with two to five options, the recommended one first with its reason, Other, and Decide for me.
+* Security mode audits a project read only: exposed secrets (masked), risky code and risky dependencies, with severity, file and line. Fixes run only after your approval.
+* A library of 672 playbooks, picked per request, and an improved prompt at the end of every job.
+
+### Remote desktop, phone and voice
+* Remote desktop with a 10 digit address: copy, paste, connect. The person who is called decides what to allow (view, control, clipboard, files) and sees a red Stop button. All monitors, file send, and copy here, paste there. The key behind an address is pinned on first use. On macOS, view only for now.
+* Phone remote: scan a QR code, check the six words, accept, and follow jobs, answer approvals, chat with the crew and see the screen from your phone.
+* Voice mode: a hands free conversation with Mel, speech to text on your own PC, barge in, and every action read back before it runs.
+
+### Workbench, installers and the rest
+* A code workbench with editor groups, explorer, search, a real terminal (shareable with a friend), source control and GitHub.
+* Installers for Windows (a small online setup and an offline one, per user, no admin), macOS (DMG) and Linux (AppImage, deb, rpm and an install script), with signed automatic updates and rollback.
+* A local profile with a name and an avatar from a gallery, real stats and achievements. Only the name and avatar are shared with friends.
+* A more serious 1.0 design, 10 languages everywhere, and a new site.
+
+### Security
+* A full review before release: local commands need the app's own origin, peer and phone approvals are strict, plans and chat from guests or peers never act as the owner, the .git folder is closed to the crew, node flags are allowlisted, the uninstaller removes only what it installed, and model downloads need a hash and a size cap.
+
 ## 0.2.1 (security) (2026-10-17)
 
 A security update for Code together, Lend your PC, Hive City, `--demo` and extensions. Please update.
@@ -45,7 +82,7 @@ First release.
 * `npx hivedesk` asks a few questions in a terminal wizard (language, folder, brain, download, working mode, crew), each with a recommended default; later runs ask only "Use the same setup?". `--yes`, or no terminal, skips the questions. See FIRST-RUN.md.
 * The model is chosen from the hardware (Qwen2.5-Coder 0.5B to 14B, Q4_K_M) and the reason is shown in one line. Free disk and free RAM are checked first; the runtime (node-llama-cpp) is installed into `~/.hivedesk` on first use; the download resumes and is checked against its SHA-256.
 * Loading is GPU first: as many layers as fit next to the context, no memory map on the GPU (0.45 GB resident for the 3B instead of 2.4 GB), a refusal to load when free RAM is short, and the 1.5B on the CPU when the GPU cannot take the model.
-* Ollama, LM Studio, and cloud providers with your own key (Anthropic, OpenAI, xAI, Google Gemini, any OpenAI compatible endpoint) work behind the same brain interface. Keys stay in `~/.hivedesk/keys.json`; the browser only sees "configured". A brain can be chosen per worker; tokens are counted per brain.
+* Other local runtimes and cloud providers with your own key work behind the same brain interface. Keys stay in `~/.hivedesk/keys.json`; the browser only sees "configured". A brain can be chosen per worker; tokens are counted per brain.
 * hivedesk opens as a native desktop window (from `desktop/`), as an app style browser window, or in the browser; the desktop is installable as an app and shows a "start hivedesk" page when the server is not running.
 * `--demo` runs a scripted job with no model; every event is labeled as a demo. `--doctor` checks Node, the GPU, RAM, disk and the models present.
 

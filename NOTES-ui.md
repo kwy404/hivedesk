@@ -114,3 +114,29 @@ Hooks in shared files (already in place, please keep them when you edit these fi
    preview. A guest can read every file of the host through `files.read`. If you want the guest preview to show
    the host's site, check `window.hivedeskCollab?.mode === 'guest'` and build the page from `files.read`.
 6. Strings: 105 keys under `code.*` and `collab.*` in all 10 `i18n/*.json` files (additions only).
+
+## From the prompt library (src/crew/library/, 2026-10-17)
+
+About 500 expert playbooks (one JSON file per entry in `src/crew/library/entries/<category>/`). For every planned
+task the engine picks 1 to 3 (BM25 over the task, the request, the brief and the file types, plus role, room and
+task kind), they go into the prompt under `<playbook>`, and their `checks` run in QA and in the City Test room.
+
+1. New files, committed: `ui/js/widgets/library.js` (Library window: search, category filter, favorites, read an
+   entry, add your own), `ui/js/widgets/library-used.js` ("Playbooks used" block with Swap, shown inside Brief and
+   report) and `ui/js/widgets/library-strings.js` (strings for the 10 locales; keys `library.*` in `i18n/*.json`
+   win when you add them, so you can move them there whenever you like).
+2. Hooks in shared files: `ui/js/main.js` imports `./widgets/library.js` and adds one menu item after
+   "Prompts (debug)"; `ui/js/widgets/brief.js` imports `usedView, usedBox` and appends `usedView(jobId)` between
+   the brief and the report. Please keep these lines when you commit those files.
+3. Events (on the job): `library.preview { picks }` after `brief.proposed` (job level picks, swappable while the
+   brief waits); `library.selected { tasks: [{ taskId, workerId, picks: [{ id, title, score, terms, pinned?,
+   swapped?, reranked? }], candidates, budget, used }] }` after `job.planned` and `task.added`, and again after
+   a swap or a cloud model re-rank; `library.checks { results: [{ id, level, status, issues }] }` when QA runs.
+4. Commands: `library.list { q?, category?, role?, favorites?, limit? }` -> `{ entries, total, stats }`;
+   `library.get { id }`; `library.favorite { id, on }`; `library.add { entry }` (saved as
+   `~/.hivedesk/library/my-<id>.json`); `library.remove { id }` (own entries only); `library.preview { text, role? }`;
+   `library.job { jobId }` -> `{ preview, tasks }` (to rebuild the block after a reload);
+   `library.swap { jobId, taskId?, from?, to? }` (a task only while it is pending; without taskId it pins and
+   blocks for the whole job, before the plan).
+5. A nice to have for later: a small "playbooks" chip on the task cards of the Timeline and the City task board,
+   from the `library.selected` events.

@@ -30,31 +30,25 @@ When the wizard does not run:
 | no terminal (a script, CI) | the same as `--yes` |
 | `--demo`, `--model`, `--brain`, `--lend`, `--join` | those flags decide, no wizard |
 
-## 2. The model, chosen by the hardware
+## 2. The model, chosen by the hardware, downloaded only with your yes
 
-Free disk and free RAM are checked first. All models are Qwen2.5-Coder Instruct, Q4_K_M, from the official Qwen repositories on Hugging Face:
+hivedesk looks at the machine (GPU, VRAM and backend: CUDA, Vulkan or Metal; Apple unified memory; CPU cores and AVX2 or AVX-512; RAM and its speed when the OS says; free disk) and ranks the model catalog for it (`src/brain/catalog/`, 41 models in up to 10 quantizations each, from the publishers or well known quantizers on Hugging Face). For each file it estimates the memory needed for the chosen context (weights plus K and V cache), where it runs (fully on the GPU, partly, or on the CPU), the speed (measured on the machines in `docs/BENCHMARKS.md`, otherwise estimated from the memory bandwidth) and a quality score per task. It picks the best quality that fits at a usable speed, and says why, for example:
+"7B IQ4_XS fits in the 6.4 GB of VRAM with a 4096 token context; smarter than 3B Q4_K_M; 20.6 tokens/s measured on this kind of machine."
 
-| Hardware | Model | Download | Runs on |
-| --- | --- | --- | --- |
-| GPU with 10 GB of VRAM or more | 14B | 9.0 GB | GPU |
-| GPU with 7 to 10 GB of VRAM | 7B | 4.7 GB | GPU |
-| GPU with 4 to 7 GB of VRAM (for example a GTX 1060 6 GB) | 3B | 2.1 GB | GPU, every layer, so it is fast and leaves VRAM for the context |
-| No usable GPU, 16 GB of RAM or more | 3B | 2.1 GB | CPU |
-| No usable GPU, 8 to 16 GB of RAM | 1.5B | 1.1 GB | CPU |
-| Under 8 GB of RAM | 0.5B | 0.5 GB | CPU, with a warning that results will be basic and a suggestion to use Ollama, LM Studio or a key |
+**Nothing is downloaded without a yes.** On the first launch (and in Settings, Models) the app shows what it detected and the recommended file with its size, source, license, expected speed, quality and the reason, plus a faster and a smarter option. The choices are "Use the recommended", "Faster", "Smarter", "Choose another" (the Models window: the whole catalog with filters, "recommended for your PC" and "fits your GPU" badges, installed models, delete and switch) and "Not now" (nothing downloads, and the dialog does not open by itself again). A yes is remembered per file in `~/.hivedesk/models/consent.json`. A model named on the command line (`--model 7b`, `--model qwen2.5-coder-7b:IQ4_XS`) and the wizard's "Download it now?" are also a yes; choosing a model in Settings opens the consent card first.
 
-The decision and the reason are shown in one line in the terminal and in the UI, for example:
-"NVIDIA GeForce GTX 1060 6GB (6.4 GB VRAM) found: using Qwen2.5-Coder 3B (2.1 GB), fully on the GPU."
-Change it later in Settings (a list with sizes and a "recommended" tag) or with `--model 14b|7b|3b|1.5b|0.5b|<path to a GGUF file>`.
+A model already downloaded is used without asking: the last one you chose, otherwise the best one in the cache. Giant models (more than 16 GB at 4096 tokens, such as 32B Q4 and the 70B class) appear locked in the Models window with a meter of the memory your City pools (VRAM and shared RAM). Running one model across several PCs uses llama.cpp RPC and is experimental and off by default (Models, Sharing): friends lend GPU and CPU separately, only to peers they list, with limits, a lease that ends on time and revoke. Today it runs between two hivedesk engines; the relay between friends' browsers is not in this version yet.
+
+**Automatic rotation** (on by default, Models, Rotation): with several models installed, every turn uses the one that fits the job best: Mel plans with the strongest reasoning model that fits, Dev and Designer use the best coding model, QA reviews with a fast one, and chat uses a quick general model. It weighs the quality per task, the speed, the memory free now and the context the turn needs, keeps at most 2 models loaded (setting), switches to the next model when one runs out of memory, errors, times out or answers invalid JSON twice, and logs which model answered and why. Any role can be pinned to a model, and automatic can be turned off.
 
 If Ollama or LM Studio is running (and the wizard did not choose something else), hivedesk uses it and downloads nothing. With Ollama it prefers a `qwen2.5-coder` model.
 
 ## 3. Runtime, download and loading
 
 1. **The local runtime** `node-llama-cpp` is installed into `~/.hivedesk/runtime/` the first time (it is not a dependency of the package, so `npx hivedesk` itself stays small). It uses prebuilt binaries (CUDA, Vulkan, Metal or CPU). If the user's npm cache is locked or broken, the install is retried once with a private cache.
-2. **The download** goes to `~/.hivedesk/models/` with a progress bar (speed and time left) in the terminal and in the UI. A cut download resumes where it stopped. The file is checked against its published SHA-256 before use.
+2. **The download** (after the yes) goes to `~/.hivedesk/models/` with a progress bar (speed and time left) in the terminal and in the UI. A cut download resumes where it stopped. Every file (and every part of a split file) is checked against the SHA-256 stored in the catalog before use.
 3. **Loading, GPU first:**
-   * as many layers as fit go to the GPU next to the context; the log and the model status say how many, for example "vulkan, 37 of 37 layers on the GPU". If less than half of the layers fit, it does not run the model half on the CPU: it steps down to the next smaller model on the GPU (see below);
+   * as many layers as fit go to the GPU next to the context; the log and the model status say how many, for example "vulkan, 37 of 37 layers on the GPU". If less than half of the layers fit, it does not run the model half on the CPU: it steps down to a smaller model of the same family on the GPU (a downloaded one first; a new download asks first);
    * on the GPU the weights are read once and uploaded, so almost nothing stays in RAM (measured with the 3B on a GTX 1060: 0.45 GB resident, against 2.4 GB when the file is memory mapped); on the CPU they are memory mapped, not copied;
    * free RAM is checked before loading: 2.5 GB when the model goes to the GPU, the model size plus 1.5 GB (at least 4 GB) on the CPU. With less, it does not load, so the machine does not freeze; it says how much is free and what to do;
    * context size: 4096 tokens, or 8192 on a GPU with 8 GB of VRAM or more (`--ctx` overrides it).
@@ -88,8 +82,8 @@ On start the engine also opens the city (CITY-PROTOCOL.md). Nothing is downloade
 | Flag | Effect |
 | --- | --- |
 | `--yes` | no questions (saved setup or defaults) |
-| `--no-download` | never downloads; if no model is found the UI says "no model yet: choose one" and offers the download |
-| `--model <name or path>` | `14b`, `7b`, `3b`, `1.5b`, `0.5b`, or a GGUF file |
+| `--no-download` | never downloads, not even after a yes in this run; the UI says "no model yet: choose one" |
+| `--model <name or path>` | `14b`, `7b`, `3b`, `1.5b`, `0.5b` (Q4_K_M), a catalog entry such as `qwen2.5-coder-7b:IQ4_XS`, or a GGUF file; naming it is the yes to download it |
 | `--brain ollama` / `--brain lmstudio` | use that server and nothing else |
 | `--brain anthropic\|openai\|xai\|gemini\|compatible` | a cloud provider with the key saved in Settings, Providers (or `HIVEDESK_API_KEY`) |
 | `--demo` | no model at all: a scripted job replays; every event is labeled as a demo |
@@ -107,8 +101,8 @@ Every failure prints a plain message and a suggestion, in the terminal and in th
 | --- | --- | --- |
 | Not enough free disk for the chosen model | tries the next smaller model that fits; if none fits, stops before downloading | free some space, or use `--model` with a file you already have, or run Ollama or LM Studio |
 | No network (runtime install or model download) | stops that step, keeps any partial download for later | check the connection and press Retry, or use `--model <file.gguf>`, or `--demo` to look around |
-| The model does not fit in the GPU memory (less than half of the layers, or not the context) | loads the next smaller model on the GPU instead (downloading it first if needed), and says so | close other GPU apps, or keep the smaller model |
-| The GPU backend fails to initialize | loads the 1.5B model on the CPU instead (downloading it first if needed), and says so | update the GPU driver, or keep the CPU mode (slower) |
+| The model does not fit in the GPU memory (less than half of the layers, or not the context) | loads a smaller model of the same family on the GPU instead (asking before a download), and says so | close other GPU apps, or keep the smaller model |
+| The GPU backend fails to initialize | loads the 1.5B model on the CPU instead (asking before a download), and says so | update the GPU driver, or keep the CPU mode (slower) |
 | Not enough free RAM to load the model | does not load it | close some apps and press Retry, or use a smaller model, or Ollama or LM Studio |
 | The runtime install fails | retries once with a private npm cache, then stops and keeps the server up | run `hivedesk --doctor`, or use Ollama or LM Studio with `--brain` |
 | The model file is corrupt (checksum mismatch) | deletes it and downloads it again once | none unless it fails twice |
@@ -116,7 +110,7 @@ Every failure prints a plain message and a suggestion, in the terminal and in th
 
 ## Honest limits
 
-* Without a model nothing is generated. The first run needs a download of 0.5 to 9.0 GB unless a model server is already running or you use a cloud key.
+* Without a model nothing is generated. The first run needs a download (0.3 to 20 GB for the files a single PC can run, after your yes) unless a model server is already running or you use a cloud key.
 * Measured on a GTX 1060 6 GB with the 3B fully on the GPU: 17 to 39 tokens per second while writing, a tiny static page in about 2 to 2.5 minutes after loading. On the CPU only, expect a few tokens per second.
 * Hive City Test runs the static checks, not your test suite, and a friend's agent works only while that friend lends a model.
 * Workers take turns on one model, so a job takes minutes, not seconds, and small models still make mistakes: read the report, it says what is missing.

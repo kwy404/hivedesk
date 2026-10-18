@@ -9,9 +9,10 @@ export function tmpDir(prefix = 'hivedesk-test-') {
 export function waitFor(fn, { timeout = 10000, interval = 10 } = {}) {
   return new Promise((resolve, reject) => {
     const started = Date.now();
-    const tick = () => {
+    const tick = async () => {
       let v;
-      try { v = fn(); } catch (err) { return reject(err); }
+      // fn may be async: its promise is awaited, never taken as a truthy value.
+      try { v = fn(); if (v && typeof v.then === 'function') v = await v; } catch (err) { return reject(err); }
       if (v) return resolve(v);
       if (Date.now() - started > timeout) return reject(new Error('waitFor timed out'));
       setTimeout(tick, interval);

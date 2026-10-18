@@ -7,12 +7,23 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 import crypto from 'node:crypto';
-import { hasRealLog } from './bus.js';
+import { isSubcommand, loadSubcommand, parseFlags, findEngine, writeEngineFile, removeEngineFile } from './core/shell.js';
 
 const HELP = `hivedesk: a crew of AI workers that build real files on your machine with a local model.
 
-Usage: npx hivedesk [options]
+Usage: npx hivedesk [command] [options]
 
+Commands (no command means start):
+  start                 start the engine and open the window
+  city                  print the City of this project: buildings, agents, tasks by state, peers online
+  invite                invite a friend: prints six words, then asks you to accept
+  join "<words>"        join a friend's City with the six words
+  peers                 known peers and what each may do here
+  share                 what this machine shares with peers (off by default)
+  doctor [--p2p]        check Node, GPU, RAM, disk, models, the project log and ports
+  help                  this help
+
+Options of start:
   --dir <folder>        project folder (default: the current folder); files go to <folder>/.hivedesk/
   --port <n>            port on 127.0.0.1 (default: a random free port)
   --no-open             do not open a window
@@ -25,19 +36,17 @@ Usage: npx hivedesk [options]
   --no-city             run without Hive City (agents, rooms and the task bus); the 0.1 desktop works the same
   --cpu                 do not use the GPU
   --ctx <n>             context size for the local model (default: up to 8192)
-  --demo                scripted demo, no model; every event is labeled as a demo. It runs in a
-                        temporary folder with its own home and never writes into a project
-  --demo-dir <folder>   run the demo in this folder instead (never one with a real project log)
+  --demo                scripted demo, no model, in its own demo folder; every event is labeled as a demo
+  --demo-dir <folder>   run the demo in this folder (empty, or a demo folder; never a real project)
   --lend                lend this machine's model to a paired friend (opens the Lend screen)
   --join <link|words>   open the desktop with "Use a friend's PC" filled in with these six words
+  --strict              refuse events that do not match their schema (for development)
   --yes                 skip the setup questions (the saved setup, or the recommended defaults)
-  --doctor              check Node, GPU, RAM, disk and models, then exit
+  --doctor              the same as "hivedesk doctor"
   --version             print the version
   --help                this help
 
 First run: see FIRST-RUN.md. Cache folder: ~/.hivedesk (or HIVEDESK_HOME).`;
-
-export { hasRealLog };
 
 export function parseArgs(argv) {
   const o = { open: true, download: true };
@@ -55,7 +64,7 @@ export function parseArgs(argv) {
     } else if (key === 'no-open') o.open = false;
     else if (key === 'no-download') o.download = false;
     else if (key === 'no-city') o.city = false;
-    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes', 'browser', 'new-token'].includes(key)) o[key] = true;
+    else if (['demo', 'lend', 'doctor', 'help', 'version', 'cpu', 'yes', 'browser', 'new-token', 'strict'].includes(key)) o[key] = true;
     else throw new Error(`unknown option: --${key}`);
   }
   if (o.port !== undefined) {
@@ -70,27 +79,6 @@ export function parseArgs(argv) {
   }
   if (o.brain && !['ollama', 'lmstudio', 'openai', 'local'].includes(o.brain)) throw new Error('--brain must be ollama, lmstudio or openai');
   return o;
-}
-
-/**
- * Where --demo runs: a new temporary folder; --demo-dir <folder> when given. A --dir that is a real
- * project (a folder with files in it) is refused, so the demo never writes into a project's log.
- */
-export function demoFolder(args, { tmp = os.tmpdir(), cwd = process.cwd() } = {}) {
-  if (args['demo-dir']) {
-    const dir = path.resolve(cwd, args['demo-dir']);
-    if (hasRealLog(dir)) throw new Error(`${dir} holds a real hivedesk project; the demo needs a folder of its own`);
-    return dir;
-  }
-  if (args.dir) {
-    const dir = path.resolve(cwd, args.dir);
-    let entries = [];
-    try { entries = fs.readdirSync(dir); } catch { entries = []; }
-    const demoOnly = entries.length === 1 && entries[0] === '.hivedesk' && fs.existsSync(path.join(dir, '.hivedesk', 'events.jsonl')) && !hasRealLog(dir);
-    if (entries.length && !demoOnly) throw new Error(`--demo will not run in ${dir}: the folder is not empty. Leave out --dir for a temporary demo folder, or pass --demo-dir <folder>`);
-    return dir;
-  }
-  return fs.mkdtempSync(path.join(tmp, 'hivedesk-demo-'));
 }
 
 /** Six words from a share link (#w=...) or from words separated by spaces or dashes. */
@@ -208,28 +196,40 @@ function makeProgress() {
   };
 }
 
-async function main() {
+/**
+ * Splits the command line into a subcommand and its arguments. No subcommand means start;
+ * the 0.2 flag --doctor still means doctor.
+ * @returns {{ command: string, rest: string[] }}
+ */
+export function splitCommand(argv) {
+  const first = argv[0];
+  if (first !== undefined && !first.startsWith('--')) {
+    if (isSubcommand(first)) return { command: first, rest: argv.slice(1) };
+    throw Object.assign(new Error(`unknown command: ${first}`), { code: 'usage' });
+  }
+  if (argv.includes('--doctor')) return { command: 'doctor', rest: argv.filter((a) => a !== '--doctor') };
+  return { command: 'start', rest: argv };
+}
+
+const usageError = (err) => {
+  console.error(`hivedesk: ${err.message}\nRun "hivedesk help" for the commands and options.`);
+  process.exit(2);
+};
+
+async function runStart(argv) {
   let args;
   try {
-    args = parseArgs(process.argv.slice(2));
+    args = parseArgs(argv);
   } catch (err) {
-    console.error(`hivedesk: ${err.message}\nRun "hivedesk --help" for the options.`);
-    process.exit(2);
+    return usageError(err);
   }
   if (args.join && !joinWords(args.join)) {
     console.error('hivedesk: --join needs a share link or the six words');
     process.exit(2);
   }
-  const { startHive, VERSION, cacheHome, runDoctor } = await import('./index.js');
+  const { startHive, VERSION, cacheHome } = await import('./index.js');
   if (args.help) return console.log(HELP);
   if (args.version) return console.log(VERSION);
-  if (args.doctor) {
-    const { formatDoctor } = await import('./doctor.js');
-    const report = await runDoctor({ home: cacheHome(), model: args.model });
-    console.log(formatDoctor(report));
-    process.exitCode = report.ok ? 0 : 1;
-    return;
-  }
   // >>> desktop hook (desktop/README.md): a second run focuses the open window; packages pick the folder.
   const desktop = args.open ? await import('../desktop/index.js').catch(() => null) : null;
   if (desktop && await desktop.focusExisting({ home: cacheHome(), args })) return;
@@ -254,38 +254,38 @@ async function main() {
       if (setup.open === false) args.open = false;
     }
   }
-  if (args['demo-dir'] && !args.demo) {
-    console.error('hivedesk: --demo-dir goes with --demo');
-    process.exit(2);
-  }
-  // The demo never touches a real project or the real ~/.hivedesk: its own folder and its own home.
-  let demoHome;
-  if (args.demo) {
-    try { dir = demoFolder(args); } catch (err) { console.error(`hivedesk: ${err.message}`); process.exit(2); }
-    demoHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hivedesk-demo-home-'));
-  }
   const progress = makeProgress();
   const log = (line) => { progress(null); console.log(`  ${line}`); };
   console.log(`hivedesk ${VERSION}${args.demo ? ' (DEMO: no model, scripted crew, a separate demo folder)' : ''}${args.lend ? ' (lend mode)' : ''}`);
   const port = args.port !== undefined ? args.port : await stablePort(4174);
-  const app = await startHive({
-    dir,
-    port,
-    token: args.demo ? undefined : loadToken(cacheHome(), !!args['new-token']),
-    demo: !!args.demo,
-    ...(demoHome ? { home: demoHome } : {}),
-    lend: !!args.lend,
-    city: args.city !== false,
-    log,
-    progress,
-    flags: {
-      brain: args.brain, model: args.model, url: args.url, noDownload: !args.download,
-      gpu: args.cpu ? false : undefined, ctx: args.ctx,
-      ...(setup && !setup.demo ? setup.flags : {})
-    }
-  });
+  let app;
+  try {
+    app = await startHive({
+      // A demo gets a fresh demo folder unless --dir names an empty or demo folder (src/core/demo.js).
+      dir: args.demo ? (args['demo-dir'] || args.dir) : dir,
+      port,
+      token: args.demo ? undefined : loadToken(cacheHome(), !!args['new-token']),
+      demo: !!args.demo,
+      lend: !!args.lend,
+      city: args.city !== false,
+      strict: args.strict ? true : undefined,
+      log,
+      progress,
+      flags: {
+        brain: args.brain, model: args.model, url: args.url, noDownload: !args.download,
+        gpu: args.cpu ? false : undefined, ctx: args.ctx,
+        ...(setup && !setup.demo ? setup.flags : {})
+      }
+    });
+  } catch (err) {
+    if (err.code === 'demo_refused') { console.error(`hivedesk: ${err.message}`); process.exit(2); }
+    throw err;
+  }
+  dir = app.dir;
   if (setup) app.hive.setSettings({ approvalMode: setup.approvalMode, crew: setup.crew });
-  console.log(`  ${args.demo ? 'demo folder' : 'folder'}: ${path.join(dir, '.hivedesk')}`);
+  // Other subcommands (city, invite, peers, share) find this engine through <home>/engine.json. A demo is not announced.
+  if (!args.demo) writeEngineFile(cacheHome(), { port: app.server.port, dir, version: VERSION });
+  console.log(`  folder: ${path.join(dir, '.hivedesk')}`);
   console.log(`  open:   ${app.url}`);
   const openUrl = startUrl(app.server.port, app.server.token, args);
   if (openUrl !== app.url) console.log(`          ${openUrl}`);
@@ -296,6 +296,7 @@ async function main() {
     stopping = true;
     progress(null);
     console.log('\n  stopping...');
+    if (!args.demo) removeEngineFile(cacheHome());
     try { await app.close(); } catch { /* exit anyway */ }
     process.exit(0);
   };
@@ -310,6 +311,108 @@ async function main() {
     if (how) console.log(`  opened ${how === 'app' ? 'in its own app window' : 'in the browser'}`);
   }
   // <<< desktop hook
+}
+
+/** `hivedesk city`: from the running engine of this folder, else read only from the log. */
+async function runCity(argv) {
+  let parsed;
+  try { parsed = parseFlags(argv, {}); } catch (err) { return usageError(err); }
+  if (parsed.flags.help) return console.log('Usage: hivedesk city [--dir <folder>] [--json]\n\nPrints the City of a project: buildings, agents, tasks by state and peers online.');
+  const { cacheHome } = await import('./index.js');
+  const { citySummary, formatCity } = await import('./core/city-report.js');
+  const dir = path.resolve(parsed.flags.dir || process.cwd());
+  const root = path.join(dir, '.hivedesk');
+  let summary;
+  const engine = await findEngine(cacheHome());
+  if (engine && path.resolve(engine.dir || '') === dir) {
+    const [state, info] = await Promise.all([engine.state(), engine.command('store.info')]);
+    summary = citySummary(state, { dir, source: 'engine', info });
+  } else {
+    if (!fs.existsSync(root)) {
+      console.error(`hivedesk: ${dir} is not a hivedesk project yet (no .hivedesk folder). Run "hivedesk" there first, or pass --dir.`);
+      process.exitCode = 1;
+      return;
+    }
+    const { EventBus } = await import('./core/bus.js');
+    const bus = new EventBus({ dir: root, readOnly: true, strict: false });
+    summary = citySummary(bus.state, { dir, source: 'log', info: bus.info() });
+    bus.close();
+  }
+  console.log(parsed.flags.json ? JSON.stringify(summary, null, 2) : formatCity(summary));
+}
+
+/** `hivedesk doctor [--p2p]`: the 0.2 checks plus the core checks; the p2p checks come from src/doctor.js (Stream 2). */
+async function runDoctorCmd(argv) {
+  let parsed;
+  try { parsed = parseFlags(argv, { model: 'string', p2p: 'boolean' }); } catch (err) { return usageError(err); }
+  if (parsed.flags.help) return console.log('Usage: hivedesk doctor [--p2p] [--model <name|path>] [--dir <folder>] [--json]');
+  const { cacheHome, runDoctor } = await import('./index.js');
+  const { formatDoctor } = await import('./doctor.js');
+  const { coreChecks } = await import('./core/doctor-checks.js');
+  const home = cacheHome();
+  const report = await runDoctor({ home, model: parsed.flags.model, p2p: !!parsed.flags.p2p });
+  const extra = await coreChecks({ home, dir: path.resolve(parsed.flags.dir || process.cwd()), engine: await findEngine(home, { timeoutMs: 1500 }) });
+  report.checks.push(...extra);
+  report.ok = report.checks.every((c) => c.ok);
+  console.log(parsed.flags.json ? JSON.stringify(report, null, 2) : formatDoctor(report));
+  process.exitCode = report.ok ? 0 : 1;
+}
+
+/** `hivedesk share`: ShareSettings, through runShare() of src/compute/share-cli.js (Stream 3). Exit code 3: not in this build. */
+async function runShareCmd(argv) {
+  const file = path.join(path.dirname(fileURLToPath(import.meta.url)), 'compute', 'share-cli.js');
+  if (!fs.existsSync(file)) {
+    console.error('hivedesk: "hivedesk share" is not in this build yet (compute/share-cli.js is missing).');
+    process.exitCode = 3;
+    return;
+  }
+  const { cacheHome } = await import('./index.js');
+  const { runShare } = await import('./compute/share-cli.js');
+  process.exitCode = runShare(argv, { home: cacheHome() });
+}
+
+/** A subcommand of another module (invite, join, peers). Exit code 3: not in this build. */
+async function runProvided(name, argv) {
+  const found = await loadSubcommand(name);
+  if (found.missing) {
+    console.error(`hivedesk: ${found.missing}.`);
+    if (name === 'join') console.error('  Until then, "hivedesk --join <words>" opens the window with the words filled in.');
+    process.exitCode = 3;
+    return;
+  }
+  const def = found.def;
+  if (def.raw) {
+    const { cacheHome } = await import('./index.js');
+    const code = await def.run(argv, { home: cacheHome(), stdin: process.stdin, stdout: process.stdout, stderr: process.stderr });
+    process.exitCode = Number.isInteger(code) ? code : 0;
+    return;
+  }
+  let parsed;
+  try { parsed = parseFlags(argv, def.options || {}); } catch (err) { return usageError(err); }
+  if (parsed.flags.help) return console.log(def.usage || `Usage: hivedesk ${name}`);
+  const index = await import('./index.js');
+  const home = index.cacheHome();
+  const code = await def.run({
+    name, flags: parsed.flags, positionals: parsed.positionals, home,
+    dir: path.resolve(parsed.flags.dir || process.cwd()), version: index.VERSION,
+    out: (line) => console.log(line), err: (line) => console.error(line),
+    findEngine: (o) => findEngine(home, o), startHive: index.startHive, loadToken: (rotate) => loadToken(home, rotate)
+  });
+  process.exitCode = Number.isInteger(code) ? code : 0;
+}
+
+async function main() {
+  const argv = process.argv.slice(2);
+  let cmd;
+  try { cmd = splitCommand(argv); } catch (err) { return usageError(err); }
+  switch (cmd.command) {
+    case 'help': return console.log(HELP);
+    case 'start': return runStart(cmd.rest);
+    case 'city': return runCity(cmd.rest);
+    case 'doctor': return runDoctorCmd(cmd.rest);
+    case 'share': return runShareCmd(cmd.rest);
+    default: return runProvided(cmd.command, cmd.rest);
+  }
 }
 
 const invoked = process.argv[1] && path.resolve(process.argv[1]);
