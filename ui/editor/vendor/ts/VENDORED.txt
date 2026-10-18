@@ -1,0 +1,3 @@
+monaco-editor 0.52.2 min/vs/language/typescript (tsMode.js, tsWorker.js)
+MIT, see ../../vs/LICENSE and ../../vs/ThirdPartyNotices.txt
+Loaded by ui/editor/monaco.js in place of the stub in vs/language/typescript.

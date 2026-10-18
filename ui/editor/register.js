@@ -1,7 +1,8 @@
 // Plugs the Code editor and Code together into the desktop (imported once by ui/js/main.js).
 // Kept small and defensive: the heavy parts load only when a window opens, and nothing here may
 // break the desktop if it fails.
-//   window types  editor (the Code window), collab (Code together), code (opens the Code window)
+//   window types  editor (the Code window: the workbench of ui/workbench/ when the engine has it,
+//                 else the single editor of code-window.js), collab (Code together), code (opens the Code window)
 //   palette       entries through globalThis.hivedeskPalette
 //   top bar       the avatars of everyone in the session; a click follows that person
 //   dock          a Code button and a Code together button
@@ -18,7 +19,7 @@ let cssDone = false;
 function linkCss() {
   if (cssDone) return;
   cssDone = true;
-  for (const href of ['/lend/lend.css', '/editor/editor.css']) document.head.append(h('link', { rel: 'stylesheet', href }));
+  for (const href of ['/lend/lend.css', '/editor/editor.css', '/workbench/workbench.css']) document.head.append(h('link', { rel: 'stylesheet', href }));
 }
 
 let editorApi = null;
@@ -61,15 +62,23 @@ wm.register('editor', {
       api?.dispose();
       if (editorApi === api) editorApi = null;
     });
-    import('./code-window.js')
-      .then(async (m) => {
+    (async () => {
+      // The workbench needs its engine part (src/workbench); older engines get the single editor.
+      const wbm = await import('/workbench/workbench.js');
+      const full = await wbm.workbenchAvailable().catch(() => false);
+      if (closed) return;
+      if (full) {
+        ctx.body.classList.add('wb-win-body');
+        api = wbm.mountWorkbench(el, { path: queue.shift() });
+      } else {
+        const m = await import('./code-window.js');
         if (closed) return;
         api = m.mountEditor(el, { path: queue.shift() });
-        editorApi = api;
-        await api.ready;
-        while (queue.length) api.open(queue.shift());
-      })
-      .catch((err) => !closed && failBox(el, t('code.loadFail', { error: err.message })));
+      }
+      editorApi = api;
+      await api.ready;
+      while (queue.length) api.open(queue.shift());
+    })().catch((err) => !closed && failBox(el, t('code.loadFail', { error: err.message })));
   },
 });
 
@@ -130,6 +139,10 @@ function initialWords() {
     out.push({ group, label: t('code.pal.review'), run: () => { wm.open('editor'); api.review(); }, icon: 'approval' });
   }
   if (q && /^[\w./-]+\.\w+$/.test(q)) out.push({ group, label: t('code.pal.openFile', { path: q }), run: () => openInEditor(q), icon: 'code' });
+  // The workbench commands (ui/workbench/commands.js) with their shortcuts, while it is open.
+  if (api?.commands) {
+    for (const c of api.commands()) out.push({ group, label: c.label, run: () => { wm.open('editor'); c.run(); }, icon: 'code', kb: c.keys?.[0]?.split('+') });
+  }
   return out;
 });
 
