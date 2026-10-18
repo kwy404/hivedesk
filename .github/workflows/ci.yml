@@ -25,7 +25,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-      - run: npm ci
+      # Without the optional node-pty: its Windows console helper crashes on headless runners, and the
+      # terminal tests fall back to the labeled basic terminal (the real PTY is tested on real machines).
+      - run: npm ci --omit=optional
       - name: Lint
         run: node scripts/lint.mjs
       - name: Rules check

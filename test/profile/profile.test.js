@@ -107,9 +107,11 @@ describe('profile store', () => {
   });
 
   it('keeps the stats local: peers get only the name and the avatar, the count only behind the switch', () => {
-    const s = new ProfileStore({ home: tempHome('profile') });
+    // A job at local midday: a job late at night would also unlock the night shift achievement.
+    const noon = new Date(2026, 9, 17, 12, 0, 0).getTime();
+    const s = new ProfileStore({ home: tempHome('profile'), now: () => noon });
     s.set({ name: 'Ben', avatar: 'orbit-violet', bio: 'private' });
-    s.count({ seq: 1, type: 'job.done', ts: new Date().toISOString(), data: {} });
+    s.count({ seq: 1, type: 'job.done', ts: new Date(noon).toISOString(), data: {} });
     expect(s.wire(PEER)).toEqual({ name: 'Ben', avatar: 'orbit-violet' });
     s.set({ shareAchievements: true });
     expect(s.wire(PEER)).toEqual({ name: 'Ben', avatar: 'orbit-violet', achievements: 1 });

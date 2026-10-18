@@ -163,7 +163,7 @@ jobs:
       - name: DMG
         run: |
           v="$(node -p "require('./package.json').version")"
-          desktop/installer/macos/make-dmg.sh stage/hivedesk.app dist/hivedesk-macos.dmg "$v"
+          bash desktop/installer/macos/make-dmg.sh stage/hivedesk.app dist/hivedesk-macos.dmg "$v"
           hdiutil verify dist/hivedesk-macos.dmg
       - uses: actions/upload-artifact@v4
         with:
