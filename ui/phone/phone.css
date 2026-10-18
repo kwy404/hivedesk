@@ -1,0 +1,36 @@
+/* Control from your phone (ui/phone/desktop.js). Uses the hive tokens of ui/css/hive.css. */
+.ph-win { display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow: auto; height: 100%; box-sizing: border-box; }
+.ph-stage { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 8px 0 4px; }
+.ph-intro { margin: 0; color: var(--text-2, var(--text)); line-height: 1.5; max-width: 34em; }
+.ph-show { display: inline-flex; align-items: center; gap: 8px; }
+.ph-scan { font-weight: 600; color: var(--honey); }
+.ph-qr { width: min(260px, 70vw); aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: #F7EEDF; box-shadow: 0 0 0 1px var(--line-2, rgb(255 255 255 / .1)), 0 18px 40px -16px rgb(0 0 0 / .7); }
+.ph-qr svg { display: block; width: 100%; height: 100%; }
+.ph-countdown { color: var(--warn); font-variant-numeric: tabular-nums; }
+.ph-status { min-height: 1.4em; }
+.ph-actions { display: flex; gap: 8px; align-items: center; width: 100%; justify-content: center; flex-wrap: wrap; }
+.ph-actions .grow { flex: 1; }
+.ph-h { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-t); }
+.ph-list { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line-2, rgb(255 255 255 / .08)); padding-top: 14px; }
+.ph-item { padding: 10px 12px; border-radius: 12px; background: var(--panel-2, rgb(255 255 255 / .03)); border: 1px solid var(--line-2, rgb(255 255 255 / .08)); display: flex; flex-direction: column; gap: 8px; }
+.ph-item-h { display: flex; align-items: center; gap: 10px; }
+.ph-item-h .grow { flex: 1; min-width: 0; }
+.ph-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); flex: none; }
+.ph-dot.on { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-a); }
+.ph-grants { display: flex; flex-direction: column; gap: 6px; }
+.ph-label { font-weight: 600; font-size: 13px; }
+.ph-check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; line-height: 1.35; }
+.ph-check input { margin-top: 2px; accent-color: var(--honey); }
+.ph-ask { display: flex; flex-direction: column; gap: 10px; width: min(440px, 84vw); }
+.ph-who { display: flex; gap: 12px; align-items: center; }
+.ph-who-name { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.ph-dev { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--honey-a); color: var(--honey); flex: none; }
+.ph-dev .ico { width: 22px; height: 22px; }
+.ph-mono { font-family: var(--font-mono, ui-monospace, monospace); }
+.ph-sas-q { font-size: 15px; font-weight: 600; }
+.ph-sas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: w; }
+.ph-sas li { counter-increment: w; padding: 8px 10px; border-radius: 10px; background: var(--honey-a); color: var(--honey); font-family: var(--font-mono, ui-monospace, monospace); font-size: 15px; font-weight: 600; text-align: left; }
+.ph-sas li::before { content: counter(w) " "; color: var(--muted-t); font-weight: 400; font-size: 12px; }
+.ph-dlg .ph-grants { padding: 10px 12px; border: 1px solid var(--line-2, rgb(255 255 255 / .1)); border-radius: 12px; }
+@media (prefers-reduced-motion: reduce) { .ph-dot.on { box-shadow: none; } }
+.ph-actions-end { justify-content: flex-end; }

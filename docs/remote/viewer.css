@@ -1,0 +1,37 @@
+/* The remote desktop viewer on the phone (js/viewer.js), loaded with it. */
+html.rv-open, html.rv-open body { overflow: hidden; }
+.rv { position: fixed; inset: 0; z-index: 90; background: #050504; display: flex; flex-direction: column; color: var(--text); touch-action: none; }
+.rv-stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; display: grid; place-items: center; }
+.rv-plate { position: relative; width: 100%; height: 100%; transform-origin: 50% 50%; will-change: transform; }
+.rv video { width: 100%; height: 100%; object-fit: contain; display: block; background: #050504; pointer-events: none; }
+.rv-cursor { position: absolute; left: 0; top: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 2px solid #fff; background: rgb(255 181 49 / .45); box-shadow: 0 0 0 1px rgb(0 0 0 / .5), 0 2px 8px rgb(0 0 0 / .6); pointer-events: none; }
+.rv-top { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 6px; padding: calc(6px + var(--top)) 8px 8px; background: linear-gradient(180deg, rgb(5 5 4 / .92), rgb(5 5 4 / .55) 70%, transparent); }
+.rv-top .grow { min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.rv-state { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-left { color: var(--dim); font-size: 12.5px; }
+.rv-ctl .rv-state { color: var(--bad); }
+.rv-foot { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; background: linear-gradient(0deg, rgb(5 5 4 / .96), rgb(5 5 4 / .7) 80%, transparent); padding-bottom: var(--bottom); }
+.rv-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px 10px; }
+.rv-bar .grow { flex: 1; }
+.rv-end { height: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid rgb(240 138 124 / .4); background: var(--bad-a); color: var(--bad); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+.rv-end svg { width: 18px; height: 18px; }
+.rv-b { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line-2); background: rgb(31 28 24 / .8); display: grid; place-items: center; color: var(--text); flex: none; }
+.rv-b[aria-pressed=true] { background: var(--honey); color: var(--honey-ink); border-color: transparent; }
+.rv-b[disabled] { opacity: .35; }
+.rv-ask { height: 42px; padding: 0 12px; border-radius: 12px; border: 0; background: var(--honey); color: var(--honey-ink); font-weight: 700; font-size: 13px; flex: none; }
+.rv-ask[hidden] { display: none; }
+.rv-sel { height: 42px; max-width: 92px; border-radius: 12px; border: 1px solid var(--line-2); background: rgb(31 28 24 / .8); padding: 0 6px; font-size: 13px; flex: none; }
+.rv.rv-ctl { box-shadow: inset 0 0 0 2px rgb(240 138 124 / .55); }
+.rv-wait { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(320px, 84vw); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 22px; border-radius: 20px; background: rgb(23 21 18 / .92); border: 1px solid var(--line-2); color: var(--text-2); }
+.rv-wait[hidden] { display: none; }
+.rv-wait b { color: var(--text); font-size: 17px; }
+.rv-wait svg { width: 34px; height: 34px; color: var(--warn); }
+.rv-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--line-3); border-top-color: var(--honey); animation: spin 1s linear infinite; }
+.rv-keys { display: none; gap: 6px; overflow-x: auto; padding: 8px 10px 0; scrollbar-width: none; }
+.rv-keys::-webkit-scrollbar { display: none; }
+.rv.rv-typing .rv-keys { display: flex; }
+.rv-k { flex: none; min-width: 46px; height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--bg-3); font: 600 14px var(--sans); }
+.rv-k[aria-pressed=true] { background: var(--honey); color: var(--honey-ink); }
+.rv-kb { position: absolute; left: -9999px; bottom: 0; width: 1px; height: 1px; opacity: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.rv-status { display: flex; flex-direction: column; min-width: 0; }

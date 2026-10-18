@@ -1,0 +1,88 @@
+/* Remote screen (ui/remote/). Uses the hive tokens of ui/css/hive.css. */
+
+.seg button[aria-checked=true] { background: var(--panel-3); color: var(--text); box-shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 1px 2px rgb(0 0 0 / .3); }
+
+/* While anyone may see this screen: a red frame around the whole window and the session bar on top. */
+html.rd-shared body::after { content: ''; position: fixed; inset: 0; border: 3px solid var(--bad); pointer-events: none; z-index: 2147483646; }
+.rd-banner {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 2147483647;
+  width: min(980px, calc(100vw - 16px)); margin-top: 6px; padding: 6px 10px; border-radius: 10px;
+  background: #2a1210; border: 1px solid var(--bad); box-shadow: 0 8px 28px rgb(0 0 0 / .55); color: var(--text);
+  display: flex; flex-direction: column; gap: 4px; font-size: 13px;
+}
+.rd-bar-head, .rd-bar-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rd-bar-row { padding-top: 4px; border-top: 1px solid rgb(229 123 110 / .2); }
+.rd-bar-name { min-width: 60px; }
+.rd-banner .grow { flex: 1; }
+.rd-stop { font-weight: 700; }
+.rd-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 10px; background: var(--panel-3); color: var(--text-2); font-size: 11.5px; white-space: nowrap; }
+.rd-chip.on { background: var(--ok-a); color: var(--ok); }
+.rd-chip.warn { background: var(--warn-a); color: var(--warn); }
+.rd-lockedtag { color: var(--warn); font-weight: 600; }
+.rd-pick select, .rd-sel { height: 25px; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 6px; font-size: 12px; }
+.rd-ask-screen { display: inline-flex; gap: 6px; align-items: center; color: var(--honey-2); }
+.rd-pop { position: fixed; z-index: 2147483647; width: 340px; max-height: 60vh; overflow: auto; padding: 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line-3); box-shadow: 0 12px 34px rgb(0 0 0 / .5); }
+
+/* The accept dialog */
+.rd-ask { display: flex; flex-direction: column; gap: 10px; width: min(430px, 82vw); }
+.rd-who { display: flex; gap: 12px; align-items: center; }
+.rd-who-name { font-size: 15px; font-weight: 600; }
+.rd-self-chosen { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.rd-avatar { border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; flex: none; letter-spacing: .02em; }
+.rd-mono, .rd-address, .rd-address-in { font-family: var(--font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+.rd-words { padding: 6px 8px; border-radius: 8px; background: var(--honey-a); color: var(--honey-2); }
+.rd-perms { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 10px; }
+.rd-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.rd-check.off { opacity: .55; cursor: default; }
+.rd-clipdir { margin-left: auto; max-width: 170px; min-width: 0; height: 24px; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 6px; font-size: 12px; }
+.rd-field { display: flex; flex-direction: column; gap: 4px; }
+.rd-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.rd-actions .grow { flex: 1; }
+.rd-countdown { color: var(--warn); font-variant-numeric: tabular-nums; }
+.rd-warn { color: var(--warn); }
+
+/* The home window */
+.rd-home { display: flex; flex-direction: column; gap: 12px; padding: 14px; overflow: auto; height: 100%; box-sizing: border-box; }
+.rd-sec { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); }
+.rd-sec summary { cursor: pointer; font-weight: 600; }
+.rd-sec .row { display: flex; gap: 8px; align-items: center; }
+.rd-address { font-size: clamp(24px, 6vw, 34px); font-weight: 700; letter-spacing: .06em; color: var(--honey); flex: 1; }
+.rd-address-in { flex: 1; height: 36px; font-size: 18px; letter-spacing: .08em; padding: 0 10px; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-3); border-radius: 8px; }
+.rd-home input[type=password] { height: 30px; padding: 0 8px; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; }
+.rd-hint { padding: 12px; border-radius: 12px; background: var(--info-a); border: 1px solid rgb(134 169 214 / .3); display: flex; flex-direction: column; gap: 6px; }
+.rd-hint ol { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+
+/* The viewer window */
+.rd-tb { flex-wrap: wrap; row-gap: 4px; }
+.rd-tb-ctl { font-size: 12px; }
+.rd-main { display: flex; flex: 1; min-height: 0; height: calc(100% - 44px); }
+.rd-stage { position: relative; flex: 1; min-width: 0; background: #000; outline: none; display: flex; }
+.rd-stage.rd-controlling { box-shadow: inset 0 0 0 2px var(--honey); }
+.rd-stage.rd-drop-on, .rd-drop.rd-drop-on { box-shadow: inset 0 0 0 2px var(--ok); }
+.rd-tiles { flex: 1; display: flex; min-width: 0; }
+.rd-tiles.side { gap: 2px; }
+.rd-video { flex: 1; min-width: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.rd-stage.rd-controlling .rd-video { cursor: none; }
+.rd-note { position: absolute; inset: auto 0 12px 0; text-align: center; color: var(--text-2); font-size: 13px; pointer-events: none; }
+.rd-lock { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; background: rgb(14 13 11 / .78); color: var(--warn); font-weight: 600; }
+.rd-drawer { width: 300px; flex: none; border-left: 1px solid var(--line); padding: 10px; overflow: auto; background: var(--panel); }
+.rd-chat { display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.rd-chat .row { display: flex; gap: 6px; }
+.rd-chat input { height: 28px; padding: 0 8px; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; }
+.rd-chatlog { flex: 1; min-height: 120px; max-height: 50vh; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+.rd-msg { align-self: flex-start; max-width: 85%; padding: 5px 9px; border-radius: 10px; background: var(--panel-3); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.rd-msg.mine { align-self: flex-end; background: var(--honey-a); color: var(--honey-2); }
+.rd-files { display: flex; flex-direction: column; gap: 8px; }
+.rd-drop { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; border: 1px dashed var(--line-3); border-radius: 10px; color: var(--text-2); font-size: 12.5px; text-align: center; }
+.rd-transfers { display: flex; flex-direction: column; gap: 6px; }
+.rd-tr { display: flex; gap: 6px; align-items: center; }
+.rd-tr .grow { flex: 1; min-width: 0; }
+.rd-tr-dir { width: 14px; text-align: center; color: var(--muted-t); }
+.rd-bar { height: 4px; border-radius: 2px; background: var(--panel-4); overflow: hidden; margin-top: 3px; }
+.rd-bar > div { height: 100%; background: var(--honey); }
+
+@media (max-width: 760px) {
+  .rd-drawer { position: absolute; inset: 0 0 0 auto; width: min(320px, 92vw); z-index: 2; }
+  .rd-banner { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .rd-banner, .rd-pop { transition: none; } }
