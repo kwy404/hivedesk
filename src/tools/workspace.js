@@ -35,7 +35,9 @@ export class Workspace {
     const parts = p.split('/').filter((s) => s !== '' && s !== '.');
     if (parts.some((s) => s === '..')) throw new PathError(`".." is not allowed: ${rel}`);
     // Git config and hooks can run commands, so the crew never touches the repository folder.
-    if (parts.length && /^\.git\.?$/i.test(parts[0])) throw new PathError(`the .git folder is off limits: ${rel}`);
+    // Windows drops trailing dots and spaces (".git. ") and answers to the 8.3 short name (GIT~1).
+    if (parts.length && /^\.git[. ]*$/i.test(parts[0])) throw new PathError(`the .git folder is off limits: ${rel}`);
+    if (parts.some((s) => /^git~\d+$/i.test(s.replace(/[. ]+$/, '')))) throw new PathError(`the .git folder is off limits: ${rel}`);
     if (parts.some((s) => /[<>:"|?*]/.test(s) || /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i.test(s))) {
       throw new PathError(`invalid file name: ${rel}`);
     }
@@ -46,7 +48,18 @@ export class Workspace {
     while (!fs.existsSync(probe) && probe !== this.root) probe = path.dirname(probe);
     const real = fs.realpathSync(probe);
     if (!this.contains(real)) throw new PathError(`path escapes the workspace through a link: ${rel}`);
+    // The real path (short names and links resolved by the OS) must not land in the repository folder.
+    if (this._inGit(probe)) throw new PathError(`the .git folder is off limits: ${rel}`);
     return abs;
+  }
+
+  /** Whether an existing path really is the root's .git folder or inside it, after the OS resolves it. */
+  _inGit(probe) {
+    let real;
+    let root;
+    try { real = fs.realpathSync.native(probe); root = (this._nativeRoot ||= fs.realpathSync.native(this.root)); } catch { return false; }
+    const first = path.relative(root, real).split(path.sep)[0] || '';
+    return /^\.git$/i.test(first);
   }
 
   contains(abs) {

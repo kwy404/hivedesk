@@ -1,0 +1,37 @@
+{
+  "id": "keyboard-navigation-fix",
+  "title": "Fix keyboard navigation",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "keyboard",
+    "keyboard navigation",
+    "tab order",
+    "tabindex",
+    "enter key",
+    "arrow keys",
+    "accessibility",
+    "keyboard trap"
+  ],
+  "when": "Parts of a page cannot be used with the keyboard, tab order jumps around, or custom widgets ignore Enter, Space or arrow keys.",
+  "inputs": [
+    "the interactive parts",
+    "their expected behavior"
+  ],
+  "prompt": "Goal: Every interactive element is reachable and operable by keyboard alone in a logical order, with focus always visible.\nSteps:\n1. Tab through the page in order and list each stop that is missing, out of order or invisible.\n2. Replace clickable div and span with button (actions) or a with href (navigation); they get focus and Enter for free.\n3. Remove positive tabindex values; fix order by moving elements in the HTML, use tabindex=\"0\" only for custom widgets and \"-1\" for programmatic focus.\n4. For composite widgets (menus, tabs, listboxes) use roving tabindex: one stop for the group, arrow keys move inside, Home and End jump.\n5. Escape closes popups and menus and returns focus to their trigger.\n6. Add a strong :focus-visible outline with at least 3 to 1 contrast.\nQuality bar:\n- Tab order follows visual order.\n- No keyboard trap anywhere.\n- Shortcuts never override typing in fields.\nPitfalls:\n- tabindex=\"5\" style ordering.\n- Handling only click on custom controls.\n- outline: none with no replacement.\nVerify:\n- [ ] All actions work with Tab, Enter, Space and Escape.\n- [ ] No positive tabindex remains.\n- [ ] Focus is visible on every stop.\n- [ ] Files parse.\nOutput: Updated HTML, CSS focus styles and key handlers.",
+  "checks": [
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "não consigo usar o menu com o teclado",
+      "output": "menu items are buttons, arrow keys move with roving tabindex, Escape closes and refocuses the trigger"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

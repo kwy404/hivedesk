@@ -1,0 +1,36 @@
+{
+  "id": "faq-doc",
+  "title": "FAQ document",
+  "category": "git-docs",
+  "roles": [
+    "writer"
+  ],
+  "tags": [
+    "faq",
+    "frequently asked questions",
+    "questions",
+    "answers",
+    "help doc",
+    "support",
+    "q and a"
+  ],
+  "when": "The user wants a FAQ for a project, product or service, written as a Markdown document.",
+  "inputs": [
+    "real questions users ask",
+    "the product facts and policies"
+  ],
+  "prompt": "Goal: Grouped, scannable questions phrased the way users ask them, each with a direct answer in the first sentence.\nSteps:\n1. Collect the real questions from the request, issues, or support history; drop questions nobody asks.\n2. Group them under ## headings by topic (Getting started, Accounts, Billing, Troubleshooting).\n3. Write each question as a ### heading in the words of the user (\"Can I use it offline?\").\n4. Answer in the first sentence (Yes, No, or the fact), then add detail, steps or a link.\n5. Keep answers under about 80 words; link to longer docs that exist.\n6. Add a closing line on how to ask something not covered.\nQuality bar:\n- Answers are direct and current.\n- No duplicate questions across groups.\n- The most asked questions come first.\nPitfalls:\n- Marketing questions nobody asks.\n- Answers that start with background.\n- Links to pages that do not exist.\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Has at least two ## groups.\n- [ ] Each answer opens with the direct reply.\n- [ ] Local links exist.\nOutput: FAQ.md (or docs/faq.md).",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "crie um FAQ para meu app de finanças",
+      "output": "# FAQ with Getting started, Data and privacy, Sync groups; 12 questions with direct answers"
+    }
+  ],
+  "size": 302,
+  "version": 1
+}

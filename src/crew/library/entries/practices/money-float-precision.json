@@ -1,0 +1,36 @@
+{
+  "id": "money-float-precision",
+  "title": "Fix money and floating point rounding errors",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "floating point",
+    "rounding",
+    "money",
+    "currency math",
+    "decimal",
+    "cents",
+    "0.1 + 0.2",
+    "precision"
+  ],
+  "when": "Totals show values like 0.30000000000000004, prices are off by a cent, or sums do not match between screens.",
+  "inputs": [
+    "the calculation code",
+    "currency and rounding rules"
+  ],
+  "prompt": "Goal: Money computed in integer minor units with one documented rounding rule, so every total matches to the cent.\nSteps:\n1. Convert amounts to integer cents at the boundary: Math.round(Number(input) * 100), or parse the decimal string directly.\n2. Do all sums, discounts and taxes in cents; round once at defined points (per line or per total, as the rules say).\n3. Use a single round helper and state the rule (half up, or half to even for banking).\n4. Split amounts (installments, shares) by distributing the leftover cents so the parts add up to the total.\n5. Format only for display with Intl.NumberFormat and the currency code; never store formatted strings.\n6. Use BigInt for amounts that can exceed Number.MAX_SAFE_INTEGER cents.\nQuality bar:\n- Totals equal the sum of displayed lines.\n- No toFixed in calculations, only in display.\n- Tests include 0.1 + 0.2 and three way splits.\nPitfalls:\n- Comparing floats with ===.\n- Rounding at every step and drifting.\n- Parsing localized strings like \"1.234,56\" with Number().\nVerify:\n- [ ] Amounts are integers in storage.\n- [ ] Splits add up exactly.\n- [ ] Display uses Intl.\n- [ ] Files parse.\nOutput: money.js with toCents, add, applyRate, split and format, plus updated call sites and tests.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "o total do carrinho dá 59.900000000001",
+      "output": "prices in cents, tax rounded per line, split 100.00 by 3 as 33.34, 33.33, 33.33"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

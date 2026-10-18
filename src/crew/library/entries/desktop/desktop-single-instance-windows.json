@@ -1,0 +1,38 @@
+{
+  "id": "desktop-single-instance-windows",
+  "title": "Single instance lock and extra windows",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "single instance",
+    "multiple windows",
+    "new window",
+    "lock file",
+    "desktop app",
+    "second instance",
+    "neutralinojs",
+    "detached window"
+  ],
+  "when": "Opening the app twice corrupts shared data, or the user wants a second window such as a preview or a detached panel.",
+  "inputs": [
+    "should a second launch focus the first one",
+    "extra windows needed"
+  ],
+  "prompt": "Goal: Only one process owns the data folder, a second launch hands its file argument to the first and exits, and extra windows open through the window API.\nSteps:\n1. On start write app.lock in the data folder with { pid: NL_PID, port: NL_PORT, t: Date.now() } and refresh t every 10 seconds.\n2. If app.lock exists with t newer than 30 seconds, another instance runs: write the file path from NL_ARGS into inbox.json, then Neutralino.app.exit().\n3. The running instance polls inbox.json every 2 seconds (or uses Neutralino.filesystem.createWatcher where available), opens the file, deletes the inbox and calls Neutralino.window.focus().\n4. Remove app.lock on windowClose; a stale lock older than 30 seconds is taken over.\n5. Extra window: Neutralino.window.create(\"/preview.html\", { width: 600, height: 800, title: \"Preview\" }); it runs as its own process, so share data through files or the extension bridge, not memory.\n6. Give each window one job; the main window owns writes, others only read.\n7. Allow window.create, window.focus and the needed filesystem calls only.\nQuality bar:\n- Double clicking a document never opens two writers.\n- A crash does not block the next start forever.\nPitfalls:\n- Lock files without a heartbeat, which stay stale after a crash.\n- Two windows writing the same JSON file.\nVerify:\n- [ ] Lock has a timestamp and stale check.\n- [ ] Second launch forwards arguments and exits.\n- [ ] Only the main window writes data.\nOutput: instance.js, preview.html and allow list lines.",
+  "checks": [
+    "js.async-errors",
+    "js.json-parse-guarded",
+    "neu.config"
+  ],
+  "examples": [
+    {
+      "input": "se abro o app duas vezes os dados se perdem",
+      "output": "app.lock with heartbeat, second launch forwards path via inbox.json and exits, preview via window.create"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

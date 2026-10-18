@@ -1,0 +1,38 @@
+{
+  "id": "boundary-validation",
+  "title": "Validate input at system boundaries",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "validation",
+    "input validation",
+    "schema",
+    "sanitize",
+    "request body",
+    "user input",
+    "boundary",
+    "parse"
+  ],
+  "when": "Data enters the program from a form, a request body, a file, storage or command line arguments and must be checked.",
+  "inputs": [
+    "the entry points",
+    "the expected shape and limits of each field"
+  ],
+  "prompt": "Goal: Every external input is parsed once into a trusted object or rejected with a precise message, so inner code can trust its data.\nSteps:\n1. List each boundary: form submit, HTTP body and query, JSON file, localStorage, process.argv, environment variables.\n2. Write one validate function per shape that returns { ok: true, value } or { ok: false, errors: [{ field, message }] }.\n3. Check type, required, length, range and format (allowed characters, enum values); trim strings and convert numbers explicitly.\n4. Parse JSON inside try and catch and limit size first (for example 1 MB for request bodies).\n5. Reject unknown fields or drop them on purpose; never spread raw input into stored objects.\n6. Return 400 with the field errors on servers; show messages next to fields in forms.\nQuality bar:\n- Validation happens once, at the edge.\n- Messages name the field and the rule.\n- Inner functions receive typed, normalized values.\nPitfalls:\n- Validating only in the browser and trusting the server body.\n- Number(\"\") becoming 0 silently.\n- Regexes without anchors that accept extra text.\nVerify:\n- [ ] Bad inputs are rejected with field messages.\n- [ ] Valid inputs reach the logic unchanged.\n- [ ] JSON parsing is guarded.\n- [ ] Body size is limited.\nOutput: validate.js with the shape validators and the updated entry points that call them.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "node.body-limit"
+  ],
+  "examples": [
+    {
+      "input": "valide os dados que chegam na API de cadastro",
+      "output": "validateSignup checks name 1 to 80 chars, email format, age 13 to 120; 400 with field errors"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

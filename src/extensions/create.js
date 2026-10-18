@@ -7,6 +7,7 @@ import path from 'node:path';
 import { guessSpec } from './intent.js';
 import { inside, readManifest } from './host.js';
 import { MANIFEST_FILE } from './manifest.js';
+import { say } from '../crew/say.js';
 
 const pretty = (o) => JSON.stringify(o, null, 2) + '\n';
 
@@ -157,7 +158,8 @@ export async function createExtension(ctx) {
     const out = await toolbox.execute('write_file', { path: `${folder}/${rel}`, content }, { workerId: 'mel', approval: false });
     if (!out.ok) { off(); throw Object.assign(new Error(`could not write the scaffold: ${out.error}`), { code: 'internal' }); }
   }
-  hive.chat('mel', `I set up ${folder}/ for the new extension "${spec.name}" (a ${spec.kind === 'role' ? 'worker' : 'widget'}). The crew finishes it now; every change shows as a diff. When it is done you can install and test it.`);
+  if (typeof hive.say === 'function') hive.say('mel', 'crew.say.extensionReady', { folder, name: spec.name, kind: spec.kind === 'role' ? 'role' : 'widget' });
+  else hive.chat('mel', say('en', 'crew.say.extensionReady', { folder, name: spec.name, kind: spec.kind === 'role' ? 'role' : 'widget' }));
 
   // The request is already a precise brief, so the prompt refiner is skipped.
   const { jobId, done } = ctx.createJob({ request: jobRequest(spec, folder), refine: false });

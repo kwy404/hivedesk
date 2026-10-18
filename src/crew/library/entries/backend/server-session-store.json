@@ -1,0 +1,42 @@
+{
+  "id": "server-session-store",
+  "title": "Server side sessions with rotation and expiry",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev",
+    "security"
+  ],
+  "tags": [
+    "sessions",
+    "session store",
+    "session expiry",
+    "idle timeout",
+    "session fixation",
+    "logout all devices",
+    "login session",
+    "backend",
+    "auth"
+  ],
+  "when": "Login works in a Node app and now real session management is needed: storage, idle and absolute expiry, rotation on login and privilege change, logout of one or all devices.",
+  "inputs": [
+    "where sessions are stored",
+    "idle and absolute limits"
+  ],
+  "prompt": "Goal: sessions.mjs that creates, looks up, rotates and revokes sessions, storing only a hash of each session id.\nSteps:\n1. create(userId): id = randomBytes(32).toString(\"base64url\"); save under sha256(id) with { userId, createdAt, lastSeen, userAgent }; return the raw id for the cookie only.\n2. lookup(id): hash, load, reject when idle over 30 minutes or older than 7 days; refresh lastSeen at most once a minute.\n3. rotate(oldId): new id, same data, old row deleted; call it on login, password change and role increase.\n4. revoke(id) on logout; revokeAll(userId) after password reset and for a \"log out other devices\" button.\n5. Cookie: sid=<id>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age equal to the absolute limit; clear with Max-Age=0.\n6. Delete expired rows from an unref timer every 10 minutes.\nQuality bar:\n- A leaked database dump holds no usable session ids.\n- Session rows hold ids and flags, never passwords or tokens.\n- Each lookup is one keyed read.\nPitfalls:\n- Keeping the pre login id after login (session fixation).\n- Sliding expiry with no absolute cap.\n- Memory only sessions that silently log everyone out on restart.\nVerify:\n- [ ] The stored key is a hash.\n- [ ] Idle and absolute expiry both have tests.\n- [ ] Login and password change rotate the id.\n- [ ] revokeAll ends other devices.\nOutput: sessions.mjs, cookie helpers in auth.mjs, test/sessions.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "sec.weak-crypto",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "adicionar sair de todos os dispositivos e expirar sessao inativa",
+      "output": "hashed session ids, 30 min idle and 7 day cap, rotate on login, revokeAll(userId)"
+    }
+  ],
+  "size": 397,
+  "version": 1
+}

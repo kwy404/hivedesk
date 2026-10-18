@@ -1,0 +1,41 @@
+{
+  "id": "mobile-deep-links-app-links",
+  "title": "Deep links, verified app links and custom URL schemes",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "deep links",
+    "app links",
+    "universal links",
+    "url scheme",
+    "mobile app",
+    "well-known",
+    "open in app",
+    "routing",
+    "share link"
+  ],
+  "when": "Links shared by email or chat should open a specific screen inside the installed app, or fall back to the website when the app is missing.",
+  "inputs": [
+    "link domain",
+    "app id and signing certificate fingerprint",
+    "screens that can be linked"
+  ],
+  "prompt": "Goal: https links on your domain open the matching screen in the app, verified by files on the domain, with the website as the fallback.\nSteps:\n1. One path scheme for web and app: https://example.com/orders/123 maps to route orders/:id.\n2. Host /.well-known/assetlinks.json with the package name and the SHA256 fingerprint of the release signing certificate.\n3. Host /.well-known/apple-app-site-association (JSON, no extension, no redirects) with appIDs and paths.\n4. In the native projects add the intent filter with autoVerify=\"true\" for the host, and the Associated Domains entry applinks:example.com.\n5. In app code: App.addListener(\"appUrlOpen\", (e) => router.go(new URL(e.url).pathname)); also read the launch URL with App.getLaunchUrl() on cold start.\n6. Validate every incoming path against the route table; unknown paths go to home, and never run actions (pay, delete) straight from a link.\n7. Custom schemes (fieldnotes://) are a fallback only; any app can claim them.\nQuality bar:\n- The same link works on the website when the app is not installed.\n- Cold start and warm start both land on the right screen.\nPitfalls:\n- Using the debug certificate fingerprint, so verification fails in the store build.\n- Redirects on the well-known files.\nVerify:\n- [ ] Both well-known files parse as JSON.\n- [ ] appUrlOpen and getLaunchUrl both route.\n- [ ] Unknown paths fall back to home.\nOutput: .well-known/assetlinks.json, .well-known/apple-app-site-association, deeplinks.js and README steps.",
+  "checks": [
+    "json.valid",
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quero que o link do pedido abra direto no app",
+      "output": "assetlinks.json and site association file, appUrlOpen router with path whitelist, web fallback"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

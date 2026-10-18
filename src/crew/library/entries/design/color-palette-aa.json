@@ -1,0 +1,39 @@
+{
+  "id": "color-palette-aa",
+  "title": "Color palette with WCAG AA contrast",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "color",
+    "palette",
+    "colors",
+    "contrast",
+    "wcag",
+    "accessible colors",
+    "color scheme",
+    "theme colors"
+  ],
+  "when": "The user wants a color palette, color scheme or theme colors for a page or app, with text that stays readable.",
+  "inputs": [
+    "mood or brand words",
+    "any color the user already has",
+    "light, dark or both"
+  ],
+  "prompt": "Goal: A small named palette where every text and background pair in use reaches WCAG AA: 4.5 to 1 for text, 3 to 1 for large text and UI borders.\nSteps:\n1. Pick roles before hues: background, surface, text, muted text, border, accent, text on accent, success, warning, danger.\n2. Choose one accent hue in three shades: a light tint for sections, the base, and a dark shade for accent text.\n3. Use near neutrals for the bulk (background around #fafaf9, text around #1c1917) instead of pure black on white.\n4. Compute contrast with the WCAG formula (L1 + 0.05) / (L2 + 0.05) for every pair you use; darken the foreground until it passes.\n5. Test the primary button label on the accent; if white fails, darken the accent or switch to dark text.\n6. Write the palette as custom properties on :root (--color-bg, --color-text, --color-accent) and use only those in rules.\nQuality bar:\n- One accent plus neutrals and three status colors.\n- Muted text passes on both background and surface.\n- Meaning never relies on color alone.\nPitfalls:\n- Light gray hint text at 2.5 to 1.\n- Testing against the page while the text sits on a card surface.\n- Brand color as text on a tint of the same hue.\nVerify:\n- [ ] Each color and background-color pair reaches 4.5 to 1.\n- [ ] Rules read var(--color-*) tokens.\n- [ ] Links are underlined, not only colored.\n- [ ] Pairs and ratios are listed in the reply.\nOutput: The :root palette and the rules that use it in style.css; the pair and ratio list in the reply.",
+  "checks": [
+    "css.contrast",
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "quero uma paleta de cores calma para um site de yoga",
+      "output": "bg #f7f5f2, text #23201c, accent #2f6b5e with white label at about 6.2 to 1, muted #5c5650"
+    }
+  ],
+  "size": 426,
+  "version": 1
+}

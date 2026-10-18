@@ -1,0 +1,39 @@
+{
+  "id": "dark-mode",
+  "title": "Dark mode for an existing site",
+  "category": "practices",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "dark mode",
+    "darkmode",
+    "dark theme",
+    "prefers-color-scheme",
+    "dark palette",
+    "color tokens",
+    "convert to dark",
+    "dark colors"
+  ],
+  "when": "The user wants an existing site or app to get a dark version that follows the system setting, with every component readable in it.",
+  "inputs": [
+    "the current stylesheets",
+    "brand colors to keep"
+  ],
+  "prompt": "Goal: Every hard coded color replaced by semantic tokens, a tuned dark palette applied through prefers-color-scheme, and no component left unreadable.\nSteps:\n1. Audit the CSS for literal colors, including shadows, borders, gradients and inline SVG fills.\n2. Map them to semantic tokens on :root: --bg, --surface, --surface-raised, --text, --muted, --accent, --border, --shadow; replace every literal.\n3. Write dark values inside @media (prefers-color-scheme: dark) { :root { ... } }, plus a [data-theme=\"dark\"] copy if a manual switch exists.\n4. Tune the dark palette: base #121212 to #1e1e1e, raised surfaces lighter instead of shadows, text near #e8e8e8, softer accents.\n5. Fix media: SVG icons use currentColor, logos get a dark variant, photos get a slight brightness reduction, charts get a dark set.\n6. Set color-scheme: light dark on :root so native controls and scrollbars follow.\nQuality bar:\n- Text pairs reach 4.5 to 1 in the dark palette too.\n- Elevation reads through surface lightness.\n- No component keeps a light background by accident.\nPitfalls:\n- A global invert filter.\n- Literal colors left inside components and pseudo elements.\n- Pure white text on pure black that glares.\nVerify:\n- [ ] A prefers-color-scheme dark rule exists.\n- [ ] No literal colors remain outside the token blocks.\n- [ ] Dark text pairs pass contrast.\n- [ ] Any saved theme choice reads storage safely.\nOutput: style.css with the token blocks and components switched to tokens, and a short list of the color mappings.",
+  "checks": [
+    "css.dark-scheme",
+    "css.contrast",
+    "js.storage-guarded",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "adicione modo escuro no meu site",
+      "output": "42 literal colors mapped to 9 tokens, dark palette via prefers-color-scheme, SVG icons on currentColor"
+    }
+  ],
+  "size": 432,
+  "version": 1
+}

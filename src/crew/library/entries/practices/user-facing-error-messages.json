@@ -1,0 +1,36 @@
+{
+  "id": "user-facing-error-messages",
+  "title": "Write user facing error messages",
+  "category": "practices",
+  "roles": [
+    "writer",
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "error messages",
+    "error copy",
+    "validation messages",
+    "ux writing",
+    "form errors",
+    "empty state",
+    "friendly errors"
+  ],
+  "when": "The app shows raw errors, vague text like \"Something went wrong\", or the user wants clearer error and validation messages.",
+  "inputs": [
+    "the error cases",
+    "where each message appears (field, banner, toast, CLI)"
+  ],
+  "prompt": "Goal: Each message says what happened, why if useful, and what to do next, in plain words placed where the user is looking.\nSteps:\n1. List each failure the user can hit and the action that fixes it.\n2. Write the pattern: what happened plus next step (\"Card declined. Try another card or contact your bank.\").\n3. Field errors sit under the field, name the rule (\"Use at least 8 characters\"), and connect with aria-describedby.\n4. Network failures offer a Retry button and keep what the user typed.\n5. Keep codes and stack traces out of the message; show a short reference id when support needs one.\n6. Announce errors in a role=\"alert\" region or move focus to an error summary after submit.\nQuality bar:\n- No blame (\"you entered an invalid value\").\n- Messages under about 20 words.\n- Same tone and terms across the app.\nPitfalls:\n- Color alone to signal an error.\n- Clearing the form after an error.\n- Technical words like null, 500 or exception.\nVerify:\n- [ ] Every listed failure has a message with a next step.\n- [ ] Field errors are linked to fields.\n- [ ] Errors are announced to assistive tech.\n- [ ] Files parse.\nOutput: A messages table (case, text, location) and the updated strings in the code.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "as mensagens de erro do meu formulário são ruins",
+      "output": "\"Enter a date after today\" under the date field, banner \"Could not save. Check your connection and try again.\" with Retry"
+    }
+  ],
+  "size": 344,
+  "version": 1
+}

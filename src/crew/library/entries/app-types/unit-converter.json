@@ -1,0 +1,52 @@
+{
+  "id": "unit-converter",
+  "title": "Unit converter for length, weight, temperature and more",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "unit converter",
+    "converter",
+    "conversion",
+    "units",
+    "metric",
+    "imperial",
+    "temperature",
+    "length",
+    "weight"
+  ],
+  "when": "The user wants to convert measurements between units such as meters and feet, kilograms and pounds, Celsius and Fahrenheit, liters and gallons.",
+  "inputs": [
+    "categories needed",
+    "default units"
+  ],
+  "prompt": "Goal: Instant, correct conversions with sensible rounding, including temperatures that are not simple factors.\nSteps:\n1. In logic.mjs keep a table per category of factors to a base unit (meter, gram, liter, square meter, meter per second).\n2. Temperature uses functions through Celsius: F = C x 9/5 + 32, K = C + 273.15.\n3. convert(value, from, to, category) pure; format up to 6 significant digits with Intl.NumberFormat.\n4. UI: category select, labeled number input with step=\"any\", from and to selects, a swap button, result in an output with aria-live.\n5. Convert on input; empty or invalid input shows a hint instead of NaN.\n6. Remember last category and units in localStorage guarded; a small table of 1, 5, 10, 100 for the current pair.\n7. test.mjs: 1 mile = 1609.344 m, 100 C = 212 F, -40 C = -40 F, round trips.\nQuality bar:\n- Exact factors from definitions (1 in = 0.0254 m).\n- Units show symbols and names.\n- Swap keeps the value.\nPitfalls:\n- Treating temperature as a factor.\n- Rounding before converting back.\n- Showing 1e-7 style output to users.\nVerify:\n- [ ] Inputs labeled.\n- [ ] Output is live.\n- [ ] Known values tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (unit tables and convert), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.input-types",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "conversor de unidades de medida",
+      "output": "length/weight/temperature/volume, swap button, 6 significant digits"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

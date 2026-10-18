@@ -1,0 +1,39 @@
+{
+  "id": "getting-started-tutorial",
+  "title": "Getting started tutorial",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "tutorial",
+    "getting started",
+    "quickstart",
+    "beginner guide",
+    "walkthrough",
+    "first steps",
+    "onboarding",
+    "how to"
+  ],
+  "when": "The user wants a step by step tutorial that takes a beginner from nothing to a first working result with the project.",
+  "inputs": [
+    "the first meaningful task a user should complete",
+    "requirements",
+    "the audience level"
+  ],
+  "prompt": "Goal: A tutorial where a beginner finishes one real task, seeing a visible result at each step, in about 15 minutes.\nSteps:\n1. Pick one concrete outcome for the reader (\"by the end you will have a running timer page\") and state it first with the time needed.\n2. List prerequisites with exact versions and how to check them (node --version).\n3. Write numbered steps; each has one action, the exact command or code in a fenced block, and what the reader should see.\n4. Introduce one new concept per step and explain it in one or two sentences, linking to reference docs for depth.\n5. Add a checkpoint after risky steps: how to tell it worked and the most common error with its fix.\n6. End with what was built, the full final code or file list, and two or three next steps.\nQuality bar:\n- Every step was run in order from a clean folder.\n- Second person, present tense.\n- No step depends on knowledge not yet given.\nPitfalls:\n- Skipping setup steps that seem obvious.\n- Showing fragments without saying which file they go in.\n- Teaching every option instead of one path.\nVerify:\n- [ ] Starts with a # heading and the outcome.\n- [ ] Code fences are closed and tagged.\n- [ ] Links point to existing files.\n- [ ] Each step shows the expected result.\nOutput: docs/getting-started.md linked from the README.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "escreva um tutorial para iniciantes usarem minha biblioteca",
+      "output": "# Getting started: build a price table in 15 minutes, 6 steps with checkpoints, final code"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

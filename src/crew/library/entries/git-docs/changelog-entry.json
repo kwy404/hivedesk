@@ -1,0 +1,37 @@
+{
+  "id": "changelog-entry",
+  "title": "CHANGELOG entry",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "changelog",
+    "changelog.md",
+    "release",
+    "version",
+    "changes",
+    "keep a changelog",
+    "history"
+  ],
+  "when": "The user wants to record changes for a new version, or start a CHANGELOG for the project.",
+  "inputs": [
+    "the changes since the last version (commits or a list)",
+    "the new version number and date"
+  ],
+  "prompt": "Goal: A CHANGELOG with a dated version heading and changes grouped for humans, newest first.\nSteps:\n1. If the file is new, start with # Changelog and one line saying the format and that the project uses semantic versioning.\n2. Add the new section at the top: ## [1.4.0] - 2026-10-17 (ISO date); keep ## [Unreleased] above it when work continues.\n3. Group changes under ### Added, ### Changed, ### Deprecated, ### Removed, ### Fixed, ### Security, omitting empty groups.\n4. Write each item from the user view in past tense: what changed and why it matters, with an issue number when known.\n5. Put breaking changes first in Changed or Removed with a BREAKING prefix and a short migration hint.\n6. Leave older entries untouched.\nQuality bar:\n- Items are user facing, not commit hashes.\n- The version matches the semantic versioning rule for the changes.\n- Dates use YYYY-MM-DD.\nPitfalls:\n- Pasting the raw commit log.\n- Internal refactors listed as features.\n- Rewriting history of old versions.\nVerify:\n- [ ] Version heading includes a date.\n- [ ] File starts with # Changelog.\n- [ ] Groups use the standard names.\n- [ ] Breaking changes are marked.\nOutput: CHANGELOG.md with the new section at the top.",
+  "checks": [
+    "md.changelog",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "atualize o changelog para a versão 2.1.0",
+      "output": "## [2.1.0] - 2026-10-17 with Added: CSV export, Fixed: totals rounding"
+    }
+  ],
+  "size": 344,
+  "version": 1
+}

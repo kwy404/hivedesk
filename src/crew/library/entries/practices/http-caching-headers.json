@@ -1,0 +1,36 @@
+{
+  "id": "http-caching-headers",
+  "title": "HTTP caching headers",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "caching",
+    "cache-control",
+    "etag",
+    "http cache",
+    "304",
+    "static files",
+    "cache busting",
+    "headers"
+  ],
+  "when": "A Node server serves static files or API responses and the user wants faster repeat loads or sees stale files after updates.",
+  "inputs": [
+    "which responses are static, versioned or dynamic"
+  ],
+  "prompt": "Goal: Correct Cache-Control per kind of response, validators for revalidation, and file names that bust caches on change.\nSteps:\n1. HTML: Cache-Control: no-cache so the browser revalidates every load.\n2. Versioned assets (app.3f9a1c.js or ?v=3): Cache-Control: public, max-age=31536000, immutable.\n3. Unversioned assets: a short max-age (for example 300) plus an ETag or Last-Modified.\n4. Compute ETag from file size and mtime (or a hash) and answer If-None-Match matches with 304 and no body.\n5. Private API data: Cache-Control: private, no-store for user specific or sensitive responses; public read endpoints may use a short max-age.\n6. Add Vary: Accept-Encoding when compressing, and keep the Content-Type on every response.\nQuality bar:\n- Updated HTML is seen on the next load.\n- Assets are downloaded once per version.\n- Personal data is never cached by shared caches.\nPitfalls:\n- Long max-age on unversioned file names.\n- Caching error responses.\n- Sending 304 with a body.\nVerify:\n- [ ] Each route sets Cache-Control.\n- [ ] Conditional requests return 304.\n- [ ] Unknown paths return 404.\n- [ ] Files parse.\nOutput: Updated server code with a cache policy function per path type.",
+  "checks": [
+    "node.http-status",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "meus usuários veem a versão antiga do site depois de atualizar",
+      "output": "HTML no-cache, hashed assets one year immutable, ETag with 304 for the rest"
+    }
+  ],
+  "size": 340,
+  "version": 1
+}

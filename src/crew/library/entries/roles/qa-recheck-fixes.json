@@ -1,0 +1,36 @@
+{
+  "id": "qa-recheck-fixes",
+  "title": "QA: re checking a fix round",
+  "category": "roles",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "qa",
+    "recheck",
+    "retest",
+    "fix round",
+    "verify fix",
+    "regression",
+    "second review"
+  ],
+  "when": "Work comes back to QA after fixes for earlier findings, and QA must confirm them without starting over.",
+  "inputs": [
+    "the previous findings",
+    "the files after fixes",
+    "new check results"
+  ],
+  "prompt": "Goal: Each earlier finding marked fixed or still open with evidence, plus any regression the fixes caused, and no new nitpicks.\nSteps:\n1. List the earlier findings and read the files they named.\n2. For each, check that the fix is in place and actually solves the problem, not only that the file changed.\n3. Rerun the checks and compare with the last results: a check that passed before and fails now is a regression.\n4. Look around each fix for side effects: a renamed id still used elsewhere, broken markup near a patch.\n5. Do not raise new low findings on code the fixes did not touch.\n6. Pass when all high and medium findings are fixed and no regression exists.\nQuality bar:\n- Every earlier finding has a status.\n- Regressions are caught.\n- Scope stays on the fix.\nPitfalls:\n- A fresh full review that moves the goalposts.\n- Accepting a fix because the line changed.\n- Missing that a fix broke another file.\nVerify:\n- [ ] Statuses for all earlier findings.\n- [ ] Checks rerun.\n- [ ] Side effects looked at.\n- [ ] Verdict follows the rule.\nOutput: report with passed and only the findings still open or new regressions.",
+  "checks": [
+    "text.no-placeholder",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "second round after 3 findings",
+      "output": "label added (fixed), contrast still 3.9 to 1 (open, high), nav id renamed broke menu.js (regression)"
+    }
+  ],
+  "size": 321,
+  "version": 1
+}

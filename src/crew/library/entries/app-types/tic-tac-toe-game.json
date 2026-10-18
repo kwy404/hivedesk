@@ -1,0 +1,49 @@
+{
+  "id": "tic-tac-toe-game",
+  "title": "Tic tac toe with an unbeatable or easy computer",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "tic tac toe",
+    "noughts and crosses",
+    "xo game",
+    "board game",
+    "two player",
+    "minimax",
+    "computer opponent"
+  ],
+  "when": "The user wants tic tac toe for two players or against the computer, with a hard mode that never loses and an easy mode for kids.",
+  "inputs": [
+    "modes",
+    "who starts"
+  ],
+  "prompt": "Goal: A tiny game with perfect rules, an opponent that matches the chosen level, and full keyboard play.\nSteps:\n1. Board array of 9 (null, X, O); logic.mjs winner(board) checks 8 lines and returns { player, line }, \"draw\" or null.\n2. Hard: minimax scoring 10 minus depth so it wins fastest and never loses; Easy: random legal move, taking an immediate win 30 percent of the time.\n3. 9 buttons in a CSS grid with aria-label \"Row 1, column 2, empty\"; filled cells disabled; arrow keys move focus.\n4. Modes two players or versus computer; choose who starts; the computer moves after 300 ms with input locked.\n5. Status in aria-live (\"Your turn, X\", \"Draw\"); winning line highlighted with a class.\n6. Scores for X, O and draws in localStorage guarded; New round and Reset.\n7. test.mjs: every line, draw, hard never loses against all human move sequences.\nQuality bar:\n- Hard mode verified exhaustively.\n- Clear whose turn it is.\n- Cells at least 80 px.\nPitfalls:\n- Clicks during the computer delay.\n- Winner check after a draw is declared.\n- X and O shown only by color.\nVerify:\n- [ ] Status live.\n- [ ] Buttons labeled and typed.\n- [ ] Minimax tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (rules and minimax), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo da velha contra o computador",
+      "output": "Easy/Hard select, 3x3 buttons, \"Computer wins\", score X 2 O 1 draws 3"
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

@@ -1,0 +1,42 @@
+{
+  "id": "comment-thread",
+  "title": "Comment thread with replies",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "comments",
+    "comment section",
+    "replies",
+    "discussion",
+    "thread",
+    "reply form",
+    "nested comments"
+  ],
+  "when": "The user wants a comments section under content, with a form to post and replies one level deep.",
+  "inputs": [
+    "existing comments if any",
+    "whether there is a backend",
+    "reply depth"
+  ],
+  "prompt": "Goal: A readable thread with safe rendering of user text, a labeled form, and reply flows that keep focus in place.\nSteps:\n1. <section aria-labelledby=\"comments-title\"> with an h2 Comments (12) and an <ol> of <li><article>: author, <time datetime>, body and a Reply button.\n2. Replies nest in an <ol> inside the parent item, at most two levels; deeper replies show Replying to Ana.\n3. The form: <label for> on the name input and the textarea, a <button type=\"submit\">Post comment</button>, required fields.\n4. New comments are built with createElement and textContent, with white-space: pre-line to keep line breaks.\n5. Reply opens the same form under the comment and focuses the textarea; Cancel returns focus to Reply.\n6. Without a backend, keep comments in localStorage inside try and catch and say they stay on this device.\nQuality bar:\n- Author and time are scannable above the text.\n- Long threads keep readable line length.\n- Posting shows the comment at once.\nPitfalls:\n- Rendering comment text with innerHTML.\n- Unlimited nesting that squeezes text on phones.\n- Pretending to publish without a backend.\nVerify:\n- [ ] Form fields have labels and the form has a submit button.\n- [ ] User text is inserted with textContent.\n- [ ] Reply and Cancel move focus as described.\n- [ ] Storage access is guarded.\nOutput: The comments section markup, comments.css and comments.js.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "html.button-type",
+    "js.safe-dom",
+    "js.storage-guarded",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "secao de comentarios com respostas no blog",
+      "output": "ol of comment articles with Reply, nested replies one level, labeled form Post comment, textContent rendering"
+    }
+  ],
+  "size": 394,
+  "version": 1
+}

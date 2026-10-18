@@ -1,0 +1,49 @@
+{
+  "id": "status-page",
+  "title": "Service status page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "status page",
+    "uptime",
+    "incident",
+    "outage",
+    "monitoring",
+    "service health"
+  ],
+  "when": "The user wants a page that shows whether a service is up and lists incidents.",
+  "inputs": [
+    "components of the service",
+    "current status",
+    "incident history"
+  ],
+  "prompt": "Goal: A calm, clear page that answers is it down and what is being done.\nSteps:\n1. Overall status banner in text and color: All systems working, Partial outage, Major outage.\n2. Components list, each with a status word and an icon that has a text alternative.\n3. Active incident: title, status (Investigating, Fixing, Monitoring, Resolved), timestamped updates with time zone.\n4. History of past incidents for 30 or 90 days.\n5. Load data from status.json so the page can update without editing HTML; handle a failed load.\nQuality bar:\n- Status is never shown by color alone.\n- Times have zones.\n- Works when the main app is down: no shared heavy assets.\nPitfalls:\n- Green banner while an incident is open.\n- Breaking when status.json is invalid.\n- Relative times without dates.\nVerify:\n- [ ] status.json parses.\n- [ ] Fetch errors show a message.\n- [ ] Status words visible.\n- [ ] Scripts parse.\nOutput: status.html, status.json, style.css and status.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "json.valid",
+    "js.syntax",
+    "js.json-parse-guarded",
+    "html.aria-live"
+  ],
+  "examples": [
+    {
+      "input": "página de status do nosso sistema",
+      "output": "banner Partial outage, components API and Site, incident with 3 timed updates"
+    }
+  ],
+  "size": 273,
+  "version": 1
+}

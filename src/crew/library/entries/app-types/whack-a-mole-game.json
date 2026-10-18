@@ -1,0 +1,52 @@
+{
+  "id": "whack-a-mole-game",
+  "title": "Whack a mole reflex game",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "whack a mole",
+    "reflex game",
+    "reaction game",
+    "tap game",
+    "click game",
+    "kids game",
+    "arcade"
+  ],
+  "when": "The user wants a reflex game where moles pop out of holes for short moments and the player hits them for points before time runs out.",
+  "inputs": [
+    "round length",
+    "speed",
+    "theme"
+  ],
+  "prompt": "Goal: A 30 second round that speeds up fairly, scores each hit once and works by tap or number keys.\nSteps:\n1. 3x3 grid of hole buttons; a mole shows in a random hole, never the same twice in a row.\n2. logic.mjs: nextHole(prev, n, rand), hit(state, i) scoring only an up, unhit mole, upTime(elapsed) from 1000 ms to 450 ms, combo bonus.\n3. Round time from timestamps; moles scheduled by a setTimeout chain cleared on stop.\n4. Mole pops with a transform transition, a plain swap under prefers-reduced-motion.\n5. aria-label \"Hole 4, mole\" or \"Hole 4, empty\"; keys 1 to 9 map to the grid like a number pad.\n6. Score, time left and final result in aria-live; high score in localStorage guarded.\n7. test.mjs: no double hit, misses do not score, no repeat hole, upTime curve.\nQuality bar:\n- Hits register on pointerdown for speed.\n- Holes large on phones.\n- End screen shows hits and accuracy.\nPitfalls:\n- Timers left running after the round.\n- Score on a mole already going down.\n- Hover only feedback.\nVerify:\n- [ ] Status live.\n- [ ] Reduced motion rule present.\n- [ ] Rules tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "whack a mole game for a kids party",
+      "output": "30 s round, 3x3 holes, speeds up, keys 1 to 9, high score"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "card-grid",
+  "title": "Responsive card grid with clickable cards",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "cards",
+    "card grid",
+    "card layout",
+    "grid",
+    "tiles",
+    "product cards",
+    "article cards",
+    "listing grid"
+  ],
+  "when": "The user wants a grid of cards for articles, products, services or team members that adapts to any width.",
+  "inputs": [
+    "the items with image, title, text and link",
+    "how many columns at most"
+  ],
+  "prompt": "Goal: A fluid grid of equal height cards where the whole card is clickable through one real link.\nSteps:\n1. <ul class=\"cards\"> of <li><article> with an img (alt, width, height, aspect-ratio: 16 / 9, object-fit: cover), an h3 with the one link, a short paragraph and meta.\n2. Grid: grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)) with a gap of 1.5rem.\n3. Whole card click: the heading link gets ::after with position: absolute; inset: 0, the article is position: relative; secondary links sit above with z-index.\n4. Equal heights: the article is display: flex with flex-direction: column, and the meta row uses margin-top: auto.\n5. Images after the first row get loading=\"lazy\"; show focus with .card:focus-within.\nQuality bar:\n- Titles clamp at two lines, text at three.\n- Every card has the same parts in the same order.\n- Hover and focus look the same.\nPitfalls:\n- Wrapping the whole card in a link, which makes screen readers read everything as one link.\n- Cards of different heights in one row.\n- Images without dimensions shifting the grid.\nVerify:\n- [ ] Each card has one link with clear text.\n- [ ] Images have alt, width and height.\n- [ ] One column at 375 px.\n- [ ] Focus shows on the whole card.\nOutput: Grid markup, cards.css, and a render script only when cards come from data.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.lazy-images",
+    "html.link-text",
+    "css.media-query",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "grade de cards dos servicos com imagem e link",
+      "output": "auto-fill grid of six article cards, stretched heading link, equal heights, focus-within outline"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "collision-aabb-circle",
+  "title": "Collision detection with boxes and circles",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "collision detection",
+    "aabb",
+    "bounding box",
+    "circle collision",
+    "hitbox",
+    "overlap",
+    "collision response",
+    "spatial grid",
+    "game"
+  ],
+  "when": "Game objects must detect overlaps, such as player against enemies or bullets against walls, using axis aligned boxes and circles, and resolve them without tunneling or sticking.",
+  "inputs": [
+    "shapes of the objects",
+    "how many objects at once"
+  ],
+  "prompt": "Goal: Correct, cheap overlap tests plus a resolution step that separates objects along one axis at a time.\nSteps:\n1. js/collide.js exports pure functions; boxes are { x, y, w, h } from the top left, circles are { x, y, r } from the center.\n2. aabb(a, b) is a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y.\n3. circles(a, b) compares the squared distance dx * dx + dy * dy with (a.r + b.r) squared, no Math.sqrt.\n4. circleBox(c, b) clamps the circle center into the box, then compares that squared distance with r squared.\n5. Moving box against tiles: move on x and fix x overlaps, then move on y and fix y overlaps, zeroing velocity on the blocked axis.\n6. Fast bullets: when speed * dt is larger than the smallest object, split the move into substeps or test the swept segment.\n7. Above about 100 objects, bucket them in a uniform grid of 64 px cells and test only the same and neighbor cells.\nQuality bar:\n- Touching edges do not count as overlap, so a player standing on ground stays stable.\n- Hitboxes are a few pixels smaller than sprites for fairness.\nPitfalls:\n- Mixing center and corner coordinates between modules.\n- Resolving both axes at once, which snags on seams between tiles.\n- Testing every pair every tick, which grows with n squared.\nVerify:\n- [ ] node:test cases: touching, overlapping, containing, far apart, circle near a box corner.\n- [ ] A bullet at 2000 px per second cannot pass a 16 px wall.\nOutput: js/collide.js, js/grid.js and test/collide.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "my bullets go through walls and the player gets stuck on tiles",
+      "output": "aabb, circle and circle box tests, axis separated resolution, substeps, uniform grid, unit tests"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

@@ -1,0 +1,50 @@
+{
+  "id": "brick-breaker-game",
+  "title": "Brick breaker paddle and ball game",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "brick breaker",
+    "bricks",
+    "block breaker",
+    "paddle game",
+    "ball game",
+    "arcade",
+    "canvas game"
+  ],
+  "when": "The user wants the arcade game where a paddle bounces a ball to break rows of bricks, with lives, levels and score.",
+  "inputs": [
+    "levels",
+    "controls",
+    "power ups wanted"
+  ],
+  "prompt": "Goal: Aimable bounces, no tunneling at speed, and levels that are easy to design as data.\nSteps:\n1. Logical canvas 480 by 640 scaled to fit with CSS and devicePixelRatio; requestAnimationFrame loop with dt clamped to 1/30 s.\n2. logic.mjs: update(state, dt, input), circleRect(ball, rect) returning the hit side, bricks with hit points and points.\n3. Bounce angle from where the ball hits the paddle (-60 to 60 degrees); constant speed, a bit faster each level; substeps so it never skips a brick.\n4. Controls: pointer move, Left and Right arrows, Space to launch, P or a hidden tab pauses.\n5. Lives 3, score and level in a text HUD outside the canvas; life lost and level clear in aria-live.\n6. Levels as strings like \"1100110011\"; best score in localStorage guarded.\n7. test.mjs: wall bounce, brick damage, angle range, no tunneling at top speed.\nQuality bar:\n- Controls feel the same at any refresh rate.\n- Ball always visible against the background.\n- Pause is instant.\nPitfalls:\n- Reversing both axes on every brick hit.\n- Ball stuck bouncing horizontally forever.\n- Game logic inside draw code.\nVerify:\n- [ ] Collision tested.\n- [ ] HUD live.\n- [ ] Buttons typed.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, game.js, logic.mjs (physics), levels.js, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a brick breaker game with 3 levels",
+      "output": "paddle by mouse or arrows, 3 lives, bricks with 1 to 3 hits"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

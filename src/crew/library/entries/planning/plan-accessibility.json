@@ -1,0 +1,34 @@
+{
+  "id": "plan-accessibility",
+  "title": "Planning accessibility from the start",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "designer"
+  ],
+  "tags": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "keyboard",
+    "screen reader",
+    "inclusive",
+    "accessible plan"
+  ],
+  "when": "Any job with a user interface, so that accessibility is built into tasks instead of patched after QA.",
+  "inputs": [
+    "the screens or pages planned",
+    "the interactive parts"
+  ],
+  "prompt": "Goal: Accessibility requirements written into each task detail and the criteria, so the first draft already meets WCAG basics.\nSteps:\n1. List interactive parts: forms, menus, dialogs, tabs, custom controls, games.\n2. For each, write the requirement in the owner task: native element first (button, label, details), keyboard path, visible focus, name for screen readers.\n3. Put contrast and sizes into the designer task: 4.5 to 1 for text, 44 px touch targets, focus ring visible, reduced motion respected.\n4. Put content rules into the writer task: alt text per image, link text that makes sense alone, clear error messages.\n5. Add criteria QA can test: everything works with Tab and Enter, labels on every field, one h1 per page.\n6. Attach the matching checks (labels, focus, contrast, aria-live) to the QA task.\nQuality bar:\n- Every interactive part has a keyboard path in its task.\n- Native elements are preferred over ARIA.\n- Criteria include accessibility lines.\nPitfalls:\n- A single \"make it accessible\" task at the end.\n- Divs used as buttons.\n- ARIA added where a native element would do.\nVerify:\n- [ ] Interactive parts listed.\n- [ ] Each owner task has its requirement.\n- [ ] Designer and writer tasks include their rules.\n- [ ] QA criteria test keyboard and labels.\nOutput: Task details and acceptance criteria with accessibility lines; no separate accessibility task.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "formulario de inscricao com etapas",
+      "output": "dev: fieldset per step, labels, focus moves to step heading; designer: focus ring, contrast; qa: Tab through all steps"
+    }
+  ],
+  "size": 394,
+  "version": 1
+}

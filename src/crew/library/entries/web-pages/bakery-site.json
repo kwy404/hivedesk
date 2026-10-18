@@ -1,0 +1,50 @@
+{
+  "id": "bakery-site",
+  "title": "Bakery website",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "bakery",
+    "bread",
+    "pastry",
+    "cakes",
+    "local business",
+    "menu",
+    "opening hours"
+  ],
+  "when": "The user asks for a site for a bakery, patisserie, bread shop or cake maker.",
+  "inputs": [
+    "bakery name",
+    "signature products and prices",
+    "address and opening hours",
+    "how to order"
+  ],
+  "prompt": "Goal: A warm, appetizing site that answers the three questions customers have: what is baked today, when are you open, how do I order.\nSteps:\n1. Open with the bakery name, one line about what makes the baking special, and a button to see the menu or order.\n2. List products in groups (breads, pastries, cakes) with name, a short description and the price in the local currency.\n3. Show the opening hours as a list per day and the address with a tel link and a map link.\n4. Add a custom order section for cakes: what to send (date, size, flavor) and how far ahead to ask.\n5. Use warm neutrals with one deep accent; keep body text dark on light for contrast.\n6. Add LocalBusiness style JSON-LD with name, address, phone and opening hours.\nQuality bar:\n- Prices and hours are easy to scan on a phone.\n- Product names are real bakery items that fit the request.\n- Allergens or dietary notes appear where they matter.\nPitfalls:\n- Beige text on cream backgrounds that fails contrast.\n- Hours hidden in the footer only.\n- Images without alt text describing the item.\nVerify:\n- [ ] Menu groups use headings and lists.\n- [ ] Opening hours list every day, closed days marked.\n- [ ] Phone is a tel link.\n- [ ] JSON-LD parses.\nOutput: index.html and style.css, optional menu section on the same page; structured data in the head.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.json-ld",
+    "html.meta-description",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "crie um site para minha padaria Pao da Vila",
+      "output": "hero \"Fresh bread every morning since 1998\", menu with sourdough and croissants, hours Mon to Sat, order by phone"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

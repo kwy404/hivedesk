@@ -1,0 +1,37 @@
+{
+  "id": "structured-logging",
+  "title": "Structured logging for Node services",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "logging",
+    "logs",
+    "structured logs",
+    "json logs",
+    "logger",
+    "observability",
+    "request id",
+    "log"
+  ],
+  "when": "A server or script logs with scattered console.log calls and the user wants logs that can be searched and filtered.",
+  "inputs": [
+    "the service and its main operations",
+    "where logs go (stdout, file)"
+  ],
+  "prompt": "Goal: One small logger writing one JSON object per line with time, level, message and context, correlated by request id.\nSteps:\n1. Write log.js exporting a logger with debug, info, warn and error that writes JSON.stringify({ time, level, msg, ...fields }) plus newline to stdout (errors to stderr).\n2. Use new Date().toISOString() for time and a stable message string; put variable data in fields, not in msg.\n3. Serialize errors as { name, message, stack, code } since JSON.stringify(err) gives {}.\n4. Create child loggers with bound context: log.child({ requestId, route }) at the start of each request.\n5. Generate requestId with crypto.randomUUID() or read an incoming X-Request-Id, and echo it in the response header.\n6. Log one line per request at the end with status and duration in ms.\nQuality bar:\n- Every line is valid JSON.\n- Messages are constant so they can be grouped.\n- No log call inside tight loops.\nPitfalls:\n- Building messages with template strings that hide fields.\n- Logging whole request bodies.\n- Writing logs with sync file calls per request.\nVerify:\n- [ ] Each log line parses as JSON.\n- [ ] Errors include stack and message.\n- [ ] Request lines carry requestId and duration.\n- [ ] Files parse.\nOutput: log.js and the call sites switched to it.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "quero logs melhores no meu servidor",
+      "output": "log.js writes {\"time\",\"level\":\"info\",\"msg\":\"request done\",\"requestId\",\"status\":200,\"ms\":12}"
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

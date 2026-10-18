@@ -1,0 +1,35 @@
+{
+  "id": "test-plan-web-page",
+  "title": "Test plan for a web page or site",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "test plan",
+    "website testing",
+    "manual testing",
+    "test cases",
+    "qa plan",
+    "page testing",
+    "site qa"
+  ],
+  "when": "Before or after building a page or site, the user wants a written test plan listing what to check, where and how.",
+  "inputs": [
+    "the pages and features",
+    "the acceptance criteria"
+  ],
+  "prompt": "Goal: A concise plan with scope, environments and numbered cases (steps and expected result) over content, layout, links, forms and access.\nSteps:\n1. Scope: pages and features in and out, and the acceptance criteria the cases trace to.\n2. Environments: 320, 375, 768, 1024 and 1440 px; light and dark scheme; keyboard only; 200 percent zoom; current versions of the major engines.\n3. Cases as ID, title, steps, expected: WP-01 Open home at 375 px; no sideways scroll and the h1 visible without scrolling.\n4. Cover content and spelling, navigation and links, images and alt, forms, responsive layout, metadata and link previews, access basics, page weight.\n5. Priority per case: P1 must pass to ship, P2 should, P3 nice; keep P1 under 15.\n6. Leave a result column (pass, fail, blocked, note) for whoever runs it.\nQuality bar:\n- Every case has an observable expected result.\n- Each criterion maps to at least one case.\n- The plan fits two screens.\nPitfalls:\n- Expected results like works fine.\n- One screen width only.\n- No owner or date for the run.\nVerify:\n- [ ] Scope and out of scope listed.\n- [ ] Cases numbered with steps and expected.\n- [ ] Priorities set.\n- [ ] Criteria traced to cases.\nOutput: test-plan.md with Scope, Environments, Cases (a Markdown table) and Results sections.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "escreva um plano de testes para o site da clinica",
+      "output": "22 cases, WP-01 to WP-22, P1 for booking form, phone links and hours, at 5 widths and keyboard"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "localstorage-versioned-state",
+  "title": "localStorage persistence with schema version and migration",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "localstorage",
+    "local storage",
+    "save data",
+    "persistence",
+    "remember settings",
+    "migration",
+    "schema version",
+    "storage"
+  ],
+  "when": "A browser app saves settings or data in localStorage and must survive reloads, storage errors and future changes to its data shape.",
+  "inputs": [
+    "what is saved",
+    "current data shape"
+  ],
+  "prompt": "Goal: One storage module that saves versioned JSON, migrates old shapes step by step, and never crashes on bad or blocked storage.\nSteps:\n1. One key per app (\"myapp:state\") holding { version: 3, data }; KEY and VERSION constants at the top.\n2. load(): in try, read, JSON.parse, migrate, validate; on any failure return defaults and keep the raw string under \"myapp:state:backup\".\n3. Migrations as an ordered map { 1: (d) => ({ ...d, tags: [] }), 2: rename }, applied from stored version + 1 to VERSION.\n4. save(): in try, stringify and setItem; on QuotaExceededError or SecurityError show a quiet notice that data will not persist.\n5. Debounce saves 300 ms, flush on pagehide, and reload on the storage event when another tab changes the key.\n6. Store data only: no functions, DOM nodes or derived values.\nQuality bar:\n- Old saved data survives app updates.\n- Private mode or a full quota never breaks the app.\n- Saved size stays far under 5 MB.\nPitfalls:\n- Touching localStorage at import time without a guard.\n- Changing the shape without a version bump.\n- Saving on every keystroke.\nVerify:\n- [ ] Every localStorage call is in try and catch.\n- [ ] JSON.parse guarded.\n- [ ] A migration for each old version.\n- [ ] Defaults on failure.\nOutput: js/storage.js exporting load, save and clear, with the migrations and a test for each.",
+  "checks": [
+    "js.syntax",
+    "js.storage-guarded",
+    "js.json-parse-guarded"
+  ],
+  "examples": [
+    {
+      "input": "salvar as tarefas no navegador sem perder quando eu mudar o app",
+      "output": "storage.js with version 2, migration adding tags: [], guarded load and save, 300 ms debounce"
+    }
+  ],
+  "size": 381,
+  "version": 1
+}

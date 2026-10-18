@@ -1,0 +1,37 @@
+{
+  "id": "visual-direction",
+  "title": "Visual direction from brand personality",
+  "category": "design",
+  "roles": [
+    "designer",
+    "mel"
+  ],
+  "tags": [
+    "visual style",
+    "look and feel",
+    "brand personality",
+    "mood board",
+    "aesthetic",
+    "style direction",
+    "vibe"
+  ],
+  "when": "The user describes a feeling (playful, premium, trustworthy, rustic) and wants it turned into concrete visual choices before building.",
+  "inputs": [
+    "audience",
+    "three personality words",
+    "what the brand must not feel like"
+  ],
+  "prompt": "Goal: A one page direction that maps three personality words to concrete color, type, shape, imagery and motion values.\nSteps:\n1. Collect the audience, three personality words and one anti word (not childish, not corporate).\n2. Translate each word into decisions: premium means generous space, serif headings, a deep neutral with one rich accent; playful means round radius, saturated accent, short bouncy motion.\n3. Fix the decisions as values: two or three hex colors, the font stacks, radius and shadow level, image style (people photos, flat illustration, none).\n4. Write do and do not pairs (Do: large photos of real people. Do not: stock icons in circles).\n5. Check accessibility up front: contrast of the chosen pairs, readable sizes, motion that can be reduced.\n6. Style a tiny sample (a hero and one card) with the values to confirm it reads right.\nQuality bar:\n- Every word maps to at least two values.\n- Few, consistent choices.\n- The sample passes contrast.\nPitfalls:\n- Mood words with no values attached.\n- Trendy effects that fight the personality.\n- Five fonts for five adjectives.\nVerify:\n- [ ] Words and anti word stated.\n- [ ] Color, type, shape, imagery and motion decided.\n- [ ] Do and do not list present.\n- [ ] Sample uses the values.\nOutput: direction.md starting with a # heading, plus sample.html and style.css for the sample.",
+  "checks": [
+    "md.h1",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "quero um visual rustico e acolhedor para minha pousada",
+      "output": "warm off white, olive accent #4f5d2f, serif headings, soft 8px radius, natural photos, slow fades"
+    }
+  ],
+  "size": 386,
+  "version": 1
+}

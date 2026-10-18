@@ -1,0 +1,38 @@
+{
+  "id": "loading-feedback",
+  "title": "Loading feedback: skeletons, spinners, progress",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "loading",
+    "spinner",
+    "skeleton",
+    "progress bar",
+    "loading state",
+    "busy",
+    "saving",
+    "wait"
+  ],
+  "when": "The user wants to show that something is loading, saving or processing, and must choose a spinner, a skeleton or a progress bar.",
+  "inputs": [
+    "what is waited for and roughly how long",
+    "whether progress is measurable"
+  ],
+  "prompt": "Goal: The right feedback for each wait length, announced to assistive tech, with no layout jump when content arrives.\nSteps:\n1. Pick by wait: under 300 ms nothing; up to 2 s a spinner or busy button; over 2 s a skeleton or determinate bar; over 10 s progress text plus Cancel.\n2. Delay the indicator about 300 ms with setTimeout and clear it on finish so fast loads do not flash.\n3. Skeleton blocks match the final content size, use a muted surface, and any shimmer stops under reduced motion.\n4. Busy button: keep its width, change the label to Saving, set aria-disabled=\"true\" and ignore repeat clicks.\n5. Progress: <progress max=\"100\" value=\"40\"> with a visible percent; without value for unknown length.\n6. Announce start and end in a role=\"status\" region (24 results loaded) and set aria-busy=\"true\" on the region being filled.\nQuality bar:\n- No layout shift when data replaces the skeleton.\n- Errors replace the indicator with a message and Retry.\n- Spinners slow to a static state under reduced motion.\nPitfalls:\n- Full screen blocking spinners for small updates.\n- Endless spinners with no timeout.\n- Skeletons shaped nothing like the result.\nVerify:\n- [ ] A status region announces loading.\n- [ ] The indicator has a show delay.\n- [ ] Animations have a reduced motion rule.\n- [ ] Busy buttons cannot submit twice.\nOutput: Loading styles in style.css and the show, hide and announce logic in the page script.",
+  "checks": [
+    "html.aria-live",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "mostrar carregando enquanto busca os produtos",
+      "output": "skeleton of 6 cards after 300ms, role status says 24 products loaded, Retry on failure"
+    }
+  ],
+  "size": 405,
+  "version": 1
+}

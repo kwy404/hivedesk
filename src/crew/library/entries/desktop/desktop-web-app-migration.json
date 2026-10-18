@@ -1,0 +1,41 @@
+{
+  "id": "desktop-web-app-migration",
+  "title": "Migrating a web app into a desktop window",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "web to desktop",
+    "migrate",
+    "desktop app",
+    "wrap web app",
+    "neutralinojs",
+    "port",
+    "offline",
+    "native features",
+    "desktop version"
+  ],
+  "when": "An existing browser app should become an installable desktop app, keeping one code base and swapping browser only features for native ones where useful.",
+  "inputs": [
+    "current web app structure",
+    "features that need native access",
+    "server parts if any"
+  ],
+  "prompt": "Goal: The same front end runs in the browser and in a Neutralinojs window, with a platform adapter that picks web or native implementations.\nSteps:\n1. Inventory: list uses of localStorage, file inputs, downloads, fetch to own server, routing, service worker and window.open.\n2. Copy the built site into resources/; use relative paths and hash routing because the local server has no rewrite rules.\n3. platform.js exports saveFile, openFile, storage and notify; it checks typeof Neutralino !== \"undefined\" (or window.NL_OS) and picks the native or browser version.\n4. Swap downloads for showSaveDialog plus filesystem.writeFile, file inputs for showOpenDialog, big localStorage data for files in the data folder.\n5. Service workers are not needed for offline in the desktop build; skip registration there.\n6. Server calls stay HTTP; the app must also handle the server being unreachable.\n7. Drop web only parts from the desktop build: install banners and third party scripts.\n8. Keep the browser build passing; run both builds in CI.\nQuality bar:\n- No feature code checks the platform directly; only platform.js does.\n- Data saved in the browser can be imported into the desktop app.\nPitfalls:\n- Absolute \"/\" asset paths that break under the documentRoot.\n- Opening remote pages inside the app window.\nVerify:\n- [ ] Both builds start from the same source.\n- [ ] platform.js is the only Neutralino import site.\n- [ ] neutralino.config.json allows only the used calls.\nOutput: platform.js, neutralino.config.json, resources/ build step and a MIGRATION.md checklist.",
+  "checks": [
+    "neu.config",
+    "js.syntax",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "meu sistema web precisa virar app desktop instalável",
+      "output": "platform.js adapter with web and native versions, relative paths, dialogs for files, MIGRATION.md"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

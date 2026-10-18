@@ -1,0 +1,40 @@
+{
+  "id": "healthcheck-restart-policy",
+  "title": "Health checks and restart policies for services",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "health check",
+    "healthz",
+    "readiness",
+    "liveness",
+    "restart policy",
+    "crash loop",
+    "service recovery",
+    "container"
+  ],
+  "when": "The user wants a crashed or hung service to be restarted automatically, and traffic sent only to instances that are ready to serve.",
+  "inputs": [
+    "service entry file",
+    "dependencies to check",
+    "how it runs (container or systemd)"
+  ],
+  "prompt": "Goal: Separate liveness and readiness endpoints, a health check that uses them, and restart rules that recover crashes without endless loops.\nSteps:\n1. GET /healthz returns 200 {\"status\":\"ok\"} when the process answers; no database call, so slow dependencies never cause restarts.\n2. GET /readyz pings dependencies with short timeouts (under 1 s) and returns 503 naming the failing check when not ready or shutting down.\n3. Both send Cache-Control: no-store, need no auth and skip access logs.\n4. Dockerfile: HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=3 CMD [\"node\", \"healthcheck.mjs\"]; the script fetches /healthz and exits 0 or 1, since slim images may lack curl.\n5. Restart: restart: unless-stopped in compose, or Restart=on-failure and RestartSec=2 in a systemd unit.\n6. Crash loop limit: StartLimitIntervalSec=60 and StartLimitBurst=5 in [Unit]; log the exit reason on crash.\nQuality bar:\n- A killed process serves again within seconds.\n- A dependency outage marks it not ready without restarts.\n- Checks are cheap enough to run every few seconds.\nPitfalls:\n- Liveness that queries the database, so one blip restarts every instance.\n- Restart=always with no start limit, hiding a broken release.\n- Returning 200 before real requests can be served.\nVerify:\n- [ ] /healthz and /readyz return the right codes.\n- [ ] HEALTHCHECK has interval, timeout and retries.\n- [ ] Restart policy and start limits set.\n- [ ] Scripts parse.\nOutput: health routes in server.mjs, healthcheck.mjs, the HEALTHCHECK line and the restart settings.",
+  "checks": [
+    "container.pinned",
+    "js.syntax",
+    "node.http-status"
+  ],
+  "examples": [
+    {
+      "input": "my node api dies sometimes and stays down until I log in",
+      "output": "/healthz and /readyz routes, healthcheck.mjs, HEALTHCHECK every 15s, Restart=on-failure with StartLimitBurst=5"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

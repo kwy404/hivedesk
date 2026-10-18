@@ -1,0 +1,40 @@
+{
+  "id": "style-guide-page",
+  "title": "Living style guide page",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "style guide",
+    "styleguide",
+    "pattern library",
+    "component library",
+    "design system page",
+    "swatches",
+    "ui kit"
+  ],
+  "when": "The user wants one page that shows the design system: colors, type, spacing, buttons, forms and components with their states.",
+  "inputs": [
+    "the site stylesheets and tokens",
+    "the components in use"
+  ],
+  "prompt": "Goal: styleguide.html that renders every token and component from the real stylesheet, so it stays true as the CSS changes.\nSteps:\n1. Link the same tokens.css and style.css the site uses; add only a small styleguide.css for the page frame.\n2. Give each family an h2 section: Colors, Typography, Spacing, Radius and elevation, Buttons, Forms, Components, Motion.\n3. Colors: a swatch per token with name, hex, and its text pair with the contrast ratio; swatch labels in a passing color.\n4. Typography: each scale step as a real sentence with the token name; spacing as bars of each step width.\n5. Components in every state side by side (default, hover via an .is-hover class, focus, disabled, error), with escaped markup in pre and code.\n6. Add a contents nav of anchor links and one usage rule per section (One primary button per view).\nQuality bar:\n- Uses the real classes, never copies of styles.\n- Every state visible without interaction.\n- The page passes the same checks as the site.\nPitfalls:\n- Hard coded swatch colors that drift from the tokens.\n- Unescaped samples that render instead of showing code.\n- A guide nobody can find; link it from the README.\nVerify:\n- [ ] styleguide.html links the site CSS.\n- [ ] Each token family has a section.\n- [ ] Component states are shown.\n- [ ] Code samples are escaped.\nOutput: styleguide.html and styleguide.css next to the site files.",
+  "checks": [
+    "html.doctype",
+    "html.h1",
+    "html.nav",
+    "html.heading-order",
+    "css.contrast",
+    "html.unique-ids"
+  ],
+  "examples": [
+    {
+      "input": "make a style guide page for our components",
+      "output": "styleguide.html with color swatches and ratios, type scale, button states, form states, contents nav"
+    }
+  ],
+  "size": 396,
+  "version": 1
+}

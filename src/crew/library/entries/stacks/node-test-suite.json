@@ -1,0 +1,40 @@
+{
+  "id": "node-test-suite",
+  "title": "Test suite with node:test and node:assert",
+  "category": "stacks",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "test",
+    "tests",
+    "unit test",
+    "node:test",
+    "assert",
+    "testing",
+    "test runner",
+    "regression test",
+    "spec"
+  ],
+  "when": "The user wants tests for a JavaScript project, a test command that needs no installs, or a regression test for a bug fix.",
+  "inputs": [
+    "modules to test",
+    "known bugs or edge cases"
+  ],
+  "prompt": "Goal: Fast, isolated node:test tests that describe behavior, cover edge cases and run with one command.\nSteps:\n1. Files in test/*.test.mjs importing test, describe and hooks from node:test and assert from node:assert/strict.\n2. Test public functions by input and output; name tests as behaviors (\"rejects an empty title\").\n3. Per function: normal case, boundaries (empty, zero, one, max), invalid input with assert.throws or assert.rejects plus a message regex, one test per fixed bug.\n4. Isolate side effects: temp folders from fs.mkdtemp in os.tmpdir() removed in after; t.mock.timers for setTimeout and Date.\n5. Servers listen on port 0; read server.address().port and close in after.\n6. Add \"test\": \"node --test\" to package.json scripts.\nQuality bar:\n- The suite runs in seconds, in any order.\n- Failure messages show expected versus actual.\n- No test needs network or the real home folder.\nPitfalls:\n- Testing private details that change with refactors.\n- Shared mutable fixtures leaking between tests.\n- Forgetting to await async assertions, so failures pass.\nVerify:\n- [ ] Test files match *.test.mjs.\n- [ ] node --test passes.\n- [ ] Edge and error cases for each function.\n- [ ] Temp files and servers cleaned up.\nOutput: test/<module>.test.mjs files and the test script in package.json.",
+  "checks": [
+    "file.test",
+    "js.syntax",
+    "node.esm",
+    "pkg.scripts"
+  ],
+  "examples": [
+    {
+      "input": "escreve testes para minhas funções de carrinho",
+      "output": "test/cart.test.mjs covering add, remove, empty cart, negative quantity throws, discount rounding regression"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

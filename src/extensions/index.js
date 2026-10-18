@@ -7,6 +7,7 @@ import { ThemeStore, generateTheme } from './themes.js';
 import { createExtension } from './create.js';
 import { detectIntent } from './intent.js';
 import { permissionFlag } from '../tools/run.js';
+import { say } from '../crew/say.js';
 
 const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 let flowSeq = 0;
@@ -37,15 +38,14 @@ export default function register(ctx) {
   const runThemeFlow = (prompt) => {
     const requestId = `th_${Date.now().toString(36)}_${++flowSeq}`;
     bus.emit('theme.generating', { requestId, prompt: prompt.slice(0, 300) });
-    hive.chat('mel', `Designing a theme from "${prompt.slice(0, 200)}". I will check the contrast before I show it to you.`);
+    speak(hive, 'mel', 'crew.say.themeStart', { prompt: prompt.slice(0, 200) });
     const done = generateTheme({ scheduler, prompt }).then((r) => {
       bus.emit('theme.generated', { requestId, ...r });
-      const fixed = r.fixes.length ? ` I adjusted ${r.fixes.map((f) => f.key).join(', ')} so the text passes WCAG AA.` : ' The contrast already passed WCAG AA.';
-      hive.chat('mel', `Here is "${r.theme.name}".${fixed} Approve it, edit it or save it in the theme editor.`);
+      speak(hive, 'mel', 'crew.say.themeReady', { name: r.theme.name, fixed: r.fixes.length ? 'yes' : 'no', keys: r.fixes.map((f) => f.key).join(', ') });
       return r;
     }, (err) => {
       bus.emit('theme.failed', { requestId, error: String(err.message || err) });
-      hive.chat('mel', `I could not make that theme: ${err.message}`);
+      speak(hive, 'mel', 'crew.say.themeFailed', { error: String(err.message || err) });
       throw err;
     });
     return { requestId, done };
@@ -101,7 +101,7 @@ export default function register(ctx) {
       const started = startCreate(String(spec.request).trim());
       // The scaffold is written first; the job id is known right after.
       const out = { jobId: null, flow: 'extension', done: started.then((r) => r.finished, () => null) };
-      started.then((r) => { out.jobId = r.jobId; }, (err) => hive.chat('mel', `I could not set up the extension: ${err.message}`));
+      started.then((r) => { out.jobId = r.jobId; }, (err) => speak(hive, 'mel', 'crew.say.extensionFailed', { error: String(err.message || err) }));
       return out;
     }
     return originalCreate(spec);
@@ -114,4 +114,10 @@ export default function register(ctx) {
       host.close();
     }
   };
+}
+
+/** A crew line in the user's language (src/crew/say.js); a host without say() gets the English one. */
+function speak(hive, who, key, params, o = {}) {
+  if (typeof hive?.say === 'function') return hive.say(who, key, params, o);
+  return hive?.chat?.(who, say('en', key, params), undefined, o.channel || 'general', o.jobId);
 }

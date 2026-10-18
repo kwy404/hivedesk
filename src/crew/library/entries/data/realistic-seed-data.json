@@ -1,0 +1,40 @@
+{
+  "id": "realistic-seed-data",
+  "title": "Realistic seed and demo data",
+  "category": "data",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "seed data",
+    "sample data",
+    "demo data",
+    "fake data",
+    "mock data",
+    "test data",
+    "fixtures",
+    "dummy data"
+  ],
+  "when": "An app needs believable demo content, test fixtures, or enough records to see how lists, charts and paging behave.",
+  "inputs": [
+    "entities and relations",
+    "locale",
+    "how many records"
+  ],
+  "prompt": "Goal: Deterministic, varied, plausible records from a seeded script, covering edge cases, with no real people data.\nSteps:\n1. Use a seeded PRNG (mulberry32 with a fixed seed) so every run produces the same data.\n2. Small domain vocabularies for the locale (first names, streets, products with real price ranges).\n3. Realistic distributions: mostly small orders and a few large, weekday peaks, dates over the 90 days before a fixed base date.\n4. Deliberate edge cases: very long names, accents, empty optional fields, zero amounts, values at filter boundaries.\n5. Keep relations valid (every foreign id exists; totals equal their lines); use example.com emails and fictional phone ranges.\n6. Write pretty JSON (or CSV) and note seed and count at the top of the generator.\nQuality bar:\n- Looks real in screenshots without being real.\n- Re-running gives identical files.\n- Volume is configurable (20 for demos, 5 thousand for load).\nPitfalls:\n- Filler text or \"Test User 1\" everywhere.\n- All dates today, hiding sort and grouping bugs.\n- Random ids that break references between files.\nVerify:\n- [ ] Seeded generator with a fixed base date.\n- [ ] Output JSON parses.\n- [ ] References resolve.\n- [ ] Edge case records present.\nOutput: scripts/seed.mjs writing data/seed.json (and optionally data/seed.csv).",
+  "checks": [
+    "js.syntax",
+    "json.valid",
+    "csv.consistent",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "gera dados de exemplo para minha loja: clientes e pedidos",
+      "output": "seed.mjs with mulberry32(42), 50 clientes, 300 pedidos over 90 days, valid customerIds"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

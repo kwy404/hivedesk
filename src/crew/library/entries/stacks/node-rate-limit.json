@@ -1,0 +1,40 @@
+{
+  "id": "node-rate-limit",
+  "title": "Rate limiting for a node:http server",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "rate limit",
+    "throttle",
+    "too many requests",
+    "429",
+    "abuse",
+    "brute force",
+    "api protection",
+    "token bucket",
+    "flood"
+  ],
+  "when": "A Node API or form endpoint needs protection from floods, brute force logins, or a client calling too often.",
+  "inputs": [
+    "routes to protect",
+    "normal request volume"
+  ],
+  "prompt": "Goal: A per client limiter that answers 429 with Retry-After, uses little memory and is tunable per route.\nSteps:\n1. Key by req.socket.remoteAddress; read X-Forwarded-For only when configured to run behind a known proxy.\n2. Token bucket per key: capacity 20, refill 10 per second; keep { tokens, updated } in a Map and refill from elapsed time on each request.\n3. Under one token: 429 with retry-after seconds and JSON { error: \"rate_limited\" }; otherwise take a token and continue.\n4. Stricter buckets for sensitive routes (login: 5 per minute per address and per username); none for static files.\n5. Send RateLimit-Limit and RateLimit-Remaining headers.\n6. Sweep idle keys every minute with an unref timer and cap the Map size; unknown routes still answer 404.\nQuality bar:\n- Normal use never hits the limit.\n- The limiter runs before body parsing, so floods are cheap to reject.\n- Limits live in config.\nPitfalls:\n- Trusting X-Forwarded-For from anyone, letting clients pick their key.\n- Fixed windows that allow double bursts at the edge.\n- A Map that never forgets keys.\nVerify:\n- [ ] 429 responses carry retry-after.\n- [ ] Idle entries are swept.\n- [ ] Login has its own limit.\n- [ ] A 404 fallback remains.\nOutput: ratelimit.mjs exporting createLimiter(options), called first in the server request handler.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.json-content-type"
+  ],
+  "examples": [
+    {
+      "input": "bloquear quem tenta muitas senhas no login",
+      "output": "token bucket per IP and per username on POST /login, 429 with retry-after, idle sweep"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "csv-parse-quoted",
+  "title": "CSV parser that handles quotes and line breaks",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "csv",
+    "parse csv",
+    "csv parser",
+    "import csv",
+    "quoted fields",
+    "delimiter",
+    "comma separated",
+    "read csv"
+  ],
+  "when": "JavaScript code must read CSV text (from a file input, a fetch or Node) where fields can hold commas, quotes or line breaks.",
+  "inputs": [
+    "sample of the CSV",
+    "whether the first row is a header"
+  ],
+  "prompt": "Goal: A small state machine parser following RFC 4180 that returns rows or objects and reports malformed lines by number.\nSteps:\n1. Strip a leading BOM (\\uFEFF) and walk the text character by character with states: field start, unquoted, quoted, quote seen inside quotes.\n2. Inside quotes, \"\" is one literal quote and commas or line breaks are data; a quote closes the field only before a delimiter, a line end or the end.\n3. End rows on \\n, \\r\\n or \\r outside quotes; drop empty trailing lines.\n4. Unknown delimiter: count , ; and tab outside quotes on the first line and take the most frequent.\n5. Header mode: trim header names, make duplicates unique (name, name_2), keep every value as a string.\n6. Collect problems (unclosed quote, wrong column count) as { line, message } instead of throwing; convert types later, per column.\nQuality bar:\n- Round trip with the matching writer keeps data identical.\n- 50 thousand rows parse without freezing; bigger files go to a worker.\n- Error lines refer to the original file.\nPitfalls:\n- split(\"\\n\") then split(\",\"), which breaks on quoted commas and line breaks.\n- Trimming values that carry meaningful spaces.\n- Guessing numbers from strings like 007 or 1,5.\nVerify:\n- [ ] Tests cover quoted commas, doubled quotes, CRLF and a line break inside quotes.\n- [ ] BOM removed.\n- [ ] Column count problems reported with line numbers.\n- [ ] No eval or Function.\nOutput: js/csv.js exporting parseCSV(text, { delimiter, header }) and a test file with the tricky cases.",
+  "checks": [
+    "js.syntax",
+    "js.no-eval",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "meu import de csv quebra quando o endereço tem vírgula",
+      "output": "parseCSV state machine honoring \"Rua A, 10\" quoted fields, doubled quotes and CRLF, with tests"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "empty-state",
+  "title": "Empty state with a next action",
+  "category": "ui-components",
+  "roles": [
+    "designer",
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "empty state",
+    "no results",
+    "nothing here",
+    "zero state",
+    "blank state",
+    "no data",
+    "first use"
+  ],
+  "when": "The user wants what a list, search or dashboard shows when there is nothing in it yet or no result matched.",
+  "inputs": [
+    "which empty case (first use, no results, all done)",
+    "the main action",
+    "help link if any"
+  ],
+  "prompt": "Goal: A short, helpful message in place of the missing content that explains why it is empty and offers one next step.\nSteps:\n1. Choose the case: first use (explain value, primary action), no results (echo the query, offer Clear filters), all done (a short confirmation).\n2. Content: a small optional SVG with aria-hidden=\"true\", an h2 of a few words, one sentence and one primary button or link.\n3. Render it inside the same container the list uses, so the layout stays put.\n4. For searches, put the message in a role=\"status\" region so No results for shoes is announced.\n5. The echoed query is user input: insert it with textContent only.\nQuality bar:\n- Copy is friendly and specific to the screen.\n- The action solves the empty case directly.\n- The illustration stays small.\nPitfalls:\n- A blank area with no message.\n- Blaming the user (You did not add anything).\n- Inserting the search text with innerHTML.\nVerify:\n- [ ] Each empty case has a heading and an action.\n- [ ] Decorative SVG is aria-hidden.\n- [ ] No results are announced.\n- [ ] Query text uses textContent.\nOutput: Empty state markup or a render function, plus its rules in style.css.",
+  "checks": [
+    "html.svg-a11y",
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "tela vazia quando nao tem pedidos ainda",
+      "output": "h2 \"No orders yet\", one line on how orders appear, Create your first product button; search case echoes the query"
+    }
+  ],
+  "size": 329,
+  "version": 1
+}

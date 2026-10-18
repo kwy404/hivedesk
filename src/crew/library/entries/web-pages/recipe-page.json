@@ -1,0 +1,47 @@
+{
+  "id": "recipe-page",
+  "title": "Recipe page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "recipe",
+    "cooking",
+    "ingredients",
+    "food blog",
+    "kitchen",
+    "servings"
+  ],
+  "when": "The user wants a page for one or more recipes with ingredients and steps.",
+  "inputs": [
+    "recipe name",
+    "servings and times",
+    "ingredients with amounts",
+    "steps"
+  ],
+  "prompt": "Goal: A recipe that is easy to follow in a kitchen: amounts first, steps numbered, no scrolling hunt.\nSteps:\n1. Recipe card at the top: name, yield, prep and cook times, a jump to recipe link.\n2. Ingredients as a list with amounts and units; group by part (dough, filling).\n3. Steps as an ordered list, one action per step, with times and temperatures.\n4. Optional servings scaler that multiplies amounts with simple rounding.\n5. Notes for swaps and storage; add Recipe JSON-LD with ingredients and instructions.\nQuality bar:\n- Units are consistent.\n- Steps fit a phone screen.\n- Print styles keep the recipe on one page.\nPitfalls:\n- A long story before the recipe with no jump link.\n- Amounts written only in steps.\n- Scaler that shows 0.333333 cups.\nVerify:\n- [ ] Ingredients list and ordered steps.\n- [ ] JSON-LD parses.\n- [ ] Print styles exist.\n- [ ] One h1.\nOutput: recipe.html, style.css and an optional scaler script.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.json-ld",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "receita de pão de queijo para o blog",
+      "output": "card with yield 30 and times, ingredients grouped, 8 numbered steps, Recipe JSON-LD"
+    }
+  ],
+  "size": 265,
+  "version": 1
+}

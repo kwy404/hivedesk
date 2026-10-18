@@ -1,0 +1,38 @@
+{
+  "id": "troubleshooting-guide",
+  "title": "Troubleshooting guide",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "troubleshooting",
+    "common problems",
+    "errors",
+    "fix issues",
+    "debugging guide",
+    "known issues",
+    "help"
+  ],
+  "when": "The user wants a document that helps users diagnose and fix common errors with a project on their own.",
+  "inputs": [
+    "known errors and their causes",
+    "diagnostic commands"
+  ],
+  "prompt": "Goal: A guide organized by symptom where each entry gives the exact message, the likely cause and the fix in steps.\nSteps:\n1. Start with a quick checks section: versions, a health command, where logs live.\n2. One ### entry per symptom, titled with what the user sees, including the exact error message so search finds it.\n3. Under each: Cause in one or two sentences, then Fix as numbered steps with commands in fenced blocks.\n4. Order entries by frequency; put install and startup problems first.\n5. Add how to collect information for a bug report (version, logs, steps) when nothing helps.\n6. Cross link related entries instead of repeating content.\nQuality bar:\n- Error messages are quoted exactly.\n- Fixes are safe and reversible, with warnings before destructive steps.\n- Each entry stands alone.\nPitfalls:\n- Vague advice like \"check your settings\".\n- Commands that delete data without a warning.\n- Entries for errors that cannot happen anymore.\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Each entry has message, cause and fix.\n- [ ] Code fences are closed.\n- [ ] Local links exist.\nOutput: docs/troubleshooting.md linked from the README.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "documente os erros mais comuns de instalação",
+      "output": "### \"EADDRINUSE: address already in use :::3000\": cause, fix with PORT=3001 or stopping the other process"
+    }
+  ],
+  "size": 328,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "extension-permission-review",
+  "title": "Browser extension permission review",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "browser extension",
+    "extension permissions",
+    "manifest v3",
+    "host permissions",
+    "activetab",
+    "content scripts",
+    "extension security",
+    "store review",
+    "security review"
+  ],
+  "when": "A Manifest V3 browser extension asks for permissions or host access, and each one must be justified and narrowed, and the code checked for paths hostile pages could drive.",
+  "inputs": [
+    "manifest.json",
+    "background and content scripts"
+  ],
+  "prompt": "Goal: Every permission and host pattern has a reason tied to a feature, and message and injection paths cannot be steered by web pages.\nSteps:\n1. Table each entry of permissions, host_permissions and content_scripts matches with the feature needing it; remove entries with none.\n2. Replace broad host access with activeTab plus scripting.executeScript on a user click, or move rare hosts to optional_host_permissions.\n3. Content scripts match only needed sites and treat the page DOM as hostile: write with textContent, never innerHTML.\n4. runtime.onMessage handlers check sender.id and sender.url, refuse unknown message types, and never run message data as code or fetch URLs it carries unchecked.\n5. No remote code: every script ships in the package, no eval, extension_pages CSP at the default or stricter.\n6. Tokens go in storage.session or storage.local only when needed, never page localStorage.\nQuality bar:\n- No <all_urls> unless all sites is the core feature.\n- Each reason is ready for the store review form.\n- web_accessible_resources lists only needed files.\nPitfalls:\n- The tabs permission just to read the active URL (activeTab covers it).\n- Content scripts trusting window.postMessage from the page.\n- A service worker fetching URLs sent by content scripts (an SSRF style relay).\nVerify:\n- [ ] The permission table has a reason per entry.\n- [ ] Host access is narrowed.\n- [ ] Message handlers check sender and type.\n- [ ] No remote code.\nOutput: A narrowed manifest.json and a permission table in SECURITY-AUDIT.md.",
+  "checks": [
+    "ext.manifest-v3",
+    "ext.no-remote-code",
+    "js.no-eval",
+    "js.safe-dom"
+  ],
+  "examples": [
+    {
+      "input": "minha extensao pede acesso a todos os sites, da pra reduzir?",
+      "output": "activeTab plus scripting on click, optional hosts, sender checks in onMessage, permission table"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

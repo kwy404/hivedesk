@@ -1,0 +1,49 @@
+{
+  "id": "blog-post",
+  "title": "Readable blog article page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "article",
+    "blog post",
+    "reading",
+    "typography",
+    "long form",
+    "content"
+  ],
+  "when": "The user wants a single article or blog post page, or a template for posts.",
+  "inputs": [
+    "title",
+    "author and date",
+    "article text with images or code"
+  ],
+  "prompt": "Goal: A comfortable long form reading page with good typography and clear structure.\nSteps:\n1. Article element with h1 title, byline, time element and reading time.\n2. Body column about 65 characters wide, line height 1.6, paragraphs with space between.\n3. Subheadings every few paragraphs; figures with figcaption for images.\n4. Quotes in blockquote, code in pre and code with horizontal scroll inside the block only.\n5. End with author box, related posts and a link back to the blog.\nQuality bar:\n- Readable at 375 px without zoom.\n- Images scale to the column width.\n- Meta description and og tags summarize the post.\nPitfalls:\n- Code blocks that make the whole page scroll sideways.\n- Light gray body text.\n- Sticky bars that cover a third of a phone screen.\nVerify:\n- [ ] One h1, h2 sections without skipped levels.\n- [ ] Images have alt and figcaption where useful.\n- [ ] Meta description present.\n- [ ] Contrast passes.\nOutput: post.html (or the page asked for) and article styles in style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.meta-description",
+    "html.og-tags",
+    "html.heading-order",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "article page for my post about composting",
+      "output": "h1, byline with date, 4 h2 sections, a figure with caption, related posts"
+    }
+  ],
+  "size": 286,
+  "version": 1
+}

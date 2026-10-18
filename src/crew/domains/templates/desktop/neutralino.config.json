@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
+  "applicationId": "com.example.mydesktop",
+  "version": "0.1.0",
+  "defaultMode": "window",
+  "port": 0,
+  "documentRoot": "/resources/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "logging": { "enabled": true, "writeToLogFile": true },
+  "nativeAllowList": ["app.exit", "window.setTitle", "filesystem.readFile", "filesystem.writeFile", "filesystem.createDirectory", "os.getPath", "os.showSaveDialog", "os.showOpenDialog"],
+  "modes": {
+    "window": {
+      "title": "My Desktop App",
+      "width": 960,
+      "height": 640,
+      "minWidth": 480,
+      "minHeight": 360,
+      "center": true,
+      "resizable": true,
+      "exitProcessOnClose": true
+    }
+  },
+  "cli": {
+    "binaryName": "my-desktop-app",
+    "resourcesPath": "/resources/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/resources/js/neutralino.js",
+    "binaryVersion": "6.4.0",
+    "clientVersion": "6.4.0"
+  }
+}

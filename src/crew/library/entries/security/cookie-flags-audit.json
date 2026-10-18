@@ -1,0 +1,40 @@
+{
+  "id": "cookie-flags-audit",
+  "title": "Cookie flags audit",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "backend"
+  ],
+  "tags": [
+    "cookie flags",
+    "httponly",
+    "secure cookie",
+    "samesite",
+    "__host prefix",
+    "set-cookie",
+    "cookie scope",
+    "cookie inventory",
+    "security"
+  ],
+  "when": "Every cookie an app sets should be checked for flags, scope and lifetime, or a cookie is readable by scripts, sent over plain HTTP or shared with subdomains.",
+  "inputs": [
+    "server code",
+    "a running local copy"
+  ],
+  "prompt": "Goal: An inventory of all cookies with purpose and flags, each fixed to the narrowest scope that still works.\nSteps:\n1. List every Set-Cookie and document.cookie use in code, then capture real replies from the app on localhost.\n2. Record per cookie: name, purpose, HttpOnly, Secure, SameSite, Domain, Path, Max-Age or Expires, and whether it holds a secret.\n3. Session and auth cookies: HttpOnly; Secure; SameSite=Lax or Strict; Path=/; no Domain; prefer the __Host- name prefix, which forces Secure, Path=/ and no Domain.\n4. A cookie that truly must go cross site needs SameSite=None with Secure; question the need.\n5. Lifetime: auth cookies end with the server session; long Max-Age only for preferences; logout clears with the same Path and Domain and Max-Age=0.\n6. Values: no personal data, preference cookies hold small enums, and any value the server trusts is signed with HMAC.\nQuality bar:\n- Every cookie has a written purpose; unused ones are removed.\n- Secure is relaxed only on http://localhost in development.\n- A test asserts the exact Set-Cookie of the session cookie.\nPitfalls:\n- Domain=.example.com, sharing the cookie with every subdomain.\n- Clearing with another Path, which leaves the cookie alive.\n- Auth tokens set from client script, which can never be HttpOnly.\nVerify:\n- [ ] The inventory covers every cookie.\n- [ ] Auth cookies are HttpOnly, Secure and SameSite.\n- [ ] Session cookies set no Domain.\n- [ ] Logout clears with matching attributes.\nOutput: A cookie inventory in SECURITY-AUDIT.md and a fixed helper in cookies.mjs.",
+  "checks": [
+    "md.h1",
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "confere se os cookies do meu app estao com as flags certas",
+      "output": "inventory table, __Host-sid with HttpOnly Secure SameSite=Lax, no Domain, logout clearing fixed"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

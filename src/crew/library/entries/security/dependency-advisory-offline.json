@@ -1,0 +1,41 @@
+{
+  "id": "dependency-advisory-offline",
+  "title": "Dependency risk review with lockfiles and an offline advisory list",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "devops"
+  ],
+  "tags": [
+    "dependency audit",
+    "lockfile",
+    "vulnerable packages",
+    "advisories",
+    "supply chain",
+    "install scripts",
+    "transitive dependencies",
+    "offline scan",
+    "security"
+  ],
+  "when": "The dependencies of a Node or Python project must be checked for known vulnerable versions and risky traits without online audit services, using lockfiles and a local advisory list.",
+  "inputs": [
+    "lockfile",
+    "a local advisory JSON"
+  ],
+  "prompt": "Goal: An inventory of every installed package and version from the lockfile, matched against local advisories, with risky traits flagged and an upgrade plan.\nSteps:\n1. Read the lockfile, not the manifest: package-lock.json packages entries (version, resolved, integrity), requirements.txt pinned with ==, or poetry.lock; no lockfile is a finding.\n2. Load security/advisories.json: [{ \"package\": \"name\", \"vulnerable\": \"<1.2.5\", \"fixed\": \"1.2.5\", \"id\": \"ADV-1\", \"severity\": \"high\" }], refreshed by the user when online.\n3. Match versions with a small range check (<, <=, >=, exact) and print the path from the top level dependency that pulls each match in.\n4. Flag risky traits: hasInstallScript, resolved URLs outside the usual registry, missing integrity, git or file sources, wildcard versions.\n5. Plan: raise direct deps to fixed versions, override transitive ones only when needed, drop unused deps, regenerate the lockfile, scan again.\nQuality bar:\n- The scanner needs no network.\n- Each finding: package, version, advisory id, fixed version, dependency path.\n- CI can rerun the script.\nPitfalls:\n- Reading package.json ranges, which say nothing about what is installed.\n- Calling no match safe when the list is old; print its date.\n- Major upgrades without running tests.\nVerify:\n- [ ] Every lockfile entry is in the inventory.\n- [ ] The advisory list date is shown.\n- [ ] Install scripts and odd sources are flagged.\n- [ ] The plan names target versions.\nOutput: scripts/dep-scan.mjs, security/advisories.json, findings in SECURITY-AUDIT.md.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "json.valid",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "check my dependencies for known vulnerabilities without internet",
+      "output": "lockfile inventory, match against advisories.json, install script flags, upgrade plan"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

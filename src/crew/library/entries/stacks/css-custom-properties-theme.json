@@ -1,0 +1,43 @@
+{
+  "id": "css-custom-properties-theme",
+  "title": "Theme tokens with CSS custom properties",
+  "category": "stacks",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "css variables",
+    "custom properties",
+    "theme",
+    "theming",
+    "dark mode",
+    "tokens",
+    "colors",
+    "light mode",
+    "theme toggle"
+  ],
+  "when": "The user wants consistent colors and spacing, a theme switch, dark mode, or to recolor a whole site by changing a few values.",
+  "inputs": [
+    "brand colors",
+    "whether a manual theme toggle is wanted"
+  ],
+  "prompt": "Goal: Every color, space, radius and font size comes from tokens on :root, and the dark theme only swaps token values.\nSteps:\n1. Primitives on :root: a small palette (--gray-100 to --gray-900, --brand-500), --space-1 to --space-6 on a 4 px scale, --radius.\n2. Semantic tokens on top: --color-bg, --color-surface, --color-text, --color-muted, --color-accent, --color-focus; components use only these.\n3. Dark values in @media (prefers-color-scheme: dark) { :root:not([data-theme=\"light\"]) { ... } } plus :root[data-theme=\"dark\"]; declare color-scheme: light dark.\n4. Toggle: a button with aria-pressed sets document.documentElement.dataset.theme and saves the choice in localStorage inside try and catch.\n5. Apply the saved theme from a tiny guarded script in head before first paint, so there is no flash.\nQuality bar:\n- No component hardcodes a hex value.\n- Each text and background token pair reaches 4.5 to 1 in both themes.\n- The focus ring stays visible on every surface.\nPitfalls:\n- Pure white on pure black in dark mode, which glares; use near black surfaces.\n- Unguarded storage reads that throw in private windows.\nVerify:\n- [ ] :root declares primitives and semantic tokens.\n- [ ] A dark block exists for both the media query and data-theme.\n- [ ] The toggle has a name and aria-pressed.\nOutput: tokens.css (or the top of style.css) with primitives, semantic tokens and the dark block; theme.js for the toggle.",
+  "checks": [
+    "css.custom-properties",
+    "css.dark-scheme",
+    "css.contrast",
+    "css.focus-visible",
+    "css.braces",
+    "js.storage-guarded",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "add dark mode to my site with a toggle",
+      "output": "semantic tokens on :root, dark overrides under prefers-color-scheme and [data-theme=\"dark\"], toggle button saving the choice"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

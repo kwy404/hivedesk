@@ -1,0 +1,41 @@
+{
+  "id": "csp-static-site-meta",
+  "title": "CSP for static sites with meta tags and hashes",
+  "category": "security",
+  "roles": [
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "csp meta tag",
+    "static site",
+    "script hash",
+    "sha256 hash",
+    "static hosting",
+    "inline script",
+    "http-equiv",
+    "headers file",
+    "security"
+  ],
+  "when": "A static site or single page app is hosted without server code and needs a Content-Security-Policy through a meta tag or the host headers file, including inline scripts that cannot move.",
+  "inputs": [
+    "the HTML pages",
+    "outside origins the pages load",
+    "whether the host supports a headers file"
+  ],
+  "prompt": "Goal: Every HTML page carries a working policy as early as possible, with hashes for any unavoidable inline script and no unsafe-inline.\nSteps:\n1. Place <meta http-equiv=\"Content-Security-Policy\" content=\"...\"> right after <meta charset> at the top of <head>; nothing before it is covered.\n2. Base: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'.\n3. An inline script that must stay (theme before paint) gets a hash: \"sha256-\" + createHash(\"sha256\").update(text).digest(\"base64\") in script-src.\n4. scripts/csp-hashes.mjs reads each .html, hashes inline scripts and rewrites the meta tag, so edits never break it.\n5. Meta ignores frame-ancestors, report-uri and sandbox; if the host reads a headers file (such as _headers), send the policy there too with frame-ancestors 'none'.\n6. A page with extra needs (a map tile server) gets its own policy, not a looser shared one.\nQuality bar:\n- Every .html page has the tag.\n- No unsafe-inline or unsafe-eval.\n- Each page loads with zero console violations.\nPitfalls:\n- A tag placed after scripts that already ran.\n- Hashing text whose whitespace or line endings differ from the file.\n- Expecting the meta tag to stop clickjacking.\nVerify:\n- [ ] The tag comes first in head on every page.\n- [ ] Hashes regenerate from the scripts.\n- [ ] The headers file adds frame-ancestors when supported.\n- [ ] No unsafe keywords.\nOutput: Updated *.html files, scripts/csp-hashes.mjs, optional _headers file.",
+  "checks": [
+    "sec.csp",
+    "html.no-inline-handlers",
+    "html.charset",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "meu site estatico precisa de CSP mas tem um script inline de tema",
+      "output": "meta CSP first in head, sha256 hash for the theme script, hash generator script, _headers with frame-ancestors"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

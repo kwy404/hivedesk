@@ -1,0 +1,39 @@
+{
+  "id": "compose-app-database",
+  "title": "Compose file for an app and a database",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "backend"
+  ],
+  "tags": [
+    "compose",
+    "compose.yaml",
+    "database",
+    "local stack",
+    "named volume",
+    "services",
+    "depends_on",
+    "dev environment"
+  ],
+  "when": "The user wants one command to start the app together with a SQL database for development or a small server, with data that survives restarts.",
+  "inputs": [
+    "app port",
+    "database engine and version",
+    "environment variables"
+  ],
+  "prompt": "Goal: compose.yaml with an app and a database that start in order, keep data in a named volume and read secrets from an env file.\nSteps:\n1. services.db: image pinned to an exact version; env_file: .env; volume db-data on the image's data folder.\n2. db.healthcheck: the image's ready command or a SELECT 1 client call; interval 5s, timeout 3s, retries 10, start_period 10s.\n3. No published database port, or 127.0.0.1:5432:5432 only for local tools.\n4. services.app: build: . ; depends_on: db: condition: service_healthy; DATABASE_URL uses host db (the service name).\n5. app.ports: \"127.0.0.1:3000:3000\"; restart: unless-stopped.\n6. Top level volumes: db-data: {}; optional init SQL mounted read only.\n7. Commit .env.example with names and fake values; .env stays untracked.\n8. README: compose up -d, logs -f app, down keeps data, down -v erases it.\nQuality bar:\n- A fresh clone starts with one command after copying .env.example.\n- The app retries its first connection for a few seconds.\n- Database files never land in the project folder.\nPitfalls:\n- depends_on without a health condition, so the app races the database.\n- localhost inside the app container, which points at the app itself.\n- A database port published on every interface of a server.\n- A floating database tag that jumps a major and cannot read old data.\nVerify:\n- [ ] Every image has an exact tag.\n- [ ] db has a healthcheck and app waits for service_healthy.\n- [ ] No password in compose.yaml.\n- [ ] Named volume declared.\nOutput: compose.yaml, .env.example and a Run locally section in README.md.",
+  "checks": [
+    "file.nonempty",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "quero subir minha app e o banco com um comando so",
+      "output": "compose.yaml with db (pinned image, healthcheck, db-data volume) and app (depends_on service_healthy, 127.0.0.1:3000), .env.example"
+    }
+  ],
+  "size": 448,
+  "version": 1
+}

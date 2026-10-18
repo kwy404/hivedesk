@@ -1,0 +1,38 @@
+{
+  "id": "sitemap-robots",
+  "title": "Sitemap and robots.txt",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "sitemap",
+    "sitemap.xml",
+    "robots.txt",
+    "crawl",
+    "indexing",
+    "search engine",
+    "seo",
+    "noindex"
+  ],
+  "when": "The user wants search engines to find all pages of a site, or to keep some pages out of search results.",
+  "inputs": [
+    "the list of pages",
+    "the final domain if known",
+    "pages to hide"
+  ],
+  "prompt": "Goal: A valid sitemap.xml listing every public page and a robots.txt that points to it and blocks only what should be hidden.\nSteps:\n1. List the public HTML pages; skip drafts, thank you pages and duplicates.\n2. Write sitemap.xml with <?xml version=\"1.0\" encoding=\"UTF-8\"?> and <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">.\n3. Add one <url> per page with an absolute <loc> using the final domain and an optional <lastmod> in YYYY-MM-DD.\n4. Write robots.txt with User-agent: *, Disallow lines only for private paths, and Sitemap: with the absolute sitemap URL.\n5. For pages that must not appear in results, add <meta name=\"robots\" content=\"noindex\"> on the page itself.\n6. If the domain is unknown, use the one the user named and say it must be updated before going live.\nQuality bar:\n- Every listed URL exists as a file.\n- XML is well formed and escaped (&amp;).\n- robots.txt blocks nothing needed for rendering, such as CSS.\nPitfalls:\n- Disallow: / left from a staging setup.\n- Relative URLs in the sitemap.\n- Using robots.txt to hide private data, which only asks crawlers politely.\nVerify:\n- [ ] sitemap.xml lists each public page once.\n- [ ] robots.txt has a Sitemap line.\n- [ ] noindex pages are not in the sitemap.\n- [ ] No placeholder domain is left unexplained.\nOutput: sitemap.xml and robots.txt at the site root, and noindex tags where needed.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "crie sitemap e robots para meu site",
+      "output": "sitemap.xml with 6 URLs on the user domain, robots.txt with Disallow: /drafts/ and the Sitemap line"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

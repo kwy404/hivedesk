@@ -1,0 +1,40 @@
+{
+  "id": "desktop-menus-shortcuts",
+  "title": "Desktop menus and keyboard shortcuts",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "menu bar",
+    "keyboard shortcuts",
+    "accelerators",
+    "ctrl s",
+    "desktop app",
+    "hotkeys",
+    "file menu",
+    "edit menu",
+    "context menu"
+  ],
+  "when": "The desktop app needs a File, Edit, View menu and the standard shortcuts users expect (Ctrl or Cmd plus S, O, N, Z), shown next to each menu item.",
+  "inputs": [
+    "commands of the app",
+    "target OSes"
+  ],
+  "prompt": "Goal: One command table drives the menu bar, the shortcut handler and the shortcut hints, with the right modifier per OS.\nSteps:\n1. commands.js exports [{ id: \"file.save\", label: \"Save\", keys: \"Mod+S\", run }], where Mod means Cmd on mac (NL_OS is \"Darwin\") and Ctrl elsewhere.\n2. Standard set: Mod+N new, Mod+O open, Mod+S save, Mod+Shift+S save as, Mod+Z undo, Mod+Shift+Z redo, Mod+F find, Mod+, settings, F1 help.\n3. Render an in window menu bar: <nav role=\"menubar\"> with <button aria-haspopup=\"menu\"> per top menu and role=\"menuitem\" items showing the key hint at the right.\n4. Arrow keys move inside a menu, Escape closes it and returns focus to its button, Alt (or F10) focuses the bar.\n5. One keydown listener on document matches event.key with ctrlKey or metaKey and shiftKey against the table, calls preventDefault and runs the command.\n6. Skip single key shortcuts while focus is in an input or textarea; Mod shortcuts still work there.\n7. Native OS menus depend on the Neutralinojs version and OS; check the current window API docs before relying on them, and keep the in window menu as the fallback.\nQuality bar:\n- Each shortcut is shown where its command is.\n- No shortcut overrides a system one like Mod+Q or Alt+F4.\nPitfalls:\n- Comparing event.keyCode, which breaks on other keyboard layouts.\n- Two commands bound to the same keys.\nVerify:\n- [ ] All shortcuts come from one table.\n- [ ] The table has no duplicate keys.\n- [ ] Menus work with keyboard only.\nOutput: commands.js, menubar.js and menubar.css.",
+  "checks": [
+    "js.syntax",
+    "html.button-type",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "coloca menu Arquivo e Editar com atalhos Ctrl+S e Ctrl+Z no meu app",
+      "output": "commands.js table with Mod keys, in window menubar with key hints, one keydown dispatcher"
+    }
+  ],
+  "size": 435,
+  "version": 1
+}

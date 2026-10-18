@@ -1,0 +1,39 @@
+{
+  "id": "desktop-command-palette-registry",
+  "title": "Desktop command palette over the command registry",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "command palette",
+    "ctrl shift p",
+    "commands",
+    "desktop app",
+    "power users",
+    "run command",
+    "recent commands",
+    "fuzzy match"
+  ],
+  "when": "A desktop app with many features needs a keyboard launcher that runs any menu command by name, ranks recent ones first and shows each shortcut.",
+  "inputs": [
+    "the command table used by menus",
+    "command groups"
+  ],
+  "prompt": "Goal: Mod+Shift+P opens a palette that lists every registered command with its group and shortcut, ranks by match quality and recent use, and runs the pick.\nSteps:\n1. Reuse the menu registry: each entry { id, title, group, keys, when, run }; the palette, menus and shortcuts read the same list.\n2. \"when\" is a function returning false when the command is not available now (no file open); unavailable commands are hidden.\n3. Score by: exact prefix of the title, then word starts (\"ex pdf\" matches \"Export to PDF\"), then subsequence; ties broken by last used time.\n4. Store the last 20 used ids in the settings file and show them first when the query is empty.\n5. Typing \">\" prefix filters commands; plain text could search open documents if the app has them.\n6. Each row shows title, group in muted text and the key hint; Enter runs, Escape closes and returns focus.\n7. Run the command after closing the palette so dialogs it opens get focus.\n8. Use a <dialog> with a combobox input and a listbox; render rows with textContent.\nQuality bar:\n- Every menu command is reachable from the palette.\n- Opening and filtering feel instant with 300 commands.\nPitfalls:\n- A second copy of the command list that drifts from the menus.\n- Running before the palette closes, which steals focus.\nVerify:\n- [ ] Palette reads the shared registry.\n- [ ] Recent ids persist across runs.\n- [ ] Rows render without innerHTML.\nOutput: palette.js, palette.css and the registry update.",
+  "checks": [
+    "js.safe-dom",
+    "html.dialog-a11y",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "quero um Ctrl+Shift+P pra rodar qualquer comando do meu app desktop",
+      "output": "Palette over shared command registry, when() filter, recent first, word start scoring, key hints"
+    }
+  ],
+  "size": 418,
+  "version": 1
+}

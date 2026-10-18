@@ -1,0 +1,36 @@
+{
+  "id": "not-a-function-error",
+  "title": "Fix \"is not a function\" errors",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "is not a function",
+    "typeerror",
+    "undefined is not a function",
+    "method",
+    "import",
+    "callback",
+    "error",
+    "bug"
+  ],
+  "when": "The error says something \"is not a function\", or a call fails because the value is undefined, a string, or an object.",
+  "inputs": [
+    "the error line",
+    "where the called value comes from"
+  ],
+  "prompt": "Goal: Identify which kind of value is being called and correct its source so the call gets a real function.\nSteps:\n1. Log or inspect typeof and the value right before the call to see what it actually is.\n2. Check imports: a named import of a default export (or the reverse) gives undefined; match export and import shapes.\n3. Check spelling and case of the method (getElementByID vs getElementById) and that the method exists on that type (forEach on a NodeList is fine, map is not).\n4. Check order: a function expression or class used before its definition, or a script loaded before the one that defines it.\n5. Check this: a method passed as a callback loses its object; use an arrow function or bind.\n6. Check shadowing: a variable with the same name as the function (const filter = filter(...)).\nQuality bar:\n- The fix targets the true source of the value.\n- Array-like values are converted explicitly (Array.from).\n- No defensive typeof checks scattered around.\nPitfalls:\n- Adding if (fn) checks that silently skip the call.\n- Calling a promise result as a function instead of awaiting it.\n- Assuming a JSON object has methods.\nVerify:\n- [ ] The call runs with the expected value.\n- [ ] Import and export shapes match.\n- [ ] Script order in HTML is correct.\n- [ ] Files parse.\nOutput: The corrected file or files and a one line cause.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "TypeError: items.map is not a function",
+      "output": "querySelectorAll returns a NodeList: Array.from(items).map(...)"
+    }
+  ],
+  "size": 383,
+  "version": 1
+}

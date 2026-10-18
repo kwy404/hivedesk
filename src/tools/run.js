@@ -46,6 +46,12 @@ export function permissionFlag() {
   return permFlag;
 }
 
+/** The only node flags allowed before the script (node --check app.js, node --test, ...). */
+const NODE_FLAGS = [
+  /^--check$/, /^-c$/, /^--test$/, /^--test-reporter=(spec|tap|dot|junit|lcov)$/, /^--test-name-pattern=[^=]{1,200}$/, /^--enable-source-maps$/,
+  /^--trace-warnings$/, /^--trace-uncaught$/, /^--stack-trace-limit=\d{1,4}$/, /^--max-old-space-size=\d{1,5}$/, /^--input-type=(module|commonjs)$/
+];
+
 function npmCli() {
   const guess = [
     path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js'),
@@ -72,7 +78,10 @@ export function planCommand(command, cwd) {
     const flags = [];
     const perm = permissionFlag();
     if (perm) flags.push(perm, `--allow-fs-read=${cwd}`, `--allow-fs-write=${cwd}`);
-    const bad = rest.find((a) => /^--(allow-|permission|experimental-permission|inspect|require|import|loader|experimental-loader)/.test(a) || a === '-r');
+    // Before the script only an explicit list of harmless flags: no --no-* negations, no permission, loader or inspect flags.
+    const script = rest.findIndex((a) => !a.startsWith('-'));
+    const before = script === -1 ? rest : rest.slice(0, script);
+    const bad = before.find((a) => !NODE_FLAGS.some((re) => re.test(a)));
     if (bad) throw new Error(`node flag not allowed: ${bad}`);
     return { file: process.execPath, args: [...flags, ...rest], label: command };
   }

@@ -1,0 +1,35 @@
+{
+  "id": "shared-mutation-bug",
+  "title": "Fix bugs from shared mutable state",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "mutation",
+    "shared state",
+    "reference",
+    "copy",
+    "immutable",
+    "structuredclone",
+    "unexpected change",
+    "state bug"
+  ],
+  "when": "Changing one object or array unexpectedly changes another, defaults leak between calls, or state updates do not show.",
+  "inputs": [
+    "the code that holds and updates state"
+  ],
+  "prompt": "Goal: Ownership of data is clear, updates create new values where needed, and no two parts share a mutable object by accident.\nSteps:\n1. Find where the object came from: assignment and array or object passing copy references, not values.\n2. Look for in place mutators on shared data: push, splice, sort, reverse, Object.assign onto an existing object, direct property writes.\n3. Return new values instead: [...items, item], items.filter(...), items.toSorted() or [...items].sort(), { ...obj, done: true }.\n4. Use structuredClone(value) for deep copies of plain data; spread is only one level deep.\n5. Create default objects inside the function (function f(opts = {}) or a factory), never as a shared module constant that callers mutate.\n6. Freeze constants with Object.freeze in development to catch accidental writes.\nQuality bar:\n- Each state object has one owner that changes it.\n- Updates are easy to compare (old !== new).\n- Copies are deep only where nesting changes.\nPitfalls:\n- sort() on a prop or a shared list.\n- Deep cloning large data on every keystroke.\n- Assuming const makes an object immutable.\nVerify:\n- [ ] Changing a copy leaves the original intact.\n- [ ] Defaults are fresh per call.\n- [ ] UI updates after state changes.\n- [ ] Files parse.\nOutput: Fixed state handling code and a test that shows the original stays unchanged.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quando edito um item, o outro muda junto",
+      "output": "both rows shared one object from a template; now { ...template } per row and toSorted for display"
+    }
+  ],
+  "size": 385,
+  "version": 1
+}

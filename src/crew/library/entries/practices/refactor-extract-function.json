@@ -1,0 +1,35 @@
+{
+  "id": "refactor-extract-function",
+  "title": "Extract function refactor",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "refactor",
+    "extract function",
+    "long function",
+    "duplication",
+    "helper",
+    "cleanup",
+    "readability"
+  ],
+  "when": "The user asks to refactor a long or repeated block of code into smaller named functions without changing behavior.",
+  "inputs": [
+    "the file and function to refactor",
+    "how the code is run or tested"
+  ],
+  "prompt": "Goal: Same behavior, shorter functions: each extracted helper does one job and has a name that explains it.\nSteps:\n1. Read the whole function and mark blocks that have one purpose, or that appear twice with small differences.\n2. Before moving anything, note the observable behavior: return values, thrown errors, side effects and their order.\n3. Extract one block at a time into a function whose parameters are exactly the values it reads and whose return is what it changes.\n4. Prefer pure helpers: pass data in, return data out; leave DOM, file and network calls in the caller.\n5. Merge near duplicates by turning the differing part into a parameter, never by adding a mode flag with many branches.\n6. After each extraction, run the code or tests and compare the result before the next step.\nQuality bar:\n- Each helper fits on one screen and its name is a verb phrase (parsePrice, buildRow).\n- No helper reaches into outer variables it was not given.\n- The diff changes structure only, no behavior.\nPitfalls:\n- Changing logic while moving it, which hides bugs inside a refactor.\n- Helpers with five boolean parameters.\n- Extracting one line wrappers that add names but no meaning.\nVerify:\n- [ ] Outputs match the original for the same inputs.\n- [ ] Every new function is called at least once.\n- [ ] No unused variables are left in the caller.\n- [ ] The file still parses.\nOutput: The edited source file with the new helpers placed near their caller, plus a short note listing what moved where.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "refatore essa função de 200 linhas do checkout",
+      "output": "checkout() now calls validateCart, computeTotals and renderSummary; same totals for the sample carts"
+    }
+  ],
+  "size": 428,
+  "version": 1
+}

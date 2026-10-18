@@ -1,0 +1,38 @@
+{
+  "id": "git-bisect",
+  "title": "Find the commit that broke it with git bisect",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "qa",
+    "ops"
+  ],
+  "tags": [
+    "git bisect",
+    "bisect",
+    "regression",
+    "which commit",
+    "find bad commit",
+    "binary search",
+    "git"
+  ],
+  "when": "Something worked in an older version and is broken now, and the user wants to find the commit that introduced it.",
+  "inputs": [
+    "a known good version or commit",
+    "a known bad one",
+    "how to test the behavior"
+  ],
+  "prompt": "Goal: The first bad commit identified quickly and reliably, ideally by an automated check, with the cause explained.\nSteps:\n1. Make a reliable test for the bug: a small script that exits 0 when good and 1 when bad (exit 125 to skip untestable commits).\n2. Start: git bisect start, git bisect bad (current), git bisect good v1.2.0 (or a commit hash).\n3. Run it automatically: git bisect run node check-bug.mjs; or test by hand and answer git bisect good or bad at each step.\n4. Keep the test script outside the tracked files or untracked, so checkouts do not change it.\n5. Read the reported first bad commit with git show and explain which change caused it.\n6. Always finish with git bisect reset to return to the original branch.\nQuality bar:\n- The test has a clear pass or fail result.\n- About log2 of the commit count steps.\n- The conclusion names the commit and the line that matters.\nPitfalls:\n- A flaky test that gives wrong answers.\n- Forgetting git bisect reset.\n- Marking build failures as bad instead of skip.\nVerify:\n- [ ] The first bad commit is named.\n- [ ] The cause is explained.\n- [ ] The repository is back on the original branch.\n- [ ] No placeholder text in the report.\nOutput: The check script, the commands used and a short report of the culprit commit.",
+  "checks": [
+    "text.no-placeholder",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "o export parou de funcionar e não sei quando",
+      "output": "check-export.mjs exits 1 on empty file; git bisect run found a1b2c3 \"Refactor csv writer\""
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

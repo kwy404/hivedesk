@@ -1,0 +1,37 @@
+{
+  "id": "persistence-reload-check",
+  "title": "Persistence check after reload",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "persistence",
+    "saved data",
+    "reload",
+    "localstorage",
+    "indexeddb",
+    "data lost",
+    "refresh"
+  ],
+  "when": "An app saves state (notes, cart, settings, progress) and the user wants proof it survives reloads, other tabs, blocked storage and bad data.",
+  "inputs": [
+    "what should persist",
+    "where it is stored"
+  ],
+  "prompt": "Goal: Evidence that all saved state round trips across reload, survives missing or corrupted storage, and is never lost silently.\nSteps:\n1. List what persists and where: each localStorage key or IndexedDB store, file name, and the stored shape.\n2. Round trip: create, edit and delete items, reload, then compare the screen and the stored JSON with what you did.\n3. Two tabs: change data in one; the other updates on the storage event or at least never overwrites newer data.\n4. Corruption: put invalid JSON or an old shape in the key from the console and reload; the app starts with defaults or migrates, keeping a copy.\n5. Blocked or full storage: make setItem throw; the app keeps working and tells the user saving failed.\n6. Cleared storage: the first run state appears with no errors.\nQuality bar:\n- Every persisted field verified after reload.\n- No crash on corrupted or missing data.\n- Save failures are visible.\nPitfalls:\n- One reload with fresh data only.\n- Ignoring the second tab.\n- Saving only on unload, which may never fire.\nVerify:\n- [ ] Persisted state listed.\n- [ ] Round trip passed.\n- [ ] Corruption and blocked storage tested.\n- [ ] Two tab behavior noted.\nOutput: persistence-check.md with the cases and results.",
+  "checks": [
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "minhas notas somem quando recarrego a pagina?",
+      "output": "round trip ok, corrupted notes key crashes at JSON.parse, second tab overwrites; 2 fixes"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

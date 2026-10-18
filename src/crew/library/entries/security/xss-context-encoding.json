@@ -1,0 +1,41 @@
+{
+  "id": "xss-context-encoding",
+  "title": "XSS prevention by output context",
+  "category": "security",
+  "roles": [
+    "security",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "xss",
+    "output encoding",
+    "escape html",
+    "textcontent",
+    "attribute injection",
+    "javascript url",
+    "template escaping",
+    "safe rendering",
+    "security"
+  ],
+  "when": "An app renders user supplied text into HTML on the server or in the browser, and each output context (text, attribute, URL, script data) must be encoded correctly.",
+  "inputs": [
+    "render code",
+    "which fields come from users"
+  ],
+  "prompt": "Goal: Every place untrusted data reaches a page uses the encoder for its context, or a DOM API that needs none.\nSteps:\n1. Browser: text through el.textContent, attributes through el.setAttribute (never on* names), lists built with createElement instead of HTML strings.\n2. Server templates: one escapeHtml(s) mapping & < > \" ' to &amp; &lt; &gt; &quot; &#39;, applied by default; raw output needs an explicit raw() call that reviewers can grep.\n3. Attributes are quoted and escaped; data never goes into on* attributes, style or srcdoc.\n4. URLs: parse with new URL(value, location.origin) and allow only http: and https: before href or src, which blocks javascript: and data: links.\n5. Data for scripts: <script type=\"application/json\" id=\"data\"> with < written as \\u003c, read with JSON.parse(el.textContent).\n6. Rich text: Markdown with raw HTML off, or a strict tag allowlist, backed by a CSP that blocks inline script.\nQuality bar:\n- Encode at output time, not when storing.\n- Payloads <img src=x onerror=alert(1)> and javascript:alert(1) render as text.\n- No innerHTML, insertAdjacentHTML or document.write with user data.\nPitfalls:\n- Double escaping that shows &amp;lt; to users.\n- HTML escaping a value that lands in a JS string or URL.\n- Trusting values because they came from your own database (stored XSS).\nVerify:\n- [ ] Each sink maps to a context and encoder.\n- [ ] Links pass a protocol allowlist.\n- [ ] Payload tests show plain text.\n- [ ] No unsafe DOM sink remains.\nOutput: escape.mjs helpers, fixed render code, test/escape.test.mjs.",
+  "checks": [
+    "js.safe-dom",
+    "js.no-eval",
+    "js.no-document-write",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "usuarios conseguem colocar link javascript: no perfil",
+      "output": "protocol allowlist via new URL, escapeHtml by default in templates, JSON data island, payload tests"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

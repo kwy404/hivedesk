@@ -1,0 +1,42 @@
+{
+  "id": "role-permission-checks",
+  "title": "Role based authorization with permission checks",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "authorization",
+    "roles",
+    "permissions",
+    "rbac",
+    "admin",
+    "deny by default",
+    "403 forbidden",
+    "backend",
+    "user roles"
+  ],
+  "when": "An app has logged in users with different powers (admin, editor, viewer) and every route must check what each role may do, in one place, denying by default.",
+  "inputs": [
+    "roles",
+    "actions per resource",
+    "ownership rules"
+  ],
+  "prompt": "Goal: A permission table and can(user, perm, record) enforced on every route, deny by default.\nSteps:\n1. permissions.mjs: a frozen ROLE_PERMS = { viewer: [\"task:read\"], editor: [\"task:read\", \"task:write\"], admin: [\"*\"] } using noun:verb strings.\n2. Routes declare needs: router.add(\"DELETE\", \"/tasks/:id\", { perm: \"task:delete\" }, handler); startup fails for a route with neither perm nor public: true.\n3. Guard before the handler: no user gives 401, a user lacking the perm gives 403 with code forbidden.\n4. Ownership next to the table: can(user, \"task:write\", task) also needs task.ownerId === user.id unless the role holds task:write:any.\n5. Load the role from the server session or database each request, never from a client field.\n6. Log denials at warn with user id, perm and route.\nQuality bar:\n- Hidden buttons are cosmetic; the server is the real check.\n- A role change applies on the next request.\n- A test walks every route and asserts its perm or public flag.\nPitfalls:\n- if (user.role === \"admin\") sprinkled across handlers.\n- Profile updates that accept role from the body (mass assignment).\n- Failing open when a perm is missing.\nVerify:\n- [ ] Every route has perm or public.\n- [ ] 401 and 403 are used correctly.\n- [ ] Single item writes check ownership.\n- [ ] Tests prove a viewer cannot reach admin routes.\nOutput: permissions.mjs, the route guard in server.mjs, test/permissions.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "admin, editor e leitor com permissoes diferentes na API",
+      "output": "ROLE_PERMS table, perm per route, startup check, ownership rule, 401 vs 403 tests"
+    }
+  ],
+  "size": 402,
+  "version": 1
+}

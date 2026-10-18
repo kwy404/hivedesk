@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'">
+  <meta name="theme-color" content="#1f6f5c">
+  <title>My App</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <h1>My App</h1>
+  </header>
+  <main id="main">
+    <form id="add" class="add">
+      <label for="item">New item</label>
+      <div class="row">
+        <input id="item" name="item" autocomplete="off" required maxlength="200">
+        <button type="submit">Add</button>
+      </div>
+    </form>
+    <ul id="list" class="list" aria-live="polite"></ul>
+    <p id="empty" class="empty">Nothing here yet. Add your first item above.</p>
+  </main>
+</body>
+</html>

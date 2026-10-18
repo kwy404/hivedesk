@@ -1,0 +1,39 @@
+{
+  "id": "deploy-script-gotchas",
+  "title": "Where set -e fails: gotchas in deploy shell scripts",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "deploy script",
+    "errexit",
+    "shellcheck",
+    "ssh remote command",
+    "command substitution",
+    "word splitting",
+    "bash arrays",
+    "bash pitfalls"
+  ],
+  "when": "A deploy or maintenance script already uses strict mode, but the user needs it to stop in the cases errexit misses and to pass arguments safely to remote commands.",
+  "inputs": [
+    "the script",
+    "remote hosts",
+    "destructive steps"
+  ],
+  "prompt": "Goal: A deploy script that stops on every failure, keeps arguments intact locally and over ssh, and passes shellcheck.\nSteps:\n1. Header: set -Eeuo pipefail, shopt -s inherit_errexit (bash 4.4+), trap 'echo \"failed at line $LINENO: $BASH_COMMAND\" >&2' ERR.\n2. Split declaration and assignment: local out; out=\"$(cmd)\". The form local out=\"$(cmd)\" hides the status of cmd.\n3. errexit is off inside if, while, && and || lists and in functions called from them; test critical steps directly: if ! migrate; then echo \"migrate failed\" >&2; exit 1; fi.\n4. Build commands as arrays: args=(--archive --delete \"$src/\" \"$dest\"); rsync \"${args[@]}\".\n5. Remote calls: quote values with printf %q (ssh host \"cd $(printf %q \"$dir\") && ./run.sh\"), or pipe a script: ssh host bash -s -- \"$release\" < remote.sh.\n6. Guard deletes: rm -rf -- \"${target:?target is empty}\"; refuse / and $HOME.\n7. readonly constants; mktemp -d work folders removed by trap EXIT.\n8. shellcheck every script in CI; each disable comment gives a reason.\nQuality bar:\n- Any failing command stops the script and reports its line.\n- Names with spaces survive local and remote calls.\n- shellcheck reports nothing.\nPitfalls:\n- cmd | tee log without pipefail, masking the failure.\n- Testing $? after errexit already exited.\n- ssh host rm -rf $dir, expanded locally and unquoted.\nVerify:\n- [ ] ERR trap prints the line number.\n- [ ] No local x=\"$(...)\" lines.\n- [ ] Commands built with arrays.\n- [ ] Remote values quoted or passed as arguments.\nOutput: scripts/deploy.sh and a shellcheck step in the CI workflow.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "meu script de deploy continuou depois de um erro mesmo com set -e",
+      "output": "deploy.sh with set -Eeuo pipefail, inherit_errexit, ERR trap with line, split local assignments, args arrays, printf %q for ssh, shellcheck in CI"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

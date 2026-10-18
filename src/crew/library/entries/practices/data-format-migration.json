@@ -1,0 +1,37 @@
+{
+  "id": "data-format-migration",
+  "title": "Migrate stored data to a new format",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "data migration",
+    "schema version",
+    "migrate data",
+    "localstorage migration",
+    "json format",
+    "upgrade data",
+    "versioning"
+  ],
+  "when": "The shape of saved data changes (localStorage, IndexedDB, JSON files) and existing users must keep their data.",
+  "inputs": [
+    "the old and new data shapes",
+    "where data is stored"
+  ],
+  "prompt": "Goal: Versioned data with ordered migrations that upgrade old saves safely on load, never losing user data.\nSteps:\n1. Wrap stored data with a version: { version: 2, data: {...} }; treat unversioned data as version 1.\n2. Write one pure function per step: migrations = { 1: (d) => ..., 2: (d) => ... }, each returning the next version.\n3. On load, parse inside try and catch, run migrations in order until the current version, then validate the result.\n4. Back up the raw old value (a key like todos.backup.v1 or a .bak file) before writing the upgraded one.\n5. Write the new version only after the whole chain succeeds; on failure keep the original and report.\n6. Test each step with a saved sample of real old data.\nQuality bar:\n- Migrations are pure and idempotent per step.\n- Future versions newer than the code are left untouched with a warning.\n- No data is dropped without a reason.\nPitfalls:\n- Overwriting data before the migration finished.\n- Reading storage without a guard for blocked access.\n- Changing an old migration after release.\nVerify:\n- [ ] Old samples load and upgrade.\n- [ ] JSON parsing and storage access are guarded.\n- [ ] The backup exists after upgrade.\n- [ ] JSON fixtures are valid.\nOutput: migrate.js with versioned steps, the updated load and save code, and tests with old samples.",
+  "checks": [
+    "js.json-parse-guarded",
+    "js.storage-guarded",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "mudei o formato das tarefas salvas e os dados antigos sumiram",
+      "output": "version field, migration 1 to 2 turns done:boolean into status, backup key kept, tests with a v1 sample"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

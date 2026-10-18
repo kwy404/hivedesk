@@ -66,6 +66,6 @@ export class Approvals {
    * approvals: actions from a guest or a friend's model always wait for the host's own answer.
    */
   approveAll(by = 'auto') {
-    for (const [id, p] of [...this.pending]) if (!p.approval.strict) this.resolve(id, true, 'approval mode turned off', by);
+    for (const [id, p] of [...this.pending]) if (!p.approval.strict && !p.approval.origin && !p.approval.remoteOrigin) this.resolve(id, true, 'approval mode turned off', by);
   }
 }

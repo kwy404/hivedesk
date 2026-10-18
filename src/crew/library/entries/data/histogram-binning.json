@@ -1,0 +1,38 @@
+{
+  "id": "histogram-binning",
+  "title": "Histogram with sensible bins",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "histogram",
+    "distribution",
+    "bins",
+    "frequency",
+    "binning",
+    "buckets",
+    "spread of values",
+    "chart"
+  ],
+  "when": "The user wants to see how values are distributed (ages, response times, prices, scores) rather than compare categories.",
+  "inputs": [
+    "the values",
+    "unit",
+    "any fixed range"
+  ],
+  "prompt": "Goal: Bins with round edges and a defensible count, correct edge handling, and touching bars with labeled ranges.\nSteps:\n1. Bin width by Freedman Diaconis (2 * IQR / cbrt(n)) or Sturges (ceil(log2 n) + 1 bins) for small n; clamp to 5 to 30 bins.\n2. Round the width to 1, 2 or 5 times a power of ten; first edge = Math.floor(min / width) * width.\n3. index = Math.min(Math.floor((v - start) / width), bins - 1), so the max lands in the last bin; bins are [a, b) except the last, [a, b].\n4. One counting pass storing x0, x1, count; values outside a fixed range go to underflow and overflow.\n5. Bars touch (continuous axis), edges are labeled, y starts at zero.\n6. Skewed data: cap at p99 with an overflow bar or offer a log scale; caption with n, bin width and median.\nQuality bar:\n- Edges are round numbers.\n- Counts sum to n.\n- Title and data table fallback present.\nPitfalls:\n- Gaps and category labels as if bins were categories.\n- The max value falling off the end.\n- Too many bins on small samples.\nVerify:\n- [ ] Counts total n.\n- [ ] The max is counted.\n- [ ] Edges are nice numbers.\n- [ ] svg has a title.\nOutput: js/histogram.js exporting bin(values, options) and a render function, with binning tests.",
+  "checks": [
+    "js.syntax",
+    "file.test",
+    "html.svg-a11y"
+  ],
+  "examples": [
+    {
+      "input": "distribuição das idades dos alunos",
+      "output": "bins of 5 years from 15 to 65, touching bars, caption \"n = 412, median 27\""
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

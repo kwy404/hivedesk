@@ -1,0 +1,51 @@
+{
+  "id": "music-playlist-player",
+  "title": "Music playlist player with the audio element",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "music player",
+    "audio player",
+    "playlist",
+    "mp3 player",
+    "songs",
+    "media player",
+    "shuffle"
+  ],
+  "when": "The user wants a music player with a playlist, play and pause, next and previous, seek, volume, shuffle and repeat.",
+  "inputs": [
+    "track list or local files",
+    "look of the player"
+  ],
+  "prompt": "Goal: A keyboard friendly player with correct shuffle and repeat behavior built on one audio element.\nSteps:\n1. One audio element driven by JavaScript; tracks from playlist.json { title, artist, src } parsed in try and catch, or user picked files as object URLs.\n2. Buttons with aria-label: play and pause (aria-pressed), previous, next, shuffle, repeat (off, all, one); labeled range inputs for seek and volume; time \"1:23 / 3:45\".\n3. logic.mjs: nextIndex(i, length, { shuffle, repeat, order }), shuffleOrder(n, rand), formatTime(seconds).\n4. timeupdate moves the seek bar unless the user drags it; ended advances by repeat mode; error skips with a message in role=\"status\".\n5. Playlist as an ol of buttons; the current one has aria-current=\"true\".\n6. Media Session metadata and handlers when available; volume and last track in localStorage guarded.\n7. test.mjs: next and previous in every mode, formatTime.\nQuality bar:\n- Previous restarts the track after 3 seconds in.\n- Shuffle plays each track once per cycle.\n- Controls stay usable at 320 px.\nPitfalls:\n- Calling play() without handling its rejected promise.\n- Seek bar jumping while dragging.\n- Autoplay on load.\nVerify:\n- [ ] Buttons named.\n- [ ] Ranges labeled.\n- [ ] Status for errors.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (queue rules), playlist.json, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "player de musica com playlist",
+      "output": "cover, title, play/pause, prev/next, seek, shuffle, repeat one/all"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

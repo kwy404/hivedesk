@@ -1,0 +1,52 @@
+{
+  "id": "habit-tracker",
+  "title": "Habit tracker with streaks and a weekly grid",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "habit tracker",
+    "habits",
+    "streak",
+    "daily tracker",
+    "routine",
+    "goals",
+    "check in"
+  ],
+  "when": "The user wants to track daily habits, tick them off each day and see current and longest streaks.",
+  "inputs": [
+    "habits to track",
+    "week start day",
+    "history length"
+  ],
+  "prompt": "Goal: One tap check ins on a weekly grid with streaks computed in local dates, correct across months.\nSteps:\n1. Habit { id, name, color, days: [YYYY-MM-DD] }; build keys from getFullYear, getMonth and getDate, never toISOString.\n2. logic.mjs: toggleDay, currentStreak(days, today) counting back from today or from yesterday when today is open, longestStreak, completionRate(days, from, to).\n3. Grid table: rows are habits, columns the last 7 days with weekday th headers; each cell a button with aria-pressed and aria-label \"Read, Tuesday 14, done\".\n4. Add, rename and archive habits; Up and Down buttons to reorder.\n5. Show \"5 day streak\" and the rate per habit as text; optional month heat map.\n6. Persist in localStorage habits.v1 guarded; export JSON.\n7. test.mjs: streak across a month end, a gap resets it, today pending keeps yesterday streak.\nQuality bar:\n- Checking in takes one tap.\n- State is visible without color.\n- Week fits a phone screen.\nPitfalls:\n- UTC date keys that flip near midnight.\n- Streak broken just because today is not ticked yet.\n- Unlabeled icon buttons.\nVerify:\n- [ ] Cells have aria-pressed.\n- [ ] Headers are th.\n- [ ] Data reloads.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (dates and streaks), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.table-headers",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "app para acompanhar meus habitos diarios",
+      "output": "rows Read/Run/Water, 7 day buttons, \"12 day streak\", longest streak"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

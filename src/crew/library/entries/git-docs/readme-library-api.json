@@ -1,0 +1,40 @@
+{
+  "id": "readme-library-api",
+  "title": "Library README with API section",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "library readme",
+    "api section",
+    "module docs",
+    "package docs",
+    "functions",
+    "exports",
+    "readme",
+    "reference"
+  ],
+  "when": "The project is a reusable module or library and the user wants a README that documents its public API.",
+  "inputs": [
+    "the exported functions and classes",
+    "typical use cases"
+  ],
+  "prompt": "Goal: A README with a quick start and an API section that documents every export with signature, parameters, return value and errors.\nSteps:\n1. Intro: what the library solves in one sentence, and the environments it runs in (browser, Node, both).\n2. Quick start: import line and a 5 to 10 line example that does the most common task, with the result shown in a comment.\n3. API section: one ### heading per export with the signature in a fenced block, for example parse(text, options?) => Result.\n4. For each: parameters as a list (name, type, default, meaning), the return value, errors thrown and a tiny example.\n5. Document options objects as tables, and note any side effects (writes files, mutates input).\n6. Add notes on limits, performance and compatibility at the end.\nQuality bar:\n- Signatures match the code exactly.\n- Every export is documented, internal helpers are not.\n- Examples run as written.\nPitfalls:\n- Documenting an old signature.\n- Hiding errors that callers must handle.\n- Examples that depend on undefined variables.\nVerify:\n- [ ] Each export has a ### entry.\n- [ ] Code fences are closed.\n- [ ] Starts with a # heading.\n- [ ] Local links exist.\nOutput: README.md with intro, quick start and API sections.",
+  "checks": [
+    "file.readme",
+    "md.h1",
+    "md.fences",
+    "md.local-links",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "documente a API da minha biblioteca de datas",
+      "output": "### addDays(date, n) => Date, ### format(date, pattern) => string, with params, errors and examples"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

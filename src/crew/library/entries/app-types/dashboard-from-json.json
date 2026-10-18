@@ -1,0 +1,53 @@
+{
+  "id": "dashboard-from-json",
+  "title": "Analytics dashboard from a local JSON file",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "dashboard",
+    "analytics",
+    "admin dashboard",
+    "charts",
+    "kpi",
+    "metrics",
+    "reports",
+    "stats",
+    "data visualization"
+  ],
+  "when": "The user wants a dashboard with KPI cards, charts and a table built from a local JSON data file, filtered by date or category.",
+  "inputs": [
+    "data file and its fields",
+    "the 3 or 4 key numbers",
+    "filters wanted"
+  ],
+  "prompt": "Goal: Correct numbers first: filtered KPIs, readable SVG charts with text equivalents, and a sortable table, all from one data file.\nSteps:\n1. Load data.json with fetch, parse in try and catch, validate rows and count skipped ones; a file input loads another JSON.\n2. logic.mjs: filterRows(rows, { from, to, category }), kpis(rows) (total, average, count, change versus the previous period), groupBy(rows, key), seriesByDay(rows).\n3. KPI cards: label, value via Intl.NumberFormat, change as \"up 12 percent\" in words plus an arrow.\n4. Inline SVG bar and line charts drawn by functions; each svg has role=\"img\" and a title, and the table below holds the same data.\n5. Filters in a form (date inputs, category select) rerun the pure functions; show \"No data for this range\".\n6. Table with th headers, sorting and a total row; grid of 1 column on phones up to 4 on wide screens.\n7. test.mjs with a fixture: filters, kpis, groupBy, change when the previous period is zero.\nQuality bar:\n- Numbers match the table exactly.\n- Axis labels and units are present.\n- Colors pass contrast.\nPitfalls:\n- Percent change dividing by zero.\n- Charts as images without data.\n- Mixing local and UTC dates when grouping by day.\nVerify:\n- [ ] JSON.parse is guarded.\n- [ ] SVGs have titles.\n- [ ] Table uses th.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, charts.js, logic.mjs, data.json, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.table-headers",
+    "html.svg-a11y",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "painel de vendas a partir de um arquivo json",
+      "output": "4 KPI cards, bar by category, line by day, date filter, sortable table"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

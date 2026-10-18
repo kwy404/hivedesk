@@ -1,0 +1,43 @@
+{
+  "id": "site-footer",
+  "title": "Site footer with link groups and contact",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "footer",
+    "site footer",
+    "page bottom",
+    "footer links",
+    "copyright",
+    "social links",
+    "legal links",
+    "contact info"
+  ],
+  "when": "The user wants the footer for a site: grouped links, contact details, social profiles and the legal line.",
+  "inputs": [
+    "link groups and pages",
+    "email, phone and address",
+    "social profiles",
+    "legal pages"
+  ],
+  "prompt": "Goal: A footer that works as a compact sitemap and contact block, readable on any width.\nSteps:\n1. <footer> with a brand block, two or three <nav aria-label=\"...\"> groups each with a short heading and a <ul> of links, and contact in <address>.\n2. Columns: grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)) with a 2rem gap, wrapping without breakpoints.\n3. Email as mailto, phone as tel in international format, street address as text.\n4. Social links carry the network name as text or aria-label, icons aria-hidden; target=\"_blank\" links get rel=\"noopener\".\n5. Bottom row: copyright with the year written in the HTML, then privacy and terms links.\nQuality bar:\n- Group headings use the same words as the main nav.\n- Links are underlined, at 4.5 to 1 contrast, with 44 px touch height.\n- Short: not a copy of every page.\nPitfalls:\n- Icon only social links with no accessible name.\n- Light gray on dark gray that fails contrast.\n- A year printed by script that vanishes when scripts fail.\nVerify:\n- [ ] Link groups are nav elements with distinct labels.\n- [ ] Contact uses address, mailto and tel.\n- [ ] External links have rel=\"noopener\".\n- [ ] Columns stack at 375 px.\nOutput: Footer markup at the end of body and its rules in style.css.",
+  "checks": [
+    "html.nav",
+    "html.link-text",
+    "html.external-rel",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "rodape com links, contato e redes sociais",
+      "output": "footer with Shop and Help link groups, address with tel and mailto, named social links, privacy and terms row"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

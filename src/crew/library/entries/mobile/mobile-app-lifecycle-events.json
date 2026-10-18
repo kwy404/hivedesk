@@ -1,0 +1,39 @@
+{
+  "id": "mobile-app-lifecycle-events",
+  "title": "App lifecycle: pause, resume and background",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev"
+  ],
+  "tags": [
+    "app lifecycle",
+    "pause",
+    "resume",
+    "background",
+    "visibilitychange",
+    "pagehide",
+    "mobile app",
+    "save state",
+    "timers"
+  ],
+  "when": "The phone app loses unsaved input when it goes to the background, timers drift, or data looks stale when the user comes back.",
+  "inputs": [
+    "state that must survive",
+    "timers or live connections in the app"
+  ],
+  "prompt": "Goal: lifecycle.js saves state when the app is hidden, stops wasteful work in the background and refreshes cleanly on return.\nSteps:\n1. Listen to document \"visibilitychange\": when document.visibilityState is \"hidden\" call onPause(), when \"visible\" call onResume().\n2. Also listen to \"pagehide\" for the last save; the phone may kill a hidden app without any further event.\n3. In a Capacitor shell add App.addListener(\"appStateChange\", ({ isActive }) => ...) and the \"pause\" and \"resume\" events.\n4. onPause: write drafts to storage synchronously small or to IndexedDB, stop setInterval timers, close WebSocket connections, pause media.\n5. onResume: compute elapsed time from Date.now() minus the saved pausedAt instead of trusting timers, refetch data older than 5 minutes, reopen connections.\n6. If the app was killed, restore drafts and the last route on next launch.\n7. Never depend on code running while hidden; real background work needs native background tasks or push.\nQuality bar:\n- Switching apps mid typing loses nothing.\n- No timers or sockets run while hidden.\nPitfalls:\n- Saving only in \"beforeunload\" or \"unload\", which phones often skip.\n- Countdown timers that pause in the background and show wrong values.\n- Refetching everything on each resume and draining data.\nVerify:\n- [ ] visibilitychange and pagehide both save.\n- [ ] Timers stop on pause and restart on resume.\n- [ ] Elapsed time uses timestamps.\nOutput: lifecycle.js and the hook calls in app.js.",
+  "checks": [
+    "js.syntax",
+    "js.storage-guarded",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quando troco de app no celular perco o que digitei",
+      "output": "lifecycle.js: save on hidden and pagehide, stop timers, refresh stale data on resume"
+    }
+  ],
+  "size": 421,
+  "version": 1
+}

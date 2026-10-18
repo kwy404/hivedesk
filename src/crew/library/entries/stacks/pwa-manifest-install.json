@@ -1,0 +1,40 @@
+{
+  "id": "pwa-manifest-install",
+  "title": "Installable web app: manifest and install button",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "pwa",
+    "manifest",
+    "install",
+    "installable",
+    "app icon",
+    "home screen",
+    "web app",
+    "standalone",
+    "add to home screen"
+  ],
+  "when": "The user wants the site to be installable as an app, with an icon, a name and its own window.",
+  "inputs": [
+    "app name and short name",
+    "brand colors",
+    "logo"
+  ],
+  "prompt": "Goal: A valid web app manifest, icons, and an install button that appears only when installing is possible.\nSteps:\n1. manifest.json: name, short_name (12 characters or fewer), description, id, start_url \"./\", scope \"./\", display \"standalone\", background_color, theme_color, lang.\n2. Icons: 192 and 512 px PNG plus a 512 px maskable one with the logo inside the central 80 percent, each with sizes, type and purpose.\n3. In head: <link rel=\"manifest\" href=\"manifest.json\"> and <meta name=\"theme-color\">.\n4. Installability also needs HTTPS or localhost and a service worker with a fetch handler.\n5. Install button: on beforeinstallprompt call preventDefault(), keep the event, reveal a hidden <button type=\"button\">; on click call prompt() and await userChoice; hide on appinstalled.\n6. Adjust standalone mode with @media (display-mode: standalone).\nQuality bar:\n- Name and colors match the site.\n- Maskable icons are not cropped.\n- The install button never shows when install is impossible.\nPitfalls:\n- Manifest paths that break in subfolders.\n- A single tiny icon.\n- An install popup on first load.\nVerify:\n- [ ] manifest.json parses with name, icons, start_url and display.\n- [ ] Manifest link in head.\n- [ ] A service worker is registered.\n- [ ] Install button starts hidden.\nOutput: manifest.json, icons/ folder, head links in index.html and install.js.",
+  "checks": [
+    "json.valid",
+    "js.syntax",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "quero que dê para instalar meu app no celular",
+      "output": "manifest.json with name, short_name, standalone, 192/512 and maskable icons, hidden Install button"
+    }
+  ],
+  "size": 388,
+  "version": 1
+}

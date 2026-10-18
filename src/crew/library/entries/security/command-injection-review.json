@@ -1,0 +1,39 @@
+{
+  "id": "command-injection-review",
+  "title": "Command injection review",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "command injection",
+    "shell injection",
+    "child_process",
+    "exec",
+    "subprocess",
+    "shell true",
+    "argument injection",
+    "os command",
+    "security review"
+  ],
+  "when": "Code runs outside programs (child_process in Node, subprocess or os.system in Python) with any value from users, files, URLs or config, and must be reviewed for command injection.",
+  "inputs": [
+    "scripts and modules that run programs"
+  ],
+  "prompt": "Goal: No program is started through a shell with untrusted text, and no untrusted value can turn into an option of the program.\nSteps:\n1. Find sinks: exec, execSync, and spawn or execFile with shell: true in Node; os.system, os.popen and subprocess calls with shell=True or one command string in Python.\n2. Trace every part of each command to its source; values from req, argv, file names, user editable env vars or database rows are untrusted.\n3. Fix with argument arrays and no shell: execFile(\"convert\", [input, output]) in Node, subprocess.run([\"convert\", inp, out], check=True) in Python.\n4. Block argument injection: match values against a strict pattern, put \"--\" before positional values and refuse values starting with \"-\".\n5. Prefer built in calls to shelling out: fs.rm over rm -rf, zlib over gzip, shutil over cp.\n6. Use a known program path, an explicit cwd, a minimal env, a timeout and maxBuffer.\nQuality bar:\n- Each finding lists file, line, source, exact command and fixed call.\n- Allowlists, not lists of bad characters.\n- Tests feed ; id, $(id), | id, a backtick form and --output=/tmp/x.\nPitfalls:\n- Quoting by hand, which breaks differently in each shell.\n- Calling execFile safe when the program is bash -c or cmd /c.\n- File names with spaces or leading dashes.\nVerify:\n- [ ] No shell string is built from a variable.\n- [ ] shell: true and shell=True are gone or justified.\n- [ ] Values cannot become options.\n- [ ] Payload tests show no extra command ran.\nOutput: Findings in SECURITY-AUDIT.md and modules fixed to use argument arrays.",
+  "checks": [
+    "sec.no-shell-input",
+    "js.no-eval",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "meu script chama exec com o nome do arquivo que o usuario manda",
+      "output": "execFile with arg array, -- before file names, pattern check, payload tests"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

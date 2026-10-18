@@ -1,0 +1,50 @@
+{
+  "id": "four-in-a-row-game",
+  "title": "Four in a row disc drop game",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "four in a row",
+    "drop discs",
+    "line up four",
+    "board game",
+    "two player",
+    "strategy game",
+    "computer opponent"
+  ],
+  "when": "The user wants the vertical grid game where players drop discs into columns and try to line up four, against a friend or the computer.",
+  "inputs": [
+    "modes",
+    "computer strength"
+  ],
+  "prompt": "Goal: Correct gravity and win checks with a computer that plays real strategy.\nSteps:\n1. Board of 7 columns by 6 rows; logic.mjs drop(board, col, player) returns the row or -1 when full; winner(board, last) checks 4 directions from the last disc.\n2. Computer: minimax with alpha beta to depth 5, center first ordering, scoring open windows of four; Easy wins or blocks, else random.\n3. 7 column buttons above the grid with aria-label \"Drop in column 3, 2 free\"; arrows choose, Enter drops.\n4. Disc falls with a translateY transition, instant under prefers-reduced-motion.\n5. Status in aria-live; the winning four ringed and named.\n6. Draw when full; scores in localStorage guarded.\n7. test.mjs: horizontal, vertical, both diagonals, full column, computer takes a win and blocks a loss.\nQuality bar:\n- Computer replies within 300 ms.\n- Discs distinguishable by pattern too.\n- Fits 360 px wide.\nPitfalls:\n- Scanning the whole board for wins each move.\n- Dropping into a full column.\n- Clicks during the computer turn.\nVerify:\n- [ ] Wins tested in 4 directions.\n- [ ] Column buttons labeled.\n- [ ] Reduced motion rule present.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (board and search), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de quatro em linha contra o computador",
+      "output": "7x6 grid, column buttons, Hard mode alpha beta, win ring"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

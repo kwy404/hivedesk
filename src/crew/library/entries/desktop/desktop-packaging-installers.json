@@ -1,0 +1,42 @@
+{
+  "id": "desktop-packaging-installers",
+  "title": "Packaging and installers per OS with code signing",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "devops",
+    "ops"
+  ],
+  "tags": [
+    "packaging",
+    "installer",
+    "code signing",
+    "notarization",
+    "desktop app",
+    "release build",
+    "appimage",
+    "distribution",
+    "msi",
+    "dmg"
+  ],
+  "when": "The desktop app works locally and must ship as installable packages for each OS, without scary unknown publisher warnings.",
+  "inputs": [
+    "target OSes and CPU types",
+    "app name, id and version",
+    "signing certificates available"
+  ],
+  "prompt": "Goal: PACKAGING.md plus build scripts that turn neu build output into a signed package per OS, with honest notes on certificates and costs.\nSteps:\n1. Run neu build --release; dist/notes-desk/ holds notes-desk-win_x64.exe, notes-desk-linux_x64, notes-desk-mac_arm64, notes-desk-mac_x64 and resources.neu.\n2. Each package needs the binary for that OS plus resources.neu in the same folder, or use --embed-resources where your version supports it.\n3. win build: wrap in an MSI or setup .exe from an installer tool, signed with a code signing certificate from a certificate authority; unsigned builds trigger warnings.\n4. mac build: a NotesDesk.app bundle with Info.plist (bundle id, version), signed with a Developer ID from a paid developer account, notarized, stapled, shipped in a .dmg.\n5. linux build: an AppImage or a .deb with a .desktop file and icons in 256 and 512 px; mark the binary executable (chmod +x).\n6. Name artifacts notes-desk-1.3.0-linux-x64.AppImage and publish SHA-256 sums.\n7. Signing keys live in the CI secret store, never in the repo.\nQuality bar:\n- Installers put the app in the standard program location and add a launcher entry.\nPitfalls:\n- Shipping only the binary without resources.neu.\n- Thinking a self signed certificate removes OS warnings; it does not.\nVerify:\n- [ ] PACKAGING.md has one section per OS.\n- [ ] Signing needs are stated with who pays.\n- [ ] No keys or passwords in the repo.\nOutput: PACKAGING.md, scripts/package-*.sh and the CI job.",
+  "checks": [
+    "md.sections",
+    "sec.no-secrets",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "como gerar instalador do meu app desktop pra cada sistema?",
+      "output": "PACKAGING.md: signed MSI, notarized .app in .dmg, AppImage, SHA-256 sums, keys in CI secrets"
+    }
+  ],
+  "size": 424,
+  "version": 1
+}

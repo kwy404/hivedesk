@@ -1,0 +1,39 @@
+{
+  "id": "canvas-game-profiling",
+  "title": "Performance profiling of a canvas game",
+  "category": "games",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "game performance",
+    "profiling",
+    "fps",
+    "frame time",
+    "lag",
+    "stutter",
+    "garbage collection",
+    "optimize game",
+    "game"
+  ],
+  "when": "A canvas game stutters, drops frames on phones or slows down over time, and the cause must be measured before anything gets optimized.",
+  "inputs": [
+    "slow scene description",
+    "target device"
+  ],
+  "prompt": "Goal: Find the real bottleneck with numbers and fix it with a before and after measurement.\nSteps:\n1. Add a debug overlay toggled by F3: average and worst frame time of the last 120 frames, update ms, render ms and entity count.\n2. Time update and render with performance.now(), and wrap them in performance.mark and performance.measure so they show in the devtools Performance panel.\n3. Record 10 s of play with 4x CPU throttling; look for long tasks, frequent minor garbage collection and style or layout recalculation.\n4. In the Memory panel take two heap snapshots a minute apart; growing arrays or listeners mean a leak.\n5. Usual fixes in order: no per frame allocation (pools), static layers cached on offscreen canvases, draws batched by fillStyle, no shadowBlur, culling, a lower resolution option.\n6. Touch the DOM HUD only for changed values and never read layout (offsetWidth) inside the loop.\n7. Record results in PERF.md: scene, device, before ms, after ms and what changed.\nQuality bar:\n- At 60 fps the frame has 16.7 ms; update plus render stay under 10 ms on a mid range phone.\n- The worst frame in a 10 s run stays under 33 ms.\nPitfalls:\n- Optimizing by guess without a recording.\n- Comparing runs with devtools open against runs without it.\n- Logging to the console in the loop, which costs time itself.\nVerify:\n- [ ] The overlay shows frame time numbers.\n- [ ] PERF.md lists before and after for every change.\n- [ ] The heap does not grow over 5 minutes of play.\nOutput: js/debug-overlay.js and PERF.md with the measurements.",
+  "checks": [
+    "js.syntax",
+    "js.no-console-log",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "my canvas game lags on phones after a few minutes",
+      "output": "F3 overlay, marks and measures, throttled recording, heap snapshots, ordered fixes, PERF.md"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

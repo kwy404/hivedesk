@@ -1,0 +1,41 @@
+{
+  "id": "personal-data-minimization",
+  "title": "Personal data minimization and privacy by design",
+  "category": "data",
+  "roles": [
+    "architect",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "privacy",
+    "personal data",
+    "pii",
+    "lgpd",
+    "gdpr",
+    "data protection",
+    "retention",
+    "delete my data",
+    "consent"
+  ],
+  "when": "An app or form collects names, emails, phones, locations, health or payment details, or a review asks whether personal data is handled well.",
+  "inputs": [
+    "fields collected",
+    "features that use them",
+    "where data is stored"
+  ],
+  "prompt": "Goal: Collect only what a feature needs, keep it only as long as needed, protect it, and let people export and delete it.\nSteps:\n1. Inventory every personal field: purpose, storage place, who sees it, retention; remove fields without a purpose.\n2. Prefer weaker forms: birth year over birth date, city over address, an age checkbox over a document number.\n3. Mark optional fields and explain next to each required personal field why it is needed.\n4. Keep personal data out of URLs, logs, analytics events and error reports; log ids instead.\n5. Separate personal fields from content in storage and restrict access.\n6. Offer export (JSON) and delete, purge inactive records after a stated period, and write a plain language privacy note.\nQuality bar:\n- Each personal field maps to a feature.\n- Nothing sensitive in query strings or console output.\n- Deletion also covers backups, or says when they expire.\nPitfalls:\n- Collecting everything \"for later\".\n- Pre checked consent boxes.\n- Forgotten copies in browser storage.\nVerify:\n- [ ] A data inventory table exists.\n- [ ] Optional fields marked.\n- [ ] Export and delete paths exist.\n- [ ] No personal data in logs or URLs.\nOutput: docs/privacy-data.md with the inventory and retention rules, plus the matching form and storage changes.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "revisa se meu formulário de inscrição pede dados demais",
+      "output": "inventory table, drop CPF and full birth date, retention 12 months, export and delete buttons"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

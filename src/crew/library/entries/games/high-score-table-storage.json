@@ -1,0 +1,40 @@
+{
+  "id": "high-score-table-storage",
+  "title": "High score table saved with guarded localStorage",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "high score",
+    "leaderboard",
+    "best score",
+    "top ten",
+    "localstorage",
+    "local scores",
+    "score table",
+    "game"
+  ],
+  "when": "A browser game keeps a local top ten with names, scores and dates that must survive reloads, private windows and corrupted saved data.",
+  "inputs": [
+    "score meaning (higher or lower is better)",
+    "name length"
+  ],
+  "prompt": "Goal: A local leaderboard that never crashes the game, whatever sits in storage.\nSteps:\n1. js/scores.js with KEY = \"mygame.scores.v1\" and MAX = 10 entries { name, score, date }, date as an ISO string.\n2. load(): read localStorage.getItem(KEY) and JSON.parse it inside try/catch, returning [] on any failure; keep entries where Number.isFinite(score) and name is a string cut to 12 chars.\n3. qualifies(score) is true when the table is shorter than MAX or the score beats the lowest.\n4. add(entry): insert, sort by score descending then earlier date first, slice to MAX, and save inside try/catch; quota or blocked storage keeps the table in memory only.\n5. Name field: <label> plus <input maxlength=\"12\" autocomplete=\"nickname\">, prefilled with the last name used; render names with textContent only.\n6. Show a <table> with a <caption>, highlight the new row, and announce \"New high score, rank 3\" in an aria-live region.\n7. When the format changes, bump the key to v2 and migrate v1 once.\nQuality bar:\n- Garbage, null or a huge string under the key loads as an empty table.\n- Ties keep the earlier score above.\nPitfalls:\n- innerHTML with a player name, which is an injection hole.\n- Treating local scores as proof in an online contest; anyone can edit them.\n- Writing to storage every frame instead of once at game over.\nVerify:\n- [ ] node:test covers corrupt JSON, ties and the 11th entry being dropped.\n- [ ] With storage blocked the game still runs.\nOutput: js/scores.js, the score table markup and test/scores.test.mjs.",
+  "checks": [
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "js.safe-dom",
+    "html.labels",
+    "html.aria-live",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "salvar ranking com os 10 melhores do jogo",
+      "output": "versioned key, defensive load, sorted top 10, labeled name input, live announcement, tests"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

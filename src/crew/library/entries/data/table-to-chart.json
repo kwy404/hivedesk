@@ -1,0 +1,37 @@
+{
+  "id": "table-to-chart",
+  "title": "Chart generated from an HTML table",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "table to chart",
+    "chart from table",
+    "progressive enhancement",
+    "visualize table",
+    "html table",
+    "graph from data"
+  ],
+  "when": "A page already has a data table, or the content belongs in a table, and the user wants a chart of it without duplicating the numbers.",
+  "inputs": [
+    "the table",
+    "chart type",
+    "which columns to plot"
+  ],
+  "prompt": "Goal: A script that reads a semantic table and renders a matching chart beside it, so the table stays the source and the fallback.\nSteps:\n1. Mark the table: <table data-chart=\"bar\" data-series=\"2,3\"> with <caption>, thead th headers and th scope=\"row\" labels.\n2. Read headers from thead textContent and values per tbody row, preferring a data-value attribute when the cell shows formatted text.\n3. If any value is not finite or rows are missing, skip the chart; the table still works.\n4. Render the chart named by data-chart with the shared chart functions, using the caption as its title.\n5. Insert the chart before the table inside a <figure>, with a toggle button that hides only the visual view, never the table semantics.\n6. Re-render on tbody changes (MutationObserver) and container resizes.\nQuality bar:\n- One source of truth: the table.\n- Works on any table with the attributes.\n- Without scripts the page shows the table alone.\nPitfalls:\n- Parsing formatted numbers (\"R$ 1.200\") directly.\n- Hiding the table with display none, losing the data for screen readers.\n- Charting total rows together with their parts.\nVerify:\n- [ ] Table has caption and th headers.\n- [ ] Numbers come from data-value or a locale parser.\n- [ ] Chart title taken from the caption.\n- [ ] Toggle button has type=\"button\" and aria-pressed.\nOutput: js/table-chart.js enhancing every table[data-chart], plus the table markup.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.table-headers",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "transformar a tabela de resultados do trimestre em gráfico",
+      "output": "table[data-chart=bar] read into bars above it, caption as title, Show table toggle"
+    }
+  ],
+  "size": 402,
+  "version": 1
+}

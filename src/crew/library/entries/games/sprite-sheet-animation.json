@@ -1,0 +1,38 @@
+{
+  "id": "sprite-sheet-animation",
+  "title": "Sprite sheets and frame animation on canvas",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "sprite sheet",
+    "sprites",
+    "animation frames",
+    "spritesheet",
+    "pixel art",
+    "drawimage",
+    "character animation",
+    "game"
+  ],
+  "when": "The game draws characters or effects from a sprite sheet image and needs named animations such as idle, run and jump, each with its own frame rate.",
+  "inputs": [
+    "sheet image and frame size",
+    "animation names"
+  ],
+  "prompt": "Goal: Crisp sprite animation, independent of frame rate, driven by a small JSON description.\nSteps:\n1. assets/hero.json: { \"frameW\": 32, \"frameH\": 32, \"anims\": { \"idle\": { \"row\": 0, \"frames\": 4, \"fps\": 6, \"loop\": true }, \"run\": { \"row\": 1, \"frames\": 6, \"fps\": 12, \"loop\": true }, \"jump\": { \"row\": 2, \"frames\": 3, \"fps\": 10, \"loop\": false } } }.\n2. Load with const img = new Image(); img.src = \"assets/hero.png\"; await img.decode() inside try/catch that shows a visible error.\n3. Animator { name, time }: play(name) resets time only on a new name; tick(dt) adds dt.\n4. frame = loop ? Math.floor(time * fps) % frames : Math.min(frames - 1, Math.floor(time * fps)).\n5. ctx.drawImage(img, frame * frameW, row * frameH, frameW, frameH, Math.round(x), Math.round(y), frameW * scale, frameH * scale).\n6. Set ctx.imageSmoothingEnabled = false for pixel art; face left with ctx.translate(x + w, y) and ctx.scale(-1, 1) between save and restore.\n7. Leave 1 px of padding between frames so neighbors do not bleed in.\nQuality bar:\n- Animation speed is the same at any refresh rate.\n- No blurry pixels and no seams at frame edges.\nPitfalls:\n- Calling play(\"run\") with a reset every tick, freezing it on frame 0.\n- Drawing before decode finished, which draws nothing.\n- Flipping without translating, which throws the sprite off screen.\nVerify:\n- [ ] Switching idle to run starts at frame 0 once.\n- [ ] The non looping jump holds its last frame.\n- [ ] hero.json parses and matches the sheet dimensions.\nOutput: js/sprites.js (load, Animator, drawFrame) and assets/hero.json.",
+  "checks": [
+    "js.syntax",
+    "json.valid",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "animate my character from a spritesheet png with run and idle",
+      "output": "hero.json frame table, Animator with per animation fps, pixel perfect drawImage, flip left"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

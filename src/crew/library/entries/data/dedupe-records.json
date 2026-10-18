@@ -1,0 +1,36 @@
+{
+  "id": "dedupe-records",
+  "title": "Finding and merging duplicate records",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "duplicates",
+    "dedupe",
+    "deduplicate",
+    "remove duplicates",
+    "merge records",
+    "duplicate contacts",
+    "unique records",
+    "cleanup"
+  ],
+  "when": "A list has repeated people, products or entries (after imports or merges) and the user wants them found and combined.",
+  "inputs": [
+    "entity type and key fields",
+    "merge preferences"
+  ],
+  "prompt": "Goal: Duplicates found by normalized keys and similarity, merged by explicit rules, with review and an audit list.\nSteps:\n1. Match keys per entity: email lowercased and trimmed, phone digits with country code, name plus birth date, SKU.\n2. Exact pass: group by key in a Map; groups of two or more are duplicates.\n3. Near pass: normalize names and addresses, block by postal code or first letters, then score token overlap or edit distance (threshold 0.85).\n4. Merge rules per field: newest non empty wins, lists union, the oldest id survives.\n5. Log { survivorId, mergedIds, fields } so references can be repointed and merges undone.\n6. Ask the user to confirm near duplicates; merge exact ones automatically only if asked.\nQuality bar:\n- No record lost; every merged id maps to a survivor.\n- False merges are rare and reversible.\n- Near linear time thanks to blocking.\nPitfalls:\n- Comparing every pair on big lists.\n- Merging on name alone.\n- Foreign keys left pointing at removed ids.\nVerify:\n- [ ] Normalizers tested.\n- [ ] Merge log produced.\n- [ ] References repointed.\n- [ ] Threshold configurable.\nOutput: js/dedupe.js with keys, findDuplicates and merge, plus a result report.",
+  "checks": [
+    "js.syntax",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "tenho clientes repetidos com e-mail em maiúsculas e minúsculas",
+      "output": "email key lowercase trim, 37 groups found, newest phone kept, merge log for undo"
+    }
+  ],
+  "size": 339,
+  "version": 1
+}

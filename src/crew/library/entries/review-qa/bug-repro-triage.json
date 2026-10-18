@@ -1,0 +1,35 @@
+{
+  "id": "bug-repro-triage",
+  "title": "Turn a vague bug report into clear repro steps",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "bug report",
+    "steps to reproduce",
+    "vague report",
+    "cannot reproduce",
+    "bug write up",
+    "customer complaint",
+    "issue report"
+  ],
+  "when": "Someone reported a bug in vague words and it must be confirmed, narrowed down and written up so a developer can fix it.",
+  "inputs": [
+    "the original report",
+    "access to the files"
+  ],
+  "prompt": "Goal: A reliable minimal reproduction with exact steps, expected versus actual, environment and the likely area of code.\nSteps:\n1. Restate the report as expected versus actual and list the unknowns (which page, data, width, input).\n2. Reproduce from a clean state: fresh load, cleared storage, same width and inputs as the reporter.\n3. If it will not reproduce, change one factor at a time: data, action order, timing, screen size, zoom, stored state.\n4. Minimize: drop steps and data until removing any one makes the bug vanish.\n5. Locate: read console errors and the stack, add temporary logs, and name the file and function where state first goes wrong.\n6. Write it up: title as symptom plus condition (Total shows NaN when a quantity is empty), numbered steps, expected, actual, environment, frequency (3 of 10), evidence.\nQuality bar:\n- Another person can reproduce from the write up alone.\n- Steps start from a clean state.\n- Root cause guesses are marked as guesses.\nPitfalls:\n- Steps that depend on your local data.\n- Closing as cannot reproduce after one try.\n- Several bugs in one report.\nVerify:\n- [ ] Minimal steps listed.\n- [ ] Expected and actual stated.\n- [ ] Environment and frequency stated.\n- [ ] Suspect file and function named.\nOutput: bugs/<short-name>.md with the write up.",
+  "checks": [
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "cliente disse que o carrinho some as vezes",
+      "output": "repro: add item, open a second tab, remove there, reload first tab; cart.js overwrites newer storage; 4 of 4"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

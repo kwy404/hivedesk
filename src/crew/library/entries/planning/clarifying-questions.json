@@ -1,0 +1,34 @@
+{
+  "id": "clarifying-questions",
+  "title": "Asking the right clarifying questions, three at most",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "questions",
+    "clarify",
+    "vague",
+    "unclear",
+    "ask the user",
+    "ambiguity",
+    "missing info"
+  ],
+  "when": "A request is missing information that would change the files, and the foreman may ask the user before planning.",
+  "inputs": [
+    "the user request",
+    "what the crew would assume by default"
+  ],
+  "prompt": "Goal: At most three short questions that each change the plan, with a default stated so the user can just say yes.\nSteps:\n1. List every unknown, then keep only those whose answer changes files, structure or data (not colors or wording).\n2. Rank them by cost of a wrong guess: data that must be real (prices, addresses) first, structure next, style last.\n3. Keep three at most; the rest become stated assumptions in the plan.\n4. Phrase each as a choice with a default: \"One page or separate pages? I will do one page unless you say otherwise.\"\n5. Ask in the language the user wrote in, in one message, numbered.\n6. If the user does not answer, proceed with the defaults and list them in the summary.\nQuality bar:\n- Each question names its default.\n- A yes or a one word answer settles each.\n- No question asks for something already in the request.\nPitfalls:\n- Open questions like \"what do you want?\" that push the work back to the user.\n- Asking about taste the crew can decide.\n- Six questions in a row before doing anything.\nVerify:\n- [ ] Three or fewer questions.\n- [ ] Each has a default.\n- [ ] Each changes files or data.\n- [ ] Assumptions for the rest are written down.\nOutput: One say message with numbered questions and defaults, then the plan with an Assumptions line.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "faz um site pra minha loja",
+      "output": "1. What does the shop sell? 2. One page or several (default one)? 3. Contact by phone or form (default phone)?"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

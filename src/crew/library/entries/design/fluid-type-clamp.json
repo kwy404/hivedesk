@@ -1,0 +1,37 @@
+{
+  "id": "fluid-type-clamp",
+  "title": "Fluid typography with clamp",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "fluid type",
+    "clamp",
+    "responsive text",
+    "fluid typography",
+    "viewport units",
+    "responsive font size",
+    "fluid spacing"
+  ],
+  "when": "The user wants headings and text that scale smoothly between phone and desktop instead of jumping at breakpoints.",
+  "inputs": [
+    "min and max size per heading level",
+    "the viewport range, 360 to 1280 px by default"
+  ],
+  "prompt": "Goal: Sizes that interpolate from a minimum at 360 px to a maximum at 1280 px with clamp, and still respond to zoom.\nSteps:\n1. Choose min and max per step, for example h1 from 32 px to 56 px; body stays near 1rem to 1.125rem.\n2. Slope = (max - min) / (1280 - 360); the vw part is slope x 100; the intercept is min - slope x 360, written in rem.\n3. Worked example for h1: slope 24 / 920 = 0.0261, so 2.61vw, intercept 22.6 px: clamp(2rem, 1.41rem + 2.61vw, 3.5rem).\n4. Always mix rem with vw in the middle value so browser zoom and font settings still scale the text.\n5. Store results as --step-0 to --step-5 on :root and reuse the method for section padding if wanted.\n6. Check 320, 768 and 1440 px: no heading wraps one word per line.\nQuality bar:\n- Minimum sizes readable on phones.\n- Text zooms to 200 percent.\n- Headings carry the scaling, body barely changes.\nPitfalls:\n- font-size: 5vw alone, which ignores zoom.\n- A min larger than the max.\n- Fluid body text that turns huge on wide monitors.\nVerify:\n- [ ] Each clamp has a rem min, rem plus vw middle and rem max.\n- [ ] Values live in :root tokens.\n- [ ] Nothing below 12 px at 320 px.\n- [ ] Headings fit at 320 px.\nOutput: Fluid type tokens on :root in style.css, with the viewport range in a comment.",
+  "checks": [
+    "css.media-query",
+    "css.min-font-size",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "titulos que diminuem suavemente no celular",
+      "output": "--step-5 clamp(2rem, 1.41rem + 2.61vw, 3.5rem), --step-3 clamp(1.5rem, 1.3rem + 0.9vw, 2rem)"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

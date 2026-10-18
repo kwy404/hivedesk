@@ -1,0 +1,37 @@
+{
+  "id": "intl-collator-sorting",
+  "title": "Locale aware sorting with Intl.Collator",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "sort",
+    "alphabetical order",
+    "collator",
+    "accents",
+    "natural sort",
+    "sort by name",
+    "locale",
+    "a to z",
+    "intl"
+  ],
+  "when": "Names, titles or files must sort alphabetically the way people expect: accents in place, case ignored, item 2 before item 10.",
+  "inputs": [
+    "locale",
+    "fields sorted"
+  ],
+  "prompt": "Goal: Text sorting and comparison through cached Intl.Collator instances configured for the user locale and the data.\nSteps:\n1. Create once: const collator = new Intl.Collator(locale, { sensitivity: \"base\", numeric: true }); sort with collator.compare.\n2. numeric: true orders \"file 2\" before \"file 10\"; caseFirst only when the domain needs it.\n3. Accent and case insensitive equality: compare(a, b) === 0 with sensitivity \"base\".\n4. Sort a copy ([...items] or toSorted) with an id tie breaker for stable order.\n5. Pass the user locale; some languages order letters differently (Swedish puts a with ring after z).\n6. Build alphabet index headings (A, B, C) by comparing first letters with the same collator.\nQuality bar:\n- Accented names sit next to their base letter.\n- Numbers inside names sort by value.\n- Order is stable across reloads.\nPitfalls:\n- Default sort(), which orders by code units (Z before a, accents last).\n- toLowerCase comparisons that ignore locale.\n- A new collator or localeCompare with options per comparison in hot loops.\nVerify:\n- [ ] One cached collator.\n- [ ] Tests with accents, case and numbers.\n- [ ] Shared arrays not mutated.\n- [ ] Tie breaker present.\nOutput: js/sort.js exporting the collator helpers used by lists and tables.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a lista de alunos coloca \"Álvaro\" depois do \"Zeca\"",
+      "output": "Intl.Collator(\"pt-BR\", { sensitivity: \"base\", numeric: true }) cached, sort copies with id tie breaker"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "desktop-clipboard-integration",
+  "title": "Clipboard copy and paste in a desktop app",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "clipboard",
+    "copy",
+    "paste",
+    "copy to clipboard",
+    "desktop app",
+    "paste table",
+    "neutralinojs",
+    "rich text"
+  ],
+  "when": "The desktop app copies results such as rows, links or codes for other apps and pastes data from spreadsheets or text editors.",
+  "inputs": [
+    "what is copied",
+    "what paste formats are accepted"
+  ],
+  "prompt": "Goal: clip.js copies and pastes text through the native clipboard with the right format for other apps and safe parsing of what comes in.\nSteps:\n1. Copy: await Neutralino.clipboard.writeText(text); fall back to navigator.clipboard.writeText when running in a plain browser.\n2. Paste: await Neutralino.clipboard.readText() from a Paste menu item or Mod+V; also handle the \"paste\" event and read event.clipboardData.getData(\"text/plain\").\n3. Copy rows as tab separated values with \\n line endings, so spreadsheets split them into cells; quote nothing.\n4. Parse pasted tables by splitting lines on \\r?\\n and cells on \\t; trim a trailing empty line; cap at 10,000 rows.\n5. Treat pasted text as data: insert with textContent or input values, never innerHTML.\n6. Confirm with a short \"Copied\" status in an aria-live region for 2 seconds.\n7. Never read the clipboard on a timer or at start; only on a user action.\n8. Allow clipboard.readText and clipboard.writeText only.\nQuality bar:\n- Copied tables paste into a spreadsheet as cells.\n- Pasting HTML from the web never runs scripts.\nPitfalls:\n- Reading the clipboard silently, which leaks passwords the user copied.\n- Losing leading zeros by converting pasted codes to numbers.\nVerify:\n- [ ] Copy and paste run inside user actions.\n- [ ] Pasted content is inserted with textContent.\n- [ ] A status message confirms copy.\nOutput: clip.js and the Edit menu wiring.",
+  "checks": [
+    "js.safe-dom",
+    "js.async-errors",
+    "html.aria-live"
+  ],
+  "examples": [
+    {
+      "input": "copiar a tabela do app e colar na planilha",
+      "output": "Rows copied as TSV via clipboard.writeText, paste parser for tab cells, textContent insert, aria-live status"
+    }
+  ],
+  "size": 402,
+  "version": 1
+}

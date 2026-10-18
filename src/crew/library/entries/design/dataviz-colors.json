@@ -1,0 +1,37 @@
+{
+  "id": "dataviz-colors",
+  "title": "Data visualization color palettes",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "chart colors",
+    "data visualization",
+    "dataviz",
+    "charts",
+    "graph colors",
+    "categorical colors",
+    "color blind",
+    "heatmap"
+  ],
+  "when": "The user builds charts, graphs, maps or dashboards and needs colors for series, ranges or positive and negative values.",
+  "inputs": [
+    "the data and what it compares",
+    "light, dark or both"
+  ],
+  "prompt": "Goal: Chart colors that match the data type (categorical, sequential, diverging), work for color blind readers and are labeled directly.\nSteps:\n1. Classify the data: categories (unordered), sequential (low to high), diverging (around a midpoint such as zero or a target).\n2. Categorical: up to 6 hues of similar lightness, ordered so neighbors contrast; fold the rest into Other in gray.\n3. Sequential: one hue from light to dark in 5 to 7 even lightness steps; darker means more.\n4. Diverging: two hues on either side of a light neutral midpoint, equal steps each way.\n5. Avoid red next to green; prefer blue with orange, and add direct labels, shapes or patterns so color is not the only cue.\n6. Highlight by saturation: the focus series in full color, others in muted gray.\nQuality bar:\n- Each series is named on or next to its mark.\n- Marks reach 3 to 1 against the chart background.\n- No rainbow scale for ordered data.\nPitfalls:\n- Ten categorical colors.\n- Red and green as the only difference.\n- Pale yellow bars on white.\nVerify:\n- [ ] Palette type matches the data.\n- [ ] Series colors are :root tokens.\n- [ ] Axis and label text use the text color.\n- [ ] Direct labels or patterns exist.\nOutput: Chart color tokens in style.css and their use in the chart script or SVG.",
+  "checks": [
+    "css.custom-properties",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "cores para o grafico de vendas por regiao",
+      "output": "5 categorical tokens of equal lightness, gray Other, direct labels at line ends, blue and orange for the two main series"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

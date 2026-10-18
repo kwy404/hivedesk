@@ -1,0 +1,40 @@
+{
+  "id": "readme-project",
+  "title": "Project README",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "readme",
+    "readme.md",
+    "project documentation",
+    "docs",
+    "project overview",
+    "how to run",
+    "documentation"
+  ],
+  "when": "The user wants a README for a project, app or site, or the existing README is missing, outdated or vague.",
+  "inputs": [
+    "what the project does and for whom",
+    "how to run it",
+    "the files in the project"
+  ],
+  "prompt": "Goal: A README that lets a newcomer understand the project in one paragraph and run it in under five minutes.\nSteps:\n1. Start with # Project name and one or two sentences: what it does, for whom, and what makes it useful.\n2. Add ## Features as 3 to 6 bullets of real capabilities found in the code.\n3. Add ## Getting started with requirements (for example Node 20 or Python 3.11) and copy pasteable commands in fenced blocks with a language tag.\n4. Add ## Usage with one realistic example and its output, or the main screens of the app.\n5. Add ## Project structure with the key files and one line each, and ## Configuration if there are settings.\n6. End with ## License (or a note that none is chosen yet) and how to contribute or report problems.\nQuality bar:\n- Every command was checked against the actual files and scripts.\n- Short sections, scannable headings.\n- No marketing filler.\nPitfalls:\n- Commands for scripts that do not exist.\n- Links to files that are not in the project.\n- A wall of text with no headings.\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Code fences are closed.\n- [ ] Local links point to existing files.\n- [ ] At least Getting started and Usage sections exist.\nOutput: README.md at the project root.",
+  "checks": [
+    "file.readme",
+    "md.h1",
+    "md.fences",
+    "md.local-links",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "escreva um README para meu projeto",
+      "output": "# Pomodoro Timer, features, getting started with \"node server.js\", usage, structure, license"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "turn-based-rules-engine-tests",
+  "title": "Turn based game logic separated from rendering",
+  "category": "games",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "turn based",
+    "game logic",
+    "rules engine",
+    "pure functions",
+    "board game",
+    "node:test",
+    "strategy game",
+    "game tests",
+    "game"
+  ],
+  "when": "A turn based game such as a board, tactics or card battle game needs its rules in a pure module that the interface only calls, so the rules can be tested in Node without a browser.",
+  "inputs": [
+    "the rules in plain words",
+    "number of players"
+  ],
+  "prompt": "Goal: The interface sends moves, the rules module returns new states, and node --test proves the rules.\nSteps:\n1. rules.mjs has no DOM, no timers and no Math.random; it exports initialState(options, rng), legalMoves(state), applyMove(state, move) and outcome(state) returning null, { winner } or { draw: true }.\n2. State is plain JSON (players, board, currentPlayer, turn, log), so it can be saved, copied with structuredClone and compared.\n3. applyMove checks that the move is in legalMoves(state) first; otherwise it returns { error: \"illegal\" } and changes nothing.\n4. applyMove never mutates its input and returns a fresh object, which makes undo and replays trivial.\n5. ui.js renders from state only and turns clicks or keys into move objects; animations read the move log, not hidden flags.\n6. The computer opponent in ai.mjs scores legalMoves with an evaluation or a depth limited minimax, also pure.\n7. test/rules.test.mjs uses node:test and node:assert/strict: opening state, each rule, illegal moves, win, draw and a replay of a recorded game.\nQuality bar:\n- Every rule written in the README has at least one test.\n- Saving and loading mid game resumes identically.\nPitfalls:\n- Rules hidden inside click handlers.\n- Two sources of truth, DOM classes plus state.\n- Tests that depend on a random setup without a fixed seed.\nVerify:\n- [ ] node --test passes with no browser.\n- [ ] applyMove on a deep frozen state does not throw.\n- [ ] An illegal move leaves the state deepEqual to before.\nOutput: rules.mjs, ai.mjs, ui.js and test/rules.test.mjs.",
+  "checks": [
+    "node.test-runner",
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "separate the rules of my tactics game so I can test them",
+      "output": "pure rules.mjs with legalMoves and applyMove, state only UI, minimax ai, node --test suite"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

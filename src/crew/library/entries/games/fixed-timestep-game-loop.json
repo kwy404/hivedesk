@@ -1,0 +1,37 @@
+{
+  "id": "fixed-timestep-game-loop",
+  "title": "Fixed time step game loop for canvas games",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "game loop",
+    "fixed timestep",
+    "requestanimationframe",
+    "delta time",
+    "accumulator",
+    "interpolation",
+    "canvas game",
+    "game"
+  ],
+  "when": "The user builds a canvas game and needs simulation speed that does not depend on the monitor refresh rate, with smooth drawing between simulation ticks.",
+  "inputs": [
+    "simulation rate in ticks per second",
+    "what moves each tick"
+  ],
+  "prompt": "Goal: Game rules advance in equal ticks while drawing happens once per display frame, blended between ticks.\nSteps:\n1. In loop.js export start({ update, render, hz = 60 }) with const STEP = 1000 / hz in milliseconds.\n2. In the requestAnimationFrame callback read the timestamp argument; frameMs = Math.min(timestamp - last, 250) so a long stall cannot spiral.\n3. acc += frameMs; while (acc >= STEP) { copy positions to prev; update(STEP / 1000); acc -= STEP } with a cap of 5 ticks per frame, dropping the leftover.\n4. alpha = acc / STEP; render(alpha) draws x = prev.x + (cur.x - prev.x) * alpha for moving objects.\n5. update never draws and render never changes rules; random numbers are drawn only inside update.\n6. Return stop(), which calls cancelAnimationFrame(handle); on resume set last = null so the first frame counts as 0 ms.\nQuality bar:\n- The same inputs give the same tick count and positions on 60, 120 and 144 Hz screens.\n- No visible stutter at hz 30 thanks to interpolation.\n- Tick work stays under 4 ms on a mid range phone.\nPitfalls:\n- Date.now instead of the frame timestamp, which drifts and jitters.\n- Multiplying by the raw frame delta, so collisions miss at low frame rates.\n- No tick cap, so a slow device freezes inside a catch up loop.\nVerify:\n- [ ] With 4x CPU throttling the game speed stays equal.\n- [ ] Pause then resume does not teleport objects.\n- [ ] getContext(\"2d\") and requestAnimationFrame are present.\nOutput: js/loop.js (start, stop), js/game.js (update, render) and index.html with the canvas.",
+  "checks": [
+    "game.loop",
+    "js.syntax",
+    "js.no-var"
+  ],
+  "examples": [
+    {
+      "input": "meu jogo fica mais rápido no monitor de 144 Hz",
+      "output": "loop.js with 60 Hz accumulator, tick cap, interpolated render, stop and resume"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

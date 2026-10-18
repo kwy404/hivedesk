@@ -1,0 +1,50 @@
+{
+  "id": "docs-site",
+  "title": "Documentation site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "docs",
+    "documentation",
+    "manual",
+    "guide",
+    "reference",
+    "sidebar",
+    "api docs"
+  ],
+  "when": "The user wants documentation pages for a library, tool, API or product.",
+  "inputs": [
+    "product name",
+    "topics: getting started, guides, reference",
+    "code examples"
+  ],
+  "prompt": "Goal: Docs where readers find the answer fast: clear navigation, scannable pages, copyable examples.\nSteps:\n1. Plan the pages: Getting started, Guides, Reference, FAQ; each page has one h1 and h2 sections.\n2. Layout: a sidebar nav (nav element, current page marked with aria-current) and a content column under 75 characters wide.\n3. Getting started gets the reader to a working result in under five steps.\n4. Code blocks in pre and code, with the language named in the text above and no line numbers in the copied text.\n5. Add a table of contents for long pages and anchor ids on headings.\n6. On phones, the sidebar becomes a toggle button with aria-expanded.\nQuality bar:\n- Each page answers one question.\n- Examples run as written.\n- Headings are specific (Configure the port, not Configuration).\nPitfalls:\n- A wall of text with no examples.\n- Sidebar that covers content on mobile.\n- Duplicate heading ids across the page.\nVerify:\n- [ ] nav exists with aria-current on the active link.\n- [ ] Headings do not skip levels.\n- [ ] Unique ids.\n- [ ] Local links resolve.\nOutput: One HTML file per page (index.html, guide.html, reference.html) sharing style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.nav",
+    "html.heading-order",
+    "html.unique-ids",
+    "html.skip-link"
+  ],
+  "examples": [
+    {
+      "input": "docs for my CLI tool",
+      "output": "index.html quick start in 4 steps, reference.html with every flag in a table, sidebar nav"
+    }
+  ],
+  "size": 332,
+  "version": 1
+}

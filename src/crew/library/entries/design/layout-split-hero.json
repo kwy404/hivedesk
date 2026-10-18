@@ -1,0 +1,39 @@
+{
+  "id": "layout-split-hero",
+  "title": "Split hero with text and image side by side",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "hero",
+    "split hero",
+    "hero section",
+    "banner",
+    "two column hero",
+    "image and text",
+    "above the fold"
+  ],
+  "when": "The user wants a hero section with the message on one side and an image, illustration or short form on the other.",
+  "inputs": [
+    "headline and supporting line",
+    "the main action",
+    "the visual"
+  ],
+  "prompt": "Goal: A hero with headline, line and action beside a visual on wide screens, stacking text first on phones.\nSteps:\n1. Markup: a section with a text block (h1, one paragraph, a primary and a secondary link) then a figure or img.\n2. Layout: grid with gap var(--space-6), one column by default, grid-template-columns: 1.1fr 1fr and align-items: center from about 54em.\n3. Keep text first in the source; to show the image on the left, move it with grid-column, not by DOM order.\n4. Size the h1 with clamp(2rem, 1.2rem + 3vw, 3.5rem) and cap the paragraph at 45ch.\n5. Give the img width, height, aspect-ratio with object-fit: cover, and fetchpriority=\"high\".\n6. Keep padding modest, clamp(2rem, 6vw, 6rem), so the action shows on a 375 by 667 screen.\nQuality bar:\n- Headline and button fit the first phone screen.\n- The image never squashes.\n- Text and visual balance in weight.\nPitfalls:\n- Text over a busy photo with no overlay.\n- Image first on phones, pushing the message down.\n- min-height: 100vh heroes that waste the screen.\nVerify:\n- [ ] One h1 in the hero.\n- [ ] Two columns in a media query.\n- [ ] The img has alt, width and height.\n- [ ] The primary action is a real link.\nOutput: The hero section in index.html and its rules in style.css.",
+  "checks": [
+    "html.h1",
+    "html.img-alt",
+    "css.media-query",
+    "html.img-dimensions"
+  ],
+  "examples": [
+    {
+      "input": "hero com texto de um lado e foto do produto do outro",
+      "output": "grid 1.1fr 1fr from 54em, h1 with clamp, photo 4:3 with fetchpriority high"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

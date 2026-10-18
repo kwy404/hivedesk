@@ -1,0 +1,43 @@
+{
+  "id": "desktop-app-security",
+  "title": "Desktop app security: CSP, no remote code, narrow native API",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "security",
+    "reviewer"
+  ],
+  "tags": [
+    "desktop security",
+    "content security policy",
+    "csp",
+    "native api",
+    "allow list",
+    "remote code",
+    "xss",
+    "desktop app",
+    "hardening"
+  ],
+  "when": "Review or harden a desktop web app before release, where any script injection could reach the file system or native calls.",
+  "inputs": [
+    "neutralino.config.json",
+    "resources folder",
+    "places that render user or file content"
+  ],
+  "prompt": "Goal: An app where injected text cannot run, only bundled code runs, and the native bridge exposes only what features need.\nSteps:\n1. CSP meta in every HTML file: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; connect-src 'self' plus exact API hosts; no unsafe-inline, no unsafe-eval.\n2. Move inline handlers and inline scripts into files; no eval, new Function or setTimeout with strings.\n3. Load no script from the network; vendor every library into resources/ and pin its version.\n4. Render file and user content with textContent or a sanitizer; never innerHTML with untrusted text.\n5. nativeAllowList lists exact functions; block os.execCommand, os.spawnProcess and filesystem.remove unless a feature needs them, and then validate every argument.\n6. Keep \"tokenSecurity\": \"one-time\" and \"enableInspector\": false in release config; the server listens on 127.0.0.1 only.\n7. Never navigate the main window to remote pages; open external links with Neutralino.os.open after checking the scheme is https.\n8. Secrets do not belong in resources; anyone can unpack resources.neu.\nQuality bar:\n- Each allowed native function maps to a named feature.\n- A pasted <img onerror> string shows as text.\nPitfalls:\n- Wildcards like \"filesystem.*\" in the allow list.\n- Opening links from documents in the app window.\nVerify:\n- [ ] CSP meta present without unsafe-inline.\n- [ ] No eval or remote script tags.\n- [ ] Allow list has no wildcards.\nOutput: updated HTML heads, neutralino.config.json and SECURITY.md findings.",
+  "checks": [
+    "sec.csp",
+    "neu.config",
+    "js.no-eval",
+    "html.no-inline-handlers",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "revisa a segurança do meu app desktop antes de publicar",
+      "output": "Strict CSP meta, vendored scripts, exact allow list without execCommand, inspector off, SECURITY.md"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

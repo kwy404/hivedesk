@@ -1,0 +1,41 @@
+{
+  "id": "sticky-mobile-cta-bar",
+  "title": "Sticky mobile call to action bar",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "sticky cta",
+    "sticky bar",
+    "bottom bar",
+    "mobile cta",
+    "call now button",
+    "fixed bottom",
+    "book now bar",
+    "quick actions"
+  ],
+  "when": "The user wants a bar fixed to the bottom of phone screens with one or two actions, such as Call and Book.",
+  "inputs": [
+    "the one or two actions and their targets",
+    "phone number",
+    "the section that holds the main form"
+  ],
+  "prompt": "Goal: A thumb friendly bottom bar on phones that never hides content and steps aside when its target is on screen.\nSteps:\n1. <div role=\"region\" aria-label=\"Quick actions\" class=\"cta-bar\"> with at most two links: a tel link Call us and the primary action such as Book a visit.\n2. Below 720 px only: position: fixed; inset-inline: 0; bottom: 0; padding-bottom: env(safe-area-inset-bottom); hidden from 720 px up.\n3. Give the body padding-bottom equal to the bar height so the last content stays visible.\n4. Hide the bar while the booking section is on screen (IntersectionObserver) and while a form field has focus.\n5. Actions are at least 48 px tall with verb plus object labels; the primary one uses the accent color.\nQuality bar:\n- Two actions at most, the primary obvious.\n- The bar contrasts with the page so it reads as a control.\n- Links work without JS.\nPitfalls:\n- Covering cookie banners or submit buttons.\n- Showing the bar on desktop too.\n- tel links without the country code.\nVerify:\n- [ ] Hidden at 720 px and above.\n- [ ] Body has bottom padding while it shows.\n- [ ] It hides when the target is visible.\n- [ ] Links have clear text.\nOutput: Bar markup before the closing body tag, its CSS and cta-bar.js.",
+  "checks": [
+    "html.link-text",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "barra fixa no celular com ligar e agendar",
+      "output": "bottom region with Call us tel link and Book a visit, hidden over 720 px and while the booking form is visible"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

@@ -1,0 +1,12 @@
+{
+  "name": "my-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A small JSON HTTP API on node:http with tests, no dependencies.",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}

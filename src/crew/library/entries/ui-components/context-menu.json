@@ -1,0 +1,37 @@
+{
+  "id": "context-menu",
+  "title": "Custom right click context menu",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "context menu",
+    "right click menu",
+    "right click",
+    "custom menu",
+    "long press menu",
+    "shortcut menu"
+  ],
+  "when": "The user wants a custom menu on right click or long press over items such as files, rows or canvas objects.",
+  "inputs": [
+    "the target area",
+    "the actions",
+    "whether a toolbar already offers them"
+  ],
+  "prompt": "Goal: A context menu that opens from mouse, keyboard and touch, follows the menu pattern and never traps the user.\nSteps:\n1. On contextmenu over the target area call preventDefault and open <ul role=\"menu\" aria-label=\"Item actions\"> at clientX and clientY, clamped inside the viewport.\n2. The ContextMenu key and Shift+F10 open it at the focused element; items are <button type=\"button\" role=\"menuitem\" tabindex=\"-1\">.\n3. ArrowDown and ArrowUp wrap, Home and End jump, Enter runs, Escape closes and refocuses the origin item.\n4. Touch: a 500 ms pointerdown timer opens it, cancelled by pointerup or a move over 10 px.\n5. Close on outside pointerdown, scroll, resize and blur; disabled items use aria-disabled=\"true\".\nQuality bar:\n- Every action also exists somewhere visible.\n- The menu opens at the pointer.\n- The native menu still works outside the target.\nPitfalls:\n- Blocking the native menu on the whole page.\n- A menu opening off screen near edges.\n- Long press that also selects text; set user-select: none on the target.\nVerify:\n- [ ] role menu with an accessible name.\n- [ ] Shift+F10 opens it.\n- [ ] Escape returns focus to the origin.\n- [ ] It stays inside the viewport.\nOutput: Menu markup, context-menu.css and context-menu.js wiring the target area.",
+  "checks": [
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "right click menu on file cards with rename and delete",
+      "output": "role menu opened at pointer, Shift+F10 support, 500 ms long press on touch, Escape back to the card"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

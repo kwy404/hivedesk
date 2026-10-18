@@ -1,0 +1,38 @@
+{
+  "id": "systemd-unit-hardening",
+  "title": "Harden a systemd service unit",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "security"
+  ],
+  "tags": [
+    "systemd",
+    "service file",
+    "hardening",
+    "sandboxing",
+    "linux service",
+    "least privilege",
+    "unit file",
+    "systemd-analyze"
+  ],
+  "when": "The user runs a daemon under systemd and wants it confined with the sandboxing the OS can enforce, without breaking what the service needs.",
+  "inputs": [
+    "the current unit file",
+    "folders the service writes",
+    "ports it binds"
+  ],
+  "prompt": "Goal: A unit running as its own user on a read only system, with private temp, no privilege gain and only the paths and capabilities it needs.\nSteps:\n1. User=app and Group=app, or DynamicUser=yes when stateless; StateDirectory=app and LogsDirectory=app create owned writable folders.\n2. NoNewPrivileges=yes, PrivateTmp=yes, PrivateDevices=yes, ProtectSystem=strict, ProtectHome=yes.\n3. ReadWritePaths= only for extra folders the service writes.\n4. Empty CapabilityBoundingSet=; for ports below 1024 add CAP_NET_BIND_SERVICE to AmbientCapabilities and the bounding set, or bind a high port behind the proxy.\n5. RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX, LockPersonality=yes, RestrictSUIDSGID=yes, ProtectKernelTunables=yes, ProtectKernelModules=yes, SystemCallFilter=@system-service.\n6. Secrets via EnvironmentFile= with mode 600, or LoadCredential=.\n7. Run systemd-analyze security app.service, fix the worst items, then test every feature.\nQuality bar:\n- The exposure score drops and every feature still works.\n- Each relaxed setting has a comment with the reason.\n- Nothing runs as root.\nPitfalls:\n- Enabling everything at once and not knowing which line broke uploads.\n- ProtectSystem=strict without ReadWritePaths for the data folder.\n- Secrets in Environment= lines, readable through systemctl show.\nVerify:\n- [ ] User or DynamicUser set.\n- [ ] NoNewPrivileges and ProtectSystem present.\n- [ ] Writable paths explicit.\n- [ ] Analyze score before and after noted.\nOutput: deploy/app.service with comments and the systemd-analyze scores.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "make my systemd service safer, it runs as root today",
+      "output": "app.service with User=app, ProtectSystem=strict, ReadWritePaths for data, NoNewPrivileges, empty CapabilityBoundingSet, analyze score noted"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

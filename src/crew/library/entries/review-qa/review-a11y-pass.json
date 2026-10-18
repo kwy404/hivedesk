@@ -1,0 +1,39 @@
+{
+  "id": "review-a11y-pass",
+  "title": "Accessibility review pass",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "qa"
+  ],
+  "tags": [
+    "accessibility review",
+    "a11y audit",
+    "accessibility check",
+    "wcag audit",
+    "aria review",
+    "compliance",
+    "a11y"
+  ],
+  "when": "The user asks to check a page or app for accessibility problems against WCAG 2.2 AA and wants a report of what fails.",
+  "inputs": [
+    "the pages",
+    "the main tasks users do"
+  ],
+  "prompt": "Goal: An audit by WCAG criterion recording each failure with the element, the criterion number, who is affected, and the fix.\nSteps:\n1. Static layer: alt on images, labels on controls, lang, title, heading order, unique ids, contrast pairs computed from the CSS.\n2. Keyboard layer: every control reachable, visible focus (2.4.7), no trap (2.1.2), logical order (2.4.3).\n3. Semantics layer: landmarks, button versus link, names on icon buttons (4.1.2), form errors identified and announced (3.3.1, 4.1.3).\n4. Visual layer: text 4.5 to 1 and UI parts 3 to 1 (1.4.3, 1.4.11), reflow at 320 px (1.4.10), 200 percent zoom (1.4.4).\n5. Media and motion: captions or transcripts, no autoplay sound, reduced motion honored (2.3.3).\n6. Write each failure as criterion, element, impact (who cannot do what), fix; passes get one line per criterion.\nQuality bar:\n- Every failure cites a criterion number.\n- Impact described in user terms.\n- Fixes are specific markup or CSS.\nPitfalls:\n- Reporting only static results.\n- Recommending ARIA where a native element fixes it.\n- Calling a page compliant after a partial check.\nVerify:\n- [ ] All five layers checked.\n- [ ] Each failure has criterion and fix.\n- [ ] Contrast pairs computed.\n- [ ] Pass and fail counts summarized.\nOutput: a11y-review.md with a criteria table and the findings.",
+  "checks": [
+    "html.img-alt",
+    "html.labels",
+    "css.focus-visible",
+    "html.heading-order",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "faca uma auditoria de acessibilidade do meu site",
+      "output": "1.4.3 fail: muted text 3.1 to 1 in .card p; 2.4.7 fail: outline none on links; 4.1.2 fail: icon cart button unnamed"
+    }
+  ],
+  "size": 378,
+  "version": 1
+}

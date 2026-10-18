@@ -1,0 +1,39 @@
+{
+  "id": "keyboard-shortcuts-dialog",
+  "title": "Keyboard shortcuts help dialog",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "keyboard shortcuts",
+    "hotkeys",
+    "shortcuts help",
+    "key bindings",
+    "cheat sheet",
+    "help overlay",
+    "question mark key"
+  ],
+  "when": "The user wants app keyboard shortcuts plus a help dialog that lists them, opened with the question mark key.",
+  "inputs": [
+    "the shortcuts and what they do",
+    "groups such as navigation and editing"
+  ],
+  "prompt": "Goal: Shortcuts and their help dialog driven by one list, so the docs never drift and the keys never fire while typing.\nSteps:\n1. One array of { keys, label, group, run } drives both the keydown handler and the help list.\n2. Skip shortcuts when the event target is an input, textarea, select or contenteditable, and when a modifier is held that the shortcut does not use.\n3. Question mark opens <dialog aria-labelledby=\"kb-title\"> with a heading, a Close button and one <dl> per group: <dt><kbd>g</kbd> <kbd>i</kbd></dt><dd>Go to inbox</dd>.\n4. Show Ctrl or the Command key depending on the platform.\n5. WCAG 2.1.4: single letter shortcuts can be turned off with a checkbox in the dialog, saved with the other settings.\nQuality bar:\n- Labels use verbs (Go to inbox, Archive).\n- Keys use kbd elements, one per key.\n- A visible link also opens the dialog.\nPitfalls:\n- Shortcuts firing while typing a message.\n- Overriding common browser keys such as Ctrl+W.\n- A help list typed by hand that goes stale.\nVerify:\n- [ ] The dialog has a title and Close.\n- [ ] Typing in fields triggers nothing.\n- [ ] The list is generated from the array.\n- [ ] Single key shortcuts can be disabled.\nOutput: Dialog markup, shortcuts.css and shortcuts.js with the array.",
+  "checks": [
+    "html.dialog-a11y",
+    "html.button-type",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "atalhos de teclado e uma janela de ajuda com ?",
+      "output": "shortcut array for j, k, g i, ?, dialog listing groups with kbd elements, skipped inside inputs"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

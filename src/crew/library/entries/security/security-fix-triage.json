@@ -1,0 +1,41 @@
+{
+  "id": "security-fix-triage",
+  "title": "Triage and fix order for security findings",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "fix order",
+    "remediation plan",
+    "security triage",
+    "prioritize vulnerabilities",
+    "patch plan",
+    "user approval",
+    "security fixes",
+    "risk ranking",
+    "security"
+  ],
+  "when": "A list of security findings exists and must become a fix order, grouped into small safe changes and approved by the user before any file is modified.",
+  "inputs": [
+    "SECURITY-AUDIT.md findings",
+    "release constraints"
+  ],
+  "prompt": "Goal: A numbered fix plan the user approves first, then applied one finding at a time with a test proving each fix.\nSteps:\n1. Score each finding: exposure (internet facing, logged in only, local), impact (takeover, data leak, outage, hardening) and effort (one line, one module, redesign).\n2. Order: leaked live secrets first (rotate now), then critical exposed issues, then high, then cheap medium fixes; a fix closing several findings moves up.\n3. Group into change sets of one concern (all placeholders in one module) so each is reviewed and reverted alone.\n4. Write FIX-PLAN.md with order, finding ids, files to change, the test to add and the change risk; then stop and ask the user to approve, edit or drop items. No file changes before an explicit yes.\n5. After approval apply one change set: a failing test showing the issue, the fix, the full test run, the finding marked fixed.\n6. Record accepted risks with the user's reason and a review date; rerun the relevant checks at the end.\nQuality bar:\n- The approval is noted in FIX-PLAN.md before the first edit.\n- Each fix has a test or a written manual check.\n- No unrelated refactors ride along.\nPitfalls:\n- Easy low items first while a critical stays open.\n- Large mixed changes that break features and get reverted with the fix.\n- Quietly skipping hard findings.\nVerify:\n- [ ] FIX-PLAN.md has order and reasons.\n- [ ] User approval is recorded before edits.\n- [ ] Each applied fix has a test.\n- [ ] Every finding has a status.\nOutput: FIX-PLAN.md and status updates in SECURITY-AUDIT.md.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "temos 14 achados de seguranca, por onde comecar?",
+      "output": "scored list, secrets rotated first, 5 change sets in FIX-PLAN.md, wait for approval, test per fix"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

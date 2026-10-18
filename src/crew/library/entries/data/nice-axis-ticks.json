@@ -1,0 +1,36 @@
+{
+  "id": "nice-axis-ticks",
+  "title": "Nice axis ticks and scales",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "axis",
+    "ticks",
+    "scale",
+    "chart axis",
+    "gridlines",
+    "round numbers",
+    "y axis",
+    "axis labels"
+  ],
+  "when": "A chart needs axis ticks at round, human friendly values, or labels come out like 13.7, 27.4, 41.1.",
+  "inputs": [
+    "data min and max",
+    "roughly how many ticks"
+  ],
+  "prompt": "Goal: A tick function returning 4 to 7 round values (1, 2, 2.5 or 5 times a power of ten) that cover the data, with matching labels.\nSteps:\n1. If min equals max, widen the range (plus and minus 1, or 10 percent of the value).\n2. raw = (max - min) / count; mag = 10 ** Math.floor(Math.log10(raw)); step = first of 1, 2, 2.5, 5, 10 times mag that is at least raw.\n3. niceMin = Math.floor(min / step) * step; niceMax = Math.ceil(max / step) * step.\n4. Compute each tick as niceMin + i * step and round to the step decimals to remove float noise.\n5. Format all labels with one Intl.NumberFormat and the same decimals; compact notation above 10 thousand.\n6. Time axes pick from a ladder (minutes, hours, days, weeks, months, years) and snap to calendar boundaries; return { min, max, step, ticks }.\nQuality bar:\n- No label like 0.30000000000000004.\n- Zero is a tick when the range crosses it.\n- Negatives, tiny and huge ranges work.\nPitfalls:\n- A top tick below the data max, clipping the tallest bar.\n- Mixed decimals across labels.\n- The raw data min used as the first label.\nVerify:\n- [ ] Tests for 0 to 97, 0.001 to 0.009, -40 to 35 and equal min and max.\n- [ ] Ticks are multiples of step.\n- [ ] Labels share decimals.\n- [ ] The function is pure.\nOutput: js/ticks.js exporting niceTicks(min, max, count) and formatTick, with a test file.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "os números do eixo do meu gráfico estão quebrados",
+      "output": "niceTicks(3, 97, 5) -> 0, 20, 40, 60, 80, 100 with shared formatting"
+    }
+  ],
+  "size": 382,
+  "version": 1
+}

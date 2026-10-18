@@ -1,0 +1,48 @@
+{
+  "id": "podcast-site",
+  "title": "Podcast website",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "podcast",
+    "episodes",
+    "audio",
+    "show notes",
+    "listen",
+    "hosts"
+  ],
+  "when": "The user wants a site for a podcast with episodes, players and show notes.",
+  "inputs": [
+    "show name and topic",
+    "episodes with number, date, audio file, notes",
+    "hosts",
+    "where to listen"
+  ],
+  "prompt": "Goal: A site where new listeners understand the show and play an episode in one click.\nSteps:\n1. Hero with show name, one line topic, the latest episode and a play button.\n2. Episode list: number, title, date, duration, short summary, link to its notes.\n3. Each episode page or section: audio element with controls and preload=\"none\", notes, links, transcript if given.\n4. Hosts with photos and a sentence each.\n5. Where to listen links with clear text.\nQuality bar:\n- Players never autoplay.\n- Transcripts or summaries make episodes searchable.\n- Durations shown.\nPitfalls:\n- Loading every audio file on page load.\n- Icon only platform links.\n- No episode numbers.\nVerify:\n- [ ] audio has controls and preload none.\n- [ ] Link text is descriptive.\n- [ ] time elements for dates.\n- [ ] One h1.\nOutput: index.html, an episodes page if needed and style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text",
+    "html.external-rel"
+  ],
+  "examples": [
+    {
+      "input": "site para meu podcast de tecnologia",
+      "output": "hero with latest episode player, list of 10 episodes with durations, hosts, listen links"
+    }
+  ],
+  "size": 245,
+  "version": 1
+}

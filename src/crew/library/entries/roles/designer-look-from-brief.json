@@ -1,0 +1,37 @@
+{
+  "id": "designer-look-from-brief",
+  "title": "Designer: choosing a look from the brief",
+  "category": "roles",
+  "roles": [
+    "designer"
+  ],
+  "tags": [
+    "designer",
+    "look and feel",
+    "style direction",
+    "visual direction",
+    "palette",
+    "typography",
+    "mood",
+    "brand feel"
+  ],
+  "when": "The brief gives a subject and maybe a feeling (cozy, serious, playful) but no visual direction, and the designer must choose one.",
+  "inputs": [
+    "the subject and audience",
+    "any words about feel",
+    "existing brand colors"
+  ],
+  "prompt": "Goal: One coherent direction (palette, type, shape, density) chosen from the brief with a reason, applied consistently in the stylesheet.\nSteps:\n1. Pull three words of feel from the brief, or infer them from the subject and audience (a law office: calm, serious, clear).\n2. Pick a palette: one neutral background, one dark text color, one accent; add a soft tint of the accent for surfaces.\n3. Pick type from the system stacks: a serif heading for classic feel, a sans for modern, a rounded or heavy weight for playful.\n4. Pick shape and density: radius 0 to 4 px for serious, 12 px or more for friendly; generous spacing for calm, tighter for data heavy pages.\n5. Write the direction in two lines in a note with the reason tied to the brief.\n6. Apply it through custom properties and check text contrast on every background.\nQuality bar:\n- The look matches the audience.\n- One accent only.\n- Text contrast passes everywhere.\nPitfalls:\n- A generic gradient look for every subject.\n- Several accent colors competing.\n- Fonts loaded from the network.\nVerify:\n- [ ] Direction note exists with a reason.\n- [ ] Palette is three colors plus tint.\n- [ ] Type uses system stacks.\n- [ ] Contrast checked.\nOutput: style.css (or tokens.css) built on the chosen direction and a two line note explaining it.",
+  "checks": [
+    "css.braces",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "site para um escritorio de contabilidade",
+      "output": "calm, serious, clear: navy text, off white bg, teal accent, serif headings, radius 4px"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

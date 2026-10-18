@@ -1,0 +1,37 @@
+{
+  "id": "writer-copy-from-brief",
+  "title": "Writer: page copy from a brief",
+  "category": "roles",
+  "roles": [
+    "writer"
+  ],
+  "tags": [
+    "writer",
+    "copy",
+    "page copy",
+    "website text",
+    "headline",
+    "copywriting",
+    "content"
+  ],
+  "when": "The writer gets a short brief and must produce the real text for a page: headline, sections, buttons, footer.",
+  "inputs": [
+    "the business or product",
+    "the audience",
+    "the one action wanted",
+    "facts given by the user"
+  ],
+  "prompt": "Goal: Specific, plain copy built from the facts in the brief, structured per section, ready for the developer to paste.\nSteps:\n1. List the facts in the brief (what, who, where, prices, hours); copy may only claim these or modest, obvious details.\n2. Write the headline as the offer plus the benefit in under ten words.\n3. Write a one sentence subheading that adds who it is for or how it works.\n4. Write each section as a heading and two or three short sentences or a list; lead with the reader benefit.\n5. Write button labels as verb plus object and the closing call to action that repeats the main action.\n6. Deliver the copy as a Markdown file with one heading per page section, or patch it directly into the HTML if the task says so.\nQuality bar:\n- Every claim comes from the brief or is plainly true.\n- Sentences under 20 words.\n- The main action appears at least twice.\nPitfalls:\n- Hype words (revolutionary, world class) with no facts.\n- Invented reviews, awards or numbers.\n- Long paragraphs nobody reads on a phone.\nVerify:\n- [ ] No lorem ipsum or brackets left.\n- [ ] Headline under ten words.\n- [ ] Buttons are verb plus object.\n- [ ] Facts match the brief.\nOutput: COPY.md with a section per page part, or the text placed in the HTML.",
+  "checks": [
+    "text.no-placeholder",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "textos do site da escola de natacao para criancas",
+      "output": "h1 \"Swimming lessons for kids aged 3 to 10\", sections: classes, safety, prices, Book a trial class"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

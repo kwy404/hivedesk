@@ -1,0 +1,40 @@
+{
+  "id": "ext-options-page",
+  "title": "Extension options page bound to storage",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "options page",
+    "extension settings",
+    "settings page",
+    "options_ui",
+    "preferences",
+    "settings form",
+    "browser extension",
+    "reset defaults"
+  ],
+  "when": "A browser extension needs a settings page where users change preferences that the popup, worker and content scripts all respect.",
+  "inputs": [
+    "settings and defaults",
+    "validation rules",
+    "where settings are used"
+  ],
+  "prompt": "Goal: An accessible options form that loads saved values, validates input, saves with visible feedback and resets to defaults.\nSteps:\n1. manifest.json: \"options_ui\": { \"page\": \"options.html\", \"open_in_tab\": false }; the popup opens it with chrome.runtime.openOptionsPage().\n2. defaults.js exports DEFAULTS = { theme: \"auto\", maxItems: 20, blockList: [] }, imported by every part.\n3. options.html: a <form> with a <label> per field, number inputs with min and max, a textarea taking one site per line, Save and Reset buttons, and <p id=\"status\" role=\"status\" aria-live=\"polite\">.\n4. options.js on DOMContentLoaded: const v = await chrome.storage.sync.get(DEFAULTS); fill each field.\n5. Submit: preventDefault, trim lines, drop empties, check hosts with new URL(\"https://\" + h), show errors beside fields, then chrome.storage.sync.set(values) and status \"Saved\".\n6. Reset asks for confirmation, writes DEFAULTS and refills the form.\n7. Other parts follow changes through storage.onChanged without reloads.\nQuality bar:\n- Every input has a visible label and focus style.\n- Invalid input never reaches storage.\n- Save status is announced to screen readers.\nPitfalls:\n- Saving to sync on every keystroke and hitting write limits.\n- Defaults copied into several files that drift apart.\n- Inline onsubmit handlers blocked by the extension CSP.\nVerify:\n- [ ] Labels on all fields.\n- [ ] aria-live status present.\n- [ ] No inline handlers.\n- [ ] options_ui declared.\nOutput: options.html, options.css, options.js, defaults.js and the manifest entry.",
+  "checks": [
+    "html.labels",
+    "html.aria-live",
+    "html.no-inline-handlers",
+    "ext.manifest-v3"
+  ],
+  "examples": [
+    {
+      "input": "pagina de configuracoes para minha extensao com lista de sites",
+      "output": "options.html form with labels and aria-live status, defaults.js shared, validation of hosts, save and reset via storage.sync"
+    }
+  ],
+  "size": 440,
+  "version": 1
+}

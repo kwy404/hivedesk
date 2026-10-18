@@ -1,0 +1,34 @@
+{
+  "id": "plan-documentation",
+  "title": "Planning the documentation for a job",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "writer"
+  ],
+  "tags": [
+    "docs plan",
+    "documentation",
+    "what to document",
+    "readme plan",
+    "guides",
+    "help",
+    "manual"
+  ],
+  "when": "A job produces something people must open, run, configure or maintain, and the plan must decide which docs to write.",
+  "inputs": [
+    "who will read the docs (end user, maintainer)",
+    "what the result does",
+    "how it is run"
+  ],
+  "prompt": "Goal: The smallest set of docs that lets each reader succeed, with one owner task, written after the code it describes.\nSteps:\n1. Name the readers and their one question each: user (how do I use it), maintainer (how do I change it).\n2. Default to one README.md: what it is, how to open or run it, how to use it, files, limits.\n3. Add a separate doc only for a real second reader: CHANGELOG.md for releases, a help page for non technical users.\n4. Give the docs task the list of commands, file names and options to describe, taken from the build task details.\n5. Make the docs task depend on the code tasks so it describes what exists.\n6. Add a criterion: every command in the docs works and every file named exists.\nQuality bar:\n- Each doc has a reader and a question.\n- Docs come after code.\n- No doc describes planned but unbuilt features.\nPitfalls:\n- Five docs for a one page site.\n- Docs written first and drifting from the code.\n- README with no run instructions.\nVerify:\n- [ ] Readers named.\n- [ ] README task exists.\n- [ ] Docs depend on code tasks.\n- [ ] A docs criterion exists.\nOutput: A writer task (or two) with the facts to document and the files to create.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "script de backup das fotos em Python",
+      "output": "README.md task after backup.py: run command, options, where copies go, how to restore"
+    }
+  ],
+  "size": 335,
+  "version": 1
+}

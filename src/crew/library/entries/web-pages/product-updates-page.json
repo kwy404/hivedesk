@@ -1,0 +1,45 @@
+{
+  "id": "product-updates-page",
+  "title": "Product updates page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "product updates",
+    "whats new",
+    "release notes",
+    "announcements",
+    "changelog page"
+  ],
+  "when": "The user wants a public page that lists product updates or release notes for customers.",
+  "inputs": [
+    "product name",
+    "updates with date and type",
+    "links to docs"
+  ],
+  "prompt": "Goal: A scannable timeline of changes written for customers, not for developers.\nSteps:\n1. One h1 and a one line intro; optional filter by type (New, Improved, Fixed) as buttons.\n2. Each update: date in a time element, a type label in text, a title with the user benefit, two lines of detail, a link to docs.\n3. Newest first; group by month when there are many.\n4. Anchor ids on each update so they can be linked.\n5. Subscribe or feed link at the end if the user has one.\nQuality bar:\n- Each title says what the customer can now do.\n- Labels are text, not only color.\n- Dates are unambiguous.\nPitfalls:\n- Internal ticket numbers or jargon.\n- Walls of text.\n- Duplicate anchor ids.\nVerify:\n- [ ] Updates sorted newest first.\n- [ ] time elements with datetime.\n- [ ] Unique ids.\n- [ ] Filter buttons have type.\nOutput: updates.html, style.css and an optional filter script.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.unique-ids",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "página de novidades do meu app",
+      "output": "h1 What is new, 6 updates with dates and New or Fixed labels, filter buttons"
+    }
+  ],
+  "size": 249,
+  "version": 1
+}

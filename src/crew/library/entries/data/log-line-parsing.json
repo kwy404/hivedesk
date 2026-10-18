@@ -1,0 +1,40 @@
+{
+  "id": "log-line-parsing",
+  "title": "Parsing and summarizing log files",
+  "category": "data",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "logs",
+    "log file",
+    "parse logs",
+    "access log",
+    "log analysis",
+    "error report",
+    "log parser",
+    "summarize logs"
+  ],
+  "when": "The user has server or app log files and wants errors counted, slow requests found, or a summary report.",
+  "inputs": [
+    "log samples",
+    "what to report"
+  ],
+  "prompt": "Goal: A streaming Node script that parses each line into fields, tolerates bad lines, and prints a clear summary.\nSteps:\n1. Start with #!/usr/bin/env node; take paths from process.argv and read each line by line with readline over createReadStream.\n2. Detect format per line: JSON lines (JSON.parse in try when it starts with \"{\"), access log regex with named groups (ip, time, method, path, status, bytes), or key=value pairs.\n3. Normalize to { time, level, status, path, durationMs, message } with ISO times keeping the offset.\n4. Count unparsed lines and keep the first 5 as examples.\n5. Aggregate: counts per level and status class, top 10 paths and messages, errors per hour, p50 and p95 duration.\n6. Print a readable report, --json for machine output, --since and --level filters; set process.exitCode = 1 when a file cannot be read.\nQuality bar:\n- Flat memory on gigabyte files.\n- Report totals match parsed lines.\n- --mask hides IPs and emails.\nPitfalls:\n- Reading the whole file into memory.\n- One bad line crashing the run.\n- Regexes that break on quoted fields with spaces.\nVerify:\n- [ ] Shebang and non zero exit on errors.\n- [ ] Line by line reading.\n- [ ] JSON.parse in try.\n- [ ] Unparsed lines counted.\nOutput: logstat.mjs with per format parsers and the report, plus usage in README.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code",
+    "js.json-parse-guarded"
+  ],
+  "examples": [
+    {
+      "input": "which endpoints are failing the most in access.log?",
+      "output": "logstat.mjs access.log -> 5xx by path top 10, errors per hour, p95 duration, 3 unparsed lines"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

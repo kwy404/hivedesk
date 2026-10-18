@@ -1,0 +1,34 @@
+{
+  "id": "milestones",
+  "title": "Milestones for a larger project",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "milestones",
+    "phases",
+    "stages",
+    "roadmap",
+    "checkpoints",
+    "larger project",
+    "iterations"
+  ],
+  "when": "The request is too big for one crew job, so it must be split into milestones that each end with something usable.",
+  "inputs": [
+    "the full request",
+    "the core loop",
+    "what the user needs first"
+  ],
+  "prompt": "Goal: Three to five milestones, each a complete crew job with its own criteria, in an order where each builds on the last.\nSteps:\n1. Name the end state in one sentence and the first usable slice in another.\n2. Cut milestones by user value: M1 the core loop working, M2 saving and editing, M3 extras, M4 docs and polish.\n3. Write for each milestone: what the user can do after it, files added or changed, and three criteria.\n4. Check each milestone can be planned as 2 to 6 tasks; split any that cannot.\n5. Plan only M1 in detail now; keep the rest as short outlines to refine later.\n6. After each milestone, review what changed and adjust the next outline.\nQuality bar:\n- Every milestone ends usable.\n- Each has criteria.\n- Only the next milestone is detailed.\nPitfalls:\n- Milestones by layer (all HTML, then all JS) that are usable only at the end.\n- Planning every milestone in detail upfront.\n- A milestone too big for one job.\nVerify:\n- [ ] Three to five milestones.\n- [ ] Each says what the user can do.\n- [ ] M1 has a full task plan.\n- [ ] Later ones are outlines.\nOutput: A milestone list in the summary and the task plan for M1.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "sistema de estoque completo para minha loja",
+      "output": "M1 list and add items, M2 edit and stock alerts, M3 CSV export, M4 README and help page"
+    }
+  ],
+  "size": 325,
+  "version": 1
+}

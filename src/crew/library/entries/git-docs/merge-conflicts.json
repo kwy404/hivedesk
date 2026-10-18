@@ -1,0 +1,38 @@
+{
+  "id": "merge-conflicts",
+  "title": "Resolve merge conflicts",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "merge conflict",
+    "conflict",
+    "rebase conflict",
+    "conflict markers",
+    "git merge",
+    "resolve conflicts",
+    "git"
+  ],
+  "when": "A merge, rebase or pull stopped with conflicts and the user needs them resolved correctly.",
+  "inputs": [
+    "git status output",
+    "the conflicted files",
+    "the intent of both sides"
+  ],
+  "prompt": "Goal: Each conflict resolved by combining the intent of both sides, with no markers left and the project working.\nSteps:\n1. Run git status to list conflicted files; check whether it is a merge or a rebase, since ours and theirs swap meaning in a rebase.\n2. For each hunk between <<<<<<<, ======= and >>>>>>>, read both versions and the commit messages (git log --merge) to learn each intent.\n3. Write the combined result by hand: keep both changes when they are independent, rewrite when they touch the same logic.\n4. For generated files and lock files, take one side and regenerate instead of hand merging.\n5. Search the whole project for leftover markers, run the tests, then git add each file and git merge --continue or git rebase --continue.\n6. If it goes wrong, git merge --abort or git rebase --abort returns to the start.\nQuality bar:\n- No change from either side is lost unintentionally.\n- The result parses and tests pass.\n- JSON files stay valid.\nPitfalls:\n- Choosing one side for the whole file without reading the other.\n- Leaving ======= lines in code or JSON.\n- Committing before running anything.\nVerify:\n- [ ] No conflict markers remain.\n- [ ] Scripts parse.\n- [ ] JSON files parse.\n- [ ] Tests or the main flow pass.\nOutput: Resolved files and a short note on each conflict and how it was combined.",
+  "checks": [
+    "js.syntax",
+    "json.valid",
+    "py.balanced"
+  ],
+  "examples": [
+    {
+      "input": "deu conflito no merge, me ajuda",
+      "output": "app.js: kept the new validation from main and the renamed function from the branch; package.json merged by hand"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "service-worker-offline",
+  "title": "Offline support with a service worker",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "service worker",
+    "offline",
+    "cache",
+    "cache api",
+    "works offline",
+    "precache",
+    "sw.js",
+    "no internet"
+  ],
+  "when": "The user wants a site or app to open without a connection, or to cache its files for fast repeat visits.",
+  "inputs": [
+    "list of app files",
+    "which data may be stale"
+  ],
+  "prompt": "Goal: A versioned service worker that precaches the app shell, serves it offline, and updates without trapping users on old files.\nSteps:\n1. Register from main.js when \"serviceWorker\" in navigator: navigator.serviceWorker.register(\"./sw.js\"); keep sw.js at the root so its scope covers the app.\n2. Define const CACHE = \"app-v1\" and ASSETS as relative URLs: ./, ./index.html, ./style.css, ./main.js, icons.\n3. install: event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS))); activate: delete caches not named CACHE, then clients.claim().\n4. fetch: handle only same origin GET; navigations go network first with the cached index.html as fallback; static files go cache first and store fresh copies.\n5. Bump CACHE whenever an asset changes and tell the user when registration.waiting holds a new version.\nQuality bar:\n- After one visit the app opens with the network off.\n- Navigations never end on a raw offline error page.\n- Old caches are removed on activate.\nPitfalls:\n- Caching POST or cross origin responses blindly.\n- Absolute paths that break when the app lives in a subfolder.\n- Testing over file://; service workers need localhost or HTTPS.\nVerify:\n- [ ] sw.js has install, activate and fetch listeners.\n- [ ] Every ASSETS path exists.\n- [ ] activate deletes old caches.\n- [ ] Registration is feature detected.\nOutput: sw.js at the project root and the registration snippet in main.js.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quero que meu app funcione sem internet",
+      "output": "sw.js precaching index.html, style.css, main.js under app-v1, network first navigations with cached fallback"
+    }
+  ],
+  "size": 401,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "writer-microcopy",
+  "title": "Writer: microcopy for buttons and errors",
+  "category": "roles",
+  "roles": [
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "writer",
+    "microcopy",
+    "button labels",
+    "error messages",
+    "empty states",
+    "ui text",
+    "tooltips",
+    "confirmations"
+  ],
+  "when": "An interface needs its small texts written: button labels, field hints, errors, empty states, confirmations and success messages.",
+  "inputs": [
+    "the screens and controls",
+    "what each action does",
+    "the errors that can happen"
+  ],
+  "prompt": "Goal: Short, specific UI text that tells users what will happen, what went wrong and what to do next.\nSteps:\n1. Buttons: verb plus object for what happens (Save note, Delete 3 items); avoid OK, Submit and Yes.\n2. Errors: say what happened and how to fix it in one sentence: \"Enter an email like name@example.com.\"\n3. Empty states: say why it is empty and give the first action: \"No tasks yet. Add your first task.\"\n4. Destructive confirmations: name the thing and the result: \"Delete the list Groceries? This cannot be undone.\" with buttons Delete list and Cancel.\n5. Success: confirm briefly with the result: \"Saved. Your note is in the list.\"\n6. Keep one table of all strings (key, text) so they stay consistent and are easy to translate.\nQuality bar:\n- No message blames the user.\n- Errors always include a fix.\n- Labels match the action exactly.\nPitfalls:\n- Error codes or \"Invalid input\" with no guidance.\n- Different words for the same action on different screens.\n- Jokes in error messages.\nVerify:\n- [ ] Every control has a label.\n- [ ] Every error has a fix.\n- [ ] Empty states have an action.\n- [ ] Strings table exists.\nOutput: strings.json (or a strings table in the task file) and patched HTML or JS where the texts live.",
+  "checks": [
+    "text.no-placeholder",
+    "json.valid",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "textos dos botoes e erros do app de tarefas",
+      "output": "Add task, Clear done tasks; error: \"Write a task name first.\"; empty: \"Nothing here yet.\""
+    }
+  ],
+  "size": 353,
+  "version": 1
+}

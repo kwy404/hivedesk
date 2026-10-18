@@ -1,0 +1,41 @@
+{
+  "id": "mobile-offline-location-maps",
+  "title": "Location tracking and maps that work offline",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "geolocation",
+    "maps",
+    "offline maps",
+    "gps tracking",
+    "route",
+    "mobile app",
+    "watchposition",
+    "battery",
+    "map tiles"
+  ],
+  "when": "The phone app records positions or shows places on a map in areas with poor signal, so it must keep working and drawing without the network.",
+  "inputs": [
+    "what is tracked or shown",
+    "area size",
+    "tracking interval"
+  ],
+  "prompt": "Goal: Positions are recorded to the device with accuracy, and a map view draws points and tracks even with no network.\nSteps:\n1. After a tap: id = navigator.geolocation.watchPosition(save, onErr, { enableHighAccuracy: true, maximumAge: 5000 }); stop with clearWatch(id).\n2. save() drops fixes with coords.accuracy over 50 m and points closer than 5 m to the last one, then writes { lat, lon, acc, t } to IndexedDB.\n3. Draw the track on a <canvas> or SVG with a simple equirectangular projection around the track center; this needs no tiles at all.\n4. For a base map ship your own small tile pack for the known area; bulk downloads from public tile servers break their usage policies.\n5. Cache viewed tiles in a service worker cache with a size cap so revisited areas work offline.\n6. Show the last known position with its age and an accuracy circle when a new fix is missing.\n7. Compute distance with the haversine formula in a pure function that node:test can check.\n8. Web pages cannot track with the screen off; continuous tracking needs a native background location plugin and a store justification.\nQuality bar:\n- Tracking stops when the user leaves the screen or taps stop.\n- Offline the map still shows saved tracks.\nPitfalls:\n- High accuracy forever, which drains the battery.\n- Plotting raw jittery fixes.\nVerify:\n- [ ] clearWatch is called on stop.\n- [ ] Inaccurate fixes are filtered.\n- [ ] The map renders in airplane mode.\nOutput: track.js, mapview.js, geo.js with a test and the tile cache rule in sw.js.",
+  "checks": [
+    "js.async-errors",
+    "js.storage-guarded",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "app de trilha que grava o percurso mesmo sem internet",
+      "output": "watchPosition with accuracy filter to IndexedDB, canvas track view, capped tile cache, haversine test"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

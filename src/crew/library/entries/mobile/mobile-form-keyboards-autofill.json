@@ -1,0 +1,41 @@
+{
+  "id": "mobile-form-keyboards-autofill",
+  "title": "Mobile forms with the right keyboard and autofill",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "forms",
+    "mobile keyboard",
+    "inputmode",
+    "autocomplete",
+    "autofill",
+    "enterkeyhint",
+    "one time code",
+    "mobile app",
+    "sign up form"
+  ],
+  "when": "A form is painful on a phone: wrong keyboard, no autofill, the page zooms on focus, or the keyboard covers the submit button.",
+  "inputs": [
+    "the form fields",
+    "which are required"
+  ],
+  "prompt": "Goal: A form where each field opens the right on screen keyboard, autofill fills what it can and the active field stays visible above the keyboard.\nSteps:\n1. Pick type and inputmode per field: type=\"email\"; type=\"tel\" for phones; inputmode=\"numeric\" with pattern=\"[0-9]*\" for codes; inputmode=\"decimal\" for amounts; type=\"search\" for search boxes.\n2. Set autocomplete tokens: name, email, tel, street-address, postal-code, current-password, new-password, one-time-code.\n3. Set enterkeyhint (\"next\", \"done\", \"search\", \"send\") so the return key says what happens.\n4. Font size at least 16px on inputs so the phone does not zoom on focus; never block zoom in the viewport meta.\n5. Each input has a visible <label for>; errors sit under the field, linked with aria-describedby.\n6. One column layout, full width fields, submit button at least 48 px tall.\n7. On focus call el.scrollIntoView({ block: \"center\" }) after a short delay when the visualViewport height shrinks.\n8. Use autocapitalize=\"off\" and spellcheck=\"false\" for emails and usernames.\nQuality bar:\n- The form can be completed with autofill plus two taps.\n- No field asks for data the task does not need.\nPitfalls:\n- type=\"number\" for card or zip codes, which drops leading zeros and shows spinners.\n- Placeholders used as labels.\n- Validation that fires on every key press.\nVerify:\n- [ ] Every input has a label and an autocomplete token.\n- [ ] Inputs use 16px or larger text.\n- [ ] The form submits with the return key.\nOutput: the form markup in index.html, form.css and form.js.",
+  "checks": [
+    "html.labels",
+    "html.input-types",
+    "html.form-submit",
+    "css.min-font-size"
+  ],
+  "examples": [
+    {
+      "input": "meu formulário de cadastro no celular abre o teclado errado e dá zoom",
+      "output": "Fields with inputmode, autocomplete tokens, enterkeyhint, 16px inputs and aria-describedby errors"
+    }
+  ],
+  "size": 440,
+  "version": 1
+}

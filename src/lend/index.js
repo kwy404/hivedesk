@@ -12,11 +12,19 @@
 //                also lends its brain to the host); only this PC's own browser can send it
 //   GET /api/lend the same counters over REST
 // It also loads Code together (src/collab/), which adds files.write for the Code editor.
+// 1.0: it attaches the P2P control plane (src/p2p/engine.js, the p2p.* commands) and adds the
+// grant based lending of src/lend/share.js:
+//   lend.offer   an invite that offers the compute capabilities of the Lend form
+//   lend.accept  accept a join request with the form's capabilities (needs sasMatches: true)
+//   lend.revoke  revoke every compute grant of one peer
+//   lend.stop    also revokes every compute grant of every peer (the real Stop)
 // On the host nothing is needed here: the remote brain rides the engine's brain.attach,
 // brain.request and brain.respond frames.
 
 import { createLendGuard, lendable } from './guard.js';
 import registerCollab from '../collab/index.js';
+import { attachP2P } from '../p2p/engine.js';
+import { LEND_CAPS, lendAnswer, lendCaps, lendingNow, readLendForm } from './share.js';
 
 const LOG_STATUSES = new Set(['running', 'done', 'refused', 'failed', 'cancelled', 'stopped']);
 const num = (v) => (Number.isFinite(v) && v >= 0 ? Math.round(v) : undefined);
@@ -76,7 +84,23 @@ export default function register(ctx) {
   const guard = createLendGuard({ chat, emit, grant: config.lendGrant });
   // guarded: lend.chat can reach the local brain. When false the browser uses the engine's brain.chat.
   let lending = !!config.lend;
-  const status = () => ({ lend: lending, guarded: !!chat, ...guard.status() });
+  const p2p = attachP2P(ctx);
+  const lendGrants = () => (p2p.started ? lendingNow(p2p.node().listPeers()) : []);
+  const status = () => ({ lend: lending, guarded: !!chat, ...guard.status(), p2p: { started: p2p.started, lending: lendGrants() } });
+
+  /** Revokes every compute grant (of one peer, or of all). Returns how many. */
+  const revokeCompute = (peerId, reason) => {
+    if (!p2p.started) return 0;
+    let count = 0;
+    for (const p of lendGrants()) {
+      if (peerId && p.peerId !== peerId) continue;
+      for (const g of p.grants) {
+        p2p.node().revoke(g.id, reason);
+        count++;
+      }
+    }
+    return count;
+  };
 
   const onlyLend = () => {
     if (!lending) throw Object.assign(new Error('This hivedesk was not started with --lend'), { code: 'not_lending' });
@@ -112,10 +136,26 @@ export default function register(ctx) {
     return {};
   });
   server?.command?.('lend.stop', (data) => {
+    const reason = typeof data?.reason === 'string' ? data.reason.slice(0, 200) : 'stopped';
+    // Stop lending revokes the grants for real, so the worker aborts what they allowed.
+    const revoked = revokeCompute(null, 'stop lending');
+    if (!lending && revoked) return { ...status(), revoked };
     onlyLend();
-    guard.stop(typeof data?.reason === 'string' ? data.reason.slice(0, 200) : 'stopped');
-    return status();
+    guard.stop(reason);
+    return { ...status(), revoked };
   });
+  server?.command?.('lend.offer', async (data) => {
+    const caps = lendCaps(data?.form);
+    if (!caps.length) throw Object.assign(new Error('Turn on the GPU or the CPU to lend'), { code: 'bad_request' });
+    const invite = await p2p.node().createInvite({ caps, minutes: data?.minutes });
+    return { ...invite, form: readLendForm(data?.form) };
+  });
+  server?.command?.('lend.accept', (data) => {
+    const caps = lendAnswer(data?.form);
+    return p2p.node().answerJoin(String(data?.requestId || ''), { accept: true, sasMatches: data?.sasMatches, caps });
+  });
+  server?.command?.('lend.grants', () => ({ lending: lendGrants(), capabilities: LEND_CAPS }));
+  server?.command?.('lend.revoke', (data) => ({ revoked: revokeCompute(String(data?.peerId || ''), 'revoked from the Lend screen') }));
   server?.command?.('lend.resume', () => {
     onlyLend();
     guard.resume();
@@ -126,5 +166,5 @@ export default function register(ctx) {
     res.end(JSON.stringify(status()));
   });
   registerCollab(ctx);
-  return { guard, status };
+  return { guard, status, p2p };
 }

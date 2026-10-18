@@ -1,0 +1,36 @@
+{
+  "id": "review-logging",
+  "title": "Logging review for scripts and servers",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "ops"
+  ],
+  "tags": [
+    "logging",
+    "logs",
+    "log levels",
+    "debug output",
+    "stderr",
+    "observability",
+    "log privacy"
+  ],
+  "when": "The user wants logs reviewed: useful when something breaks, quiet otherwise, and free of secrets and personal data.",
+  "inputs": [
+    "the scripts or server",
+    "where logs end up"
+  ],
+  "prompt": "Goal: A review of log levels, structure, context and privacy, listing missing, noisy and dangerous log lines with fixes.\nSteps:\n1. Inventory log calls: console.log, console.error, print, the logging module, process.stderr.write, and where each goes.\n2. Levels: errors to stderr, progress to stdout or info, debug output behind a flag (--verbose or LOG_LEVEL=debug).\n3. Context: each error line names the operation, the input id and the message; one line per event, optionally JSON lines with ts, level, msg.\n4. Privacy: no passwords, tokens, card numbers, emails or raw request bodies; mask them (user u_123, a***@example.org).\n5. Noise: logs inside hot loops, per request success lines in busy servers, leftover debug prints in browser code.\n6. Size: log files capped or rotated; tests do not flood the output.\nQuality bar:\n- Each finding names the line and its replacement.\n- An error log allows diagnosis without a rerun.\n- Zero secrets in output.\nPitfalls:\n- Logging whole objects that carry secrets.\n- console.log for errors, which never reach stderr.\n- Deleting logs instead of leveling them.\nVerify:\n- [ ] Log calls inventoried.\n- [ ] Levels checked.\n- [ ] Secrets and personal data searched.\n- [ ] Browser debug prints listed.\nOutput: logging-review.md with findings and a proposed log line format.",
+  "checks": [
+    "js.no-console-log",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "review the logs of my backup script",
+      "output": "password printed at backup.mjs:22, errors on stdout, 400 lines per run; propose --verbose and JSON lines"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

@@ -1,0 +1,49 @@
+{
+  "id": "mines-grid-game",
+  "title": "Hidden mines grid game with flags",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "mines",
+    "mine grid",
+    "minefield",
+    "logic game",
+    "flags",
+    "puzzle game",
+    "grid game"
+  ],
+  "when": "The user wants the classic grid of hidden mines: reveal cells, numbers count nearby mines, flag suspects, clear every safe cell to win.",
+  "inputs": [
+    "levels",
+    "touch support"
+  ],
+  "prompt": "Goal: A fair board (first click is always safe), instant flood reveal and full keyboard and touch play.\nSteps:\n1. Levels 9x9 with 10 mines, 16x16 with 40, 30x16 with 99; place mines after the first click, keeping that cell and its neighbors safe.\n2. logic.mjs: createBoard(w, h, mines, safeIndex, rand), neighbors(i), counts, reveal(board, i) with an iterative queue flood fill for zeros, toggleFlag, chord when flags equal the number, status.\n3. Grid of buttons with roving tabindex: arrows move, Enter reveals, F flags; right click and a 500 ms long press flag.\n4. aria-label per cell: \"Row 3, column 4, hidden\", \"flagged\", \"2 mines nearby\"; numbers in text plus color.\n5. Header: mines left, timer, New game; result in aria-live; on loss show all mines and wrong flags.\n6. Best time per level in localStorage guarded.\n7. test.mjs: first click safe, counts, flood stops at numbers, win detection.\nQuality bar:\n- Large board scrolls inside its frame.\n- No context menu on flagging.\n- Timer starts on the first reveal.\nPitfalls:\n- Recursive flood fill overflowing the stack.\n- Mines placed before the first click.\n- Revealing a flagged cell.\nVerify:\n- [ ] Cells labeled.\n- [ ] Status live.\n- [ ] Logic tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (board), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de campo minado",
+      "output": "Beginner/Intermediate/Expert, safe first click, flags by right click or long press"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

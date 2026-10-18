@@ -1,0 +1,53 @@
+{
+  "id": "chat-ui-local",
+  "title": "Chat interface with local echo replies",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "chat",
+    "chat ui",
+    "chat app",
+    "messenger",
+    "messages",
+    "chatbot",
+    "conversation",
+    "message bubbles"
+  ],
+  "when": "The user wants a chat screen with message bubbles, an input bar and replies, working offline with a local echo or scripted bot and no server.",
+  "inputs": [
+    "bot persona and replies",
+    "history kept or not",
+    "look of the bubbles"
+  ],
+  "prompt": "Goal: A chat screen that feels real on a phone, keeps the input visible and renders every message as text.\nSteps:\n1. Message { id, author: me | bot, text, at }; logic.mjs: createMessage, replyFor(text) from a rules table with an echo fallback, groupByDay, formatTime.\n2. Layout: header, a scrolling list with role=\"log\" and aria-live=\"polite\", and a bottom form with a labeled textarea and Send; height 100dvh.\n3. Enter sends, Shift+Enter adds a line; ignore empty text; keep focus in the textarea.\n4. Bubbles: mine right with the accent, others left; text via textContent with white-space: pre-wrap.\n5. Typing indicator for 600 to 1200 ms before a reply; scroll down only if the user was already near the bottom.\n6. Keep the last 200 messages in localStorage chat.v1 guarded; Clear chat with confirm.\n7. test.mjs: replyFor rules, empty rejected, groupByDay.\nQuality bar:\n- Mobile keyboard never hides the input.\n- Date separators between days.\n- Long words wrap.\nPitfalls:\n- innerHTML for message text.\n- Jumping to the bottom while the user reads history.\n- Pretending to send to a server.\nVerify:\n- [ ] Log has role=\"log\".\n- [ ] Textarea labeled.\n- [ ] History reloads.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (messages and bot rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a chat interface for a support bot demo",
+      "output": "bubbles, typing dots, bot answers \"hours\" and \"price\", echo fallback, history saved"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

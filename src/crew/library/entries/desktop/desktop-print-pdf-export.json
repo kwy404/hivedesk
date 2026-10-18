@@ -1,0 +1,39 @@
+{
+  "id": "desktop-print-pdf-export",
+  "title": "Printing and export to PDF from a desktop app",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "print",
+    "export pdf",
+    "pdf",
+    "print preview",
+    "desktop app",
+    "report",
+    "page breaks",
+    "save as pdf"
+  ],
+  "when": "Users of the desktop app need to print a report or invoice and save it as a PDF file, with clean page breaks and no app chrome on paper.",
+  "inputs": [
+    "document or report to print",
+    "paper size"
+  ],
+  "prompt": "Goal: A print view with print CSS, a Print command and a PDF export path that works on each OS, with the per OS limits written down.\nSteps:\n1. Build the printable content in a dedicated <article id=\"print-view\">; @media print hides everything else (toolbar, sidebar, dialogs).\n2. @page { size: A4; margin: 15mm } with a setting for Letter; break-inside: avoid on rows and cards; thead { display: table-header-group } to repeat headers.\n3. Print command calls window.print(); test it per OS, since some WebViews ignore it.\n4. PDF export option A: the OS print dialog offers save as PDF on most systems; tell the user so in the Export menu.\n5. Option B, when print is not available: write the print view to a standalone report.html in the temp folder with inlined CSS, then open it with Neutralino.os.open so the default browser prints it.\n6. Option C, a direct PDF: generate it in a worker with a small vendored PDF library, then save with showSaveDialog and filesystem.writeBinaryFile.\n7. Use black text, real borders instead of background colors, and tabular figures for numbers.\nQuality bar:\n- No buttons or menus appear on paper.\n- Tables split between rows, never through a row.\nPitfalls:\n- Background colors that do not print by default.\n- Assuming window.print works the same in every WebView.\nVerify:\n- [ ] @media print and @page rules exist.\n- [ ] The Print command has a fallback path.\n- [ ] Exported files open in a PDF viewer.\nOutput: print.css, print.js and the Export menu items.",
+  "checks": [
+    "css.media-query",
+    "js.async-errors",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "imprimir o relatório do app desktop e salvar em PDF",
+      "output": "print.css with @page A4, window.print with report.html fallback opened via os.open, optional PDF writer"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

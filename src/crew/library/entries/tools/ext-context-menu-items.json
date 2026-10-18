@@ -1,0 +1,37 @@
+{
+  "id": "ext-context-menu-items",
+  "title": "Extension context menu items with contextMenus",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "contextmenus",
+    "extension menu",
+    "selected text",
+    "link action",
+    "image action",
+    "menu item",
+    "onclicked",
+    "browser extension"
+  ],
+  "when": "A browser extension should add entries to the browser's right click menu for selected text, links, images or the whole page.",
+  "inputs": [
+    "menu actions",
+    "contexts for each",
+    "pages where they apply"
+  ],
+  "prompt": "Goal: Menu items created once at install, shown only in fitting contexts and handled by a top level listener in the service worker.\nSteps:\n1. Add \"contextMenus\" to permissions, plus \"activeTab\" and \"scripting\" if an item acts on the page.\n2. In chrome.runtime.onInstalled: chrome.contextMenus.removeAll(), then create items with fixed ids, for example { id: \"lookup\", title: \"Look up \\\"%s\\\"\", contexts: [\"selection\"] }.\n3. Narrow where items show with documentUrlPatterns or targetUrlPatterns.\n4. Several items go under one parent ({ id: \"root\", title: \"My tool\" } and parentId: \"root\").\n5. chrome.contextMenus.onClicked.addListener((info, tab) => ...) at top level; switch on info.menuItemId and read info.selectionText, info.linkUrl, info.srcUrl or info.pageUrl.\n6. Validate those values: trim, cap length, parse links with new URL.\n7. Page work: chrome.scripting.executeScript({ target: { tabId: tab.id }, func, args: [text] }); tab may be undefined in some contexts, so check it.\nQuality bar:\n- Items appear only where they make sense.\n- No duplicate id errors after reloads or updates.\nPitfalls:\n- Creating items on every worker start instead of onInstalled.\n- An onclick property in create(), unsupported in Manifest V3 workers.\n- Long selections pasted straight into a URL.\nVerify:\n- [ ] contextMenus permission declared.\n- [ ] Items created in onInstalled with ids.\n- [ ] onClicked registered at top level.\n- [ ] Selection and link values validated.\nOutput: menus.js imported by background.js, plus the manifest permissions.",
+  "checks": [
+    "ext.manifest-v3",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "add a right click option to search the selected text in my app",
+      "output": "menus.js creating items in onInstalled with ids and contexts, top level onClicked switch, selection validated, executeScript for page work"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

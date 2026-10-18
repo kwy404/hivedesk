@@ -1,0 +1,40 @@
+{
+  "id": "desktop-local-logs-crash-reports",
+  "title": "Logging and crash reports to a local file",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "logging",
+    "log file",
+    "crash report",
+    "error report",
+    "desktop app",
+    "diagnostics",
+    "log rotation",
+    "support",
+    "debug"
+  ],
+  "when": "Users report bugs in the desktop app and nobody can see what happened; the app needs local logs and a crash report the user can choose to send.",
+  "inputs": [
+    "important events to log",
+    "support contact method"
+  ],
+  "prompt": "Goal: log.js writes leveled, rotated log lines to the user data folder, and unexpected errors produce a local crash report the user can review and share.\nSteps:\n1. Log path: (await Neutralino.os.getPath(\"data\")) + \"/NotesDesk/logs/app.log\".\n2. Line format: ISO time, level (debug, info, warn, error), area, message, as one JSON object per line.\n3. Buffer lines and append every 2 seconds with Neutralino.filesystem.appendFile; flush on windowClose.\n4. Rotate at 1 MB: rename app.log to app.1.log, keep 3 files.\n5. Catch crashes: window.addEventListener(\"error\") and (\"unhandledrejection\") write an error entry with stack, app version (NL_VERSION), OS (NL_OS) and the last 50 log lines into crash-<time>.json.\n6. Redact: never log file contents, tokens, emails or full paths under the home folder; replace with \"<redacted>\" or \"~\".\n7. On the next start, if a new crash file exists, show \"The app closed unexpectedly. Open report?\" with Open folder and Dismiss; sending is the user choice.\n8. Neutralinojs native logs go to neutralinojs.log when the logging block is enabled in the config; mention both files in Help.\nQuality bar:\n- Logs never grow without limit.\n- Nothing personal leaves the machine without consent.\nPitfalls:\n- Writing a file on every log call, which slows the UI.\n- Logging in the install folder.\nVerify:\n- [ ] Rotation keeps at most 3 files.\n- [ ] error and unhandledrejection are captured.\n- [ ] Redaction runs before writing.\nOutput: log.js, crash.js and a Help section on finding logs.",
+  "checks": [
+    "js.async-errors",
+    "sec.no-secrets",
+    "js.no-console-log"
+  ],
+  "examples": [
+    {
+      "input": "cliente diz que o app desktop fecha sozinho e eu não sei por que",
+      "output": "JSON lines log in data folder, 1 MB rotation, crash file with last 50 lines, redaction, open report prompt"
+    }
+  ],
+  "size": 431,
+  "version": 1
+}

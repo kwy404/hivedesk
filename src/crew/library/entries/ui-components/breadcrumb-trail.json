@@ -1,0 +1,38 @@
+{
+  "id": "breadcrumb-trail",
+  "title": "Breadcrumb trail with structured data",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "breadcrumb",
+    "breadcrumbs",
+    "trail",
+    "page path",
+    "you are here",
+    "hierarchy",
+    "parent pages"
+  ],
+  "when": "The user wants a breadcrumb that shows where a page sits in the site hierarchy and links back to parent pages.",
+  "inputs": [
+    "the path from home to the current page",
+    "page names and URLs"
+  ],
+  "prompt": "Goal: A short linked trail announced as navigation and read by search engines as a BreadcrumbList.\nSteps:\n1. <nav aria-label=\"Breadcrumb\"> with an <ol>; ancestors are links, the last item is the current page with aria-current=\"page\".\n2. Separators come from CSS (li + li::before { content: \"/\"; }) so they are not read aloud; a separator SVG is aria-hidden.\n3. On narrow screens keep the first and the last two items and collapse the middle behind <button type=\"button\" aria-expanded=\"false\">.\n4. Truncate a very long current title with text-overflow: ellipsis; the full text stays in the element.\n5. Add BreadcrumbList JSON-LD whose itemListElement (position, name, item) matches the visible trail.\nQuality bar:\n- Names match the titles of the pages they lead to.\n- The trail sits above the h1, small but at full contrast.\n- Links show a focus outline.\nPitfalls:\n- Separators typed as text and announced.\n- Current page linked to itself without aria-current.\n- JSON-LD names that differ from the visible trail.\nVerify:\n- [ ] A nav labeled Breadcrumb wraps an ol.\n- [ ] The last item has aria-current=\"page\".\n- [ ] The JSON-LD parses and lists every level in order.\n- [ ] The trail fits or collapses at 375 px.\nOutput: Breadcrumb markup above the page title, its CSS, and the JSON-LD in the head.",
+  "checks": [
+    "html.nav",
+    "html.link-text",
+    "html.json-ld",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "breadcrumb for product pages: Home > Shoes > Running > Model X",
+      "output": "nav aria-label Breadcrumb, ol with three links and the current item, CSS chevrons, BreadcrumbList JSON-LD"
+    }
+  ],
+  "size": 371,
+  "version": 1
+}

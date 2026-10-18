@@ -1,0 +1,39 @@
+{
+  "id": "tls-certificate-renewal",
+  "title": "TLS certificate renewal checklist",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "security"
+  ],
+  "tags": [
+    "tls",
+    "https",
+    "ssl certificate",
+    "certificate renewal",
+    "acme",
+    "certificate expiry",
+    "certificates",
+    "renew certificate"
+  ],
+  "when": "A site serves HTTPS and the user wants certificates to renew on their own and to be warned well before any of them expires.",
+  "inputs": [
+    "hostnames",
+    "where the proxy reads certificates",
+    "DNS access"
+  ],
+  "prompt": "Goal: Automatic renewal with an ACME client, a reload hook, expiry monitoring and a checklist for the manual parts.\nSteps:\n1. Inventory each hostname, its certificate paths, the service reading them and who controls DNS.\n2. Issue with the HTTP challenge on port 80, or the DNS challenge for wildcards; rehearse on the CA staging endpoint to avoid rate limits.\n3. Renew twice daily from a systemd timer or cron; the client acts only under 30 days left.\n4. Deploy hook: test the proxy config, then reload (reload keeps connections, restart drops them).\n5. Serve the full chain file; private keys mode 600, owned by root or the service user.\n6. Daily monitor: echo | openssl s_client -connect host:443 -servername host 2>/dev/null | openssl x509 -noout -enddate; alert under 14 days.\n7. TLS.md lists hosts, renew and dry run commands, the hook, the monitor and steps when renewal fails.\nQuality bar:\n- A renewal dry run passes today.\n- Alerts fire weeks before expiry.\n- Nobody has to remember a date.\nPitfalls:\n- Renewal succeeds but nothing reloads, so the old certificate stays live.\n- Port 80 closed by the firewall, failing HTTP challenges.\n- Names like www or api missing from the certificate.\n- HSTS preload before every subdomain serves HTTPS.\nVerify:\n- [ ] Every host listed with its certificate path.\n- [ ] Timer or cron entry shown.\n- [ ] Reload hook present.\n- [ ] Expiry check documented.\nOutput: TLS.md checklist plus the timer and hook files.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "o certificado do meu site expirou de novo, quero automatizar",
+      "output": "TLS.md with host inventory, twice daily renewal timer, reload hook, openssl expiry check alerting under 14 days"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

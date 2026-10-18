@@ -1,0 +1,52 @@
+{
+  "id": "contact-book",
+  "title": "Contact book with groups, search and export",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "contacts",
+    "contact book",
+    "address book",
+    "phone book",
+    "contact list",
+    "people",
+    "vcard"
+  ],
+  "when": "The user wants an address book app to store people with phone, email and notes, search them and export contacts.",
+  "inputs": [
+    "contact fields",
+    "groups",
+    "export format"
+  ],
+  "prompt": "Goal: A searchable address book that catches duplicates and exports valid vCard files.\nSteps:\n1. Contact { id, name, phone, email, company, groups[], favorite, notes }; name required, email checked with a simple pattern.\n2. logic.mjs: digits(phone), findDuplicates by email or phone digits, search over name, phone, email, company ignoring accents (NFD, strip marks), sort with localeCompare.\n3. List grouped by first letter with sticky headings and favorites on top; detail shows tel: and mailto: links.\n4. Form with type=\"tel\" and type=\"email\" inputs and labels; warn about a duplicate before saving.\n5. Group filter buttons with aria-pressed.\n6. Export .vcf (vCard 3.0, escape commas, semicolons and newlines) via a Blob link; import CSV; persist in localStorage contacts.v1 guarded.\n7. test.mjs: duplicates, accent search, vCard escaping.\nQuality bar:\n- Search answers on each key.\n- Tap to call and email on phones.\n- Exports open in common address book apps.\nPitfalls:\n- Comparing phones with spaces and dashes.\n- Unescaped commas in vCard.\n- Sorting with plain less than on accented names.\nVerify:\n- [ ] Input types right.\n- [ ] Form labeled.\n- [ ] Export tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (search, duplicates, vCard), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "agenda de contatos com busca e grupos",
+      "output": "A to Z list, favorites, duplicate warning, Export .vcf"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

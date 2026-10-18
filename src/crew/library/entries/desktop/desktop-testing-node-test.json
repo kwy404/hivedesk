@@ -1,0 +1,39 @@
+{
+  "id": "desktop-testing-node-test",
+  "title": "Desktop app testing with node:test and a smoke run",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "testing",
+    "unit tests",
+    "node:test",
+    "smoke test",
+    "desktop app",
+    "test logic",
+    "mock native api",
+    "ci"
+  ],
+  "when": "The desktop app has logic mixed with native calls and no tests; the user wants fast unit tests for the logic and a short manual smoke run per release.",
+  "inputs": [
+    "logic modules",
+    "native calls used"
+  ],
+  "prompt": "Goal: Pure logic tested with node:test without a window, native calls behind one adapter that tests replace, and a SMOKE.md checklist for real builds.\nSteps:\n1. Split code: resources/js/core/ holds pure modules (parse, validate, sort, migrate) with no Neutralino or DOM references.\n2. native.js is the only file that touches Neutralino.*; core functions receive what they need as arguments.\n3. Tests in test/*.test.mjs: import { test } from \"node:test\"; import assert from \"node:assert/strict\"; then import the core modules by relative path.\n4. Cover happy path, empty input, invalid JSON, migration from each old schema, and boundary values such as 0 and max sizes.\n5. Fake the adapter in tests with a small object (readFile returns a fixed string) to test flows like open then save.\n6. package.json: \"test\": \"node --test test/\".\n7. SMOKE.md for each OS build: launch, open a file, edit, save, reopen, change settings, restart, quit from tray; note version and result.\n8. Run unit tests in CI on every push; run the smoke list before each release.\nQuality bar:\n- Unit tests run in seconds with no window.\n- Each bug fix adds a failing test first.\nPitfalls:\n- Importing a module that calls Neutralino at import time, which crashes under node.\n- Testing only through the UI by hand.\nVerify:\n- [ ] Tests import node:test and node:assert.\n- [ ] Core modules have no Neutralino references.\n- [ ] SMOKE.md lists steps per OS.\nOutput: test/*.test.mjs, native.js adapter, package.json test script and SMOKE.md.",
+  "checks": [
+    "node.test-runner",
+    "file.test",
+    "pkg.scripts"
+  ],
+  "examples": [
+    {
+      "input": "adicionar testes no meu app desktop Neutralinojs",
+      "output": "core/ pure modules with node:test suites, native.js adapter faked in tests, SMOKE.md per OS"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

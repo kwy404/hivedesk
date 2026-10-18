@@ -1,0 +1,43 @@
+{
+  "id": "health-readiness-endpoints",
+  "title": "Health and readiness endpoints",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "ops",
+    "devops",
+    "dev"
+  ],
+  "tags": [
+    "health check",
+    "readiness",
+    "liveness",
+    "healthz",
+    "readyz",
+    "monitoring",
+    "uptime",
+    "load balancer",
+    "backend"
+  ],
+  "when": "A Node service runs behind a process manager, load balancer or container orchestrator and needs endpoints saying whether it is alive and whether it can take traffic.",
+  "inputs": [
+    "dependencies such as database and storage",
+    "probe interval"
+  ],
+  "prompt": "Goal: GET /healthz for liveness and GET /readyz for readiness: cheap, unauthenticated and honest about dependencies.\nSteps:\n1. /healthz replies 200 { \"status\": \"ok\" } while the event loop runs; it checks nothing external, so a slow database causes no restarts.\n2. /readyz runs quick checks with about 1 s timeout each: SELECT 1, storage folder writable, migrations applied, queue not stuck.\n3. Reply 200 { \"status\": \"ready\", \"checks\": { \"db\": \"ok\" } } or 503 { \"status\": \"not_ready\", \"checks\": { \"db\": \"timeout\" } }.\n4. /readyz says 503 during startup until migrations finish and from the moment shutdown begins.\n5. Cache readiness for a few seconds so frequent probes do not load the database.\n6. Send Cache-Control: no-store, keep probes out of access logs, and exempt them from rate limits.\nQuality bar:\n- Public replies reveal no versions, hostnames or error text; details only on an internal port.\n- Worst case probe time is under 2 s.\n- Probe paths and codes are documented.\nPitfalls:\n- Liveness tied to the database, causing restart loops in an outage.\n- Readiness that always says 200.\n- Heavy queries inside probes.\nVerify:\n- [ ] /healthz touches no dependency.\n- [ ] A test closes the database and gets 503 from /readyz.\n- [ ] Shutdown flips readiness to 503.\n- [ ] Probes send no-store.\nOutput: routes/health.mjs, a probe section in README.md, test/health.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.json-content-type",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "add health checks for the load balancer",
+      "output": "/healthz always cheap, /readyz checks db and storage with timeouts, 503 during startup and shutdown"
+    }
+  ],
+  "size": 394,
+  "version": 1
+}

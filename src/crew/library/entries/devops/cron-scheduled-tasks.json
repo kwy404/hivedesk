@@ -1,0 +1,38 @@
+{
+  "id": "cron-scheduled-tasks",
+  "title": "Cron jobs and systemd timers on a server",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops"
+  ],
+  "tags": [
+    "cron",
+    "crontab",
+    "systemd timer",
+    "scheduled task",
+    "nightly job",
+    "flock",
+    "server automation",
+    "run every night"
+  ],
+  "when": "The user wants a script to run on a server every night or every few minutes, reliably, with logs, and without two runs overlapping.",
+  "inputs": [
+    "the script",
+    "schedule",
+    "server timezone"
+  ],
+  "prompt": "Goal: A scheduled task with absolute paths, an overlap lock, captured output, an explicit timezone and a visible failure signal.\nSteps:\n1. Make scripts/nightly.sh work by hand first: set -euo pipefail, cd into its own folder, absolute paths.\n2. Crontab: 15 3 * * * /usr/bin/flock -n /run/lock/nightly.lock /srv/app/scripts/nightly.sh >> /var/log/app/nightly.log 2>&1\n3. Cron's environment is nearly empty: set PATH=/usr/local/bin:/usr/bin:/bin and SHELL=/bin/bash atop the crontab; load app variables from an env file in the script.\n4. CRON_TZ=UTC or a documented server zone; avoid 01:00 to 03:00 local, which daylight saving skips or repeats.\n5. systemd option: nightly.service (Type=oneshot) and nightly.timer with OnCalendar=*-*-* 03:15:00, Persistent=true for catch up and RandomizedDelaySec=300; output goes to the journal.\n6. Failures exit non zero and reach someone: OnFailure= in the unit, MAILTO in cron, or a success ping the uptime checker expects.\n7. Keep the job idempotent so reruns do no harm.\nQuality bar:\n- Each run logs start, end and result with timestamps.\n- Runs never overlap.\n- A failure cannot pass unnoticed.\nPitfalls:\n- A bare % in a crontab command, which cron turns into a newline; write \\%.\n- Relative paths that only work from your own shell.\n- /etc/crontab lines missing the user field.\nVerify:\n- [ ] Absolute paths everywhere.\n- [ ] flock or a timer prevents overlap.\n- [ ] Output goes to a log or the journal.\n- [ ] Timezone stated.\nOutput: scripts/nightly.sh plus the crontab line or nightly.service and nightly.timer.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "rodar um script todo dia as 3 da manha no servidor",
+      "output": "crontab line with flock -n and log redirect, PATH and CRON_TZ set, or nightly.service plus nightly.timer with Persistent=true"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

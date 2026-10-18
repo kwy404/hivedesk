@@ -1,0 +1,37 @@
+{
+  "id": "input-action-mapping-gamepad",
+  "title": "Keyboard and gamepad input mapped to game actions",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "keyboard input",
+    "gamepad",
+    "controller",
+    "input mapping",
+    "key bindings",
+    "game controls",
+    "gamepad api",
+    "joystick",
+    "game"
+  ],
+  "when": "The game must read the keyboard and game controllers through one layer of named actions like jump or fire, polled once per simulation tick.",
+  "inputs": [
+    "actions the game needs",
+    "default keys"
+  ],
+  "prompt": "Goal: Game code asks input.isDown(\"jump\") and never looks at raw keys or button indexes.\nSteps:\n1. js/input.js holds bindings = { left: [\"ArrowLeft\", \"KeyA\"], right: [\"ArrowRight\", \"KeyD\"], jump: [\"Space\", \"KeyW\"], fire: [\"KeyJ\"] } using event.code, so AZERTY layouts keep the same physical keys.\n2. keydown and keyup update a Set of held codes; preventDefault only for bound codes so browser shortcuts survive.\n3. Clear the Set on window blur so keys do not stick after switching apps.\n4. Each tick read navigator.getGamepads(); for pads with mapping === \"standard\" use buttons[0] for jump, buttons[2] for fire and axes[0] for horizontal with a dead zone of 0.2.\n5. Listen to gamepadconnected and gamepaddisconnected to show a short \"Controller connected\" status line.\n6. input.poll() at the start of update computes pressed (down now, up last tick) and released per action.\n7. input.axis(\"moveX\") returns -1 to 1, merging keys and stick and keeping the larger magnitude.\nQuality bar:\n- Holding a key never auto repeats a jump.\n- Unplugging a pad mid game stops its input without errors.\nPitfalls:\n- event.key, which changes with shift and keyboard layout.\n- Caching the Gamepad object; some browsers hand out a fresh snapshot on every call.\n- Reading pressed edges inside render, so quick taps between ticks get lost.\nVerify:\n- [ ] pressed fires once per physical press.\n- [ ] Switching apps while holding right does not keep moving.\n- [ ] Stick drift under 0.2 is ignored.\nOutput: js/input.js exporting bindings, poll, isDown, pressed and axis.",
+  "checks": [
+    "js.syntax",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "suporte a controle de videogame no meu jogo de navegador",
+      "output": "action map over event.code plus standard gamepad polling with dead zone and press edges"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

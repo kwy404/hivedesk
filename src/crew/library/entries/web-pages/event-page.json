@@ -1,0 +1,50 @@
+{
+  "id": "event-page",
+  "title": "Event or conference page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "event",
+    "conference",
+    "meetup",
+    "schedule",
+    "speakers",
+    "tickets",
+    "agenda"
+  ],
+  "when": "The user wants a page for a conference, meetup, workshop, festival or launch event.",
+  "inputs": [
+    "event name, date, time zone, place",
+    "schedule",
+    "speakers",
+    "how to register"
+  ],
+  "prompt": "Goal: A page that makes the when, where and why obvious and gets people registered.\nSteps:\n1. Hero with name, date with weekday and time zone, place (or online), and a Register button.\n2. Agenda as a list of time slots with title and speaker; use the time element with datetime attributes.\n3. Speakers grid with photo, name, role and talk title.\n4. Venue block: address, how to get there, accessibility info.\n5. Registration: a form with labels or a link to the real registration; state price and deadline.\n6. Add Event JSON-LD with startDate, location and offers.\nQuality bar:\n- Times always show the time zone.\n- The agenda reads in order on a phone.\n- Deadlines and prices are explicit.\nPitfalls:\n- Dates without a year or weekday.\n- Countdown timers that drift or break the layout.\n- Agenda tables that overflow at 375 px.\nVerify:\n- [ ] time elements have datetime values.\n- [ ] Register action appears in the hero and after the agenda.\n- [ ] JSON-LD parses.\n- [ ] No horizontal scroll.\nOutput: index.html with hero, agenda, speakers, venue and registration; style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.json-ld",
+    "html.labels",
+    "html.form-submit"
+  ],
+  "examples": [
+    {
+      "input": "page for a JS meetup on March 12",
+      "output": "hero with date and time zone, 4 talks with times, venue, register form with name and email"
+    }
+  ],
+  "size": 307,
+  "version": 1
+}

@@ -1,0 +1,12 @@
+{
+  "name": "my-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A small command line tool with flags, help, exit codes and tests.",
+  "bin": { "count": "bin/cli.js" },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}

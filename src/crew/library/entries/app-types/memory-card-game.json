@@ -1,0 +1,52 @@
+{
+  "id": "memory-card-game",
+  "title": "Memory card matching game",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "memory game",
+    "matching game",
+    "card game",
+    "concentration",
+    "pairs",
+    "flip cards",
+    "kids game"
+  ],
+  "when": "The user wants a memory game where cards are flipped two at a time to find matching pairs, with moves and time counted.",
+  "inputs": [
+    "grid size",
+    "card faces (shapes, words, pictures)",
+    "theme"
+  ],
+  "prompt": "Goal: Fair shuffles, flawless pair logic, smooth flips and a game that a screen reader user can play.\nSteps:\n1. Deck of pairs (8 for 4x4, 18 for 6x6) of shapes or words, Fisher Yates shuffled with injectable random.\n2. logic.mjs flip(state, i) with states idle, oneUp, twoUp: a match stays, a mismatch is marked to flip back; count moves and matches.\n3. app.js waits 800 ms before hiding a mismatch and ignores clicks meanwhile; the timer starts on the first flip.\n4. Cards are buttons with aria-label \"Card 5, hidden\" or \"Card 5, star\"; matched ones disabled.\n5. CSS 3D flip (rotateY, backface-visibility hidden); under prefers-reduced-motion swap faces instantly.\n6. Win dialog with moves and time; best per size in localStorage guarded; status in aria-live.\n7. test.mjs: each face twice, match and mismatch, third click ignored.\nQuality bar:\n- Grid stays square on phones.\n- Faces are distinct in shape, not only color.\n- Restart reshuffles.\nPitfalls:\n- Clicking the same card twice counts as a match.\n- Three cards up at once.\n- Shuffling with sort and Math.random.\nVerify:\n- [ ] Reduced motion rule exists.\n- [ ] Cards labeled.\n- [ ] Logic tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (deck and flips), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo da memoria para criancas com animais",
+      "output": "4x4 grid of animal names, flip animation, \"24 moves, 1:12\""
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

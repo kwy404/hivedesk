@@ -1,0 +1,39 @@
+{
+  "id": "dom-event-delegation",
+  "title": "Event delegation for dynamic lists",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "events",
+    "event delegation",
+    "click",
+    "addeventlistener",
+    "dynamic list",
+    "dom",
+    "listeners",
+    "data attributes",
+    "buttons"
+  ],
+  "when": "A list, table or grid gets items added and removed at runtime and every item needs clicks, edits or keys handled.",
+  "inputs": [
+    "the container element",
+    "actions per item (delete, toggle, edit)"
+  ],
+  "prompt": "Goal: One listener on a stable container handles current and future items, routed by data attributes, with no leaks.\nSteps:\n1. Attach one click listener (and change or input when items have fields) to a container that is never replaced, such as ul#items or tbody.\n2. Resolve the target with event.target.closest(\"[data-action]\"); return early when null.\n3. Read btn.dataset.action and the item id from btn.closest(\"[data-id]\").dataset.id.\n4. Dispatch through a map: const actions = { delete: removeItem, toggle: toggleItem }; actions[action]?.(id).\n5. Use <button type=\"button\"> so Enter and Space work; handle Escape or arrows with one delegated keydown; delegate focus with focusin and focusout, which bubble.\nQuality bar:\n- Adding 1000 items adds zero listeners.\n- Every action works from the keyboard.\n- Button names include the item (Delete Milk).\nPitfalls:\n- Comparing event.target directly, which fails when the click lands on an icon inside the button.\n- Adding listeners inside the render loop, which stacks duplicates.\n- Replacing the container on re-render and losing the listener.\nVerify:\n- [ ] Exactly one click listener for the list.\n- [ ] closest() resolves targets.\n- [ ] No inline onclick attributes.\n- [ ] Buttons declare type=\"button\".\nOutput: The list module (or app.js) with the delegated handler and action map; markup with data-id and data-action.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.no-inline-handlers",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "delete buttons stop working on new todo items",
+      "output": "one click listener on ul#todos using closest(\"[data-action]\") and an actions map"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

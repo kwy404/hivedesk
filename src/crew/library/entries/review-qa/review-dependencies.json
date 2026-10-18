@@ -1,0 +1,37 @@
+{
+  "id": "review-dependencies",
+  "title": "Review a new dependency before adding it",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "architect"
+  ],
+  "tags": [
+    "dependency",
+    "dependencies",
+    "third party",
+    "package",
+    "library",
+    "vendor",
+    "supply chain",
+    "license"
+  ],
+  "when": "Someone wants to add a third party file, package or snippet, and the user wants it judged against using the platform.",
+  "inputs": [
+    "the dependency and why it is wanted",
+    "the project constraints"
+  ],
+  "prompt": "Goal: A go or no go on the dependency with evidence on need, size, license, maintenance and risk.\nSteps:\n1. State the need in one line and check the platform first: Intl, fetch, URL, crypto.randomUUID, structuredClone, node:test, util.parseArgs, argparse, pathlib.\n2. If still needed, measure file size, transitive dependencies and anything that runs at install time.\n3. License: permissive licenses are usually fine, copyleft needs a decision, no license means do not use.\n4. Health: last release date, open security advisories, number of maintainers, readable code.\n5. Risk: install scripts, network calls, eval, broad permissions; since the crew runs offline, vendor a pinned copy locally.\n6. Decide: no (use the platform), yes vendored with version and license noted, or write a small local helper.\nQuality bar:\n- The decision is backed by numbers.\n- The platform option is always weighed first.\n- License recorded.\nPitfalls:\n- A big library for one function.\n- Copying code without its license.\n- Unpinned versions.\nVerify:\n- [ ] Need statement written.\n- [ ] Platform option checked.\n- [ ] Size, license and health recorded.\n- [ ] Decision stated.\nOutput: dependency-review.md with the decision and the evidence.",
+  "checks": [
+    "md.h1",
+    "js.no-eval"
+  ],
+  "examples": [
+    {
+      "input": "posso usar uma biblioteca so para formatar datas?",
+      "output": "no go: Intl.DateTimeFormat covers the 3 formats needed; library adds 70 KB"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

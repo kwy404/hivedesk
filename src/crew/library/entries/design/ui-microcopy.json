@@ -1,0 +1,36 @@
+{
+  "id": "ui-microcopy",
+  "title": "UI microcopy: labels, buttons and messages",
+  "category": "design",
+  "roles": [
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "microcopy",
+    "ux writing",
+    "button text",
+    "button labels",
+    "tone of voice",
+    "ui text",
+    "wording"
+  ],
+  "when": "The user wants the small words of an interface written well: buttons, field labels, hints, confirmations, errors and tooltips.",
+  "inputs": [
+    "the screens and their actions",
+    "the voice of the brand"
+  ],
+  "prompt": "Goal: Interface text that is short, specific and consistent, in one tone, telling people what happens next.\nSteps:\n1. Fix the tone in three words (friendly, plain, calm) with one rule each, for example no jokes in errors.\n2. Buttons: verb plus object in sentence case (Save draft, Send invite), matching the title of what they open.\n3. Labels are nouns, not questions; hints give the format and the reason (We send the receipt here).\n4. Errors say what went wrong and how to fix it in field context (Enter a date after today), no blame, no codes.\n5. Destructive confirmations name the object and consequence (Delete Garden plan? This removes 12 photos.) with buttons Delete plan and Keep.\n6. Keep a word list, one term per concept, and the same verb from button to result (Publish, then Published).\nQuality bar:\n- Most labels under four words.\n- No bare Submit, OK or Click here.\n- Readable by a 12 year old.\nPitfalls:\n- Cute errors when people lose work.\n- Two words for one thing.\n- All caps button text.\nVerify:\n- [ ] Every button names its action.\n- [ ] Every error says how to fix it.\n- [ ] The word list holds across screens.\n- [ ] Link text makes sense alone.\nOutput: Updated text in the page files and a short word list and tone note in the reply.",
+  "checks": [
+    "html.link-text",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "rewrite the buttons and error messages of my booking app",
+      "output": "Submit becomes Book table, error \"Pick a time after 18:00\", confirm \"Cancel booking for Friday?\""
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

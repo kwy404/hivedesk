@@ -1,0 +1,34 @@
+{
+  "id": "plan-multi-page-site",
+  "title": "Task plan for a site with several pages",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "sitemap",
+    "pages",
+    "site plan",
+    "several pages",
+    "shared stylesheet",
+    "page list",
+    "site structure"
+  ],
+  "when": "The foreman plans a website with three or more pages and must split it among workers without inconsistent headers or styles.",
+  "inputs": [
+    "the pages wanted",
+    "content per page",
+    "workers available"
+  ],
+  "prompt": "Goal: A plan where shared parts are defined once, each page is its own task, and every page links to the others the same way.\nSteps:\n1. Write the sitemap: file name, title and purpose per page (index.html, about.html, contact.html).\n2. Task 1 creates the shared frame: style.css plus a header and footer snippet spelled out in the plan for every page to copy.\n3. Give each page its own task with the exact nav markup, its h1 and its sections.\n4. Writer drafts all page copy in one task first when the copy is long, so pages share one voice.\n5. Name the current page rule: the nav link of the current page gets aria-current=\"page\".\n6. QA checks every link between pages and that each page passes the HTML basics.\nQuality bar:\n- Header and nav markup are identical on every page except aria-current.\n- One stylesheet serves all pages.\n- Each page has a unique title and h1.\nPitfalls:\n- Each page task inventing its own nav.\n- A stylesheet per page that drifts apart.\n- Links to pages no task creates.\nVerify:\n- [ ] Sitemap lists every file.\n- [ ] The shared frame task comes first.\n- [ ] Each page task copies the nav exactly.\n- [ ] QA checks links.\nOutput: Plan: frame task, page tasks, optional copy task, QA; sitemap and nav markup in the summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "site com home, servicos, sobre e contato",
+      "output": "task 1 style.css and nav markup; tasks 2 to 5 one page each; task 6 QA checks links"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

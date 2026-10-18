@@ -1,0 +1,41 @@
+{
+  "id": "api-resource-modeling",
+  "title": "Modeling API resources, verbs and outcome codes",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "architect",
+    "dev"
+  ],
+  "tags": [
+    "resource design",
+    "api design",
+    "http verbs",
+    "put vs patch",
+    "idempotent",
+    "nested resources",
+    "outcome table",
+    "backend",
+    "rest api"
+  ],
+  "when": "Before writing routes, the user must decide which resources an API exposes, how they nest, which verbs change them and which status each outcome returns.",
+  "inputs": [
+    "the domain nouns",
+    "who owns what",
+    "actions users perform"
+  ],
+  "prompt": "Goal: A resource map where every URL is a noun, every verb keeps its HTTP meaning and every outcome has exactly one status code.\nSteps:\n1. List the nouns in the request (users, projects, invoices) and who owns each; nest one level at most: /projects/:projectId/tasks for the collection, /tasks/:taskId for the item.\n2. Fix verb meaning: GET is safe, PUT replaces the whole item and is idempotent, PATCH changes only the listed fields, DELETE is idempotent (pick 204 or 404 for a repeated DELETE and document it).\n3. Turn actions into sub resources or state fields: POST /invoices/:id/payments instead of POST /payInvoice, PATCH { \"status\": \"archived\" } instead of /archive.\n4. Outcome table per route: 201 created, 202 queued, 400 malformed, 401 no credentials, 403 not allowed, 404 absent, 409 conflict, 412 stale version, 422 rule broken.\n5. Mark server owned fields (id, createdAt, version) and reject them in client bodies.\n6. Write the map into docs/resources.md before coding.\nQuality bar:\n- One canonical URL per item.\n- POST is the only verb that is not idempotent.\n- 401 means who are you, 403 means you may not.\nPitfalls:\n- Deep nesting such as /users/1/projects/2/tasks/3/comments.\n- GET links in emails that change state.\n- Mapping every failure to 400, so clients cannot tell a conflict from a typo.\nVerify:\n- [ ] Each route lists verb, path and statuses.\n- [ ] No verb appears inside a path.\n- [ ] Server owned fields are listed.\n- [ ] Each resource has one item URL.\nOutput: docs/resources.md with the resource map and the outcome table.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "preciso desenhar a API de um sistema de faturas com pagamentos",
+      "output": "/invoices, /invoices/:id, POST /invoices/:id/payments, 409 when already paid, 412 on stale version"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "writer-translation-ready",
+  "title": "Writer: writing text ready for translation",
+  "category": "roles",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "writer",
+    "translation",
+    "localization",
+    "i18n",
+    "translatable",
+    "multiple languages",
+    "strings"
+  ],
+  "when": "The text will be translated (a bilingual site, an app with a language switch) and must be written so translation is easy and safe.",
+  "inputs": [
+    "the strings or pages",
+    "target languages"
+  ],
+  "prompt": "Goal: Source text and string files that translate cleanly: full sentences, no concatenation, room for longer words, and clear context.\nSteps:\n1. Keep each message a full sentence with placeholders by name: \"{count} items in your cart\", never \"items\" glued to a number in code.\n2. Avoid idioms, puns and cultural references; say \"very easy\" instead of a figure of speech.\n3. Handle plurals as separate strings (one, other) instead of adding an s.\n4. Store strings in one JSON file per language with the same keys (en.json, pt.json) and a short context note per key that is ambiguous.\n5. Leave room: layouts must allow text about 30 percent longer; no text baked into images.\n6. Write dates, numbers and currency through Intl formatting, not in the strings.\nQuality bar:\n- Every key exists in every language file.\n- No sentence is built from fragments.\n- Placeholders are named.\nPitfalls:\n- Concatenated fragments whose word order breaks in other languages.\n- The same English word used for two meanings under one key.\n- Fixed width buttons that clip translations.\nVerify:\n- [ ] JSON files parse.\n- [ ] Keys match across languages.\n- [ ] Plurals handled.\n- [ ] No text in images.\nOutput: One JSON strings file per language and any code patches that read them.",
+  "checks": [
+    "json.valid",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "site em portugues e ingles",
+      "output": "en.json and pt.json with same keys, \"cart.count\": \"{count} items\", plurals one and other"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

@@ -1,0 +1,52 @@
+{
+  "id": "tip-calculator",
+  "title": "Tip calculator with bill split per person",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tip calculator",
+    "tip",
+    "gratuity",
+    "bill",
+    "split the bill",
+    "restaurant bill",
+    "per person"
+  ],
+  "when": "The user wants a quick tip calculator: bill amount, tip percent and number of people, giving the tip, total and amount per person.",
+  "inputs": [
+    "default tip options",
+    "currency",
+    "round up wanted"
+  ],
+  "prompt": "Goal: One screen that answers \"how much does each of us pay\" with exact cents and no NaN ever.\nSteps:\n1. Inputs: bill with inputmode=\"decimal\", tip presets 10, 15, 18, 20 as buttons with aria-pressed plus a custom percent, people with minus and plus (minimum 1).\n2. logic.mjs in cents: tipCents(bill, pct) rounded half up, totalCents, perPerson(total, people) returning base share and how many pay one extra cent.\n3. Optional roundUp to a whole unit per person, showing the extra it adds.\n4. Results update on input in an output with aria-live: Tip, Total, Each pays, via Intl.NumberFormat.\n5. Inline errors: bill above 0, people at least 1.\n6. Remember the last tip percent in localStorage guarded; Reset button.\n7. test.mjs: 100.00 at 15 percent for 3, odd cent spread, round up.\nQuality bar:\n- Shares add up to the total.\n- Fits one phone screen.\n- Selected preset is visible and announced.\nPitfalls:\n- NaN or Infinity with empty fields.\n- Floats for cents.\n- Custom percent and preset both active.\nVerify:\n- [ ] Inputs labeled.\n- [ ] Presets use aria-pressed.\n- [ ] Output live.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (cents math), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "calculadora de gorjeta para dividir a conta",
+      "output": "bill 230,00, 10%, 4 people: tip 23,00, each 63,25"
+    }
+  ],
+  "size": 338,
+  "version": 1
+}

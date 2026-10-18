@@ -1,0 +1,34 @@
+{
+  "id": "plan-for-small-models",
+  "title": "Planning for small local models",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "small model",
+    "local model",
+    "tiny tasks",
+    "short files",
+    "context limit",
+    "limited context",
+    "weak model"
+  ],
+  "when": "The crew runs on a small local model with a short context window, and plans must stay inside what such a model can do reliably.",
+  "inputs": [
+    "the request",
+    "the context limit",
+    "existing file sizes"
+  ],
+  "prompt": "Goal: A plan whose every task fits a small model: one clear output, short files, and all needed names spelled out in the detail.\nSteps:\n1. Keep each task to one file, or two short related files, under about 150 lines each.\n2. Split long files by concern: data.js, render.js, events.js instead of one app.js of 500 lines.\n3. Spell out every shared name in the task detail (ids, classes, function names), so the worker need not read other files.\n4. Prefer edits with edit_file on known lines over rewriting a large file.\n5. Avoid tasks that need reading more than two existing files; summarize what they contain in the detail instead.\n6. Write details as short imperative lines, one requirement per line.\nQuality bar:\n- No task needs the whole workspace in context.\n- Details are self contained.\n- Files stay short.\nPitfalls:\n- A single task that writes a large app in one go.\n- Details that say \"follow the existing style\" without saying what it is.\n- Long prose details a small model loses track of.\nVerify:\n- [ ] Each task outputs one or two files.\n- [ ] Planned files are under about 150 lines.\n- [ ] Shared names appear in details.\n- [ ] No task reads more than two big files.\nOutput: A plan of short tasks with self contained, line by line details.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "kanban board with drag and drop and saving",
+      "output": "tasks: board.html, state.js (add, move, save), drag.js (pointer events), style.css, qa"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

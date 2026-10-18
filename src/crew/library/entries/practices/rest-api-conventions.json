@@ -1,0 +1,39 @@
+{
+  "id": "rest-api-conventions",
+  "title": "REST API conventions",
+  "category": "practices",
+  "roles": [
+    "architect",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "rest",
+    "api",
+    "endpoints",
+    "http methods",
+    "status codes",
+    "routes",
+    "json api",
+    "pagination"
+  ],
+  "when": "The user designs or cleans up an HTTP JSON API and wants consistent URLs, methods, status codes and pagination.",
+  "inputs": [
+    "the resources and operations",
+    "who calls the API"
+  ],
+  "prompt": "Goal: Predictable resource URLs, correct methods and status codes, and uniform JSON bodies for lists, items and errors.\nSteps:\n1. Name resources as plural nouns: GET /api/tasks, GET /api/tasks/:id, POST /api/tasks, PATCH /api/tasks/:id, DELETE /api/tasks/:id.\n2. Status codes: 200 read or update, 201 created with a Location header, 204 delete with no body, 400 invalid, 404 missing, 409 conflict, 415 wrong content type.\n3. Accept and return application/json; reject other request types; limit body size.\n4. Lists: ?limit=20&cursor=abc (or page) and return { items, nextCursor }; filters as query params (?status=open).\n5. Use camelCase fields, ISO 8601 UTC dates and string ids; never expose internal file paths.\n6. Version the path (/api/v1) once external clients depend on it.\nQuality bar:\n- Same shape for every list and item.\n- GET never changes data.\n- Unknown routes return 404 JSON.\nPitfalls:\n- Verbs in URLs (/getTasks).\n- 200 with an error inside the body.\n- Returning all records with no limit.\nVerify:\n- [ ] Each route sets a status code.\n- [ ] JSON responses send application/json.\n- [ ] Bodies have a size limit.\n- [ ] Unknown routes return 404.\nOutput: The routes in the server code and a short API table (method, path, body, responses) in the README.",
+  "checks": [
+    "node.http-status",
+    "node.json-content-type",
+    "node.body-limit"
+  ],
+  "examples": [
+    {
+      "input": "organize as rotas da minha API de tarefas",
+      "output": "GET/POST /api/tasks, PATCH/DELETE /api/tasks/:id, 201 with Location, cursor pagination"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

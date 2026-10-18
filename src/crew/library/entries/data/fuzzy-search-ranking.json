@@ -1,0 +1,38 @@
+{
+  "id": "fuzzy-search-ranking",
+  "title": "Fuzzy search with typo tolerance and ranking",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "fuzzy search",
+    "fuzzy",
+    "typo",
+    "autocomplete",
+    "suggestions",
+    "ranking",
+    "levenshtein",
+    "command palette",
+    "approximate match"
+  ],
+  "when": "Exact search is not enough: users misspell names, type abbreviations, or need ranked suggestions for autocomplete or a command palette.",
+  "inputs": [
+    "candidate list and fields",
+    "size of the list"
+  ],
+  "prompt": "Goal: A small ranked fuzzy matcher that finds what users mean, highlights matched letters and stays fast.\nSteps:\n1. Normalize query and candidates the same way: lowercase, strip accent marks, collapse spaces; precompute once.\n2. Score in tiers: exact, prefix, word starts (initials), subsequence, then typo tolerant.\n3. Subsequence score rewards consecutive letters and matches after a space, dash or capital; penalizes gaps and late starts.\n4. Typos: Damerau Levenshtein with early exit, 1 edit for words of 4 or more letters, 2 for 8 or more.\n5. Rank by tier, score, shorter candidate, then recency; return the top 20.\n6. Highlight matched ranges with text nodes and <mark> elements; above 10 thousand items prefilter by trigrams or first letter.\nQuality bar:\n- Common typos put the right item first in tests.\n- Each keystroke ranks in under 16 ms on the target data.\n- Highlights cover exactly the matched letters.\nPitfalls:\n- Edit distance against everything on every keystroke without a length prefilter.\n- Different normalization for score and highlight.\n- Hundreds of weak matches returned.\nVerify:\n- [ ] A table of queries with expected first results.\n- [ ] Highlight built from text nodes and mark.\n- [ ] One shared normalize function.\n- [ ] No innerHTML with data.\nOutput: js/fuzzy.js exporting search(items, query, { keys, limit }) and highlight(text, ranges), plus tests.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "search contacts even when I type \"jhon\" or \"mra silva\"",
+      "output": "tiered fuzzy search with typo tolerance ranking John and Maria Silva first, mark highlights"
+    }
+  ],
+  "size": 396,
+  "version": 1
+}

@@ -1,0 +1,35 @@
+{
+  "id": "reviewer-verdict-rules",
+  "title": "Reviewer: approve or request changes",
+  "category": "roles",
+  "roles": [
+    "reviewer"
+  ],
+  "tags": [
+    "reviewer",
+    "approve",
+    "request changes",
+    "verdict",
+    "pass review",
+    "reject",
+    "blocking"
+  ],
+  "when": "The reviewer has comments and must decide whether the task moves on to Test or goes back to its author.",
+  "inputs": [
+    "the review comments",
+    "the criteria",
+    "loops used so far"
+  ],
+  "prompt": "Goal: A consistent verdict: approve when nothing blocking remains, request changes only for blocking issues, and say which is which.\nSteps:\n1. Label every comment blocking or non blocking before deciding.\n2. Blocking: a criterion not met, a bug, a crash or syntax error, a security or data loss risk, a change outside the task that breaks something.\n3. Non blocking: naming, style, small duplication, ideas for later.\n4. Approve when there are zero blocking comments; pass the non blocking ones along as suggestions.\n5. Request changes with only the blocking issues in the list, each with a fix, so the author knows exactly what to do.\n6. Near the loop limit, approve with notes if the remaining issues are non blocking rather than spending the last loop on taste.\nQuality bar:\n- The verdict follows the labels.\n- Issue lists contain only blockers.\n- Suggestions are clearly optional.\nPitfalls:\n- Requesting changes for style alone.\n- Approving with a known bug \"to keep things moving\".\n- Mixing blockers and suggestions in one list.\nVerify:\n- [ ] Each comment is labeled.\n- [ ] Blocking count decides the verdict.\n- [ ] Issues have fixes.\n- [ ] Suggestions kept separate.\nOutput: passed true or false, issues with blockers only, and a suggestions line.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "2 comments: variable name, missing submit handler",
+      "output": "handler missing is blocking: request changes with that one issue; name is a suggestion"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

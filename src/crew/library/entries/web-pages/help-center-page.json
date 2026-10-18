@@ -1,0 +1,46 @@
+{
+  "id": "help-center-page",
+  "title": "Help center page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "help center",
+    "support",
+    "knowledge base",
+    "questions",
+    "customer service"
+  ],
+  "when": "The user wants a support or help page that groups common questions and ways to get help.",
+  "inputs": [
+    "product name",
+    "common questions grouped by topic",
+    "support channels"
+  ],
+  "prompt": "Goal: Let people solve their own problem in under a minute, and reach a person when they cannot.\nSteps:\n1. Search field with a label at the top that filters the questions on the page.\n2. Topic cards (Account, Billing, Orders) linking to sections with h2 headings.\n3. Each answer starts with the direct answer, then steps as an ordered list.\n4. Use details and summary elements for the questions so they work without JavaScript.\n5. End with contact options and response times.\nQuality bar:\n- Answers are short and specific.\n- Search filters by question text and shows a no result message.\n- Keyboard works for every question.\nPitfalls:\n- Answers that only say contact support.\n- Accordion buttons built from divs.\n- Search that hides everything when empty.\nVerify:\n- [ ] Search input labeled.\n- [ ] details and summary used for questions.\n- [ ] Contact section present.\n- [ ] Scripts parse.\nOutput: help.html, style.css and a small search filter script.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "js.syntax",
+    "html.aria-live"
+  ],
+  "examples": [
+    {
+      "input": "central de ajuda para minha loja",
+      "output": "search field, topics Orders and Returns, 12 questions in details elements, contact block"
+    }
+  ],
+  "size": 272,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "svg-bar-chart",
+  "title": "Bar chart in plain SVG",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "bar chart",
+    "chart",
+    "graph",
+    "bars",
+    "column chart",
+    "svg chart",
+    "compare categories",
+    "ranking"
+  ],
+  "when": "The user wants to compare values across categories (sales by month, votes per option, top products) as bars, without a chart library.",
+  "inputs": [
+    "categories and values",
+    "unit",
+    "the message of the chart"
+  ],
+  "prompt": "Goal: A crisp, labeled SVG bar chart built from data with a zero baseline, readable labels and a text alternative.\nSteps:\n1. viewBox 0 0 640 360 with margins (top 20, right 16, bottom 48, left 56); CSS width 100%, height auto.\n2. y from 0 to a nice max (1, 2 or 5 times a power of ten); bar height = value / max * plot height.\n3. Bands: step = plot width / n, bar width = step * 0.7, offset step * 0.15.\n4. Create nodes with createElementNS(\"http://www.w3.org/2000/svg\", \"rect\") and setAttribute; labels via textContent.\n5. Draw 4 or 5 gridlines with tick labels, category labels under bars (horizontal bars when names are long) and value labels.\n6. One fill color; the accent only on a bar that carries the message. Add role=\"img\" and a <title> stating the takeaway.\nQuality bar:\n- Sorted by value unless the order is natural, such as months.\n- Labels at least 12 px rendered.\n- Bars reach 3 to 1 contrast with the background.\nPitfalls:\n- A y axis not starting at zero, which exaggerates gaps.\n- Rainbow colors with no meaning.\n- Overlapping labels on phones.\nVerify:\n- [ ] svg has viewBox, role=\"img\" and a title.\n- [ ] Bars start at zero.\n- [ ] Values readable as text.\n- [ ] No innerHTML with data.\nOutput: js/bar-chart.js exporting barChart(container, data, options) and chart CSS.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.svg-a11y"
+  ],
+  "examples": [
+    {
+      "input": "gráfico de barras das vendas por mês",
+      "output": "barChart with 12 month bars, y ticks 0 to 50k, title \"Sales peaked in December\""
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

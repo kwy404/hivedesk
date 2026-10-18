@@ -1,0 +1,38 @@
+{
+  "id": "design-consistency-audit",
+  "title": "Design consistency audit of a stylesheet",
+  "category": "design",
+  "roles": [
+    "designer",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "consistency",
+    "design audit",
+    "css audit",
+    "inconsistent styles",
+    "style cleanup",
+    "design debt",
+    "unify"
+  ],
+  "when": "The design looks slightly off everywhere and the user wants inconsistent colors, sizes, spacing and radii found and unified.",
+  "inputs": [
+    "the stylesheets",
+    "the main pages to check after changes"
+  ],
+  "prompt": "Goal: An inventory of every distinct design value in the CSS, reduced to a small token set, with the replacements applied.\nSteps:\n1. Search the stylesheets per property family: color and background, font-size, margin, padding and gap, border-radius, box-shadow, z-index.\n2. Count distinct values per family and how often each appears (for example 14 grays, 9 font sizes).\n3. Cluster near duplicates: #333, #343434 and #2f2f2f become one; 15 px and 16 px become 1rem.\n4. Define or reuse tokens for the survivors and replace every literal with var(); comment any value that is truly unique.\n5. Compare components of one kind: buttons, inputs and cards share height, radius and padding.\n6. Report before and after counts per family.\nQuality bar:\n- Each family ends small: about 8 colors, 6 to 8 sizes, 8 spacing steps, 3 radii, 4 shadows.\n- No visual regression on the main pages.\n- Contrast still passes after merging grays.\nPitfalls:\n- Merging colors that carry meaning, such as danger red into brand red.\n- Changing only half the files.\n- Leaving old literals beside the new tokens.\nVerify:\n- [ ] Before and after counts reported.\n- [ ] Literals replaced by var() references.\n- [ ] Tokens on :root.\n- [ ] Contrast passes.\nOutput: Updated stylesheets plus an audit table (family, before, after) in the reply.",
+  "checks": [
+    "css.custom-properties",
+    "css.contrast",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "everything looks slightly different on each page, unify it",
+      "output": "grays 14 to 6, font sizes 11 to 7, radii 5 to 3, all as tokens"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

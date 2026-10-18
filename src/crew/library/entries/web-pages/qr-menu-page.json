@@ -1,0 +1,47 @@
+{
+  "id": "qr-menu-page",
+  "title": "Mobile menu page for QR codes",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "qr code",
+    "digital menu",
+    "restaurant",
+    "bar",
+    "menu",
+    "table"
+  ],
+  "when": "The user wants a phone first menu that customers open from a QR code at the table.",
+  "inputs": [
+    "menu items with prices and categories",
+    "languages",
+    "allergen info"
+  ],
+  "prompt": "Goal: A tiny, instant loading menu for phones with category jumps and clear prices.\nSteps:\n1. One HTML file with inline CSS, under 100 KB, no external fonts.\n2. Sticky category bar with anchor links that scrolls sideways if long.\n3. Items: name, short description, price aligned right, dietary labels as text.\n4. Large tap targets and text at least 16 px.\n5. Optional language switch as links to sections or separate files.\nQuality bar:\n- Readable in bright light: strong contrast.\n- Loads on weak connections.\n- Prices are easy to compare.\nPitfalls:\n- PDF menus that need zooming.\n- Photos that make the page heavy.\n- Category bar that hides headings.\nVerify:\n- [ ] Anchors match section ids.\n- [ ] Contrast passes.\n- [ ] No external assets.\n- [ ] Viewport present.\nOutput: menu.html with inline styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "css.contrast",
+    "html.unique-ids",
+    "css.min-font-size"
+  ],
+  "examples": [
+    {
+      "input": "cardápio digital para QR code do bar",
+      "output": "sticky categories Drinks, Food, Desserts, items with prices, vegan labels"
+    }
+  ],
+  "size": 230,
+  "version": 1
+}

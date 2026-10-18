@@ -1,0 +1,39 @@
+{
+  "id": "cli-tests-spawn-binary",
+  "title": "End to end CLI tests with node:test and spawned processes",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "cli tests",
+    "node:test",
+    "spawnsync",
+    "end to end tests",
+    "exit code tests",
+    "stdout assertions",
+    "integration tests",
+    "testing"
+  ],
+  "when": "The user wants tests that run the real command line tool the way a user does, checking stdout, stderr and the exit code of each case.",
+  "inputs": [
+    "the bin file",
+    "key behaviors",
+    "fixture files"
+  ],
+  "prompt": "Goal: Tests that spawn the bin file with the current Node, feed input, and assert output and status in isolated temp folders.\nSteps:\n1. test/cli.test.mjs imports test from node:test, assert from node:assert/strict, spawnSync from node:child_process and fileURLToPath from node:url.\n2. const BIN = fileURLToPath(new URL(\"../bin/tool.mjs\", import.meta.url)); run(args, o = {}) returns spawnSync(process.execPath, [BIN, ...args], { encoding: \"utf8\", input: o.input ?? \"\", cwd: o.cwd, env: { ...process.env, NO_COLOR: \"1\", ...o.env }, timeout: 10000 }).\n3. Cases: --help gives status 0 and Usage; an unknown flag gives 2, stderr text, empty stdout; valid input gives exact stdout; a missing file gives 1.\n4. Stdin case: input \"a\\nb\\n\", assert the transformed lines.\n5. Files: fs.mkdtempSync(path.join(os.tmpdir(), \"tool-\")), write fixtures, run with cwd there, assert created files, fs.rmSync in t.after.\n6. Normalize endings before comparing: out.replace(/\\r\\n/g, \"\\n\").\n7. Set XDG_CONFIG_HOME and HOME to the temp folder so the developer's own config never leaks in.\nQuality bar:\n- process.execPath, never whatever node is on PATH.\n- The suite runs in seconds.\n- Each exit code has a test.\nPitfalls:\n- exec with a command string, breaking on spaces in paths.\n- No timeout, so a tool waiting on stdin hangs the suite.\n- Asserting on colored output.\nVerify:\n- [ ] Imports node:test and node:assert.\n- [ ] Status, stdout and stderr asserted.\n- [ ] Temp folders removed.\n- [ ] node --test passes.\nOutput: test/cli.test.mjs and test/fixtures/.",
+  "checks": [
+    "node.test-runner",
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "escrever testes que rodam minha CLI de verdade",
+      "output": "test/cli.test.mjs spawning process.execPath bin/tool.mjs with NO_COLOR, asserting status, stdout and stderr, temp folder fixtures"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

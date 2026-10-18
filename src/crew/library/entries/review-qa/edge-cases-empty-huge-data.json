@@ -1,0 +1,35 @@
+{
+  "id": "edge-cases-empty-huge-data",
+  "title": "Edge cases for empty and huge data",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "empty data",
+    "large data",
+    "big list",
+    "scale test",
+    "zero items",
+    "stress test",
+    "pagination"
+  ],
+  "when": "A list, table, chart or file processor needs testing with no data, a single item, and very large amounts of data.",
+  "inputs": [
+    "the views and scripts that handle collections",
+    "realistic maximum size"
+  ],
+  "prompt": "Goal: Proof that each view and function behaves at 0, 1, typical and huge sizes, with layout, speed and memory findings.\nSteps:\n1. Generate datasets with a small script: 0, 1, 2, 50 and 10,000 items (100,000 rows for scripts), plus very long names and missing optional fields.\n2. Empty: a real empty state appears; totals and averages show no NaN or undefined; charts do not divide by zero.\n3. One item: singular wording (1 item), layouts that assume pairs, prev and next disabled properly.\n4. Huge: time the render with performance.now, watch scroll smoothness, decide on pagination or windowing; files must stream, not load whole.\n5. Long content: 200 character names wrap or truncate with a title attribute; 12 digit numbers fit their cells.\n6. Record the size at which each view gets slow (over 100 ms per interaction).\nQuality bar:\n- Every size tried on every view.\n- Timings reported with dataset size.\n- No undefined, NaN or [object Object] on screen.\nPitfalls:\n- Testing only with three sample items.\n- Hard coded demo data hiding the empty state.\n- Freezing the tab with synchronous loops on huge input.\nVerify:\n- [ ] Datasets created at each size.\n- [ ] Empty and single item cases checked.\n- [ ] Huge timings recorded.\n- [ ] Long content checked.\nOutput: data-size-qa.md with results per size, and the generator script if kept.",
+  "checks": [
+    "md.h1",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "does my contacts table handle 10 thousand people?",
+      "output": "0 rows shows empty state, 1 row says 1 contacts (bug), 10k rows render 2.8 s; propose pages of 100"
+    }
+  ],
+  "size": 383,
+  "version": 1
+}

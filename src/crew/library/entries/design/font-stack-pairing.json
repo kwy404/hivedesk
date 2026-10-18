@@ -1,0 +1,38 @@
+{
+  "id": "font-stack-pairing",
+  "title": "System font stacks and font pairing",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "font",
+    "fonts",
+    "font family",
+    "font stack",
+    "typeface",
+    "serif",
+    "sans serif",
+    "monospace",
+    "font pairing"
+  ],
+  "when": "The user wants to choose fonts, pair a heading font with a body font, or use fast system fonts with no downloads.",
+  "inputs": [
+    "tone: modern, classic, friendly or technical",
+    "whether font files ship in the project folder"
+  ],
+  "prompt": "Goal: Fonts that render instantly from the system or local files, one clear pairing, and safe fallbacks.\nSteps:\n1. Build stacks from CSS generic keywords: --font-sans: system-ui, sans-serif; --font-serif: ui-serif, serif; --font-mono: ui-monospace, monospace.\n2. Pair by role: a serif heading over a sans body for a classic tone, one sans family in two weights for apps.\n3. Keep to two families and three weights; mono only for code, and font-variant-numeric: tabular-nums for aligned numbers.\n4. If font files ship with the project, use @font-face with a relative woff2 url and font-display: swap, keeping the system stack as fallback.\n5. Reduce swap shift with a fallback of similar x-height or a size-adjust in the @font-face.\n6. Expose --font-body and --font-heading on :root and apply them on body and h1 to h3.\nQuality bar:\n- Text is readable before any custom font arrives.\n- Heading and body fonts play clearly different roles.\n- Never more than two families on screen.\nPitfalls:\n- A remote font service, which needs the network.\n- Script or display faces for body text.\n- Faux bold from a missing weight file.\nVerify:\n- [ ] Each font-family ends with a generic keyword.\n- [ ] Any @font-face uses a relative url and swap.\n- [ ] At most two families.\n- [ ] Code uses the mono stack.\nOutput: Font tokens and any @font-face rules at the top of style.css.",
+  "checks": [
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "which fonts should my law office site use",
+      "output": "headings ui-serif, serif at 600; body system-ui, sans-serif at 400; no downloads"
+    }
+  ],
+  "size": 389,
+  "version": 1
+}

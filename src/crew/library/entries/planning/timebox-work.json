@@ -1,0 +1,33 @@
+{
+  "id": "timebox-work",
+  "title": "Timeboxing work in turns",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "timebox",
+    "time limit",
+    "budget",
+    "turns budget",
+    "deadline",
+    "stop rule",
+    "limit"
+  ],
+  "when": "A task could grow without end (research, polish, debugging) and the plan must cap it with a budget and a stop rule.",
+  "inputs": [
+    "the open ended task",
+    "turns available"
+  ],
+  "prompt": "Goal: Each open ended task has a turn budget, a minimum deliverable and a rule for what happens when the budget runs out.\nSteps:\n1. Identify open ended tasks: polish, investigate, optimize, explore options.\n2. Give each a budget in turns (for example 4) and say it in the detail.\n3. Define the minimum deliverable that must exist when the budget ends: a note with findings, a patch, a list of options.\n4. Define checkpoints: at half the budget, the worker writes a note with what it found so far.\n5. Define the stop rule: when the budget ends, finish with what exists and call done with a summary of what is left.\n6. Give leftover work to a later task or the user notes, never extend silently.\nQuality bar:\n- Budgets are numbers.\n- The minimum deliverable is concrete.\n- Stopping on time still leaves something useful.\nPitfalls:\n- A polish task with no end.\n- Budgets so small that nothing useful can exist.\n- Ending with nothing written because the task was not done.\nVerify:\n- [ ] Open ended tasks have budgets.\n- [ ] Each has a minimum deliverable.\n- [ ] A halfway note is planned.\n- [ ] Leftovers have a home.\nOutput: Task details with \"Budget: N turns. Minimum: ... When out of turns: ...\" lines.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "investigate why the page feels slow",
+      "output": "Budget 5 turns; minimum: note with the three biggest causes and one patch; then done"
+    }
+  ],
+  "size": 344,
+  "version": 1
+}

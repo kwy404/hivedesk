@@ -1,0 +1,37 @@
+{
+  "id": "rtl-support",
+  "title": "Right to left language support",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "rtl",
+    "right to left",
+    "arabic",
+    "hebrew",
+    "dir attribute",
+    "logical properties",
+    "bidi",
+    "i18n"
+  ],
+  "when": "The site must support Arabic, Hebrew, Persian or Urdu, or mixed direction text displays in the wrong order.",
+  "inputs": [
+    "the HTML and CSS",
+    "which pages or languages are right to left"
+  ],
+  "prompt": "Goal: Layouts that mirror correctly with dir=\"rtl\", using logical CSS properties, with mixed direction text kept readable.\nSteps:\n1. Set <html lang=\"ar\" dir=\"rtl\"> for right to left locales and update both when the language changes.\n2. Replace physical properties with logical ones: margin-inline-start, padding-inline-end, inset-inline-start, text-align: start, border-inline-start.\n3. Flex and grid follow dir automatically; remove manual row-reverse hacks.\n4. Mirror directional icons (arrows, back, progress) with :dir(rtl) or [dir=\"rtl\"] and transform: scaleX(-1); do not mirror logos or media controls.\n5. Wrap user content of unknown direction in <bdi> or set dir=\"auto\" on inputs and text blocks.\n6. Test with real right to left text, including numbers and Latin words inside sentences.\nQuality bar:\n- No left or right in layout CSS except for intentional cases.\n- Reading order matches the visual order.\n- Form fields align to the start edge.\nPitfalls:\n- Mirroring with transform on the whole page.\n- Hard coded float: left in components.\n- Phone numbers and code reversed because of missing isolation.\nVerify:\n- [ ] html has lang and dir for rtl pages.\n- [ ] Layout CSS uses logical properties.\n- [ ] Directional icons mirror.\n- [ ] CSS braces balance.\nOutput: Updated CSS with logical properties and HTML with dir handling.",
+  "checks": [
+    "html.lang",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "preciso do site em árabe também",
+      "output": "dir=\"rtl\" on html for ar, margin-inline and inset-inline everywhere, arrow icons mirrored with :dir(rtl)"
+    }
+  ],
+  "size": 382,
+  "version": 1
+}

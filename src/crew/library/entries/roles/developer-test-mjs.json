@@ -1,0 +1,38 @@
+{
+  "id": "developer-test-mjs",
+  "title": "Developer: writing test.mjs with node:assert",
+  "category": "roles",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "test",
+    "unit test",
+    "test.mjs",
+    "node:assert",
+    "node:test",
+    "assert",
+    "testing",
+    "write tests"
+  ],
+  "when": "The developer writes logic (calculation, parsing, filtering, state changes) and must leave a test that runs with plain node.",
+  "inputs": [
+    "the module with the logic",
+    "the cases from the plan"
+  ],
+  "prompt": "Goal: A test.mjs that imports the real functions, covers normal, edge and bad inputs, and exits non zero on failure.\nSteps:\n1. Make the logic importable: export pure functions from a module (logic.js) that does not touch document or window.\n2. Create test.mjs with import assert from \"node:assert/strict\" and import { test } from \"node:test\".\n3. Write one test per behavior with a clear name: test(\"total ignores removed items\", ...).\n4. Use assert.equal for values, assert.deepEqual for arrays and objects, assert.throws for bad input.\n5. Cover three kinds: a normal case, a boundary (empty, zero, one item), and an invalid input.\n6. Run it with run: node test.mjs and fix the code, not the test, when it fails.\nQuality bar:\n- Tests import the real module, not a copy.\n- Each test checks one behavior.\n- The file runs with no install.\nPitfalls:\n- Tests that only check that a function exists.\n- Copying the function into the test file.\n- Floating point totals compared with equal instead of rounding first.\nVerify:\n- [ ] test.mjs exists and parses.\n- [ ] It imports from the module.\n- [ ] Normal, boundary and bad cases present.\n- [ ] node test.mjs passes.\nOutput: test.mjs next to the module, plus the export changes the module needed.",
+  "checks": [
+    "file.test",
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "testa a funcao que calcula o frete",
+      "output": "test.mjs: freight(0) is 0, freight(10) is 15.5, freight(-1) throws RangeError"
+    }
+  ],
+  "size": 354,
+  "version": 1
+}

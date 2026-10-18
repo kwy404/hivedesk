@@ -1,0 +1,53 @@
+{
+  "id": "countdown-to-date",
+  "title": "Countdown to a date or event",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "countdown",
+    "countdown timer",
+    "event countdown",
+    "days until",
+    "launch countdown",
+    "birthday",
+    "deadline"
+  ],
+  "when": "The user wants a countdown showing days, hours, minutes and seconds until an event, launch, birthday or deadline.",
+  "inputs": [
+    "event name",
+    "date and time",
+    "message at zero"
+  ],
+  "prompt": "Goal: A countdown that is exact in local time, ticks on whole seconds and handles the moment it reaches zero.\nSteps:\n1. Labeled event name and datetime-local inputs; several countdowns saved in localStorage guarded and listed nearest first.\n2. logic.mjs: parseLocal(str) builds new Date(y, m - 1, d, h, min) from parts; diffParts(target, now) returns { days, hours, minutes, seconds, past }.\n3. Four labeled blocks (Days, Hours, Minutes, Seconds); schedule with setTimeout(tick, 1000 - Date.now() % 1000) to stay on the second.\n4. Say \"local time\"; computing from epoch ms keeps daylight saving changes right.\n5. At zero stop, show the event message in role=\"status\"; a celebration animation only without prefers-reduced-motion.\n6. Past events show \"3 days ago\" and can be deleted.\n7. test.mjs: known pairs, past dates, across a month end.\nQuality bar:\n- No drift after an hour open.\n- Numbers pad to two digits.\n- Readable at 375 px.\nPitfalls:\n- Date.parse on \"2026-12-31 20:00\", which differs between engines.\n- Negative numbers after the deadline.\n- Announcing every second.\nVerify:\n- [ ] Diff math tested.\n- [ ] Reduced motion rule present.\n- [ ] Inputs labeled.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (date math), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "contagem regressiva para meu casamento",
+      "output": "blocks 128 days 04:12:09, message \"Hoje e o grande dia\" at zero"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

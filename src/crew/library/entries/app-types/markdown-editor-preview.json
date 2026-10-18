@@ -1,0 +1,47 @@
+{
+  "id": "markdown-editor-preview",
+  "title": "Markdown editor with live, escaped preview",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "markdown editor",
+    "markdown",
+    "live preview",
+    "md editor",
+    "markdown to html",
+    "writing app",
+    "text editor"
+  ],
+  "when": "The user wants a Markdown editor with a side by side live preview, a formatting toolbar and download of the result.",
+  "inputs": [
+    "Markdown features needed",
+    "export formats"
+  ],
+  "prompt": "Goal: A split editor whose preview updates as you type and can never run or inject markup from the text.\nSteps:\n1. Split view: labeled textarea and a preview article; under 768 px a tab toggle shows one at a time.\n2. logic.mjs toHtml(md): escape & < > \" and apostrophe in the whole input first, then block rules (headings, lists, blockquote, fenced code, paragraphs), then inline rules with code spans before bold, italic and links.\n3. Links accept only http, https, mailto and relative URLs; anything else stays text; absolute links get rel=\"noopener\".\n4. Debounce 150 ms and set preview.innerHTML only to the output of toHtml, never to raw input.\n5. Toolbar (Bold, Italic, Link, Heading, List) wraps the selection via selectionStart and selectionEnd and keeps focus; Ctrl+B and Ctrl+I.\n6. Autosave the draft to localStorage in try and catch; word count; Download .md and .html via Blob.\n7. test.mjs: <script> becomes &lt;script&gt;, javascript: links dropped, nested emphasis, code spans keep asterisks.\nQuality bar:\n- Escaping happens before any rule.\n- Cursor position survives toolbar actions.\n- Preview typography is readable at 65 characters per line.\nPitfalls:\n- Escaping after converting, which leaves raw tags.\n- Regex that eats across lines.\n- Toolbar buttons that steal and lose the selection.\nVerify:\n- [ ] toHtml is the only innerHTML source.\n- [ ] Textarea labeled.\n- [ ] Unsafe links tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (editor and toolbar), logic.mjs (toHtml), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "html.labels",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "editor de markdown com pre visualizacao ao vivo",
+      "output": "textarea + preview, toolbar B/I/link, escape first, Download .md"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

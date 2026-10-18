@@ -1,0 +1,39 @@
+{
+  "id": "desktop-background-tasks",
+  "title": "Background work without freezing the window",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "background task",
+    "web worker",
+    "frozen ui",
+    "long task",
+    "desktop app",
+    "progress",
+    "cancel",
+    "not responding",
+    "performance"
+  ],
+  "when": "Importing, indexing or exporting in the desktop app freezes the window or shows not responding, and the work needs progress and cancel.",
+  "inputs": [
+    "the heavy job and its input size",
+    "needed progress detail"
+  ],
+  "prompt": "Goal: Heavy jobs run off the UI thread with progress, cancel and errors reported, so the window keeps repainting.\nSteps:\n1. Move CPU work into worker.js: const w = new Worker(\"js/worker.js\", { type: \"module\" }); post the input, receive { type: \"progress\" | \"done\" | \"error\" } messages.\n2. Keep workers pure: no DOM, no native calls; the main thread reads files and passes text or ArrayBuffers (transfer them with postMessage(buf, [buf])).\n3. Post progress at most every 100 ms with done and total counts; the UI shows a <progress> and an estimate.\n4. Cancel: a button calls w.terminate() and resets state; for soft cancel post { type: \"cancel\" } checked between chunks.\n5. When a worker is not possible, chunk the loop: process 500 items, then await new Promise((r) => setTimeout(r, 0)) before the next batch.\n6. Long file writes: queue them and await each Neutralino.filesystem call; never block with busy loops.\n7. External tools, if truly needed, run with Neutralino.os.spawnProcess and fixed arguments, never a shell string built from user input.\n8. worker.onerror and message errors show a readable message and re-enable the buttons.\nQuality bar:\n- The window stays responsive during a 100 MB import.\n- Cancel stops within one second.\nPitfalls:\n- Posting progress for every item, which floods the UI.\n- Copying huge buffers instead of transferring them.\nVerify:\n- [ ] Heavy loops live in the worker or yield.\n- [ ] Cancel and error paths reset the UI.\n- [ ] No shell strings with user input.\nOutput: worker.js, jobs.js and the progress markup.",
+  "checks": [
+    "js.async-errors",
+    "sec.no-shell-input",
+    "js.no-sync-in-handlers"
+  ],
+  "examples": [
+    {
+      "input": "quando importo arquivo grande o app desktop congela",
+      "output": "Module worker with progress every 100 ms, transferable buffers, terminate on cancel, chunked fallback"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

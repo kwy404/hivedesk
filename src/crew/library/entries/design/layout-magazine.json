@@ -1,0 +1,37 @@
+{
+  "id": "layout-magazine",
+  "title": "Magazine style editorial layout",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "magazine",
+    "editorial",
+    "news layout",
+    "featured story",
+    "newspaper",
+    "article grid",
+    "front page"
+  ],
+  "when": "The user wants a news, magazine or editorial front page with a lead story, secondary stories and headline lists.",
+  "inputs": [
+    "stories with title, summary, section and date",
+    "which story leads"
+  ],
+  "prompt": "Goal: A 12 column editorial grid with lead, secondary and tertiary tiers that collapses to one readable column on phones.\nSteps:\n1. From about 60em use grid-template-columns: repeat(12, minmax(0, 1fr)); one column below.\n2. Lead story spans 8 columns with a large image and a two line dek; a side rail spans 4 with three headline only items.\n3. Second row: three stories of 4 columns with a smaller image, a kicker (section name) and byline.\n4. Separate tiers with thin rules (border-block-start: 1px solid var(--color-border)) and type size, not boxes.\n5. Write each story as an article with a heading link, a time element with datetime, and a short summary.\n6. Use a serif for headlines and one body size; vary only size and weight by tier.\nQuality bar:\n- Three visible levels of importance.\n- Headline links carry the full title.\n- Columns align to shared grid lines.\nPitfalls:\n- Every story the same size, which hides the lead.\n- CSS multi column text that forces zigzag reading.\n- Headlines cut with ellipsis.\nVerify:\n- [ ] 12 minmax(0, 1fr) tracks.\n- [ ] Each story is an article with a heading link.\n- [ ] time elements carry datetime.\n- [ ] Single column at 375 px.\nOutput: index.html with the story tiers and the editorial grid in style.css.",
+  "checks": [
+    "css.media-query",
+    "html.heading-order",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "front page for a neighborhood news site",
+      "output": "lead story 8 columns with rail of 3 headlines, then 3 stories of 4 columns, serif headlines"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

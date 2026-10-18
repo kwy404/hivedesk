@@ -1,0 +1,35 @@
+{
+  "id": "developer-unclear-spec",
+  "title": "Developer: working with an unclear task",
+  "category": "roles",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "unclear",
+    "ambiguous",
+    "spec",
+    "missing detail",
+    "assumption",
+    "ask",
+    "interpret task"
+  ],
+  "when": "The task detail is ambiguous or contradicts the files, and the developer must still deliver something correct.",
+  "inputs": [
+    "the task detail",
+    "the acceptance criteria",
+    "the existing files"
+  ],
+  "prompt": "Goal: A delivery that follows the most likely meaning, keeps the choice easy to change, and states the assumption in the summary.\nSteps:\n1. Look for the answer before guessing: acceptance criteria, the plan summary, other tasks, existing files and notes.\n2. If two readings remain, pick the one that is smaller and matches the criteria; prefer what existing files already do.\n3. If the gap blocks the work entirely (no content, unknown data format), send one short say to the foreman with two options and a default.\n4. Keep the assumed part isolated: a constant at the top of the file, one function, or one data file.\n5. Write a note with the assumption so later workers see it.\n6. Mention the assumption in the done summary in one line.\nQuality bar:\n- The criteria still pass.\n- The assumption is visible and easy to change.\n- No invented features beyond the reading.\nPitfalls:\n- Stopping and waiting when a reasonable default exists.\n- Building both readings.\n- Hiding a guess so QA thinks it was specified.\nVerify:\n- [ ] Sources were checked first.\n- [ ] One reading built.\n- [ ] The assumption is in a note and the summary.\n- [ ] No placeholders left.\nOutput: The task files, a note with the assumption, and a done summary that names it.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "task says \"add filters\" with no list",
+      "output": "reading: filter by category and price from data.json fields; constant FILTERS at top; note added"
+    }
+  ],
+  "size": 355,
+  "version": 1
+}

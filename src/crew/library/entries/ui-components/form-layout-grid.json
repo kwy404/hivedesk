@@ -1,0 +1,42 @@
+{
+  "id": "form-layout-grid",
+  "title": "Multi field form layout with fieldsets",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "form layout",
+    "form",
+    "form fields",
+    "registration form",
+    "checkout form",
+    "address form",
+    "fieldset",
+    "two column form"
+  ],
+  "when": "The user wants a form with many fields, such as registration, checkout, address or profile, laid out cleanly.",
+  "inputs": [
+    "the fields and which are required",
+    "how fields group together",
+    "what submitting does"
+  ],
+  "prompt": "Goal: A form that groups related fields, uses the right input types and autofill tokens, and reads well from 375 px up.\nSteps:\n1. Every control has a visible <label for> above it; group related fields in <fieldset> with a <legend> (Contact, Address, Payment).\n2. Grid: grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); long fields such as street span grid-column: 1 / -1.\n3. Types and tokens: type=\"email\" autocomplete=\"email\", type=\"tel\" autocomplete=\"tel\", autocomplete=\"given-name\", \"postal-code\", \"address-line1\"; inputmode=\"numeric\" for codes.\n4. Mark required fields with required and write (optional) after the label of the rest.\n5. Hints go in a <p id> under the label, linked with aria-describedby.\n6. One <button type=\"submit\"> with a specific label (Create account); inputs at least 16 px font and 44 px tall.\nQuality bar:\n- Field order follows how people think (name, then contact, then address).\n- Field widths hint the expected length.\n- Tab order equals visual order.\nPitfalls:\n- Placeholder text used as the only label.\n- Splitting one value across several boxes (phone in three parts).\n- Asterisks with no legend explaining them.\nVerify:\n- [ ] Every input, select and textarea has a label.\n- [ ] Email and phone fields use email and tel types.\n- [ ] The form has one submit button.\n- [ ] One column at 375 px.\nOutput: The form markup in the page and form.css with the grid and field styles.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "html.button-type",
+    "css.focus-visible",
+    "css.media-query"
+  ],
+  "examples": [
+    {
+      "input": "formulario de cadastro com nome, email, telefone e endereco",
+      "output": "fieldsets Contact and Address, auto-fit grid, email and tel types with autocomplete, Create account submit"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

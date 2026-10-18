@@ -1,0 +1,36 @@
+{
+  "id": "ids-random-uuid",
+  "title": "Generating ids with crypto.randomUUID",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "id",
+    "uuid",
+    "unique id",
+    "identifier",
+    "randomuuid",
+    "generate id",
+    "primary key",
+    "random id"
+  ],
+  "when": "Records created in the browser or Node need unique ids, or the code uses Date.now(), counters or Math.random for ids.",
+  "inputs": [
+    "where records are created",
+    "whether ids appear in URLs"
+  ],
+  "prompt": "Goal: Collision safe ids from the platform crypto API, with a fallback, a clear format, and no hidden meaning.\nSteps:\n1. Use crypto.randomUUID() (browsers in secure contexts, global in recent Node, or import from node:crypto).\n2. Fallback for plain http pages: fill new Uint8Array(16) with crypto.getRandomValues, set byte 6 to (b & 0x0f) | 0x40 and byte 8 to (b & 0x3f) | 0x80, format as hex with dashes.\n3. Create ids once at creation, keep them as strings, never change them.\n4. Optional readable type prefixes (ord_, usr_) validated with a regex when read from input.\n5. Order by createdAt, not by id.\n6. Short public codes (invites, order numbers) use a separate random code from an unambiguous alphabet (no 0, O, 1, l), checked for uniqueness.\nQuality bar:\n- No two records share an id, even across devices.\n- Ids leak no emails, counts or times.\n- One helper used everywhere.\nPitfalls:\n- Math.random ids, which collide and can be guessed.\n- Array index as id, broken by deletes.\n- Counters generated on several clients.\nVerify:\n- [ ] A single newId() helper.\n- [ ] Fallback uses getRandomValues.\n- [ ] No Math.random in id code.\n- [ ] Ids from input are validated.\nOutput: js/id.js exporting newId() and isId(value), used by every create function.",
+  "checks": [
+    "js.syntax",
+    "js.no-eval"
+  ],
+  "examples": [
+    {
+      "input": "os ids das tarefas estão repetindo",
+      "output": "newId() with crypto.randomUUID and getRandomValues fallback, replacing Date.now() ids"
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

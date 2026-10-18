@@ -1,0 +1,39 @@
+{
+  "id": "migration-guide",
+  "title": "Migration guide between versions",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "migration guide",
+    "upgrade guide",
+    "breaking changes",
+    "upgrade",
+    "major version",
+    "migrate",
+    "before and after"
+  ],
+  "when": "A new major version changes APIs, config or data, and users need step by step instructions to upgrade.",
+  "inputs": [
+    "the breaking changes",
+    "old and new usage",
+    "any automatic migration available"
+  ],
+  "prompt": "Goal: A guide where users upgrade by following ordered steps, with before and after code for every breaking change.\nSteps:\n1. Title with the versions (# Migrating from 1.x to 2.0), who must read it, and the expected effort.\n2. A checklist summary at the top so readers can see all required changes at once.\n3. One ## section per breaking change: what changed, why, and before and after code in fenced blocks.\n4. Order the sections in the sequence users should apply them (config first, then code, then data).\n5. Describe data or config migrations, how to back up first, and how to verify success.\n6. End with deprecations to watch for next, and how to roll back if needed.\nQuality bar:\n- Every breaking change in the changelog appears here.\n- Code samples are minimal and correct.\n- Search friendly headings using the old names.\nPitfalls:\n- Only listing changes without showing new usage.\n- Forgetting changed defaults, which break silently.\n- No backup step before data changes.\nVerify:\n- [ ] Starts with a # heading naming versions.\n- [ ] Each breaking change has before and after.\n- [ ] Code fences are closed.\n- [ ] Has a checklist.\nOutput: MIGRATION.md or docs/migrating-to-2.md, linked from the CHANGELOG.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.sections",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "write the upgrade guide for v2 of my CLI",
+      "output": "# Migrating from 1.x to 2.0: checklist, --out renamed to --output, config moved to .toolrc.json"
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

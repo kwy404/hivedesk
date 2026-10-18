@@ -1,0 +1,40 @@
+{
+  "id": "mobile-tab-bar-back-button",
+  "title": "Bottom tab bar and back button navigation",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tab bar",
+    "bottom navigation",
+    "back button",
+    "navigation",
+    "mobile app",
+    "history",
+    "routing",
+    "hardware back",
+    "stack navigation"
+  ],
+  "when": "The phone app needs a bottom tab bar for top level sections and a predictable back behavior, including the hardware back key in a Capacitor shell.",
+  "inputs": [
+    "top level sections (3 to 5)",
+    "detail screens under each"
+  ],
+  "prompt": "Goal: A 3 to 5 item bottom tab bar where each tab keeps its own stack and scroll position, and back always goes to the previous screen before leaving the app.\nSteps:\n1. Markup: <nav aria-label=\"Main\"> with <a href=\"#/home\"> items, each holding an icon plus a short text label; mark the active one with aria-current=\"page\".\n2. router.js listens to hashchange (or popstate) and renders the screen; detail screens push a new entry, tab switches replace it.\n3. Remember window.scrollY per tab in a Map and restore it after the render.\n4. Tapping the active tab again scrolls to top, then pops to the tab root.\n5. A visible back arrow in the header on detail screens calls history.back().\n6. Capacitor: App.addListener(\"backButton\", ({ canGoBack }) => canGoBack ? history.back() : App.exitApp()); close open sheets or dialogs first.\n7. Pad the bar with env(safe-area-inset-bottom) and keep it visible while scrolling.\nQuality bar:\n- Labels are always visible, not icon only.\n- Back never skips a screen and never exits from a detail screen.\nPitfalls:\n- Pushing a history entry on every tab tap, so back walks through tabs.\n- More than 5 tabs; move extras into a \"More\" screen.\n- Exiting while a dialog is open.\nVerify:\n- [ ] aria-current marks the active tab.\n- [ ] Scroll position survives a tab round trip.\n- [ ] The hardware back handler closes overlays first.\nOutput: tab bar markup in index.html, router.js and the bar CSS.",
+  "checks": [
+    "html.nav",
+    "js.syntax",
+    "css.media-query"
+  ],
+  "examples": [
+    {
+      "input": "app com abas embaixo: inicio, busca, perfil, e o botão voltar funcionando",
+      "output": "nav with aria-current tabs, per tab scroll memory, backButton listener that closes dialogs then goes back"
+    }
+  ],
+  "size": 407,
+  "version": 1
+}

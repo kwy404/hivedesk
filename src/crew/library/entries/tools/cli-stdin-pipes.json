@@ -1,0 +1,39 @@
+{
+  "id": "cli-stdin-pipes",
+  "title": "Reading stdin and working in pipes",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "stdin",
+    "pipes",
+    "unix pipeline",
+    "read from stdin",
+    "line by line",
+    "streaming input",
+    "epipe",
+    "backpressure",
+    "cli"
+  ],
+  "when": "A CLI should accept data piped from another command or from file arguments, process big inputs line by line, and behave when its output is piped to head.",
+  "inputs": [
+    "input format",
+    "expected input size",
+    "output format"
+  ],
+  "prompt": "Goal: Input from files or stdin through one line iterator, processed incrementally, with output that respects backpressure and a closed pipe.\nSteps:\n1. Sources: positional paths, or process.stdin when there are none or the path is \"-\"; if stdin.isTTY and no file was given, print usage instead of waiting silently.\n2. Small inputs: process.stdin.setEncoding(\"utf8\"); let text = \"\"; for await (const chunk of process.stdin) text += chunk.\n3. Large inputs: const rl = readline.createInterface({ input: stream, crlfDelay: Infinity }); for await (const line of rl) handle(line); memory stays flat.\n4. Write through a helper: if (!process.stdout.write(s)) await once(process.stdout, \"drain\").\n5. Closed pipe: process.stdout.on(\"error\", (e) => { if (e.code === \"EPIPE\") process.exit(0); else throw e; }) so tool | head -1 ends quietly.\n6. Strip a leading BOM (﻿) on the first line; a missing final newline is a normal last line.\n7. One record per line (plain, or JSON lines with --json) so the next tool can parse it.\nQuality bar:\n- A 2 GB input runs in constant memory.\n- cat a.txt | tool and tool a.txt give identical output.\n- An empty pipe ends at once with no output.\nPitfalls:\n- fs.readFileSync(0) on huge inputs, or on a TTY where it blocks.\n- Splitting on \"\\n\" and keeping the \"\\r\" of CRLF files.\n- Ignoring the write return value and buffering gigabytes in memory.\nVerify:\n- [ ] \"-\" reads stdin.\n- [ ] readline with crlfDelay.\n- [ ] EPIPE handled.\n- [ ] Async errors caught in main.\nOutput: src/input.mjs, src/output.mjs and bin/tool.mjs wiring them.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quero usar minha ferramenta assim: cat dados.txt | tool | head",
+      "output": "src/input.mjs reading files or stdin with readline and crlfDelay, write helper awaiting drain, EPIPE exits 0"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

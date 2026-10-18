@@ -1,0 +1,36 @@
+{
+  "id": "touch-target-focus",
+  "title": "Touch target size and focus rings",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "touch targets",
+    "tap target",
+    "focus ring",
+    "focus outline",
+    "hit area",
+    "mobile usability",
+    "small buttons"
+  ],
+  "when": "Controls are hard to tap on phones or keyboard focus is invisible, and the user wants comfortable, visible targets.",
+  "inputs": [
+    "the small or dense controls",
+    "surface colors where focus must show"
+  ],
+  "prompt": "Goal: Every control at least 44 by 44 px (WCAG 2.2 minimum 24 px with spacing) and a focus ring visible on any background.\nSteps:\n1. Find small targets: icon buttons, dense list links, checkboxes, close buttons, pagination.\n2. Grow the hit area, not the look: padding with min-width and min-height 44px, or a ::before with inset: -10px on a position: relative control.\n3. Keep at least 8 px between adjacent targets so a thumb hits one.\n4. Focus: :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px }; never remove outline without a replacement.\n5. Choose a focus color with 3 to 1 against both control and page, or a two tone ring (outline plus a box-shadow in the background color).\n6. Enlarge checkboxes and radios with inline-size: 1.25rem and accent-color, and make the whole label clickable.\nQuality bar:\n- Focus ring visible on light, dark and accent surfaces.\n- No target under 24 px without 24 px of spacing.\n- Focused anchors are not hidden under a sticky header (scroll-margin-top).\nPitfalls:\n- outline: none in a reset.\n- Hit areas overlapping neighbors.\n- Focus styles applied only on :hover.\nVerify:\n- [ ] A :focus-visible rule covers interactive elements.\n- [ ] Icon buttons measure at least 44 px.\n- [ ] Adjacent targets keep 8 px.\n- [ ] scroll-margin-top set under a sticky header.\nOutput: Target size and focus rules in style.css.",
+  "checks": [
+    "css.focus-visible",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "os botoes de icone sao dificeis de tocar no celular",
+      "output": "icon buttons min 44px with padding, 3px focus ring with 2px offset, 8px gap between controls"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

@@ -1,0 +1,54 @@
+{
+  "id": "expense-splitter",
+  "title": "Group expense splitter that settles who owes whom",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "split expenses",
+    "expense splitter",
+    "split bill",
+    "shared expenses",
+    "trip expenses",
+    "who owes",
+    "settle up",
+    "roommates",
+    "friends"
+  ],
+  "when": "The user wants to split shared costs of a trip, house or dinner among friends and get the shortest list of payments to settle up.",
+  "inputs": [
+    "people in the group",
+    "expenses with payer and who shared them",
+    "currency"
+  ],
+  "prompt": "Goal: Balances that sum to exactly zero and a short list of payments that settles everyone.\nSteps:\n1. Data: people [] and expenses { id, payer, amountCents, participants[], description }; participants default to everyone.\n2. logic.mjs balances(): payer gets plus the amount, each participant minus a share; split in cents and hand leftover cents one by one so shares sum exactly.\n3. settle(balances): repeatedly pair the largest debtor with the largest creditor until all are zero; return [{ from, to, amountCents }].\n4. UI: add person form, expense form with payer select and a participants checkbox fieldset, expense list with delete, balances table, settlement as sentences \"Ana pays Bruno 23.50\".\n5. Block removing a person used in an expense, with the reason in role=\"alert\".\n6. Save the group in localStorage split.v1 guarded.\n7. test.mjs: 100.00 over 3 sums to 100.00, balances sum to 0, settle clears all in at most n minus 1 payments.\nQuality bar:\n- Every cent is accounted for.\n- Positive and negative balances are labeled \"is owed\" and \"owes\".\n- Works one handed on a phone.\nPitfalls:\n- Rounding each share and losing a cent.\n- Ignoring participants and splitting every expense with all.\n- Floating point totals.\nVerify:\n- [ ] Balances sum to zero.\n- [ ] Settlement list matches balances.\n- [ ] Forms are labeled.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (balances and settle), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.table-headers",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "dividir as despesas da viagem entre 4 amigos",
+      "output": "people + expenses forms, balances table, \"Carla pays Davi 57.25\" list"
+    }
+  ],
+  "size": 410,
+  "version": 1
+}

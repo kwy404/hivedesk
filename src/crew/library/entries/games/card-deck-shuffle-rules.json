@@ -1,0 +1,38 @@
+{
+  "id": "card-deck-shuffle-rules",
+  "title": "Card game deck, Fisher Yates shuffle and rules engine",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "card game",
+    "deck of cards",
+    "shuffle",
+    "fisher yates",
+    "solitaire",
+    "blackjack",
+    "playing cards",
+    "rules engine",
+    "game"
+  ],
+  "when": "A card game needs a correct deck model, an unbiased shuffle, dealing, and a rules engine for moves like drawing, playing and scoring hands.",
+  "inputs": [
+    "which card game",
+    "jokers or not"
+  ],
+  "prompt": "Goal: An unbiased, testable deck plus rules written as small check functions, not scattered ifs.\nSteps:\n1. cards.mjs: SUITS = [\"clubs\", \"diamonds\", \"hearts\", \"spades\"], ranks 1 to 13, card ids like \"H12\" so state stays JSON.\n2. shuffle(a, rng): for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); swap a[i] and a[j] }, with rng injected for tests.\n3. Never shuffle with array.sort(() => Math.random() - 0.5); it is biased and engine dependent.\n4. Piles are named arrays in state: deck, discard, hands per player, tableau columns; deal(state, n) takes from the top, the end of the array.\n5. Rules are functions canPlay(state, card, target) returning true or a reason string, and play(state, move) returning a new state.\n6. Scoring helpers per game, for example handValue counting aces as 11 and lowering them to 1 while the total is above 21.\n7. Each card shows rank, suit symbol and text (aria-label \"Queen of hearts\"); suits differ by shape as well as red and black.\nQuality bar:\n- Over 60000 shuffles of 3 cards each of the 6 orders appears about 10000 times, within 5 percent.\n- The card count stays 52 after any sequence of moves.\nPitfalls:\n- Using rng() * i instead of (i + 1), so a card never stays in place.\n- Dealing from the start of the array while drawing from the end.\n- Sharing one deck array between rounds and mutating it.\nVerify:\n- [ ] node:test checks the shuffle distribution with a seeded rng.\n- [ ] Every rule has a passing and a failing test.\nOutput: cards.mjs, rules.mjs, ui.js and test/cards.test.mjs.",
+  "checks": [
+    "node.test-runner",
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "jogo de paciência com embaralhamento justo",
+      "output": "card ids, Fisher Yates with injected rng, pile model, canPlay reasons, distribution test"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

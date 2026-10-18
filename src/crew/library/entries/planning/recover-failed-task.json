@@ -1,0 +1,36 @@
+{
+  "id": "recover-failed-task",
+  "title": "Recovering when a task fails",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "qa"
+  ],
+  "tags": [
+    "failed",
+    "failure",
+    "retry",
+    "stuck",
+    "blocked",
+    "recover",
+    "loop",
+    "qa failed"
+  ],
+  "when": "A task failed QA or review more than once, a worker got stuck, or a city task is near its loop limit and about to be blocked.",
+  "inputs": [
+    "the task and its issues",
+    "the files as they are",
+    "how many loops are left"
+  ],
+  "prompt": "Goal: A recovery that changes something real (smaller task, clearer detail, other worker, or a question) instead of repeating the same attempt.\nSteps:\n1. Read the issues and the files; classify the failure: unclear detail, task too big, wrong worker, impossible under constraints, or a flaky check.\n2. Unclear detail: rewrite the detail with the exact element, function or text expected.\n3. Too big: split into two tasks, the first one keeping what already passes.\n4. Wrong fit: reassign to a worker whose role matches the failing part.\n5. Impossible: tell the user what cannot be done here and offer the nearest version.\n6. Never send the same detail back a third time; each retry changes one of the above.\nQuality bar:\n- Each retry differs from the last.\n- Passing work is kept.\n- The user hears about blocks early.\nPitfalls:\n- Retrying unchanged until the loop limit.\n- Throwing away all files and starting over.\n- Lowering the criteria quietly to pass.\nVerify:\n- [ ] Failure class named.\n- [ ] The retry changes detail, size, worker or scope.\n- [ ] Kept files listed.\n- [ ] User told if blocked.\nOutput: A revised task (or two), a note with the failure class, and a say message when the user must decide.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "QA failed the form twice: labels missing",
+      "output": "class: unclear detail; new detail lists each input id with its label text"
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

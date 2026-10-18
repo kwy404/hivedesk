@@ -1,0 +1,35 @@
+{
+  "id": "plan-browser-game",
+  "title": "Planning a small browser game",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "game plan",
+    "game",
+    "game loop",
+    "levels",
+    "mechanics",
+    "score",
+    "canvas game",
+    "arcade"
+  ],
+  "when": "The user asks for a game (puzzle, arcade, word or card game) and the crew must plan it so it is playable at the end of the job.",
+  "inputs": [
+    "the game idea",
+    "controls (keyboard, touch)",
+    "win and lose rules"
+  ],
+  "prompt": "Goal: A plan that delivers one playable loop first, with pure game rules separated from drawing so they can be tested.\nSteps:\n1. Write the rules in five lines: goal, controls, what scores, how you lose, how you restart.\n2. Split logic and view: game.js holds state and a step(state, input) function; view.js draws with Canvas or DOM.\n3. Plan the loop: requestAnimationFrame with a fixed step for real time games, or event driven turns for puzzles.\n4. Add a test task for the rules: scoring, collisions or win detection in test.mjs with node:assert.\n5. Plan controls for keyboard and touch, plus pause and restart, and a visible score with an aria-live summary at game over.\n6. Put levels, sounds and effects in Later unless the user asked for them.\nQuality bar:\n- The game is playable from start to restart.\n- Rules are pure functions with tests.\n- Works with keyboard and touch.\nPitfalls:\n- Drawing and rules tangled in one function.\n- Frame rate dependent speed.\n- No restart, so the page must reload.\nVerify:\n- [ ] Rules are written down.\n- [ ] game.js and view.js are separate tasks or owners.\n- [ ] A rules test task exists.\n- [ ] Controls and restart are planned.\nOutput: Plan with index.html, game.js, view.js, style.css, test.mjs owners; rules in the summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "jogo da cobrinha no navegador",
+      "output": "rules: eat to grow, hit wall loses; game.js step(), view.js canvas, test.mjs collisions"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "license-options",
+  "title": "Explain license options for a project",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "ops"
+  ],
+  "tags": [
+    "license",
+    "open source license",
+    "mit",
+    "apache",
+    "gpl",
+    "licensing",
+    "copyright",
+    "license file"
+  ],
+  "when": "The user wants to choose or add a license for a project and needs the common options explained, without legal advice.",
+  "inputs": [
+    "how the user wants others to use the code",
+    "whether contributions or patents matter"
+  ],
+  "prompt": "Goal: A neutral, plain summary of common license families and, after the user chooses, a LICENSE file and README section.\nSteps:\n1. State clearly that this is general information, not legal advice, and that a lawyer should confirm for business needs.\n2. Explain permissive licenses (MIT, BSD-2-Clause, Apache-2.0): reuse allowed with notice; Apache-2.0 adds an explicit patent grant.\n3. Explain copyleft (GPL-3.0, AGPL-3.0 for network use, LGPL or MPL-2.0 as weaker forms): derived works must stay under the same license.\n4. Mention dedication options (CC0, Unlicense) and that \"no license\" means all rights reserved.\n5. Ask the user to choose; never pick for them silently.\n6. Add the official, unmodified license text as LICENSE with the year and owner name the user gives, an SPDX identifier, and a ## License section in the README linking to it.\nQuality bar:\n- Neutral comparisons, no recommendation framed as legal advice.\n- The license text is the standard one.\n- The README and LICENSE agree.\nPitfalls:\n- Writing a custom license.\n- Mixing incompatible licenses without noting it.\n- Leaving the owner name blank.\nVerify:\n- [ ] The disclaimer is present.\n- [ ] LICENSE exists when one was chosen.\n- [ ] README links to the LICENSE file that exists.\n- [ ] The SPDX id matches the text.\nOutput: The explanation in the reply, then LICENSE and the README section after the choice.",
+  "checks": [
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "qual licença eu coloco no meu projeto?",
+      "output": "summary of MIT, Apache-2.0 and GPL-3.0 with a not legal advice note; after choice, LICENSE with MIT text"
+    }
+  ],
+  "size": 395,
+  "version": 1
+}

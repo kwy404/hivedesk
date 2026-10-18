@@ -13,7 +13,7 @@ import { ToolBox } from '../../src/tools/index.js';
 import { Approvals } from '../../src/tools/approvals.js';
 import { createLendGuard } from '../../src/lend/guard.js';
 import { findLocalChat } from '../../src/lend/index.js';
-import { demoFolder } from '../../src/cli.js';
+import { prepareDemoDir, isDemoFolder } from '../../src/core/demo.js';
 import { Sandbox } from '../../src/extensions/sandbox.js';
 import { guestMay } from '../../src/collab/policy.js';
 import { readOptions } from '../../ui/lend/core/frames.js';
@@ -96,7 +96,7 @@ describe('guest agents and guest writes', () => {
     for (const id of ['m_rita0001:pip', 'm_rita0001:zed']) {
       const a = r.s.agents[id];
       expect(a.tools.some((t) => WRITE.includes(t))).toBe(false);
-      expect(a.permissions).toEqual({ shell: false, write: false });
+      expect(a.permissions).toMatchObject({ shell: false, write: false });
       expect(r.bus.state.crew.find((w) => w.id === a.workerId).tools.some((t) => WRITE.includes(t))).toBe(false);
     }
     const pip = r.s.agents['m_rita0001:pip'];
@@ -247,22 +247,24 @@ describe('lend safety on the lender', () => {
 });
 
 describe('demo separation', () => {
+  // 1.0 (PLAN 1.5, src/core/demo.js): a demo runs only in an empty folder or a demo folder (marker file).
   it('--demo never writes into a real project log', async () => {
     const real = tmpDir();
     const app = await startHive({ dir: real, home: tmpDir(), brain: createFakeBrain({ respond: () => 'x' }) });
     await app.close();
-    const log = path.join(real, '.hivedesk', 'events.jsonl');
-    const before = fs.readFileSync(log, 'utf8');
-    await expect(startHive({ dir: real, demo: true, home: tmpDir(), autoStartDemo: false })).rejects.toMatchObject({ code: 'demo_dir' });
-    expect(fs.readFileSync(log, 'utf8')).toBe(before);
-    expect(() => demoFolder({ dir: real })).toThrow(/not empty/);
-    expect(() => demoFolder({ 'demo-dir': real })).toThrow(/real hivedesk project/);
+    const logDir = path.join(real, '.hivedesk', 'events');
+    const snapshot = () => fs.readdirSync(logDir).map((f) => [f, fs.readFileSync(path.join(logDir, f), 'utf8')]);
+    const before = snapshot();
+    expect(before.length).toBeGreaterThan(0);
+    await expect(startHive({ dir: real, demo: true, home: tmpDir(), autoStartDemo: false })).rejects.toMatchObject({ code: 'demo_refused' });
+    expect(snapshot()).toEqual(before);
+    expect(() => prepareDemoDir(real)).toThrow(/real project folder/);
     const project = tmpDir();
     fs.writeFileSync(path.join(project, 'index.html'), '<p>mine</p>');
-    expect(() => demoFolder({ dir: project })).toThrow(/not empty/);
-    expect(demoFolder({ 'demo-dir': project })).toBe(path.resolve(project));
-    const fresh = demoFolder({}, { tmp: tmpDir() });
-    expect(fs.readdirSync(fresh)).toEqual([]);
+    expect(() => prepareDemoDir(project)).toThrow(/real project folder/);
+    const fresh = prepareDemoDir();
+    expect(isDemoFolder(fresh)).toBe(true);
+    fs.rmSync(fresh, { recursive: true, force: true });
   });
 
   it('a demo run in a folder does not label a later real run as a demo', async () => {
@@ -270,12 +272,13 @@ describe('demo separation', () => {
     const demo = await startHive({ dir, demo: true, home: tmpDir(), autoStartDemo: false, demoDelayMs: 0 });
     expect(demo.bus.state.demo).toBe(true);
     await demo.close();
-    expect(demoFolder({ dir })).toBe(path.resolve(dir));
+    expect(isDemoFolder(dir)).toBe(true);
     const real = await startHive({ dir, home: tmpDir(), brain: createFakeBrain({ respond: () => 'x' }) });
     expect(real.bus.state.demo).toBe(false);
     await real.close();
-    // Once a real run wrote to it, the demo stays out.
-    await expect(startHive({ dir, demo: true, home: tmpDir(), autoStartDemo: false })).rejects.toMatchObject({ code: 'demo_dir' });
+    // Once a real run wrote to it, it is a real project and the demo stays out.
+    expect(isDemoFolder(dir)).toBe(false);
+    await expect(startHive({ dir, demo: true, home: tmpDir(), autoStartDemo: false })).rejects.toMatchObject({ code: 'demo_refused' });
   });
 });
 

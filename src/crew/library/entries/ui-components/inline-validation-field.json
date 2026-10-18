@@ -1,0 +1,44 @@
+{
+  "id": "inline-validation-field",
+  "title": "Input fields with inline validation messages",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "validation",
+    "form validation",
+    "inline errors",
+    "error message",
+    "input error",
+    "field validation",
+    "required field",
+    "invalid input"
+  ],
+  "when": "The user wants form fields that show helpful error messages next to the field while typing or on submit.",
+  "inputs": [
+    "the fields and their rules",
+    "the error wording",
+    "what happens on success"
+  ],
+  "prompt": "Goal: Validation that tells people how to fix each field, at the right moment, in a way screen readers announce.\nSteps:\n1. Rules as native constraints (required, type, minlength, pattern); add novalidate to the form and run checkValidity() in JS to show your own messages.\n2. Validate a field first on blur; once it was invalid, revalidate on every input so the error clears as soon as it is fixed.\n3. Each field gets <p id=\"email-error\" class=\"error\"> linked through aria-describedby together with its hint, and aria-invalid=\"true\" while wrong.\n4. Messages say how to fix it: Enter an email like name@example.com, not Invalid.\n5. On submit with errors, prevent it, show a role=\"alert\" summary with links to the fields and focus the first invalid one.\n6. Show success in a role=\"status\" region.\nQuality bar:\n- Errors pair an icon and text with the red border.\n- No error shows before the user touched the field.\n- Messages are set with textContent.\nPitfalls:\n- Validating on every keystroke from the first letter.\n- Clearing what the user typed after an error.\n- Disabling the submit button with no explanation.\nVerify:\n- [ ] Every field has a label and an error element linked by aria-describedby.\n- [ ] aria-invalid toggles with the state.\n- [ ] Submit focuses the first invalid field.\n- [ ] A live region announces the result.\nOutput: Form markup, validation styles in form.css and validate.js.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "validar email e senha mostrando o erro embaixo do campo",
+      "output": "blur then input validation, aria-describedby error text, role alert summary on submit, focus first invalid"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

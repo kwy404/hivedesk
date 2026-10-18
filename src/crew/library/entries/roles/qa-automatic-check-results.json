@@ -1,0 +1,35 @@
+{
+  "id": "qa-automatic-check-results",
+  "title": "QA: using the automatic check results",
+  "category": "roles",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "qa",
+    "checks",
+    "check results",
+    "automated checks",
+    "lint",
+    "static checks",
+    "warnings",
+    "errors"
+  ],
+  "when": "QA receives the results of the automatic checks with the work and must turn them into findings correctly.",
+  "inputs": [
+    "check results with levels and issues",
+    "the files"
+  ],
+  "prompt": "Goal: Every error level failure turned into a finding with a fix, warnings judged on merit, and false alarms explained rather than ignored.\nSteps:\n1. Read the check list: id, level (error or warn), status and issues.\n2. For each failing error check, open the file it names and confirm the issue in the text.\n3. Write a high finding with the fix the check implies: missing lang means add lang=\"en\" to the html tag.\n4. For warnings, write a medium or low finding only if a user would feel it; otherwise mention it in one line.\n5. If a check is wrong for this file (for example a printable page with no nav), say why in the finding problem with severity low.\n6. Never pass with an error level failure that is real.\nQuality bar:\n- Every error failure is handled.\n- Fixes are specific to the file.\n- Skipped checks are not treated as passes of real requirements.\nPitfalls:\n- Copying the check text as the finding with no fix.\n- Ignoring warnings that point at real breakage.\n- Assuming a skipped check means the criterion passed.\nVerify:\n- [ ] Each error failure has a finding.\n- [ ] Warnings were judged.\n- [ ] False alarms explained.\n- [ ] passed matches the rules.\nOutput: Findings derived from checks plus manual ones, in the report.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "html.labels failed on contact.html, css.no-important warned",
+      "output": "high: add label for #phone; low note: 4 !important in style.css"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "dockerignore-small-images",
+  "title": "Small container images with .dockerignore and layer order",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev"
+  ],
+  "tags": [
+    "dockerignore",
+    "image size",
+    "small image",
+    "build context",
+    "layer cache",
+    "slow builds",
+    "container image",
+    "slim base"
+  ],
+  "when": "Container builds are slow, the build context is huge, or the image weighs hundreds of megabytes and the user wants it smaller and quicker to rebuild.",
+  "inputs": [
+    "current Dockerfile",
+    "project folder layout",
+    "image size today"
+  ],
+  "prompt": "Goal: A tight build context and a final image with only runtime files, with sizes measured before and after.\nSteps:\n1. Measure first: the image size from the engine's image list and per layer sizes from its history command.\n2. .dockerignore: .git, node_modules, __pycache__, *.log, coverage/, .env*, tests/, editor folders, local build output.\n3. For messy projects use an allow list: a first line * then !src/, !package.json and !the lockfile.\n4. Order instructions from least to most changing: base, system packages, dependency manifests, install, source.\n5. Install and clean in one RUN: apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*.\n6. Use a slim pinned base and copy only built output into the last stage.\n7. Rebuild, compare sizes, and note both numbers in the commit message.\nQuality bar:\n- The context sent to the builder is a few megabytes.\n- Editing one source file does not rerun dependency installs.\n- No secrets or version control data in any layer.\nPitfalls:\n- Deleting files in a later RUN; the earlier layer still holds them.\n- Ignoring a file the build needs, such as the lockfile.\n- COPY . . before the install, which invalidates the cache on every edit.\nVerify:\n- [ ] .dockerignore lists .git, .env and dependency folders.\n- [ ] Install and cleanup share one RUN.\n- [ ] FROM is pinned.\n- [ ] Sizes before and after recorded.\nOutput: .dockerignore, the reordered Dockerfile and a short size note.",
+  "checks": [
+    "container.pinned"
+  ],
+  "examples": [
+    {
+      "input": "my image is 1.2 GB and every build reinstalls everything",
+      "output": ".dockerignore allow list, dependency layer before source, apt cleanup in one RUN, size note 1.2 GB to 180 MB"
+    }
+  ],
+  "size": 419,
+  "version": 1
+}

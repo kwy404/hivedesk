@@ -1,0 +1,40 @@
+{
+  "id": "desktop-os-theme-follow",
+  "title": "Desktop theme that follows the OS",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "dark mode",
+    "system theme",
+    "os theme",
+    "accent color",
+    "desktop app",
+    "light theme",
+    "high contrast",
+    "native look"
+  ],
+  "when": "The desktop app should match the OS light or dark mode live, honor high contrast settings and feel native next to other apps.",
+  "inputs": [
+    "color tokens",
+    "manual theme choice needed or not"
+  ],
+  "prompt": "Goal: Theme tokens that switch live with the OS, a System, Light, Dark setting, and support for forced colors high contrast mode.\nSteps:\n1. :root { color-scheme: light dark; } with tokens --bg, --panel, --text, --muted, --accent, --border, --focus.\n2. Dark values in @media (prefers-color-scheme: dark), overridden by [data-theme=\"light\"] or [data-theme=\"dark\"] on html when the user picks one.\n3. theme.js applies the setting at start before first paint and listens to matchMedia(\"(prefers-color-scheme: dark)\") change events while the choice is System.\n4. Use system fonts: font-family: system-ui, sans-serif; and the accent keyword AccentColor where supported, with a token fallback.\n5. @media (forced-colors: active): drop custom backgrounds on controls, use CanvasText, ButtonText and Highlight keywords, keep borders visible.\n6. Native parts (title bar, dialogs, tray) follow the OS on their own; keep the in window header color close to them.\n7. Add @media (prefers-reduced-motion: reduce) to turn off theme transition animations.\nQuality bar:\n- Switching the OS theme updates the open window within a second.\n- Text contrast is 4.5 to 1 in both themes.\nPitfalls:\n- Detecting the theme once and never listening again.\n- Hiding focus rings in high contrast mode.\nVerify:\n- [ ] Dark tokens under prefers-color-scheme.\n- [ ] forced-colors rules exist.\n- [ ] The change listener is attached.\nOutput: theme.css, theme.js and the theme setting control.",
+  "checks": [
+    "css.dark-scheme",
+    "css.media-query",
+    "css.reduced-motion",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "meu app desktop tem que seguir o tema escuro do sistema",
+      "output": "Tokens with prefers-color-scheme, System/Light/Dark setting, live listener, forced-colors rules"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

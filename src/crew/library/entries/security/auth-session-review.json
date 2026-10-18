@@ -1,0 +1,39 @@
+{
+  "id": "auth-session-review",
+  "title": "Authentication and session review",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer"
+  ],
+  "tags": [
+    "authentication review",
+    "login review",
+    "session review",
+    "account enumeration",
+    "mfa",
+    "remember me",
+    "oauth state",
+    "logout",
+    "security review"
+  ],
+  "when": "The sign up, login, logout, remember me and account recovery flows of an app should be reviewed end to end for authentication and session weaknesses.",
+  "inputs": [
+    "auth routes",
+    "session code",
+    "test accounts"
+  ],
+  "prompt": "Goal: Each auth flow is walked step by step against a checklist, and each gap becomes a finding with file, line and fix.\nSteps:\n1. Map flows from routes: sign up, email verify, login, second factor, remember me, logout, reset, email change, account delete, third party callback.\n2. Login: one generic error, throttling per account and address, session id rotated after login, nothing from the anonymous session trusted afterwards.\n3. Session: id from a CSPRNG with at least 128 bits, stored server side or signed, idle and absolute timeouts, ended on logout and password change.\n4. Remember me: a separate long lived random token stored hashed, rotated on use and revocable from a device list; never the password or bare user id in a cookie.\n5. Sensitive actions (email change, password change, delete account, new API key) need recent authentication or the current password.\n6. Third party sign in: state parameter checked, exact redirect URI match, PKCE for public clients, provider email verified before linking accounts.\nQuality bar:\n- Each flow is marked pass, fail or absent.\n- Findings cite route and code line.\n- Reproduction uses local test accounts only.\nPitfalls:\n- Reviewing login while skipping recovery and email change.\n- Linking accounts by an unverified provider email.\n- Sessions that survive a password reset.\nVerify:\n- [ ] All flows are listed.\n- [ ] Rotation on login is confirmed.\n- [ ] Recent auth guards sensitive actions.\n- [ ] Findings have file, line and fix.\nOutput: An auth section with a flow table in SECURITY-AUDIT.md.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "revisa todo o fluxo de login, lembrar de mim e recuperacao de conta",
+      "output": "flow table with pass or fail, session rotation gap, remember me token stored plain, fixes"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

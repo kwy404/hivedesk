@@ -1,0 +1,49 @@
+{
+  "id": "contact-page",
+  "title": "Contact page with form",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "contact",
+    "contact form",
+    "get in touch",
+    "email",
+    "phone",
+    "location"
+  ],
+  "when": "The user wants a contact page with a form, contact details and location.",
+  "inputs": [
+    "email, phone, address",
+    "what people usually ask",
+    "where form messages go"
+  ],
+  "prompt": "Goal: Make contacting easy by every channel and make the form reliable and accessible.\nSteps:\n1. Contact details first: email link, tel link, address, hours, expected reply time.\n2. Form fields: name, email (type email), topic select, message textarea; each with a visible label.\n3. Validate on submit; show errors next to fields with aria-describedby, and focus the first invalid field.\n4. Send to the endpoint the user gave, or open a prefilled mailto; never pretend it was sent.\n5. Success message in an aria-live region and a clear next step.\nQuality bar:\n- Required fields are marked in text.\n- Errors say how to fix the problem.\n- Phone and email work as links.\nPitfalls:\n- Captcha walls for a tiny site.\n- Clearing the form on error.\n- Placeholders instead of labels.\nVerify:\n- [ ] All controls labeled.\n- [ ] Submit button present.\n- [ ] Status region announced.\n- [ ] Email input is type email.\nOutput: contact.html, styles, and contact.js for validation.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.input-types",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "página de contato com formulário",
+      "output": "details block with email and phone links, form with name, email, topic, message, inline errors"
+    }
+  ],
+  "size": 276,
+  "version": 1
+}

@@ -3,8 +3,10 @@
 // Templates are versioned: change PROMPT_VERSION when a template changes, and update the golden snapshots.
 import { TOOLS } from '../../tools/index.js';
 import { ROLES, HIRED_ROLE } from './roles.js';
+import { playbookSection } from '../library/index.js';
+import { playbooksOf } from '../library/hook.js';
 
-export const PROMPT_VERSION = '2026-10-16.2';
+export const PROMPT_VERSION = '2026-10-17.1';
 
 /** About 3.5 characters per token for English, code and JSON with the Qwen and most cloud tokenizers. */
 export function estimateTokens(text) {
@@ -164,6 +166,8 @@ export function numbered(text, maxChars = 2400) {
 
 /**
  * Builds the system prompt and the first user message of a task, within the token budget.
+ * The expert playbooks picked for the task (src/crew/library/, or input.playbooks) go between the
+ * objective and the context, in at most about a third (37 percent) of the budget.
  * Trimming order when it does not fit (first to go last): map, memories, related files, files being edited.
  * The objective and the acceptance criteria are never cut.
  * @returns {{ system: string, user: string, budget: { family: string, limit: number, used: number, sections: Record<string, number>, trimmed: string[], version: string } }}
@@ -197,8 +201,10 @@ export function assembleTaskPrompt(input) {
   if (memories.length) pieces.push({ kind: 'memories', priority: 4, text: `What we know (memory):\n${memories.map((m) => `- ${m}`).join('\n')}` });
   pieces.push({ kind: 'map', priority: 5, text: `Project map:\n${projectMap(files)}` });
 
+  const playbook = playbookSection(input.playbooks || playbooksOf(task) || [], { maxTokens: Math.floor(limit * 0.37) });
   const sections = { system: estimateTokens(system), objective: estimateTokens(objective) };
-  let used = sections.system + sections.objective;
+  if (playbook) sections.playbook = estimateTokens(playbook.text);
+  let used = sections.system + sections.objective + (sections.playbook || 0);
   // Drop from the lowest priority up (map, memories, related files, ...) until it fits; a piece of
   // priority 1 (the file being changed, the review data) is cut down instead of dropped.
   const kept = [...pieces].sort((x, y) => x.priority - y.priority);
@@ -223,6 +229,6 @@ export function assembleTaskPrompt(input) {
   const order = ['editing', 'review', 'related', 'previous', 'user', 'scratchpad', 'memories', 'map'];
   kept.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind));
   const context = tag('context', kept.map((p) => p.text).join('\n\n') || '(nothing yet)');
-  const user = `${objective}\n\n${context}\n\nWhat is your first action?`;
-  return { system, user, budget: { family, limit, used, sections, trimmed, version: PROMPT_VERSION } };
+  const user = `${objective}\n\n${playbook ? `${playbook.text}\n\n` : ''}${context}\n\nWhat is your first action?`;
+  return { system, user, budget: { family, limit, used, sections, trimmed, version: PROMPT_VERSION, ...(playbook ? { playbooks: playbook.used } : {}) } };
 }

@@ -31,6 +31,22 @@ export const BUILTIN = [
 
 export const BUILTIN_IDS = BUILTIN.map((w) => w.id);
 
+const BUILD_TOOLS = ['list_files', 'read_file', 'write_file', 'edit_file', 'delete_file', 'run', 'check'];
+/**
+ * Domain specialists: not part of every job. Mel brings one in when a request is classified into its
+ * domain (src/crew/domains/), and it leads that job; a web job never sees them.
+ */
+export const SPECIALISTS = [
+  { id: 'mobile', name: 'Mobi', role: 'Mobile developer', color: '#5FD3B0', avatar: 'Mo', prompt: 'You are Mobi, a senior mobile developer: installable PWAs with a Capacitor config for Android and iOS.', tools: [...BUILD_TOOLS, 'preview'] },
+  { id: 'desktop', name: 'Desk', role: 'Desktop app developer', color: '#8FA8FF', avatar: 'Dk', prompt: 'You are Desk, a senior desktop app developer: Neutralinojs apps with a narrow native allow list.', tools: [...BUILD_TOOLS, 'preview'] },
+  { id: 'backend', name: 'Bex', role: 'Backend developer', color: '#F29A5C', avatar: 'Bx', prompt: 'You are Bex, a senior backend developer: small JSON HTTP APIs on node:http with tests.', tools: BUILD_TOOLS },
+  { id: 'security', name: 'Sec', role: 'Security reviewer', color: '#E86B6B', avatar: 'Sc', prompt: 'You are Sec, a careful application security reviewer: real risks with severity, file, line and a fix.', tools: ['list_files', 'read_file', 'check'] },
+  { id: 'data', name: 'Dana', role: 'Data engineer', color: '#B9D46A', avatar: 'Da', prompt: 'You are Dana, a senior data engineer: small, correct data scripts with tests.', tools: BUILD_TOOLS },
+  { id: 'devops', name: 'Ops', role: 'DevOps engineer', color: '#A3A3B8', avatar: 'Op', prompt: 'You are Ops, a senior DevOps engineer: pinned, non root, repeatable container and CI files.', tools: ['list_files', 'read_file', 'write_file', 'edit_file', 'delete_file', 'check'] }
+].map((w) => ({ ...w, builtin: true, specialist: true }));
+
+export const SPECIALIST_IDS = SPECIALISTS.map((w) => w.id);
+
 let hired = 0;
 
 /**

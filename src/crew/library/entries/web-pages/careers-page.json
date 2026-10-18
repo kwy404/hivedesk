@@ -1,0 +1,47 @@
+{
+  "id": "careers-page",
+  "title": "Careers and job openings page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "careers",
+    "jobs",
+    "hiring",
+    "job openings",
+    "recruiting",
+    "work with us"
+  ],
+  "when": "The user wants a careers page with open positions and how to apply.",
+  "inputs": [
+    "company and culture facts",
+    "open roles with location and type",
+    "benefits",
+    "application method"
+  ],
+  "prompt": "Goal: Help the right people apply: honest culture, clear roles and a simple application.\nSteps:\n1. Intro: what the company does and what working there is like, with concrete facts.\n2. Open roles list: title, team, location or remote, contract type, salary range if given.\n3. Each role: responsibilities, must haves, nice to haves, process steps and timeline.\n4. Benefits as a list with real items.\n5. Apply by email link or form with resume upload label.\nQuality bar:\n- Inclusive language.\n- Requirements are real must haves.\n- The process and timeline are stated.\nPitfalls:\n- Long requirement lists that scare good candidates.\n- Buzzwords such as rockstar.\n- Expired roles still listed.\nVerify:\n- [ ] Roles have location and type.\n- [ ] Apply path exists per role.\n- [ ] Headings ordered.\n- [ ] Labels on form.\nOutput: careers.html and shared styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.heading-order",
+    "html.labels"
+  ],
+  "examples": [
+    {
+      "input": "página trabalhe conosco com 2 vagas",
+      "output": "intro facts, 2 roles with remote and salary range, process in 4 steps, apply by email"
+    }
+  ],
+  "size": 244,
+  "version": 1
+}

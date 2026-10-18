@@ -1,0 +1,42 @@
+{
+  "id": "game-hud-accessibility",
+  "title": "Accessible game HUD: colorblind safe and remappable keys",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "game accessibility",
+    "hud",
+    "colorblind",
+    "remap keys",
+    "key rebinding",
+    "accessibility options",
+    "game ui",
+    "reduced motion",
+    "game"
+  ],
+  "when": "The game interface must be readable and playable by more people: colorblind safe colors, remappable controls, scalable text, calmer motion and menus that work with assistive tech.",
+  "inputs": [
+    "HUD values shown",
+    "actions to remap"
+  ],
+  "prompt": "Goal: An options screen and HUD that let players adapt the game instead of fighting it.\nSteps:\n1. HUD text (score, lives, ammo) lives in HTML over the canvas, updated via textContent only on change; events like \"Wave 3\" go to a polite aria-live region.\n2. Never carry meaning by color alone: pair colors with shapes (enemies triangles, allies circles) and use a deuteranopia safe palette such as #0072b2 and #e69f00.\n3. HUD text keeps at least 4.5 to 1 contrast over a semi opaque panel.\n4. Remap screen: each action with a \"Change\" button that waits for the next keydown (Escape cancels), conflicts offer a swap, bindings save to guarded localStorage, plus \"Reset to defaults\".\n5. Options: text size 100 to 150 percent via a CSS variable, shake on or off, flashing off, game speed 75 to 100 percent, toggle instead of hold.\n6. Start with the calmer settings when prefers-reduced-motion matches.\n7. Menus are real buttons with visible :focus-visible rings, usable by keyboard or d pad.\nQuality bar:\n- Every function works with one hand on the keyboard.\n- Nothing flashes more than 3 times per second.\nPitfalls:\n- HUD text painted on the canvas, invisible to screen readers and blurry when scaled.\n- Tutorial prompts with hardcoded key names after the player remapped them.\n- Announcing the score every frame through aria-live.\nVerify:\n- [ ] Contrast of HUD text is checked.\n- [ ] A remapped jump still works after reload.\n- [ ] Reduced motion disables shake.\nOutput: hud.js, options.js, the HUD and options markup in index.html and style.css.",
+  "checks": [
+    "html.aria-live",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "css.contrast",
+    "js.storage-guarded",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "deixar meu jogo acessível para daltônicos e com teclas configuráveis",
+      "output": "HTML HUD with live events, shape plus color cues, rebinding screen, text size and motion options"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

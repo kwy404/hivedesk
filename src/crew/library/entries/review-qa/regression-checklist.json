@@ -1,0 +1,35 @@
+{
+  "id": "regression-checklist",
+  "title": "Regression checklist after a change",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "regression",
+    "regression testing",
+    "retest",
+    "broke something",
+    "side effects",
+    "after a fix",
+    "still works"
+  ],
+  "when": "After a fix or new feature, the user wants to make sure existing behavior did not break.",
+  "inputs": [
+    "the diff or list of changed files",
+    "previous bug reports"
+  ],
+  "prompt": "Goal: A focused regression run over the changed area, its dependents and the core flows, leaving a reusable checklist.\nSteps:\n1. Read the diff and list what it touches: functions, selectors, routes, storage keys, shared helpers.\n2. Find dependents: search every changed function name, class and storage key across the project.\n3. Build the list: the change itself, each dependent, the core flows (open, main task, save, reload), and old bugs fixed in the same area.\n4. Run the automated tests (node --test or python -m unittest) and the static checks before the manual items.\n5. Compare with the last good state: same output files, same layout at 375 and 1280 px.\n6. Save the list as regression.md and add an item each time a bug is fixed.\nQuality bar:\n- Each item has pass or fail and a date.\n- Previously fixed bugs are retested.\n- The list stays under 25 items.\nPitfalls:\n- Retesting only the changed line.\n- Skipping tests because the change looks small.\n- A list that grows forever with dead items.\nVerify:\n- [ ] Touched areas listed.\n- [ ] Dependents searched.\n- [ ] Tests run.\n- [ ] regression.md updated.\nOutput: regression.md with the checklist and the results of this run.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "mudei o calculo do frete, o que mais pode ter quebrado?",
+      "output": "dependents: cart total, checkout summary, invoice export; 14 items, old bug #3 coupon rounding retested"
+    }
+  ],
+  "size": 338,
+  "version": 1
+}

@@ -1,0 +1,51 @@
+{
+  "id": "word-guess-game",
+  "title": "Five letter word guessing game",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "word game",
+    "word guess",
+    "five letter word",
+    "daily word",
+    "word puzzle",
+    "guess the word",
+    "letters"
+  ],
+  "when": "The user wants the daily word puzzle: six tries to guess a five letter word, each guess scored letter by letter as right spot, in the word, or absent.",
+  "inputs": [
+    "language and word lists",
+    "daily or free play"
+  ],
+  "prompt": "Goal: Correct scoring with repeated letters, a responsive keyboard and stats that persist.\nSteps:\n1. Local answer and allowed lists; daily index from whole local days since a fixed start date; also a free play mode.\n2. logic.mjs score(guess, answer) in two passes: mark exact matches and count the rest of the answer letters, then mark present only while counts last; keyboardState keeps the best state per letter.\n3. 6 rows of 5 cells; physical keys and an on screen keyboard of buttons; Enter submits, Backspace deletes.\n4. Reject words not in the list with a shake and a role=\"alert\" message.\n5. Each cell aria-label \"A, correct spot\", \"in the word\" or \"not in the word\"; high contrast palette option; flip reveal off under prefers-reduced-motion.\n6. Stats in localStorage guarded: played, win rate, streak, distribution; share as a text grid of letters.\n7. test.mjs: repeated letters (answer ABBEY, guess BABES), all correct, invalid word.\nQuality bar:\n- Colors never the only signal.\n- Keyboard hints match cell states.\n- One game per day in daily mode.\nPitfalls:\n- Marking a letter present more times than it occurs.\n- Daily word changing at UTC midnight.\n- Accepting guesses shorter than 5.\nVerify:\n- [ ] Scoring tested with duplicates.\n- [ ] Alerts live.\n- [ ] Reduced motion rule exists.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (scoring and daily index), words.js, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de adivinhar palavra de 5 letras em portugues",
+      "output": "6x5 grid, on screen keyboard, daily word, stats and streak"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

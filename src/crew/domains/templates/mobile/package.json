@@ -1,0 +1,14 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An installable mobile web app (PWA) with a Capacitor config for Android and iOS builds.",
+  "scripts": {
+    "test": "node --test",
+    "serve": "npx --yes http-server www -p 8080 -c-1",
+    "cap:setup": "npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios",
+    "cap:android": "npx cap add android && npx cap sync android && npx cap open android",
+    "cap:ios": "npx cap add ios && npx cap sync ios && npx cap open ios"
+  }
+}

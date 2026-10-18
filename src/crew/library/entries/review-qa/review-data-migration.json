@@ -1,0 +1,36 @@
+{
+  "id": "review-data-migration",
+  "title": "Data migration review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "data migration",
+    "migration",
+    "schema change",
+    "storage version",
+    "backward compatibility",
+    "sql migration",
+    "rollback"
+  ],
+  "when": "A change alters saved data (a localStorage shape, a JSON file format, a SQL schema or CSV columns) and the migration needs review.",
+  "inputs": [
+    "old and new data shapes",
+    "the migration code"
+  ],
+  "prompt": "Goal: Confidence that old data upgrades correctly, nothing is lost, the migration is safe to run twice, and there is a way back.\nSteps:\n1. Find the version marker (a version field or a key such as app:v2) and every version that may exist on user machines.\n2. Read the steps: each maps vN to vN+1, runs in order, and fills missing or extra fields with defaults.\n3. Idempotence: a second run changes nothing; a crash midway resumes or is atomic (temp file plus rename, a SQL transaction).\n4. Backup: old data copied first (data.v1.bak.json) or kept until the new version is confirmed.\n5. Test with real samples: one file per old version, an empty store, corrupted JSON; compare record counts and spot check values.\n6. Rollback: either the old app reads the new format or the backup restores; write the steps down.\nQuality bar:\n- Record counts match before and after.\n- No field silently dropped.\n- The migration logs once with both versions.\nPitfalls:\n- Migrating in place with no backup.\n- Assuming everyone is on the previous version.\n- Changing the shape without bumping the version.\nVerify:\n- [ ] Version marker present.\n- [ ] Each step tested with a sample.\n- [ ] Idempotence checked.\n- [ ] Backup and rollback described.\nOutput: migration-review.md with findings, plus fixtures for each old version if added.",
+  "checks": [
+    "md.h1",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "changed how notes are saved, review the upgrade code",
+      "output": "v1 to v2 drops tags when empty string (bug), no backup, second run duplicates ids; 3 fixes"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

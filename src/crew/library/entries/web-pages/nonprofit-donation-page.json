@@ -1,0 +1,50 @@
+{
+  "id": "nonprofit-donation-page",
+  "title": "Nonprofit page with donation call",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "nonprofit",
+    "charity",
+    "donation",
+    "ngo",
+    "volunteer",
+    "cause",
+    "impact"
+  ],
+  "when": "The user wants a page for a charity, NGO or cause that asks for donations or volunteers.",
+  "inputs": [
+    "organization and cause",
+    "impact numbers",
+    "how donations work",
+    "volunteer info"
+  ],
+  "prompt": "Goal: Move visitors from caring to acting: show the need, the impact and simple ways to help.\nSteps:\n1. Hero: the cause in human terms and two actions, Donate and Volunteer.\n2. Impact section with numbers the user gave and what a donation amount does.\n3. One real story in a few sentences, with consent assumed only if given.\n4. Donation options: amounts as radio buttons and a custom amount field; the payment step goes to the processor the user names.\n5. Transparency: where money goes, registration number, reports.\nQuality bar:\n- Respectful language about the people helped.\n- Clear numbers.\n- The donate path is short.\nPitfalls:\n- Guilt heavy copy.\n- Collecting card numbers on the page.\n- Unverified impact claims.\nVerify:\n- [ ] Amount radios grouped and labeled.\n- [ ] Donate action in hero and after impact.\n- [ ] No card fields.\n- [ ] Contrast passes.\nOutput: index.html and style.css; donation leads to the named processor link.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "css.contrast",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "página para ONG de resgate de animais pedir doações",
+      "output": "hero with Donate and Volunteer, impact numbers, amounts 20, 50, 100, transparency block"
+    }
+  ],
+  "size": 268,
+  "version": 1
+}

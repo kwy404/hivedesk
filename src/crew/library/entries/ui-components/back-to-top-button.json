@@ -1,0 +1,38 @@
+{
+  "id": "back-to-top-button",
+  "title": "Back to top button",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "back to top",
+    "scroll to top",
+    "go to top",
+    "top button",
+    "floating button",
+    "scroll up"
+  ],
+  "when": "The user wants a floating button that takes the reader back to the top of a long page.",
+  "inputs": [
+    "page length",
+    "other fixed elements in the corners"
+  ],
+  "prompt": "Goal: A small floating link that appears after scrolling, jumps to the top and moves focus there too.\nSteps:\n1. <a href=\"#top\" class=\"to-top\"> with visually hidden text Back to top and an arrow SVG with aria-hidden=\"true\"; the header gets id=\"top\" and tabindex=\"-1\".\n2. Show it once the header leaves view: an IntersectionObserver on the header toggles data-show.\n3. Hide with visibility: hidden plus opacity so it leaves the Tab order while hidden.\n4. Smooth scroll only inside @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }.\n5. Fixed at the bottom end with env(safe-area-inset-bottom), 48 px square, clear of chat widgets and sticky bars.\nQuality bar:\n- It works without JavaScript as a plain anchor.\n- After the jump, keyboard focus starts at the top.\n- It never covers form buttons.\nPitfalls:\n- A scroll listener doing work on every pixel.\n- An icon only control with no name.\n- Forced smooth scrolling for reduced motion users.\nVerify:\n- [ ] The link has an accessible name.\n- [ ] The SVG is aria-hidden.\n- [ ] Hidden and unfocusable near the top.\n- [ ] Reduced motion jumps instantly.\nOutput: The link before the closing body tag, its CSS and to-top.js.",
+  "checks": [
+    "html.link-text",
+    "html.svg-a11y",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "botao voltar ao topo no blog",
+      "output": "fixed arrow link to #top shown after the header scrolls away, smooth only without reduced motion"
+    }
+  ],
+  "size": 342,
+  "version": 1
+}

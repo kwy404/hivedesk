@@ -1,0 +1,39 @@
+{
+  "id": "top-down-shooter-basics",
+  "title": "Top down shooter basics: aim, bullets and enemies",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "top down shooter",
+    "twin stick",
+    "shooter",
+    "bullets",
+    "aiming",
+    "enemies",
+    "arena game",
+    "shoot em up",
+    "game"
+  ],
+  "when": "The user wants a top down or twin stick shooter: move with keys or a stick, aim with the mouse or a second stick, and fire at chasing enemies in an arena.",
+  "inputs": [
+    "weapons",
+    "enemy kinds",
+    "arena size"
+  ],
+  "prompt": "Goal: A tight core of move, aim, shoot and dodge with pooled bullets and readable hits.\nSteps:\n1. Move: normalize the input vector so diagonals are not faster; speed 240 px per second.\n2. Aim: angle = Math.atan2(mouseWorldY - player.y, mouseWorldX - player.x), or the right stick when its length passes 0.3.\n3. Fire on a cooldown: if (fireHeld && cooldown <= 0) spawn a bullet and set cooldown = 0.12, with a spread of 3 degrees either way.\n4. Bullets live in a pool of 256 slots { x, y, vx, vy, life } and are freed on timeout, leaving the arena or hitting.\n5. Enemies steer toward the player and add a separation force from neighbors so they do not stack.\n6. Hits use circle tests; the enemy flashes white for 60 ms and is knocked back along the bullet direction.\n7. After being hit the player blinks with 1 s of invulnerability, plus a 0.1 s slow down.\n8. Hide the system cursor over the canvas and draw a crosshair; pointer lock stays optional.\nQuality bar:\n- Bullets leave from the gun tip, not the player center.\n- 300 bullets and 80 enemies run at full frame rate.\nPitfalls:\n- A new object per shot, causing garbage collection pauses.\n- Aiming with screen coordinates after the camera moved.\n- Contact damage on every tick instead of behind a cooldown.\nVerify:\n- [ ] Diagonal speed equals straight speed.\n- [ ] Holding fire gives about 8 shots per second.\n- [ ] The bullet pool never exceeds its size.\nOutput: js/shooter.js (player, bullets, enemies) wired into the loop in js/main.js.",
+  "checks": [
+    "js.syntax",
+    "game.loop"
+  ],
+  "examples": [
+    {
+      "input": "jogo de nave visto de cima, mira com o mouse",
+      "output": "normalized movement, atan2 aim, cooldown fire, 256 bullet pool, separation steering, i frames"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

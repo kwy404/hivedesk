@@ -1,0 +1,39 @@
+{
+  "id": "modernize-legacy-js",
+  "title": "Modernize legacy JavaScript",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "legacy code",
+    "modernize",
+    "es6",
+    "es modules",
+    "var to const",
+    "callbacks to async",
+    "old javascript",
+    "refactor"
+  ],
+  "when": "Old JavaScript uses var, callbacks, prototype classes, global scripts or XMLHttpRequest and the user wants modern syntax.",
+  "inputs": [
+    "the legacy files",
+    "how they are loaded and which environments must run them"
+  ],
+  "prompt": "Goal: The same behavior in modern JavaScript: modules, const and let, async and await, classes, and platform APIs.\nSteps:\n1. Replace var with const by default and let where reassigned, checking for hoisting and loop closure bugs.\n2. Convert callback and XMLHttpRequest code to fetch with async and await, keeping error paths.\n3. Turn constructor plus prototype into class syntax, and string concatenation into template literals.\n4. Use modern built ins: Array.from, includes, Object.entries, optional chaining, ?? for defaults, URLSearchParams.\n5. Move globals into ES modules with explicit exports; load with type=\"module\" or import in Node.\n6. Convert one file at a time and run it after each.\nQuality bar:\n- Behavior is unchanged.\n- No implicit globals remain.\n- Every async path handles errors.\nPitfalls:\n- Changing || defaults to ?? where empty strings should fall back.\n- Breaking this in methods converted to arrow functions.\n- Mixing module and classic scripts that share globals.\nVerify:\n- [ ] No var remains.\n- [ ] Strict equality is used.\n- [ ] Node imports use node: specifiers.\n- [ ] Files parse.\nOutput: Modernized files and a note of anything intentionally left (for example a script kept classic).",
+  "checks": [
+    "js.syntax",
+    "js.no-var",
+    "js.strict-equality",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "modernize this 2012 script with XMLHttpRequest and var",
+      "output": "fetch with async and await, class Gallery, const and let, module exports"
+    }
+  ],
+  "size": 347,
+  "version": 1
+}

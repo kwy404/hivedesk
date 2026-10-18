@@ -1,0 +1,36 @@
+{
+  "id": "design-critique",
+  "title": "Structured design critique of a page",
+  "category": "design",
+  "roles": [
+    "designer",
+    "reviewer"
+  ],
+  "tags": [
+    "design critique",
+    "design feedback",
+    "ui feedback",
+    "critique",
+    "how does it look",
+    "heuristics",
+    "looks bad"
+  ],
+  "when": "The user asks for feedback on how a page or screen looks and works, and wants a clear list of what to change.",
+  "inputs": [
+    "the page files or a description",
+    "the goal of the page and its audience"
+  ],
+  "prompt": "Goal: A critique that judges the design against its goal with named principles, each issue ranked and paired with a concrete fix.\nSteps:\n1. Restate the goal of the screen and its main user in one line; judge everything against it.\n2. Walk five lenses: hierarchy (what is seen first), layout and alignment, type and color, content clarity, interaction and states.\n3. Write each finding as observation, impact, suggestion: the two buttons weigh the same, so users hesitate; make Book primary and Learn more a text link.\n4. Rank findings: high blocks the goal, medium slows people, low is polish.\n5. Name what works too, so it survives the next pass.\n6. End with the top three changes in order, each small enough for one task.\nQuality bar:\n- Every finding points at a specific element and file.\n- Suggestions give sizes, colors or order, not taste words.\n- No more than 12 findings.\nPitfalls:\n- Opinions with no reason (I do not like the blue).\n- Redesigning everything instead of fixing what matters.\n- Code bugs mixed in without a label.\nVerify:\n- [ ] The goal line comes first.\n- [ ] Each finding has impact and suggestion.\n- [ ] Findings are ranked.\n- [ ] Top three changes listed.\nOutput: critique.md starting with a # heading, a section per lens, and the ranked list.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "o que voce acha do design da minha landing page?",
+      "output": "goal: book a demo; high: two equal buttons; medium: 9 font sizes; low: icon styles mixed; top 3 fixes"
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

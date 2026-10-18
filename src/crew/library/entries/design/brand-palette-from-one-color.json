@@ -1,0 +1,38 @@
+{
+  "id": "brand-palette-from-one-color",
+  "title": "Brand palette built from one color",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "brand color",
+    "brand palette",
+    "shades",
+    "tints",
+    "color ramp",
+    "hsl",
+    "oklch",
+    "logo color"
+  ],
+  "when": "The user has one brand or logo color and wants a full set of shades, matching neutrals and status colors around it.",
+  "inputs": [
+    "the brand color in hex",
+    "where it will appear: buttons, headers, backgrounds"
+  ],
+  "prompt": "Goal: A 50 to 900 ramp of the brand hue plus tinted neutrals and status colors, each step with a clear role.\nSteps:\n1. Convert the hex to HSL (or oklch) and note its lightness; it becomes the step where that lightness lands, often 500 or 600.\n2. Generate ten steps by moving lightness evenly from about 97 to 15 percent; lower saturation slightly at both ends so tints are not neon and shades not muddy.\n3. Make neutrals from the same hue at 5 to 10 percent saturation so grays feel related.\n4. Pick green, amber and red at the brand base lightness so no status color shouts louder than the brand.\n5. Assign roles: 600 or 700 for buttons with white labels, 50 to 100 for tinted sections, 800 to 900 for text on tints.\nQuality bar:\n- Steps are evenly spaced and visibly distinct.\n- The original hex is kept exactly at one step.\n- Button and text pairs pass 4.5 to 1.\nPitfalls:\n- A light brand color (yellow, cyan) used as body text.\n- Tints made with opacity, which shift with the backdrop.\n- Pure gray neutrals next to a warm brand.\nVerify:\n- [ ] --brand-50 to --brand-900 exist.\n- [ ] Neutrals share the brand hue.\n- [ ] Every text pair in use passes contrast.\n- [ ] The original hex appears unchanged.\nOutput: The :root block of style.css with both ramps and role aliases such as --color-accent: var(--brand-700).",
+  "checks": [
+    "css.custom-properties",
+    "css.contrast",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "my logo is #e4572e, build the site colors from it",
+      "output": "--brand-50 #fdf0ec to --brand-900 #3d1409, buttons on --brand-700 with white text, warm gray neutrals"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

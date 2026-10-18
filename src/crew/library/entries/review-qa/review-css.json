@@ -1,0 +1,39 @@
+{
+  "id": "review-css",
+  "title": "CSS stylesheet review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "designer"
+  ],
+  "tags": [
+    "css review",
+    "stylesheet review",
+    "specificity",
+    "css check",
+    "responsive css",
+    "dead css",
+    "important"
+  ],
+  "when": "The user wants a stylesheet reviewed for maintainability, responsiveness, accessible styling and dead or conflicting rules.",
+  "inputs": [
+    "the CSS files",
+    "the HTML that uses them"
+  ],
+  "prompt": "Goal: A CSS review flagging specificity trouble, fixed sizes, missing states and unused rules, each with the selector and a fix.\nSteps:\n1. Check braces and parse by eye; every rule after a missing brace is broken.\n2. Specificity: ids in selectors, chains deeper than three, more than three !important, overrides fighting each other; suggest single class selectors.\n3. Responsiveness: widths over 400 px, px heights on text boxes, no media query or fluid grid, overflow at 320 px.\n4. Accessible styling: outline removed without a :focus-visible replacement, fonts under 12 px, failing color pairs, motion without prefers-reduced-motion.\n5. Consistency: raw values that should be tokens, duplicate declarations, prefixes no longer needed.\n6. Dead code: search each class in the HTML and list selectors that match nothing.\nQuality bar:\n- Every finding quotes the selector.\n- Fixes keep the look unless the finding is a bug.\n- Severity marked.\nPitfalls:\n- Demanding a naming methodology the project never used.\n- Missing a rule that never applies because of source order.\n- Approving outline: none.\nVerify:\n- [ ] Specificity hot spots listed.\n- [ ] Fixed widths and tiny fonts listed.\n- [ ] Focus and motion rules checked.\n- [ ] Unused selectors checked against the HTML.\nOutput: review.md with findings under Responsive, Accessibility, Maintainability and Dead code.",
+  "checks": [
+    "css.braces",
+    "css.focus-visible",
+    "css.no-important",
+    "css.no-fixed-width",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "meu CSS esta uma bagunca, revisa pra mim",
+      "output": "7 !important, #header .nav ul li a chains, width 960px wrapper, 12 unused selectors, outline none on buttons"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

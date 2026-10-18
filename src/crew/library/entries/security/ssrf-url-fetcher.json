@@ -1,0 +1,41 @@
+{
+  "id": "ssrf-url-fetcher",
+  "title": "SSRF protection for URL fetchers",
+  "category": "security",
+  "roles": [
+    "security",
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "ssrf",
+    "server side request forgery",
+    "url fetch",
+    "link preview",
+    "webhook url",
+    "private ip",
+    "metadata endpoint",
+    "dns rebinding",
+    "security"
+  ],
+  "when": "A server fetches URLs that users supply (link previews, image import, webhook targets, feed readers) and must not become a proxy into private networks.",
+  "inputs": [
+    "features that fetch URLs",
+    "domains that must be reachable"
+  ],
+  "prompt": "Goal: fetchPublicUrl(url) reaches only public http and https hosts, checked after DNS and on every redirect, with size and time limits.\nSteps:\n1. Parse with new URL(input); allow http: and https: only, default ports, and no user or password in the URL.\n2. Resolve with dns.promises.lookup(host, { all: true }); refuse any loopback (127.0.0.0/8, ::1), private (10/8, 172.16/12, 192.168/16, fc00::/7), link local (169.254/16 with the cloud metadata 169.254.169.254, fe80::/10) or 0.0.0.0 address, IPv4 mapped forms included.\n3. Connect to the vetted address, not the name again: give http.request a custom lookup returning it, which defeats DNS rebinding.\n4. Use redirect: \"manual\", follow at most 3 hops yourself, and repeat steps 1 to 3 per Location.\n5. Limits: AbortSignal.timeout(5000), a byte cap, only the content types the feature needs.\n6. Return only what the feature uses (title, image), never raw bodies or internal error text.\nQuality bar:\n- A domain allowlist wherever the feature allows one.\n- Odd IP spellings (2130706433, 0x7f.1) are caught by checking resolved addresses.\n- Tests cover each blocked range and a redirect to 127.0.0.1.\nPitfalls:\n- Checking the hostname string only.\n- Letting fetch follow redirects on its own.\n- Echoing the fetched body, which turns blind SSRF into full reads.\nVerify:\n- [ ] Private, loopback and link local ranges are blocked.\n- [ ] Redirect targets are rechecked.\n- [ ] Timeout and byte cap exist.\n- [ ] Only http and https pass.\nOutput: safe-fetch.mjs, test/safe-fetch.test.mjs and a note in SECURITY-AUDIT.md.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "js.async-errors",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "o preview de links do chat busca qualquer URL que o usuario cola",
+      "output": "scheme check, DNS resolve with private range block, pinned address, manual redirects, 5 s timeout"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

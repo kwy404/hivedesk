@@ -1,0 +1,38 @@
+{
+  "id": "cli-help-text",
+  "title": "CLI --help text",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "help text",
+    "--help",
+    "cli help",
+    "usage message",
+    "command line",
+    "flags",
+    "cli",
+    "man page"
+  ],
+  "when": "A command line tool needs a clear --help output and usage error messages.",
+  "inputs": [
+    "the commands, arguments and flags",
+    "defaults and exit codes"
+  ],
+  "prompt": "Goal: A compact help screen that shows usage, every option with defaults and a few examples, printed by -h and --help.\nSteps:\n1. Line one: tool name and a one line description; line two: Usage: tool [options] <input> [output].\n2. Options block aligned in columns: short and long form, value placeholder, description and (default: x).\n3. Commands block when the tool has subcommands, each with one line, and tool help <command> for details.\n4. Examples block with 2 or 3 real invocations and a short comment each.\n5. Print help to stdout and exit 0 for --help; on bad usage print a one line error plus \"Run tool --help\" to stderr and exit 2.\n6. Keep it under about 25 lines and 80 columns; add --version printing the version.\nQuality bar:\n- Help matches the parser exactly.\n- Defaults are shown.\n- Errors name the bad flag or value.\nPitfalls:\n- Dumping help on every error.\n- Help text that lists removed flags.\n- Exit code 0 for bad usage.\nVerify:\n- [ ] --help prints usage and exits 0.\n- [ ] Bad flags exit non zero with a short message.\n- [ ] The script has a shebang.\n- [ ] Scripts parse.\nOutput: The help string and usage error handling in the CLI source.",
+  "checks": [
+    "node.shebang",
+    "node.exit-code",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "melhora o --help do meu script",
+      "output": "Usage: imgsize [options] <dir>; -w, --width <px> (default: 1200); 3 examples; exit 2 on bad flags"
+    }
+  ],
+  "size": 332,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "web-worker-offload",
+  "title": "Web Workers for heavy computation",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "web worker",
+    "worker",
+    "background thread",
+    "heavy computation",
+    "performance",
+    "page freezes",
+    "postmessage",
+    "parallel"
+  ],
+  "when": "The page freezes during a long calculation (parsing big files, image processing, search indexing, simulations).",
+  "inputs": [
+    "the slow function",
+    "size of the data"
+  ],
+  "prompt": "Goal: Heavy work runs in a module worker with progress, cancellation and errors reported to a responsive page.\nSteps:\n1. new Worker(new URL(\"./worker.js\", import.meta.url), { type: \"module\" }).\n2. Protocol: in { id, type: \"start\" | \"cancel\", payload }, out { id, type: \"progress\" | \"result\" | \"error\", data }.\n3. A call(type, payload) wrapper returns a promise matched by id and rejects on error messages and worker.onerror.\n4. In the worker, process in chunks, post progress every few hundred ms, check a cancelled flag between chunks.\n5. Transfer big binaries instead of copying: postMessage(msg, [buffer]).\n6. No DOM in the worker; terminate() it when no longer needed or for a hard cancel.\nQuality bar:\n- The interface stays responsive and shows progress.\n- Worker errors reach the page with a readable message.\n- Pure functions shared by page and worker live in one module.\nPitfalls:\n- Posting huge objects back and forth each step.\n- Using window or document inside the worker.\n- Loading from file://, where workers fail; serve the folder.\nVerify:\n- [ ] Worker created with type module.\n- [ ] Messages carry ids and types.\n- [ ] onerror handled.\n- [ ] Progress shown in an aria-live region.\nOutput: js/worker.js, js/worker-client.js (promise wrapper) and the page code calling it.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "the page freezes while it parses my 80 MB CSV",
+      "output": "parse in a module worker in 1 MB chunks, progress messages, cancel button, result posted back"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

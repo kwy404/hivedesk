@@ -1,0 +1,39 @@
+{
+  "id": "neutralino-app-setup",
+  "title": "Neutralinojs desktop app setup with a narrow allow list",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "neutralinojs",
+    "desktop app",
+    "neutralino.config.json",
+    "native api",
+    "allow list",
+    "lightweight desktop",
+    "cross platform",
+    "neu cli"
+  ],
+  "when": "The user wants a small cross platform desktop app from HTML, CSS and JavaScript with Neutralinojs and needs a config that exposes only the native calls it uses.",
+  "inputs": [
+    "app name and id",
+    "native features needed (files, dialogs, tray)",
+    "window size"
+  ],
+  "prompt": "Goal: A Neutralinojs project whose neutralino.config.json opens one window, serves resources/ and allows only the native functions the code calls.\nSteps:\n1. Run neu create notes-desk, or create neutralino.config.json, resources/index.html, resources/js/main.js and resources/js/neutralino.js.\n2. Root keys: \"applicationId\": \"com.acme.notesdesk\", \"version\": \"1.0.0\", \"defaultMode\": \"window\", \"documentRoot\": \"/resources/\", \"url\": \"/\", \"enableNativeAPI\": true, \"tokenSecurity\": \"one-time\".\n3. \"nativeAllowList\": list exact functions such as \"app.exit\", \"os.showOpenDialog\", \"filesystem.readFile\", \"filesystem.writeFile\"; never \"os.*\" or \"*\".\n4. \"modes\": { \"window\": { \"title\": \"Notes\", \"width\": 960, \"height\": 640, \"minWidth\": 480, \"minHeight\": 360 } }.\n5. \"cli\": { \"binaryName\": \"notes-desk\", \"resourcesPath\": \"/resources/\", \"clientLibrary\": \"/resources/js/neutralino.js\" }.\n6. main.js: Neutralino.init(); Neutralino.events.on(\"windowClose\", () => Neutralino.app.exit()).\n7. Develop with neu run; neu build --release writes dist/notes-desk/ with binaries and resources.neu.\nQuality bar:\n- Every native call in the code appears in the allow list, and nothing more.\nPitfalls:\n- Allowing os.execCommand, which turns any injected script into shell access.\n- Forgetting the windowClose handler, so the process keeps running.\nVerify:\n- [ ] neutralino.config.json parses with applicationId and modes.window.\n- [ ] nativeAllowList has no wildcard on os.\n- [ ] neutralino.js is loaded before main.js.\nOutput: neutralino.config.json, resources/index.html and resources/js/main.js.",
+  "checks": [
+    "neu.config",
+    "json.valid",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quero um app desktop leve com HTML e JS",
+      "output": "Neutralinojs project with one-time token, window 960x640 min 480x360, five exact allow list entries"
+    }
+  ],
+  "size": 449,
+  "version": 1
+}

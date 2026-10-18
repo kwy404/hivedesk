@@ -1,0 +1,34 @@
+{
+  "id": "acceptance-criteria",
+  "title": "Writing acceptance criteria",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "qa"
+  ],
+  "tags": [
+    "acceptance criteria",
+    "criteria",
+    "requirements",
+    "testable",
+    "conditions",
+    "expected result",
+    "pass fail"
+  ],
+  "when": "A plan needs the list of conditions QA will test, or the brief has goals but nothing a checker can say yes or no to.",
+  "inputs": [
+    "the user request",
+    "the planned files"
+  ],
+  "prompt": "Goal: 3 to 7 criteria that each read as one observable fact about the files, which QA can mark pass or fail without guessing.\nSteps:\n1. Turn each thing the user asked for into a sentence that starts with a file or a screen: \"index.html shows the opening hours for every day\".\n2. Make each criterion checkable by reading files or running a check: name the element, text, function or command.\n3. Add one criterion for behavior when it matters: \"submitting the empty form shows an error next to the email field\".\n4. Add the baseline the crew always needs: works at 375 px wide, no placeholder text, scripts parse.\n5. Cut criteria that are taste (looks modern) or rewrite them as a fact (one accent color, body text 16 px or larger).\n6. Keep 3 to 7; more than that means the job should be split.\nQuality bar:\n- Two different checkers would give the same verdict for each line.\n- Each criterion maps to at least one task.\n- No criterion asks for something the request did not imply.\nPitfalls:\n- Criteria that restate the request (\"a nice bakery site\").\n- Criteria about process (dev wrote tests) instead of results.\n- Numbers with no source, such as \"loads in 1 second\", that nobody can measure here.\nVerify:\n- [ ] Each line names a file, element, command or output.\n- [ ] Each line is pass or fail, never a score.\n- [ ] Count is 3 to 7.\n- [ ] Every user requirement appears.\nOutput: A criteria list as \"- [ ] ...\" lines, attached to the plan for QA.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "a todo app that saves my tasks",
+      "output": "- [ ] adding a task shows it in the list; - [ ] tasks survive a reload via localStorage; - [ ] app.js parses"
+    }
+  ],
+  "size": 413,
+  "version": 1
+}

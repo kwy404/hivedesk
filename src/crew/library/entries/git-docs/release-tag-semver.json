@@ -1,0 +1,37 @@
+{
+  "id": "release-tag-semver",
+  "title": "Tag a release with semantic versioning",
+  "category": "git-docs",
+  "roles": [
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "release",
+    "semver",
+    "semantic versioning",
+    "git tag",
+    "version bump",
+    "tag",
+    "versioning",
+    "major minor patch"
+  ],
+  "when": "The user is ready to release a version and needs the right version number, the tag and the files updated.",
+  "inputs": [
+    "changes since the last tag",
+    "the current version"
+  ],
+  "prompt": "Goal: The correct next version by semantic versioning, set consistently in files, recorded in the changelog and tagged.\nSteps:\n1. Read the changes since the last tag (git log v1.3.0..HEAD --oneline) and classify them.\n2. Pick the bump: major for breaking changes, minor for new backward compatible features, patch for fixes only; before 1.0.0 breaking changes bump the minor.\n3. Update the version in package.json (or pyproject or a version constant) and anywhere else it is printed, such as --version output.\n4. Add the dated CHANGELOG section for the version.\n5. Commit (\"Release 1.4.0\"), then create an annotated tag: git tag -a v1.4.0 -m \"Release 1.4.0\".\n6. Push the commit and the tag (git push and git push origin v1.4.0) and note how to undo a wrong local tag (git tag -d).\nQuality bar:\n- The tag, files and changelog all show the same version.\n- Tags are annotated, not lightweight.\n- Pre releases use suffixes like 2.0.0-rc.1.\nPitfalls:\n- A minor bump that contains a breaking change.\n- Moving or reusing a tag that was already pushed.\n- Forgetting the version string printed by the CLI.\nVerify:\n- [ ] package.json is valid JSON with the new version.\n- [ ] CHANGELOG has the dated version heading.\n- [ ] The tag command uses -a and v prefix.\n- [ ] Version strings agree everywhere.\nOutput: Updated version files, the CHANGELOG entry and the exact git commands.",
+  "checks": [
+    "json.valid",
+    "md.changelog"
+  ],
+  "examples": [
+    {
+      "input": "vou lançar a nova versão, qual número uso",
+      "output": "new --json flag and two fixes: 1.3.0 to 1.4.0, CHANGELOG dated, git tag -a v1.4.0"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

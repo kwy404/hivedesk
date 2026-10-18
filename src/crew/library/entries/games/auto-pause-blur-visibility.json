@@ -1,0 +1,36 @@
+{
+  "id": "auto-pause-blur-visibility",
+  "title": "Auto pause on tab switch, blur and lost focus",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "pause",
+    "auto pause",
+    "visibilitychange",
+    "blur",
+    "focus lost",
+    "background tab",
+    "resume",
+    "game"
+  ],
+  "when": "An action game must pause by itself when the tab is hidden, the window loses focus, the controller disconnects or a phone call takes over, and resume only on purpose.",
+  "inputs": [
+    "what counts as paused state",
+    "save on exit or not"
+  ],
+  "prompt": "Goal: The player never dies while away, and resuming is an explicit choice.\nSteps:\n1. document.addEventListener(\"visibilitychange\", ...): when document.visibilityState === \"hidden\" call game.pause(\"hidden\").\n2. window blur pauses with reason \"blur\"; gamepaddisconnected for the active pad pauses with reason \"controller\".\n3. pause(reason) is idempotent: it stops ticks, renders one dimmed frame, suspends audio, clears held inputs and opens the pause overlay with the reason.\n4. Never auto resume on focus; the \"Paused\" dialog has a Resume button that receives focus, plus Escape or the Start button.\n5. On resume reset the loop timestamp so the first tick sees dt 0, then run a 3, 2, 1 countdown of 1.5 s before enemies move.\n6. On pagehide store a snapshot through guarded storage when the game offers continue.\n7. Turn based and puzzle games stop only their timers; the board stays usable.\nQuality bar:\n- Leaving the tab for 10 minutes and returning shows exactly the same state.\n- No burst of catch up ticks after resuming.\nPitfalls:\n- Trusting that requestAnimationFrame stops in hidden tabs while timers and audio keep running.\n- Auto resume on focus, which surprises the player.\n- blur and visibilitychange both toggling pause, so the second one unpauses.\nVerify:\n- [ ] Switching apps pauses within one frame.\n- [ ] Resume is reachable by keyboard and gets focus.\n- [ ] Held keys are released after resuming.\nOutput: js/pause.js wired into js/main.js and the pause dialog in index.html.",
+  "checks": [
+    "js.syntax",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "o jogo continua rodando quando troco de aba e eu morro",
+      "output": "idempotent pause on hidden, blur and pad loss, manual resume with countdown, dt reset"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

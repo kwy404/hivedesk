@@ -1,0 +1,50 @@
+{
+  "id": "wedding-site",
+  "title": "Wedding site with RSVP",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "wedding",
+    "rsvp",
+    "invitation",
+    "celebration",
+    "party",
+    "guests"
+  ],
+  "when": "The user wants a wedding, birthday or celebration site with details and an RSVP.",
+  "inputs": [
+    "names and date",
+    "ceremony and party places",
+    "schedule",
+    "RSVP deadline",
+    "dress code and gifts"
+  ],
+  "prompt": "Goal: An elegant page that gives guests every detail and collects the RSVP with no confusion.\nSteps:\n1. Hero with the couple names, date and city, and an RSVP button.\n2. Story or welcome in a few warm sentences.\n3. Details: ceremony and reception with time, address and map link; schedule of the day.\n4. RSVP form: name, attending yes or no as radios, number of guests, dietary needs, message; without a backend use a mailto summary or say where answers go.\n5. Travel, stay, dress code and gifts as short sections.\nQuality bar:\n- Script fonts only for names, never for body text.\n- The RSVP deadline is visible near the form.\n- Every field has a label.\nPitfalls:\n- Light gold text on white that fails contrast.\n- Forms that look like they send but go nowhere.\n- Huge background images on mobile data.\nVerify:\n- [ ] RSVP radios are grouped with fieldset and legend.\n- [ ] Labels on all fields.\n- [ ] Contrast passes.\n- [ ] Works at 375 px.\nOutput: index.html, style.css and a small form script if needed.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "site do nosso casamento com confirmação de presença",
+      "output": "names and date hero, ceremony and party details, RSVP form with attending radios and guest count"
+    }
+  ],
+  "size": 287,
+  "version": 1
+}

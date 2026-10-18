@@ -1,0 +1,48 @@
+{
+  "id": "pricing-page",
+  "title": "Pricing page with plans",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "pricing",
+    "plans",
+    "subscription",
+    "tiers",
+    "saas",
+    "compare plans"
+  ],
+  "when": "The user wants a pricing page with plans, a comparison and billing options.",
+  "inputs": [
+    "plans with price and features",
+    "monthly and yearly prices",
+    "the recommended plan"
+  ],
+  "prompt": "Goal: A pricing page where each visitor can pick a plan in one look and trust the numbers.\nSteps:\n1. Three plans at most side by side (stacked on phones); the recommended one marked with text, not only color.\n2. Each plan: name, who it is for, price with period, the main limits, and one action.\n3. Monthly and yearly toggle as two buttons with aria-pressed, showing the yearly saving in plain numbers.\n4. Full comparison as a table with th headers, scrollable inside its wrapper on phones.\n5. FAQ about billing, refunds and limits under the table.\nQuality bar:\n- Prices include currency and period.\n- Feature names are the same words in cards and table.\n- The table has a caption.\nPitfalls:\n- Hidden fees or prices that change on hover.\n- Check marks with no text for screen readers.\n- Five plans that freeze the decision.\nVerify:\n- [ ] Table has th headers and a caption.\n- [ ] Toggle updates every price.\n- [ ] Recommended plan is labeled in text.\n- [ ] No overflow at 375 px.\nOutput: pricing.html (or index.html), style.css and a small script for the billing toggle.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.table-headers",
+    "html.button-type",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "pricing page for my app with free, pro and team",
+      "output": "three cards, monthly or yearly toggle with 2 months free, comparison table, billing FAQ"
+    }
+  ],
+  "size": 306,
+  "version": 1
+}

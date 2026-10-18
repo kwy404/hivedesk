@@ -1,0 +1,38 @@
+{
+  "id": "i18n-setup",
+  "title": "Extract strings for translation (i18n)",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "i18n",
+    "internationalization",
+    "translation",
+    "translate",
+    "multiple languages",
+    "locale",
+    "language switcher",
+    "strings"
+  ],
+  "when": "The user wants the app or site available in more than one language, or to move hard coded text into translation files.",
+  "inputs": [
+    "the files with user facing text",
+    "the target languages"
+  ],
+  "prompt": "Goal: All user facing strings live in one JSON file per language, looked up by stable keys, with a working language switch.\nSteps:\n1. Find every user facing string: HTML text, attributes (alt, title, placeholder, aria-label), and strings in scripts, including errors.\n2. Create locales/en.json and locales/pt.json with flat, meaningful keys (cart.empty, cart.checkout), never sentences as keys.\n3. Mark HTML with data-i18n=\"cart.empty\" (and data-i18n-attr=\"aria-label:cart.close\" for attributes) and apply with textContent.\n4. Write t(key, params) that looks up the active locale, falls back to English, and replaces {name} placeholders.\n5. Pick the language from a saved choice, then navigator.language, then the default; set <html lang> on change.\n6. Keep whole sentences per key so translators can reorder words.\nQuality bar:\n- No user facing text is left in code.\n- Both locale files have the same keys.\n- Missing keys show the fallback, never the raw key.\nPitfalls:\n- Concatenating fragments (\"You have \" + n + \" items\").\n- Translating with innerHTML, which opens injection holes.\n- Forgetting attribute text and error messages.\nVerify:\n- [ ] Locale files are valid JSON with matching keys.\n- [ ] Switching language updates text and lang.\n- [ ] Scripts parse.\n- [ ] Placeholders are replaced.\nOutput: locales/<lang>.json files, i18n.js with t() and the switch, and HTML marked with data-i18n.",
+  "checks": [
+    "json.valid",
+    "js.syntax",
+    "html.lang"
+  ],
+  "examples": [
+    {
+      "input": "quero meu site em português e inglês",
+      "output": "locales/pt.json and en.json with 48 keys, data-i18n attributes, switcher saved per visitor"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

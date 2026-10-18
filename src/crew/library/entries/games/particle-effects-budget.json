@@ -1,0 +1,38 @@
+{
+  "id": "particle-effects-budget",
+  "title": "Particle effects with a fixed budget",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "particles",
+    "particle system",
+    "explosions",
+    "effects",
+    "object pool",
+    "sparks",
+    "game juice",
+    "trails",
+    "game"
+  ],
+  "when": "The game wants sparks, smoke, explosions or trails that look rich but must never grow memory or frame time without bound.",
+  "inputs": [
+    "effect kinds",
+    "target devices"
+  ],
+  "prompt": "Goal: A pooled particle system with a hard cap that degrades gracefully on slow devices.\nSteps:\n1. MAX = 600; store fields in typed arrays allocated once: Float32Array for x, y, vx, vy, life, maxLife, size and Uint8Array for kind.\n2. emit(kind, x, y, count) fills free slots; when the pool is full it skips the rest, never allocating.\n3. update(dt): life -= dt, apply velocity and drag, and when life <= 0 copy the last alive slot into this one so alive particles stay packed.\n4. Draw grouped by kind with one fillStyle each, globalAlpha = life / maxLife, and small fillRect calls instead of arc for sparks.\n5. Use globalCompositeOperation = \"lighter\" only for glow kinds and set it back to \"source-over\" after.\n6. Quality scale: when the average frame time over 60 frames passes 18 ms halve emit counts; restore slowly when under 12 ms.\n7. Cut counts to a quarter when prefers-reduced-motion matches.\nQuality bar:\n- The system creates no objects per frame; the memory graph stays flat.\n- A 200 particle explosion updates in under 1 ms on a laptop.\nPitfalls:\n- Array.splice on dead particles, which is slow and makes garbage.\n- shadowBlur on many particles, which is very expensive.\n- Forgetting to reset globalAlpha, fading the whole HUD.\nVerify:\n- [ ] Spamming explosions keeps the alive count at or under MAX.\n- [ ] Frame time stays steady during a big burst.\nOutput: js/particles.js exporting emit, update, draw and setQuality.",
+  "checks": [
+    "js.syntax",
+    "js.no-var"
+  ],
+  "examples": [
+    {
+      "input": "explosões com partículas sem deixar o jogo lento",
+      "output": "typed array pool of 600, packed removal, grouped draws, adaptive quality, reduced motion cut"
+    }
+  ],
+  "size": 409,
+  "version": 1
+}

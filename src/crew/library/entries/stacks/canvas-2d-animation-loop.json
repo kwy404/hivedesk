@@ -1,0 +1,38 @@
+{
+  "id": "canvas-2d-animation-loop",
+  "title": "Canvas 2D drawing and animation loop",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "canvas",
+    "animation",
+    "drawing",
+    "2d",
+    "game loop",
+    "requestanimationframe",
+    "graphics",
+    "particles",
+    "render"
+  ],
+  "when": "The user wants animated graphics, a simple game, particles, a drawing pad or a visualization drawn on a canvas.",
+  "inputs": [
+    "what is drawn",
+    "interaction (pointer, keys)"
+  ],
+  "prompt": "Goal: A sharp, resizable canvas with a fixed timestep loop that runs smoothly, pauses when hidden and stays accessible.\nSteps:\n1. Sharpness: canvas.width = cssWidth * devicePixelRatio (same for height) and ctx.setTransform(dpr, 0, 0, dpr, 0, 0); redo in a ResizeObserver.\n2. Loop with requestAnimationFrame; dt from the timestamp, clamped to 0.1 s after tab switches.\n3. Update in fixed steps of 1 / 60 s with an accumulator, draw once per frame.\n4. Draw order: clearRect, background, world, interface; save and restore around transforms.\n5. Keep update(state, dt) and draw(ctx, state) separate so logic is testable; convert pointer events to canvas coordinates.\n6. Pause on visibilitychange; respect prefers-reduced-motion; give the canvas role=\"img\" and an aria-label or a text description.\nQuality bar:\n- No blur on dense screens.\n- Steady frame rate for the intended scene.\n- Speed is the same on 60 and 144 Hz displays.\nPitfalls:\n- Sizing the canvas only in CSS, which stretches pixels.\n- Movement per frame instead of per second.\n- Allocating objects every frame in hot loops.\nVerify:\n- [ ] devicePixelRatio handled.\n- [ ] Fixed step update with clamped dt.\n- [ ] visibilitychange pauses.\n- [ ] Canvas has a text alternative.\nOutput: index.html with the canvas, js/loop.js, js/scene.js (update and draw) and style.css.",
+  "checks": [
+    "js.syntax",
+    "css.reduced-motion",
+    "html.balanced"
+  ],
+  "examples": [
+    {
+      "input": "animação de partículas que seguem o mouse",
+      "output": "canvas sized by dpr, fixed step particles update, pointermove attractor, pause when hidden"
+    }
+  ],
+  "size": 379,
+  "version": 1
+}

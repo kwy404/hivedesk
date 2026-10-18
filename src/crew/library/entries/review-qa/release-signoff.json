@@ -1,0 +1,40 @@
+{
+  "id": "release-signoff",
+  "title": "Final release sign off",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "reviewer",
+    "mel"
+  ],
+  "tags": [
+    "release",
+    "sign off",
+    "go no go",
+    "ready to ship",
+    "launch",
+    "release checklist",
+    "final check"
+  ],
+  "when": "Everything is said to be done and the user wants a final go or no go decision before shipping or handing over.",
+  "inputs": [
+    "test and check results",
+    "open bugs",
+    "version number"
+  ],
+  "prompt": "Goal: A sign off record that gathers the evidence (tests, checks, criteria, known issues) and states go or no go with reasons.\nSteps:\n1. Collect evidence: automated tests and static checks, the acceptance criteria table, open bugs by severity, smoke results.\n2. Gates: no open S1 or P1, every criterion passes or is waived by the user, tests pass, no secrets or filler text in the files.\n3. Contents: version bumped, CHANGELOG entry with a date, README run steps current, license file present.\n4. Known issues: list accepted S3 and S4 items with workarounds so nobody rediscovers them.\n5. Rollback: how to return to the previous version (tag, backup folder or previous package).\n6. Write GO or NO GO with the date; for no go, the exact blocking items.\nQuality bar:\n- Each gate cites its evidence.\n- Waivers name who accepted them.\n- The record fits one screen.\nPitfalls:\n- Go based on a feeling.\n- Shipping with a stale changelog.\n- Known issues kept only in memory.\nVerify:\n- [ ] All gates evaluated.\n- [ ] Changelog has version and date.\n- [ ] Known issues listed.\n- [ ] Decision and date written.\nOutput: release-signoff.md with Evidence, Gates, Known issues, Rollback and Decision sections.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.changelog",
+    "file.readme"
+  ],
+  "examples": [
+    {
+      "input": "esta pronto para lancar a versao 2.0?",
+      "output": "NO GO 2026-10-17: S1 data loss on import open; 6 of 7 criteria pass; changelog dated; rollback to v1.9 tag"
+    }
+  ],
+  "size": 342,
+  "version": 1
+}

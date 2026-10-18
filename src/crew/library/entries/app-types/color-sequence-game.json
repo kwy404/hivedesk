@@ -1,0 +1,50 @@
+{
+  "id": "color-sequence-game",
+  "title": "Color sequence memory game",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "color sequence",
+    "sequence game",
+    "repeat the pattern",
+    "colors game",
+    "brain game",
+    "pattern memory"
+  ],
+  "when": "The user wants the game where colored pads light up in a growing sequence and the player repeats it.",
+  "inputs": [
+    "number of pads",
+    "strict mode"
+  ],
+  "prompt": "Goal: A sequence game with distinct tones, numbers as a second cue and a pace that ramps up.\nSteps:\n1. 4 pads as buttons labeled 1 to 4 and by color, each with a tone (329, 261, 220, 164 Hz) from Web Audio; AudioContext made on Start.\n2. logic.mjs: extend(seq, rand), check(seq, inputs) returning continue, roundDone or fail, interval(round) from 600 ms down to 300 ms by round 13.\n3. Playback locks input and lights each pad for 60 percent of the interval; then waits for the player.\n4. Keys 1 to 4 press pads; the lit state changes brightness and outline, not only hue.\n5. Strict mode restarts on a mistake; normal mode replays the sequence.\n6. Round and best in aria-live and localStorage guarded; reduced motion removes scaling, keeps the light.\n7. test.mjs: check states, extend grows by one, interval curve.\nQuality bar:\n- Each pad identifiable by number, color and tone.\n- Clear \"Your turn\" cue.\n- Pads at least 100 px on phones.\nPitfalls:\n- Accepting input during playback.\n- Overlapping tones from stacked oscillators.\n- Red and green as the only difference.\nVerify:\n- [ ] Pads labeled.\n- [ ] Status live.\n- [ ] Reduced motion rule present.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (audio and playback), logic.mjs, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de memoria de sequencia de cores",
+      "output": "4 pads with tones, round 7, strict mode toggle, best 12"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

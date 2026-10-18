@@ -1,0 +1,39 @@
+{
+  "id": "config-management",
+  "title": "Configuration management",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops",
+    "architect"
+  ],
+  "tags": [
+    "configuration",
+    "config",
+    "settings",
+    "environment variables",
+    "config file",
+    "defaults",
+    "env",
+    "options"
+  ],
+  "when": "Settings are hard coded or scattered, or the app needs different values per environment or per user.",
+  "inputs": [
+    "the values that vary (ports, paths, limits, URLs)",
+    "where they should come from"
+  ],
+  "prompt": "Goal: One config module that merges defaults, an optional file and environment variables, validates the result and freezes it.\nSteps:\n1. List every tunable value and give each a safe default.\n2. Define precedence: defaults, then config.json if present, then environment variables, then command line flags.\n3. Read the file with try and catch around JSON.parse and report the file name and error on failure.\n4. Convert types explicitly (Number(process.env.PORT), \"true\" to boolean) and validate ranges; exit with a clear message when invalid.\n5. Export a frozen object (Object.freeze) and import it everywhere instead of reading process.env directly.\n6. Document each key with its default in config.example.json or the README.\nQuality bar:\n- Starting with no config works with defaults.\n- Bad values fail at startup, not mid request.\n- Secrets stay in the environment only.\nPitfalls:\n- process.env reads spread through the code.\n- String \"false\" treated as true.\n- Committing a config file with real secrets.\nVerify:\n- [ ] JSON parsing is guarded.\n- [ ] Example config is valid JSON.\n- [ ] Invalid values print a clear error.\n- [ ] Files parse.\nOutput: config.js, config.example.json and the call sites updated to import config.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "o port e a pasta estão fixos no código",
+      "output": "config.js merges defaults, config.json and PORT, DATA_DIR env; frozen and validated"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

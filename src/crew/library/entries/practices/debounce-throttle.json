@@ -1,0 +1,35 @@
+{
+  "id": "debounce-throttle",
+  "title": "Debounce and throttle frequent events",
+  "category": "practices",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "debounce",
+    "throttle",
+    "search as you type",
+    "scroll event",
+    "resize event",
+    "rate limit",
+    "input event",
+    "performance"
+  ],
+  "when": "A handler runs on every keystroke, scroll or resize and causes lag, too many requests, or repeated saves.",
+  "inputs": [
+    "the event and handler",
+    "how fresh the result must be"
+  ],
+  "prompt": "Goal: The expensive work runs at a controlled rate, with the final value always processed and no lost user input.\nSteps:\n1. Choose: debounce waits until events stop (search box, autosave, validation); throttle runs at most once per interval (scroll position, drag, resize).\n2. Write a small debounce(fn, ms) that clears and sets a timer, keeps the latest arguments and exposes cancel and flush.\n3. Write throttle(fn, ms) with a leading call and a trailing call so the last position is never dropped.\n4. Pick delays by purpose: 250 to 400 ms for typing, 100 to 200 ms for resize, one animation frame for scroll visuals.\n5. Flush pending saves on blur, submit and pagehide so nothing typed is lost.\n6. Prefer passive listeners for scroll and touch: addEventListener(\"scroll\", fn, { passive: true }).\nQuality bar:\n- The last event is always handled.\n- Wrappers are created once, not per event.\n- Visual feedback stays instant even if work is delayed.\nPitfalls:\n- Creating a new debounced function inside the handler, which never debounces.\n- Throttling without a trailing call and missing the final state.\n- Delaying keyboard echo or button state, which feels broken.\nVerify:\n- [ ] Typing quickly triggers one request after the pause.\n- [ ] Scrolling triggers at most the set rate.\n- [ ] Pending work flushes on leave.\n- [ ] Files parse.\nOutput: A timing.js module with debounce and throttle and the updated listeners.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "a busca faz uma requisição por letra digitada",
+      "output": "debounce 300 ms on input, flush on Enter, cancel on clear"
+    }
+  ],
+  "size": 405,
+  "version": 1
+}

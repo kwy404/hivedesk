@@ -1,0 +1,47 @@
+{
+  "id": "link-in-bio-page",
+  "title": "Link in bio personal page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "link page",
+    "link in bio",
+    "social links",
+    "personal page",
+    "creator",
+    "profile"
+  ],
+  "when": "The user wants a simple personal page with a photo, a bio and a list of links.",
+  "inputs": [
+    "name and short bio",
+    "links with labels",
+    "photo"
+  ],
+  "prompt": "Goal: A tiny, fast page with big, clear link buttons that work on any phone.\nSteps:\n1. Avatar with alt, name as h1 and a one line bio.\n2. Links as a list of full width anchors with clear labels and 48 px tall targets.\n3. External links open in the same tab unless the user asks otherwise; if new tab, add rel=\"noopener\".\n4. Optional featured link highlighted with text, not only color.\n5. Keep everything in one HTML file with a small style block.\nQuality bar:\n- Loads instantly.\n- Every link label says where it goes.\n- Contrast passes on the chosen theme.\nPitfalls:\n- Icon only links without names.\n- Tracking scripts.\n- Tiny tap targets.\nVerify:\n- [ ] Each link has visible text.\n- [ ] rel=\"noopener\" on new tab links.\n- [ ] Contrast passes.\n- [ ] One h1.\nOutput: index.html with inline styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text",
+    "html.external-rel",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "página de links para meu perfil",
+      "output": "photo, name, bio, 6 big link buttons: shop, portfolio, contact email"
+    }
+  ],
+  "size": 228,
+  "version": 1
+}

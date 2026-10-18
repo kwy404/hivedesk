@@ -1,0 +1,42 @@
+{
+  "id": "node-http-router-module",
+  "title": "Dependency free router module for node:http",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "router",
+    "node:http",
+    "path params",
+    "routing",
+    "405 method not allowed",
+    "no framework",
+    "route table",
+    "backend",
+    "hooks"
+  ],
+  "when": "A Node server has a long if and else chain on req.url and needs a small reusable router with path parameters, method matching and 405 answers, without installing packages.",
+  "inputs": [
+    "the route list",
+    "shared hooks such as auth"
+  ],
+  "prompt": "Goal: router.mjs that compiles route patterns once, extracts params, answers 404 and 405 correctly and runs async handlers safely.\nSteps:\n1. Export createRouter() returning { add(method, pattern, handler), use(hook), handle(req, res) }.\n2. Compile \"/users/:id/posts/:postId\" once into a RegExp: replace each :name with (?<name>[^/]+) and anchor with ^ and $.\n3. In handle, parse new URL(req.url, \"http://internal\"), drop one trailing slash except on \"/\", and run decodeURIComponent on each param inside try (400 on bad escapes).\n4. Path matches but method does not: 405 with an Allow header naming the methods of that path; HEAD runs the GET handler and sends no body.\n5. Run hooks in order, then await handler({ req, res, params, query: url.searchParams }) inside try and catch, passing errors to one onError(err, req, res).\n6. No route at all: 404 JSON.\nQuality bar:\n- Patterns are compiled at add time, never per request.\n- Static routes win over param routes, so /users/me beats /users/:id.\n- No global state: tests build fresh routers.\nPitfalls:\n- Matching against req.url with the query string still attached.\n- Answering 404 where 405 is correct.\n- Async handler rejections that crash the process.\nVerify:\n- [ ] 405 responses carry Allow.\n- [ ] Bad percent escapes give 400.\n- [ ] A throwing handler reaches onError.\n- [ ] A test covers static before param ordering.\nOutput: router.mjs and test/router.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "js.async-errors",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "make a tiny router for my node server, no packages",
+      "output": "createRouter with :params, 405 plus Allow, HEAD support, onError hook, tests"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

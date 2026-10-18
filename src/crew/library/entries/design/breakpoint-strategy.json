@@ -1,0 +1,38 @@
+{
+  "id": "breakpoint-strategy",
+  "title": "Breakpoint strategy for responsive layouts",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "breakpoints",
+    "responsive",
+    "media queries",
+    "mobile first",
+    "tablet",
+    "screen sizes",
+    "container queries"
+  ],
+  "when": "The user wants a plan for responsive design (which breakpoints, mobile first rules) or a layout that breaks at odd widths.",
+  "inputs": [
+    "the layouts in the project",
+    "components reused in different column widths"
+  ],
+  "prompt": "Goal: Few breakpoints placed where the content breaks, written mobile first in em, with container queries for components.\nSteps:\n1. Design the 320 to 400 px layout first and write it as the default CSS with no media query.\n2. Widen slowly and add a breakpoint only where the layout looks wrong (long lines, empty space, cramped grid); usually 2 or 3 points such as 40em, 64em, 80em.\n3. Write min-width queries in em so they follow the user font size; avoid mixing min and max queries.\n4. Document the values in a comment block, since custom properties do not work inside media queries.\n5. Use container queries (container-type: inline-size; @container (min-width: 30em)) for cards and widgets placed in columns of different widths.\n6. Bridge the gaps with fluid tools (clamp, minmax, flex-wrap) so nothing jumps between points.\nQuality bar:\n- Every width from 320 to 1920 px looks intended.\n- At most four layout breakpoints.\n- Text size is not driven only by breakpoint jumps.\nPitfalls:\n- Breakpoints named after specific devices.\n- Desktop first CSS patched with stacks of max-width overrides.\n- Testing only at three exact widths.\nVerify:\n- [ ] Base styles have no media query.\n- [ ] Queries use min-width in em.\n- [ ] The breakpoint list is documented.\n- [ ] No horizontal scroll at 320 px.\nOutput: Responsive rules in style.css with a comment listing each breakpoint and its reason.",
+  "checks": [
+    "css.media-query",
+    "css.no-fixed-width",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "which breakpoints should my site use",
+      "output": "mobile first base, 40em two columns, 64em sidebar appears, card component switches layout with @container"
+    }
+  ],
+  "size": 397,
+  "version": 1
+}

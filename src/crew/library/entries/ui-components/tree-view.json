@@ -1,0 +1,39 @@
+{
+  "id": "tree-view",
+  "title": "Tree view for nested items",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "tree view",
+    "tree",
+    "file tree",
+    "folder tree",
+    "nested list",
+    "hierarchy view",
+    "expandable tree",
+    "outline view"
+  ],
+  "when": "The user wants an expandable tree of nested items, such as folders and files, categories or an outline.",
+  "inputs": [
+    "the nested data",
+    "what selecting an item does",
+    "single or multiple selection"
+  ],
+  "prompt": "Goal: A WAI-ARIA tree with roving focus and the full arrow key model, built safely from nested data.\nSteps:\n1. <ul role=\"tree\" aria-label=\"Files\">; each node is <li role=\"treeitem\" aria-selected=\"false\">, parents add aria-expanded and hold children in <ul role=\"group\">.\n2. Build it recursively from data with createElement and textContent.\n3. Roving tabindex: only one treeitem has tabindex=\"0\".\n4. Keys: Down and Up go to the next and previous visible item; Right opens a closed parent or goes to its first child; Left closes an open parent or goes to the parent; Home, End; Enter activates.\n5. Type ahead: a printable key moves to the next visible item starting with it.\n6. Show expand state with a CSS chevron on [aria-expanded]; for simple site navigation prefer nested link lists with disclosure buttons.\nQuality bar:\n- Focus never lands on a hidden child.\n- Indentation shows depth clearly.\n- Selection is visible without color.\nPitfalls:\n- Every item in the Tab order.\n- Click only expand icons.\n- Rebuilding the whole tree on each toggle and losing focus.\nVerify:\n- [ ] tree, treeitem and group roles are set.\n- [ ] Arrow keys follow the model.\n- [ ] One item has tabindex 0.\n- [ ] Nodes are built with textContent.\nOutput: Tree container markup, tree.css and tree.js reading the data array.",
+  "checks": [
+    "js.safe-dom",
+    "css.focus-visible",
+    "html.no-inline-handlers",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "arvore de pastas e arquivos expansivel",
+      "output": "role tree built from nested data, roving focus, Right opens, Left closes, type ahead by first letter"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

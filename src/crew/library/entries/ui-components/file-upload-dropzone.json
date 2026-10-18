@@ -1,0 +1,42 @@
+{
+  "id": "file-upload-dropzone",
+  "title": "File upload dropzone with previews",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "file upload",
+    "dropzone",
+    "drag and drop",
+    "upload files",
+    "image upload",
+    "attachments",
+    "file picker",
+    "drop files"
+  ],
+  "when": "The user wants an area where people drop or pick files, see them listed with previews and remove them before sending.",
+  "inputs": [
+    "allowed file types",
+    "max size and count",
+    "what happens with the files"
+  ],
+  "prompt": "Goal: A dropzone built on a real file input, with type and size checks, previews, removal and announced changes.\nSteps:\n1. <input type=\"file\" id=\"files\" multiple accept=\"image/*,.pdf\"> visually hidden but focusable, and a <label for=\"files\"> styled as the drop area.\n2. On dragover call preventDefault and add a highlight class; on drop read event.dataTransfer.files.\n3. Check each file type and size (for example 5 MB) and list rejections with the reason.\n4. List accepted files with name, size in KB or MB and a Remove button (type=\"button\", aria-label=\"Remove photo.jpg\").\n5. Image previews use URL.createObjectURL; call revokeObjectURL on removal.\n6. Announce changes in role=\"status\": 3 files added.\nQuality bar:\n- Keyboard users get the same result through the input.\n- The drop area shows a clear hover state.\n- File names are inserted with textContent.\nPitfalls:\n- Hiding the input with display: none, which removes it from the keyboard.\n- Trusting the extension only.\n- Leaking object URLs.\nVerify:\n- [ ] The file input has a label.\n- [ ] Drop and pick both add files.\n- [ ] Oversize files are rejected with a message.\n- [ ] Remove buttons have names.\nOutput: Dropzone markup in the form, dropzone.css and dropzone.js.",
+  "checks": [
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "area para arrastar fotos e PDFs com previa",
+      "output": "label as drop area over a hidden file input, 5 MB limit, thumbnails with Remove, status 2 files added"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

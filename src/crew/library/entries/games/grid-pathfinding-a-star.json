@@ -1,0 +1,38 @@
+{
+  "id": "grid-pathfinding-a-star",
+  "title": "Grid pathfinding with A star",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "pathfinding",
+    "a star",
+    "astar",
+    "grid path",
+    "enemy ai",
+    "shortest path",
+    "navigation",
+    "heuristic",
+    "game"
+  ],
+  "when": "Enemies or units must walk to a target on a tile grid around walls, picking short paths quickly and recomputing when the map changes.",
+  "inputs": [
+    "grid size",
+    "four or eight way movement"
+  ],
+  "prompt": "Goal: A tested A star on a grid that returns a list of cells, plus a cheap way to follow it.\nSteps:\n1. js/path.mjs exports findPath(grid, start, goal, { diagonal = false }) where grid has width, height and isBlocked(x, y).\n2. Node key = y * width + x; keep gScore and cameFrom in typed arrays sized width * height.\n3. The open set is a binary heap ordered by f = g + h; Manhattan heuristic for 4 way moves, octile for 8 way with costs 1 and Math.SQRT2.\n4. With diagonals forbid corner cutting: a diagonal step needs both side cells free.\n5. Stop when the goal is popped; walk cameFrom back to the start and reverse; return null when the open set empties.\n6. Limit each call to maxNodes (for example 5000) and serve at most 5 path requests per tick across all units.\n7. Units walk to each waypoint cell center and repath only when the target moves more than 2 cells or a tile changes.\nQuality bar:\n- Paths are optimal for the chosen move rules.\n- 100 units on a 64 by 64 map stay inside the frame budget.\nPitfalls:\n- Sorting an array on every iteration instead of using a heap.\n- A heuristic that overestimates, giving wrong paths.\n- Every unit repathing every tick.\nVerify:\n- [ ] node:test: open map line, wall detour, unreachable goal returns null, start equals goal.\n- [ ] No diagonal squeeze between two blocked corners.\nOutput: js/path.mjs, js/heap.mjs and test/path.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "inimigos precisam desviar das paredes para chegar no jogador",
+      "output": "heap based A star with octile option, no corner cutting, request budget, unit tests"
+    }
+  ],
+  "size": 395,
+  "version": 1
+}

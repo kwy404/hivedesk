@@ -1,0 +1,51 @@
+{
+  "id": "time-tracker",
+  "title": "Time tracker for projects and tasks",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "time tracker",
+    "time tracking",
+    "timesheet",
+    "hours",
+    "work log",
+    "billable hours",
+    "freelancer"
+  ],
+  "when": "The user wants to start and stop a timer per project or task, edit entries and see daily and weekly totals of hours, maybe with earnings.",
+  "inputs": [
+    "projects",
+    "hourly rate",
+    "week start"
+  ],
+  "prompt": "Goal: One running timer at a time, exact totals per day and project, and clean CSV for invoices.\nSteps:\n1. Entry { id, project, task, start, end } in epoch ms; starting a new timer stops the running one.\n2. logic.mjs: duration(entry, now), totalsBy(entries, project | day), splitAtMidnight for entries crossing days, overlaps(entries), formatHours as 1:35 and 1.58, earnings(hours, rate).\n3. Top bar: labeled project select, task input, a big Start and Stop button with aria-pressed; elapsed recomputed from start.\n4. Today list plus a weekly table with th headers: projects as rows, days as columns, totals.\n5. Edit start and end with time inputs; end must follow start; warn on overlaps.\n6. Persist in localStorage tracker.v1 guarded; CSV export per week with quoted fields.\n7. test.mjs: midnight split, totals, overlaps, CSV quoting.\nQuality bar:\n- A reload keeps the running timer.\n- Weekly totals match the entries.\n- Decimal and clock formats both shown.\nPitfalls:\n- Counting seconds with intervals.\n- Two running timers.\n- Unquoted commas in CSV.\nVerify:\n- [ ] Table uses th.\n- [ ] Inputs labeled.\n- [ ] Totals tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (time math), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.table-headers",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "controle de horas trabalhadas por projeto",
+      "output": "Start/Stop per project, week table, 32.5 h total, CSV export"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

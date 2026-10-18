@@ -1,0 +1,45 @@
+{
+  "id": "node-http-crud-api",
+  "title": "JSON CRUD API with node:http",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "api",
+    "rest",
+    "crud",
+    "server",
+    "backend",
+    "node",
+    "endpoints",
+    "json api",
+    "http server",
+    "routes"
+  ],
+  "when": "The user wants a small backend or REST API in Node with create, read, update and delete over JSON, without frameworks.",
+  "inputs": [
+    "resources and their fields",
+    "validation rules",
+    "where data is kept"
+  ],
+  "prompt": "Goal: A node:http server with clear routes, validated JSON bodies, correct status codes and one consistent error shape.\nSteps:\n1. Read PORT from process.env with a default of 3000 and bind to 127.0.0.1 unless told otherwise.\n2. Route on method plus pathname from new URL(req.url, \"http://localhost\"), using a small table of regexes such as ^/api/items/([\\w-]+)$.\n3. Read bodies with a limit: count bytes, answer 413 and destroy the request above 1 MB; JSON.parse in try and catch, 400 on bad JSON.\n4. Validate fields and answer 422 with { error, fields } naming each problem.\n5. Statuses: 200 read and update, 201 plus Location for create, 204 delete, 404 unknown id or route, 405 wrong method, 500 generic.\n6. send(res, status, data) sets content-type: application/json; charset=utf-8; data lives in a separate store module.\nQuality bar:\n- Every response is JSON with the same error shape.\n- Bad input never crashes the server; unexpected errors log and return 500.\n- The server creates ids with crypto.randomUUID().\nPitfalls:\n- Reading the body with no size limit.\n- Answering 200 with an error field.\n- Leaking stack traces to clients.\nVerify:\n- [ ] A status on every path and a 404 fallback.\n- [ ] JSON responses say application/json.\n- [ ] Body limit with 413.\n- [ ] JSON.parse inside try.\nOutput: server.mjs (routes and helpers) and store.mjs (data), with README examples for each route.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.json-content-type",
+    "node.body-limit",
+    "js.json-parse-guarded",
+    "js.no-sync-in-handlers"
+  ],
+  "examples": [
+    {
+      "input": "cria uma API de tarefas em Node sem framework",
+      "output": "GET/POST /api/tasks, GET/PUT/DELETE /api/tasks/:id, 1 MB body limit, 422 with field errors"
+    }
+  ],
+  "size": 398,
+  "version": 1
+}

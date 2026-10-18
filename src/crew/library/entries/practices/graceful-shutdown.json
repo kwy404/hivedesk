@@ -1,0 +1,36 @@
+{
+  "id": "graceful-shutdown",
+  "title": "Graceful shutdown for Node servers",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "graceful shutdown",
+    "sigterm",
+    "sigint",
+    "shutdown",
+    "process signals",
+    "close server",
+    "restart",
+    "cleanup"
+  ],
+  "when": "A Node server or worker must stop cleanly on Ctrl+C, restarts or deploys without dropping requests or corrupting files.",
+  "inputs": [
+    "the server and its resources (open files, timers, queues)"
+  ],
+  "prompt": "Goal: On a stop signal the process stops accepting work, finishes in flight work within a deadline, flushes state and exits with the right code.\nSteps:\n1. Listen once for SIGINT and SIGTERM with process.once and run a single shutdown(reason) function.\n2. Call server.close() to stop new connections, then server.closeIdleConnections(); set Connection: close on responses while stopping.\n3. Track in flight jobs and wait for them with a deadline (for example 10 s) using a timer that calls server.closeAllConnections() and exits with code 1.\n4. Stop intervals and queues, flush pending writes (write to a temp file then rename), close watchers.\n5. Exit with code 0 after a clean stop; log the reason and duration.\n6. Mark the health endpoint as unavailable (503) as soon as shutdown starts.\nQuality bar:\n- A second signal forces an immediate exit.\n- No partial files after stop.\n- Shutdown finishes within the deadline.\nPitfalls:\n- Calling process.exit() right away and losing writes.\n- Registering handlers many times.\n- Waiting forever on keep alive connections.\nVerify:\n- [ ] SIGINT triggers shutdown once.\n- [ ] In flight requests complete.\n- [ ] Exit code reflects success or timeout.\n- [ ] Files parse.\nOutput: shutdown.js (or a section of server.js) wired to signals.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "quando reinicio o servidor perco dados que estavam sendo salvos",
+      "output": "SIGTERM handler: server.close, wait jobs up to 10 s, flush via temp file and rename, exit 0"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

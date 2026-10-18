@@ -1,0 +1,47 @@
+{
+  "id": "community-club-site",
+  "title": "Community group or club site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "club",
+    "community",
+    "association",
+    "group",
+    "meetings",
+    "members",
+    "volunteers"
+  ],
+  "when": "The user wants a site for a club, association, sports team, religious group or neighborhood group.",
+  "inputs": [
+    "group name and purpose",
+    "meeting times and place",
+    "how to join",
+    "contacts"
+  ],
+  "prompt": "Goal: A friendly page that tells newcomers what the group does, when it meets and how to join.\nSteps:\n1. Hero with the group purpose and the next meeting date.\n2. What we do: three activities with short descriptions.\n3. Meetings: regular schedule with day, time and place in text; upcoming events list.\n4. How to join: steps, costs if any, who to contact.\n5. Photos of activities with alt text and a contact section.\nQuality bar:\n- Welcoming, plain language.\n- Schedule is easy to read.\n- Contact is a real link.\nPitfalls:\n- Insider jargon.\n- Old events left at the top.\n- Member data published without consent.\nVerify:\n- [ ] Meeting info in text.\n- [ ] Join steps as a list.\n- [ ] Contact link works.\n- [ ] Images have alt.\nOutput: index.html and style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "site do clube de corrida do bairro",
+      "output": "hero with next run date, weekly schedule, how to join in 3 steps, contact"
+    }
+  ],
+  "size": 217,
+  "version": 1
+}

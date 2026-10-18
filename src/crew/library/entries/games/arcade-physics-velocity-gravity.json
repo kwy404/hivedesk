@@ -1,0 +1,37 @@
+{
+  "id": "arcade-physics-velocity-gravity",
+  "title": "Simple arcade physics: velocity, gravity and friction",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "physics",
+    "gravity",
+    "velocity",
+    "friction",
+    "acceleration",
+    "game physics",
+    "movement",
+    "bounce",
+    "game"
+  ],
+  "when": "Objects need believable motion with acceleration, gravity, drag and speed limits, integrated in fixed ticks so results stay stable on every device.",
+  "inputs": [
+    "units and scale",
+    "feel wanted: floaty or snappy"
+  ],
+  "prompt": "Goal: Motion that feels responsive and stays numerically stable at any frame rate.\nSteps:\n1. Body { x, y, vx, vy, ax, ay, onGround }; units are pixels and seconds; constants live in js/tuning.js (GRAVITY 1800, MAX_FALL 900, RUN_ACCEL 2400, MAX_RUN 220, GROUND_FRICTION 10, AIR_FRICTION 2).\n2. Semi implicit Euler every fixed tick: vx += ax * dt; vy += (ay + GRAVITY) * dt; then x += vx * dt; y += vy * dt.\n3. Clamp vy to MAX_FALL and vx to MAX_RUN after accelerating.\n4. Friction without input is exponential decay: vx *= Math.exp(-friction * dt), snapping to 0 below 1 px per second.\n5. Bounce on contact: v = -v * restitution with restitution between 0 and 1, and rest when the speed falls under a small threshold.\n6. Keep the integrator in physics.mjs with no DOM, so node:test can step 60 ticks and check positions.\nQuality bar:\n- A jump peaks at the same height on a 30 and a 144 Hz screen.\n- Objects come to rest instead of jittering forever.\nPitfalls:\n- Friction written as vx *= 0.9 per frame, which depends on frame rate.\n- Updating position before velocity (explicit Euler), which gains energy in bounces.\n- Magic numbers scattered across files instead of one tuning table.\nVerify:\n- [ ] A test drops a body for 1 s and compares y with 0.5 * g * t * t within 2 percent.\n- [ ] A sliding body stops within the expected distance.\nOutput: js/physics.mjs, js/tuning.js and test/physics.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "adicionar gravidade e atrito ao meu jogo",
+      "output": "tuning table, semi implicit Euler per tick, exponential friction, restitution, physics tests"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

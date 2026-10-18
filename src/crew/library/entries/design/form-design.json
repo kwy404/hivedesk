@@ -1,0 +1,38 @@
+{
+  "id": "form-design",
+  "title": "Form layout and field design",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "form design",
+    "form layout",
+    "input fields",
+    "field labels",
+    "form ux",
+    "fieldset",
+    "help text"
+  ],
+  "when": "The user wants a form to look and read well: labels, field widths, help text, grouping, error look and the submit area.",
+  "inputs": [
+    "the fields and which are optional",
+    "what happens after submit"
+  ],
+  "prompt": "Goal: A single column form with top aligned labels, fields sized to their answer, grouped sections and clear help and error text.\nSteps:\n1. One column; each label above its field and always visible, never a placeholder as label.\n2. Size fields to the answer: postal code about 10ch, phone 16ch, names and email up to 30rem.\n3. Group related fields in fieldset with legend, with more space between groups than between fields.\n4. Put help text under the label, linked with aria-describedby; mark optional fields with (optional).\n5. States: 1px border at rest, 2px accent border on focus, danger border plus message text and icon on error.\n6. End with a submit naming the result (Create account), full width on phones.\nQuality bar:\n- Fields at least 44 px tall with 16 px text so phones do not zoom.\n- Errors appear by the field and in a summary.\n- Tab order runs top to bottom.\nPitfalls:\n- Two column forms that break scanning.\n- Gray placeholder hints that fail contrast.\n- A reset button beside submit.\nVerify:\n- [ ] Every control has a visible label.\n- [ ] Groups use fieldset and legend.\n- [ ] Help text linked by aria-describedby.\n- [ ] The form has a submit button.\nOutput: Form markup in the page and form styles in style.css.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "css.focus-visible",
+    "html.input-types"
+  ],
+  "examples": [
+    {
+      "input": "melhore o visual do formulario de cadastro",
+      "output": "labels on top, fieldsets Account and Address, (optional) marks, Create account button full width on phones"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

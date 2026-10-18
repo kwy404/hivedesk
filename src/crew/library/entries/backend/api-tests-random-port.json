@@ -1,0 +1,42 @@
+{
+  "id": "api-tests-random-port",
+  "title": "API tests against a real server on a random port",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "api tests",
+    "integration tests",
+    "node:test",
+    "random port",
+    "test server",
+    "fetch",
+    "http tests",
+    "temp folder",
+    "backend"
+  ],
+  "when": "The user wants automated tests for an HTTP API that start the real server inside the test process, call it over HTTP and check status codes, headers and bodies.",
+  "inputs": [
+    "routes to cover",
+    "how the app stores data"
+  ],
+  "prompt": "Goal: Tests start the app with listen(0), call it with fetch, use a throwaway data folder per run and always close the server.\nSteps:\n1. Split the app: app.mjs exports createServer(config) returning an http.Server; server.mjs only reads config and listens. Tests import app.mjs.\n2. before: dir = await mkdtemp(join(tmpdir(), \"api-\")); server = createServer({ dataDir: dir }); await new Promise((r) => server.listen(0, \"127.0.0.1\", r)); base = \"http://127.0.0.1:\" + server.address().port.\n3. after: server.closeAllConnections(), await new Promise((r) => server.close(r)), then rm(dir, { recursive: true, force: true }).\n4. Each test calls fetch(base + \"/api/tasks\", { method, headers, body }) and asserts res.status, res.headers.get(\"content-type\") and the fields that matter in await res.json().\n5. Per route cover success, 400 or 422, 404 unknown id, 405 wrong method, 413 big body, 401 and 403.\n6. Each test creates its own data through the API and never relies on test order.\nQuality bar:\n- node --test runs them; no fixed ports, so files run in parallel.\n- Each test takes under a second; outside services are local fakes.\n- A failure prints the reply body.\nPitfalls:\n- A server left open, so the run hangs.\n- Port 3000 hard coded, colliding with a dev server.\n- Test files sharing one data file.\nVerify:\n- [ ] listen(0) and server.address().port are used.\n- [ ] after closes the server and deletes the folder.\n- [ ] Each route has an error case.\n- [ ] node --test exits 0.\nOutput: app.mjs split from server.mjs, test/api.test.mjs, a test script in package.json.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.test-runner",
+    "file.test",
+    "pkg.scripts"
+  ],
+  "examples": [
+    {
+      "input": "escreve testes de verdade pra minha API com node:test",
+      "output": "createServer split, listen(0), fetch based cases per route, temp data dir removed in after"
+    }
+  ],
+  "size": 448,
+  "version": 1
+}

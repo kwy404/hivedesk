@@ -1,0 +1,38 @@
+{
+  "id": "motion-reduced",
+  "title": "Motion design that respects reduced motion",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "animation",
+    "motion",
+    "transitions",
+    "reduced motion",
+    "prefers-reduced-motion",
+    "easing",
+    "duration",
+    "keyframes"
+  ],
+  "when": "The user wants animations or transitions (reveals, fades, sliding panels) and they must stay comfortable for everyone.",
+  "inputs": [
+    "what should move and why",
+    "any script driven animation"
+  ],
+  "prompt": "Goal: Purposeful motion with set durations and easings, plus a reduced motion path that removes movement but keeps feedback.\nSteps:\n1. Give every animation a job: show where something came from, confirm an action, or draw attention once. Drop the rest.\n2. Tokens: --dur-fast 120ms (hover, press), --dur-base 200ms (menus), --dur-slow 320ms (panels); --ease-out cubic-bezier(0.2, 0, 0, 1) for entering.\n3. Animate only transform and opacity; width, height, top and box-shadow force layout or paint work.\n4. Make movement opt in: put slides and reveals inside @media (prefers-reduced-motion: no-preference), and under reduce use a plain fade or none.\n5. In scripts check matchMedia(\"(prefers-reduced-motion: reduce)\").matches before scroll, canvas or parallax effects.\n6. Never flash more than 3 times per second; anything looping over 5 seconds needs a pause control.\nQuality bar:\n- Durations between 100 and 400 ms.\n- Nothing moves on load unless it explains the layout.\n- With reduced motion, state changes stay visible.\nPitfalls:\n- Parallax and zoom effects that trigger vestibular symptoms.\n- scroll-behavior: smooth with no reduced override.\n- Animating layout properties.\nVerify:\n- [ ] A prefers-reduced-motion rule exists.\n- [ ] Only transform and opacity animate.\n- [ ] Durations use tokens.\n- [ ] Long loops have a pause control.\nOutput: Motion tokens and rules in style.css, and a matchMedia guard in any animating script.",
+  "checks": [
+    "css.reduced-motion",
+    "css.custom-properties",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quero animacoes suaves quando as secoes aparecem",
+      "output": "fade and 16px rise at 320ms inside no-preference, plain opacity under reduce, tokens on :root"
+    }
+  ],
+  "size": 409,
+  "version": 1
+}

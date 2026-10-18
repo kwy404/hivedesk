@@ -1,0 +1,38 @@
+{
+  "id": "cli-prompts-noninteractive",
+  "title": "Interactive prompts with a non interactive fallback",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "interactive prompt",
+    "non interactive",
+    "ci mode",
+    "--yes flag",
+    "tty detection",
+    "confirm prompt",
+    "unattended run",
+    "cli"
+  ],
+  "when": "A CLI asks questions such as confirm delete or pick a name, but must also run unattended in CI, scripts and pipes without ever hanging.",
+  "inputs": [
+    "questions and defaults",
+    "destructive steps",
+    "flags per answer"
+  ],
+  "prompt": "Goal: Every question can be answered by a flag, prompts appear only when a person is present, and missing answers in unattended runs fail fast.\nSteps:\n1. interactive = process.stdin.isTTY && process.stdout.isTTY && !process.env.CI && !flags[\"no-input\"].\n2. Each question: { key, flag, env, message, default, validate }; resolve from flag, then env var, then a prompt if interactive, then the default, else fail.\n3. Failure prints \"tool: --name is required when not running interactively\" to stderr and exits 2.\n4. Destructive steps need a confirmation; --yes skips it; with no TTY and no --yes, refuse with exit 2, never assume yes.\n5. Ask with node:readline/promises using createInterface({ input: process.stdin, output: process.stderr }) so stdout stays clean.\n6. Validate prompt answers and flag values with the same function.\n7. At the end print the equivalent command (\"next time: tool init --name shop --yes\") so users can script it.\n8. Never prompt for secrets with echo on; take them from an env var or a --token-file path.\nQuality bar:\n- echo | tool and tool < /dev/null never hang.\n- A CI run needs only flags.\n- Prompts show their defaults.\nPitfalls:\n- Prompting while stdin is a data pipe, eating the input.\n- --yes also skipping validation.\n- Prompt answers and flags following different rules.\nVerify:\n- [ ] TTY and CI checks present.\n- [ ] Every question has a flag.\n- [ ] Unattended missing answer exits 2.\n- [ ] Prompts write to stderr.\nOutput: src/ask.mjs with resolve(questions, flags) and the command that uses it.",
+  "checks": [
+    "js.syntax",
+    "node.exit-code",
+    "cli.help"
+  ],
+  "examples": [
+    {
+      "input": "my init command asks questions but hangs in CI",
+      "output": "src/ask.mjs resolving each answer from flag, env, prompt or default, --yes for confirmations, exit 2 when an answer is missing unattended"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

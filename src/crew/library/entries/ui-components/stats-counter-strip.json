@@ -1,0 +1,40 @@
+{
+  "id": "stats-counter-strip",
+  "title": "Stats strip with count up numbers",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "stats",
+    "statistics",
+    "numbers",
+    "counters",
+    "key figures",
+    "count up",
+    "metrics strip",
+    "achievements"
+  ],
+  "when": "The user wants a row of big numbers with labels, such as clients served or years in business, maybe animated.",
+  "inputs": [
+    "the 3 or 4 figures and labels",
+    "whether to animate"
+  ],
+  "prompt": "Goal: A row of key figures with the final values in the HTML and an optional count up that respects reduced motion.\nSteps:\n1. Use a <dl> or <ul>: each item has the number in large type and a short label (Projects delivered).\n2. Write the final values in the HTML so the strip is right without JS.\n3. Count up only when the strip enters the viewport (IntersectionObserver, once) with requestAnimationFrame and an ease out over about 1.2 s.\n4. Skip the animation when matchMedia(\"(prefers-reduced-motion: reduce)\") matches.\n5. Format with Intl.NumberFormat, compact for large values (12k); use tabular-nums so digits do not jitter.\n6. Two columns on phones, four in a row from about 720 px.\nQuality bar:\n- Each figure is honest and specific.\n- Labels are under five words.\n- Numbers keep 4.5 to 1 contrast.\nPitfalls:\n- Starting at 0 in the HTML, so no JS shows zeros.\n- Inflated round numbers that look fake.\n- Animating every time the strip scrolls into view.\nVerify:\n- [ ] Final values are in the markup.\n- [ ] Reduced motion shows the numbers at once.\n- [ ] Two columns at 375 px.\n- [ ] No filler figures.\nOutput: The stats markup, its CSS and count-up.js.",
+  "checks": [
+    "css.media-query",
+    "css.reduced-motion",
+    "js.syntax",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "faixa com numeros: 12 anos, 800 clientes, 4.9 de nota",
+      "output": "dl with three figures and labels, count up on first view, instant with reduced motion"
+    }
+  ],
+  "size": 331,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "edge-cases-dates-timezones",
+  "title": "Edge cases for dates and time zones",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "dates",
+    "time zones",
+    "timezone",
+    "daylight saving",
+    "dst",
+    "date bugs",
+    "utc",
+    "calendar"
+  ],
+  "when": "A feature handles dates, times, schedules, deadlines or ages, and the user wants it tested for date and time zone bugs.",
+  "inputs": [
+    "where dates are created, stored and shown",
+    "the zones of the users"
+  ],
+  "prompt": "Goal: A check of date logic across zones, daylight saving shifts, month ends and formats, with exact failing inputs.\nSteps:\n1. Find where dates are made and parsed (new Date(string), Date.parse, date inputs, stored timestamps) and whether each is local or UTC.\n2. Parsing: \"2026-03-08\" is read as UTC midnight but \"2026-03-08T00:00\" as local; show a date only value in a UTC-3 zone to expose the day off bug.\n3. Daylight saving: adding 24 hours across a shift is not adding one calendar day; 23 and 25 hour days must not skip or repeat dates.\n4. Calendar: Jan 31 plus one month, Feb 29 in leap and common years, Dec 31 to Jan 1, weeks starting Sunday or Monday.\n5. Display: Intl.DateTimeFormat with the user locale and an explicit timeZone; 12 and 24 hour clocks; relative times near midnight.\n6. Vary the zone per run: TZ=America/Sao_Paulo node --test, then TZ=Asia/Kolkata for a half hour offset.\nQuality bar:\n- Each bug shows zone, input and wrong output.\n- Storage format proposed: ISO 8601 in UTC or with offset.\n- Tests use fixed dates, never today.\nPitfalls:\n- Testing only in your own zone.\n- Using the current date as test data.\n- Assuming every day has 24 hours.\nVerify:\n- [ ] Parse sites listed.\n- [ ] DST and month end cases run.\n- [ ] Two or more zones tested.\n- [ ] Findings have exact inputs.\nOutput: date-edge-cases.md with findings, and test/dates.test.mjs if tests were added.",
+  "checks": [
+    "md.h1",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "the due date shows one day early for some users",
+      "output": "new Date(\"2026-05-10\") is UTC, shown in UTC-3 as May 9; fix: parse as local parts or store with offset"
+    }
+  ],
+  "size": 399,
+  "version": 1
+}

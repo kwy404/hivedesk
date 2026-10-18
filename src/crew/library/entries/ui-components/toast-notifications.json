@@ -1,0 +1,41 @@
+{
+  "id": "toast-notifications",
+  "title": "Toast notifications with a live region",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "toast",
+    "snackbar",
+    "notification popup",
+    "flash message",
+    "success message",
+    "status message",
+    "saved message"
+  ],
+  "when": "The user wants small temporary messages such as Saved, Copied or Upload failed that appear in a corner and fade away.",
+  "inputs": [
+    "message types (success, error, info)",
+    "where they appear",
+    "whether actions such as Undo are needed"
+  ],
+  "prompt": "Goal: Toasts that screen readers announce, that never steal focus and stay long enough to read.\nSteps:\n1. The container is in the HTML from the start: <ol class=\"toasts\" role=\"status\" aria-live=\"polite\">, plus a role=\"alert\" container for errors.\n2. toast(message, { type, timeout }) builds items with createElement and textContent, each with <button type=\"button\" aria-label=\"Dismiss\">.\n3. Success and info leave after about 5 s; errors stay until dismissed; pause timers on hover and focus-within.\n4. At most 3 at once, oldest dropped; fixed at the bottom with env(safe-area-inset-bottom), full width on phones.\n5. Slide and fade with transform and opacity; only fade under prefers-reduced-motion.\nQuality bar:\n- Each type has an icon and a word, not only a color.\n- Short, specific text (Photo deleted).\n- An Undo action stays at least 10 s.\nPitfalls:\n- Creating the live region together with the message, so nothing is announced.\n- Moving focus to the toast.\n- Messages built with innerHTML from data.\nVerify:\n- [ ] Live containers exist in the initial HTML.\n- [ ] Errors stay until dismissed.\n- [ ] Text is set with textContent.\n- [ ] Reduced motion removes the slide.\nOutput: Container markup in the page, toast.css and toast.js exporting toast().",
+  "checks": [
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "css.reduced-motion",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "mensagem de salvo com sucesso no canto da tela",
+      "output": "status live list, toast(\"Settings saved\") fades after 5 s, error toasts stay with Dismiss"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

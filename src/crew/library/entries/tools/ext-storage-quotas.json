@@ -1,0 +1,39 @@
+{
+  "id": "ext-storage-quotas",
+  "title": "Extension storage: local, sync, session and their quotas",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "chrome.storage",
+    "storage.sync",
+    "storage.local",
+    "storage quota",
+    "extension settings",
+    "settings sync",
+    "schema migration",
+    "browser extension"
+  ],
+  "when": "A browser extension stores settings or user data and must choose between local, sync and session storage while staying inside their limits.",
+  "inputs": [
+    "data to store",
+    "size estimate",
+    "needs to follow the user across devices"
+  ],
+  "prompt": "Goal: Data in the right storage area, writes within quota and rate limits, a schema version with migration, and every part reacting to changes.\nSteps:\n1. storage.sync for small settings that follow the user: about 100 KB total, 8 KB per item, 512 items, plus per minute and per hour write limits.\n2. storage.local for larger data (about 10 MB; \"unlimitedStorage\" only if truly needed); storage.session for in memory values that outlive worker restarts but not a browser restart.\n3. Declare \"storage\"; read with defaults: await chrome.storage.sync.get({ theme: \"auto\", sites: [] }).\n4. Store settings in a few keys and debounce text input writes by 500 ms.\n5. Before a sync write compare getBytesInUse() with chrome.storage.sync.QUOTA_BYTES; move large parts to local and keep a pointer in sync.\n6. Catch write rejections (per item quota, rate limits) and tell the user.\n7. Keep schemaVersion; in runtime.onInstalled with reason \"update\" migrate old keys, then save the new version.\n8. storage.onChanged keeps popup, options and content scripts in sync.\nQuality bar:\n- Settings survive worker and browser restarts.\n- No tokens in sync storage.\n- Migrations are idempotent.\nPitfalls:\n- localStorage in the worker (absent) or in content scripts (it belongs to the site).\n- A growing list in sync that hits the per item limit.\nVerify:\n- [ ] storage permission declared.\n- [ ] Reads pass defaults.\n- [ ] Write errors caught.\n- [ ] Migration keyed on schemaVersion.\nOutput: storage.js with get, set and migrate helpers, used by background.js and the UI pages.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors",
+    "ext.manifest-v3"
+  ],
+  "examples": [
+    {
+      "input": "onde guardar a lista de sites bloqueados da minha extensao",
+      "output": "storage.js: settings in sync with byte check, large list in local, schemaVersion migration on update, onChanged listeners"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

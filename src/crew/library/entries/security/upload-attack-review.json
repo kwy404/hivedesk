@@ -1,0 +1,39 @@
+{
+  "id": "upload-attack-review",
+  "title": "File upload attack review",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer"
+  ],
+  "tags": [
+    "upload security",
+    "malicious file",
+    "svg xss",
+    "zip bomb",
+    "polyglot",
+    "content sniffing",
+    "file type check",
+    "image upload",
+    "security review"
+  ],
+  "when": "An app accepts files from users and the upload path must be reviewed for attacks: script carrying files, zip and pixel bombs, name tricks, type confusion and unsafe serving.",
+  "inputs": [
+    "upload handler",
+    "how files are served",
+    "any file processing"
+  ],
+  "prompt": "Goal: Each attack class is tried against the upload feature, and every gap gets a finding and fix.\nSteps:\n1. Script carrying files: SVG with <script> or onload, HTML named .jpg, PDF with JavaScript; they must be refused, or served as attachment from another origin with nosniff and CSP sandbox.\n2. Type confusion: magic bytes must match the declared and allowed type; names like shell.php.jpg or a.jpg%00.php change nothing.\n3. Size: request cap, user quota, pixel limit before decoding (width * height under about 40 million), archive caps on entry count and unpacked size.\n4. Names: stored names are generated; original names are metadata only, stripped of control characters and separators; archive entries are checked for ../.\n5. Processing: conversions run in a separate process with time and memory limits on a copy; strip EXIF location from shared photos.\n6. Access: download URLs check owner or share rights and are not guessable listings.\nQuality bar:\n- Uploaded files are never executed or included as code.\n- Each attack has a sample in test/fixtures/uploads/ and an expected result.\n- Findings cite file, line and fix.\nPitfalls:\n- SVG uploads served inline on the main origin.\n- Checking the extension only.\n- Decoding huge images in the request path.\nVerify:\n- [ ] SVG and HTML uploads cannot run script on the app origin.\n- [ ] Magic bytes are checked.\n- [ ] Zip and pixel bombs hit caps.\n- [ ] Downloads check access.\nOutput: An upload section in SECURITY-AUDIT.md and attack samples in test/fixtures/uploads/.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "testa se o upload de avatar aceita arquivo malicioso",
+      "output": "SVG with onload served inline found, magic byte check, pixel cap, attachment plus sandbox fix"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

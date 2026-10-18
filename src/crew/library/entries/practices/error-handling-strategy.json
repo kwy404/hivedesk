@@ -1,0 +1,38 @@
+{
+  "id": "error-handling-strategy",
+  "title": "Error handling strategy for an app",
+  "category": "practices",
+  "roles": [
+    "architect",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "error handling",
+    "exceptions",
+    "try catch",
+    "promise rejection",
+    "error strategy",
+    "fail fast",
+    "unhandled rejection"
+  ],
+  "when": "The user wants consistent error handling across an app or script: where to catch, what to throw, how to report.",
+  "inputs": [
+    "the code layers (UI, logic, storage, network, server routes)",
+    "who sees errors"
+  ],
+  "prompt": "Goal: Errors are thrown with context where they happen, caught only where something useful can be done, and never silently lost.\nSteps:\n1. Classify failures: expected (invalid input, not found, offline) versus bugs (undefined access, broken invariants).\n2. Throw Error subclasses or errors with a code (err.code = \"NOT_FOUND\") and pass the cause: new Error(\"load failed\", { cause }).\n3. Catch at boundaries only: the route handler, the event handler, the CLI main; inner functions let errors bubble.\n4. At each boundary map expected errors to a response or message, and log bugs with stack and context.\n5. Add last resort handlers: window error and unhandledrejection events in browsers, process.on(\"unhandledRejection\") in Node.\n6. Await every promise or attach .catch; return early on failure instead of nesting.\nQuality bar:\n- No empty catch blocks.\n- Each catch either handles, adds context and rethrows, or reports.\n- Users see actions, logs see details.\nPitfalls:\n- catch (e) { console.log(e) } then continuing with bad state.\n- Returning null for failures and checking nowhere.\n- Catching bugs and showing them as user errors.\nVerify:\n- [ ] Every await has handling at some boundary.\n- [ ] JSON.parse calls are guarded.\n- [ ] Global handlers exist.\n- [ ] Files parse.\nOutput: errors.js with error codes and helpers, plus updated boundaries.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "organize o tratamento de erros do meu app",
+      "output": "AppError with codes, catch only in routes and UI handlers, unhandledrejection logger"
+    }
+  ],
+  "size": 385,
+  "version": 1
+}

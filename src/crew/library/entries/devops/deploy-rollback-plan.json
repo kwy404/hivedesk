@@ -1,0 +1,39 @@
+{
+  "id": "deploy-rollback-plan",
+  "title": "Rollback plan for a deploy",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops",
+    "backend"
+  ],
+  "tags": [
+    "rollback",
+    "deploy rollback",
+    "bad release",
+    "revert deploy",
+    "database migration",
+    "expand and contract",
+    "feature flag",
+    "previous version"
+  ],
+  "when": "Before shipping a release the user wants a rehearsed way back to the previous version, including what happens to database changes.",
+  "inputs": [
+    "how the app is deployed",
+    "pending migrations",
+    "key user flows"
+  ],
+  "prompt": "Goal: A rollback triggered by agreed signals, run with one command, safe for data and rehearsed in advance.\nSteps:\n1. Write triggers before deploying: error rate above 2 percent for 5 minutes, a failing health check, or a broken key flow in the smoke test.\n2. Keep the previous build runnable: last release folder, previous image tag (never only latest) or previous artifact.\n3. scripts/rollback.sh switches to the previous release, restarts and prints the live version.\n4. Migrations follow expand then contract: add columns or tables first, keep old code working, drop old fields in a later release, so going back needs no schema rollback.\n5. For an irreversible migration, back up just before it and keep restore steps beside the migration file.\n6. Risky behavior ships behind a flag that turns off without a deploy.\n7. Rehearse on staging: deploy, roll back, deploy again, timing each step.\n8. Afterwards tell affected users, keep the bad version's logs and file an issue with the timeline.\nQuality bar:\n- Going back takes under 5 minutes.\n- Anyone on call can follow the document.\n- Data written by the new version is kept.\nPitfalls:\n- A down migration deleting rows written since the deploy.\n- Rolling back by rebuilding from source with different dependencies.\n- An hour of debate while users see errors; the triggers decide.\nVerify:\n- [ ] Triggers written with numbers.\n- [ ] Previous artifact named by exact version.\n- [ ] Migrations follow expand then contract.\n- [ ] Rehearsal time recorded.\nOutput: ROLLBACK.md and scripts/rollback.sh.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "se o deploy der errado, como volto rapido?",
+      "output": "ROLLBACK.md with numeric triggers, previous artifact by version, expand then contract migrations, rollback.sh, rehearsal time"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

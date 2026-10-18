@@ -1,0 +1,37 @@
+{
+  "id": "edge-cases-unicode",
+  "title": "Edge cases for unicode and international text",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "unicode",
+    "emoji",
+    "accents",
+    "utf-8",
+    "right to left",
+    "special characters",
+    "encoding",
+    "grapheme"
+  ],
+  "when": "An app stores, searches, sorts, counts or shows user text, and the user wants it tested with accents, emoji, other scripts and right to left text.",
+  "inputs": [
+    "where text is entered, stored and shown",
+    "length limits"
+  ],
+  "prompt": "Goal: A check that text survives the full path (input, storage, search, sort, limits, display) in any script, with failing examples.\nSteps:\n1. Encoding at every layer: meta charset utf-8, files saved as UTF-8, server Content-Type with charset, Python open with encoding=\"utf-8\".\n2. Test strings: a name with tilde and cedilla, a German sharp s, a Japanese phrase, a family emoji, an Arabic sentence with digits.\n3. Length: compare str.length with the grapheme count from Intl.Segmenter for limits and truncation; never cut inside a surrogate pair.\n4. Normalization: precomposed and decomposed accents must match in search and uniqueness; apply normalize(\"NFC\") on input.\n5. Search and sort: accent and case insensitive search with localeCompare and sensitivity: \"base\"; Intl.Collator for name sorting.\n6. Direction and escaping: dir=\"auto\" on user content; < & and quotes stay literal in HTML, CSV and JSON.\nQuality bar:\n- Each finding shows the string and its code points.\n- Truncation never splits a character.\n- Fixes use built in APIs (Intl, normalize).\nPitfalls:\n- ASCII only test data.\n- Comparing with toUpperCase.\n- slice cutting an emoji in half.\nVerify:\n- [ ] Encoding set at every layer.\n- [ ] Limits checked with grapheme counts.\n- [ ] Normalization tested.\n- [ ] Right to left display checked.\nOutput: unicode-qa.md with test strings, results and fixes.",
+  "checks": [
+    "md.h1",
+    "html.charset"
+  ],
+  "examples": [
+    {
+      "input": "nomes com acento e emoji estao quebrando na lista",
+      "output": "search for Jose misses the accented form (NFD stored), 20 char limit cuts a family emoji; fix NFC and Intl.Segmenter"
+    }
+  ],
+  "size": 391,
+  "version": 1
+}

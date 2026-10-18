@@ -85,7 +85,9 @@ export async function installRuntime(home, opts = {}) {
 
 async function npmInstall(dir, extra, opts) {
   const cli = npmCli();
-  const args = ['install', `${RUNTIME_PACKAGE}@${RUNTIME_VERSION}`, '--no-audit', '--no-fund', '--omit=dev', '--loglevel=error', '--prefix', dir, ...extra];
+  // An exact version and no install scripts: the prebuilt binaries are optional dependencies with no scripts of
+  // their own, and src/brain/local.js loads them with build: 'never', so the postinstall build step is never needed.
+  const args = ['install', `${RUNTIME_PACKAGE}@${RUNTIME_VERSION}`, '--ignore-scripts', '--save-exact', '--no-audit', '--no-fund', '--omit=dev', '--loglevel=error', '--prefix', dir, ...extra];
   const sp = opts.spawnImpl || spawn;
   const child = cli
     ? sp(process.execPath, [cli, ...args], { cwd: dir, windowsHide: true })

@@ -1,0 +1,40 @@
+{
+  "id": "notification-center",
+  "title": "Notification center with unread count",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "notifications",
+    "notification center",
+    "notification bell",
+    "unread count",
+    "activity feed",
+    "inbox panel",
+    "alerts list"
+  ],
+  "when": "The user wants a bell button with an unread count that opens a panel listing recent notifications.",
+  "inputs": [
+    "notification data (title, time, link)",
+    "how items become read"
+  ],
+  "prompt": "Goal: A bell that states the unread count in its name, a panel of notifications and polite announcements of new ones.\nSteps:\n1. <button type=\"button\" aria-expanded=\"false\" aria-controls=\"notif-panel\" aria-label=\"Notifications, 3 unread\"> with an aria-hidden badge; update the label when the count changes.\n2. The panel has an h2, a Mark all as read button and a <ul> of items: title, <time datetime> shown with Intl.RelativeTimeFormat, and visually hidden Unread text plus a dot for unread ones.\n3. Opening an item marks it read and follows its link; Escape closes the panel and refocuses the bell.\n4. New items are added at the top with createElement and announced once in a role=\"status\" region (3 new notifications).\n5. Save read ids in localStorage inside try and catch; an empty list shows You are all caught up.\nQuality bar:\n- Times read as 5 minutes ago with the exact time in datetime.\n- At most about 20 items, with a link to all.\n- The badge caps at 99+.\nPitfalls:\n- A count only in the badge that screen readers miss.\n- Announcing each item of a burst.\n- Items built with innerHTML.\nVerify:\n- [ ] The bell name includes the unread count.\n- [ ] aria-expanded matches the panel.\n- [ ] New items are announced in a status region.\n- [ ] Storage access is guarded.\nOutput: Bell and panel markup, notifications.css and notifications.js.",
+  "checks": [
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "js.storage-guarded",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "sino de notificacoes com contador de nao lidas",
+      "output": "bell button labeled Notifications, 2 unread, panel with Mark all as read, relative times, status for new items"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

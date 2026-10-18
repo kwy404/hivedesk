@@ -1,0 +1,4 @@
+function order( {
+  document.querySelector('#list').innerHTML = items.map((i) => `<li>${i}</li>`).join('');
+  const saved = JSON.parse(localStorage.getItem('cart'));
+}

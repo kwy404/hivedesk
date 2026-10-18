@@ -1,0 +1,2 @@
+import fs from 'node:fs';
+export const read = (p) => fs.readFileSync(p, 'utf8'

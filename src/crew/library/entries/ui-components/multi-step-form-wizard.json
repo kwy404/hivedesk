@@ -1,0 +1,42 @@
+{
+  "id": "multi-step-form-wizard",
+  "title": "Multi step form wizard with progress",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "wizard",
+    "multi step form",
+    "step by step form",
+    "form steps",
+    "onboarding form",
+    "stepper",
+    "progress steps",
+    "checkout steps"
+  ],
+  "when": "The user wants a long form split into steps with Next and Back buttons and a progress indicator.",
+  "inputs": [
+    "the steps and their fields",
+    "what the last step submits",
+    "whether answers must survive a reload"
+  ],
+  "prompt": "Goal: One form split into steps that validates each step before moving on, shows progress and keeps focus where it belongs.\nSteps:\n1. One <form>; each step is a <fieldset> with a <legend> and only the current one visible (hidden on the rest).\n2. Progress as <ol aria-label=\"Progress\"> with aria-current=\"step\" on the current item and visible text Step 2 of 4.\n3. Next is <button type=\"button\"> that calls reportValidity() on the fields of the current fieldset before moving; Back never validates.\n4. After each move, focus the new legend or heading (tabindex=\"-1\") and update a role=\"status\" region: Step 2 of 4, Address.\n5. The last step shows a review of the answers with Edit buttons back to each step, then <button type=\"submit\">.\n6. Without JS all fieldsets show in one long form.\nQuality bar:\n- Three to five steps, each with a clear name.\n- Answers persist when moving back.\n- The progress indicator is text, not only dots.\nPitfalls:\n- Several forms that lose data between steps.\n- Validating the whole form on the first step.\n- Focus staying on a hidden Next button.\nVerify:\n- [ ] Each step is a fieldset with a legend.\n- [ ] Next blocks on invalid fields.\n- [ ] A live region announces the step.\n- [ ] Only the last step submits.\nOutput: The wizard form in the page, wizard.css and wizard.js.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.button-type",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "formulario de orcamento em 3 etapas",
+      "output": "fieldsets Project, Budget, Contact, ol progress with aria-current step, Next validates, review step with Edit and Send request"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

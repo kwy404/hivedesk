@@ -1,0 +1,38 @@
+{
+  "id": "release-pipeline-tags",
+  "title": "Release pipeline triggered by version tags",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev"
+  ],
+  "tags": [
+    "release pipeline",
+    "publish release",
+    "version tag",
+    "changelog",
+    "build artifacts",
+    "checksums",
+    "ci",
+    "tag push"
+  ],
+  "when": "The user wants pushing a tag like v1.4.0 to verify, build and publish release files, with the notes taken from the matching CHANGELOG.md section.",
+  "inputs": [
+    "version source file",
+    "artifacts to build",
+    "changelog format"
+  ],
+  "prompt": "Goal: A tag triggered workflow that refuses mismatched versions, builds once, attaches checksums and uses the changelog section as notes.\nSteps:\n1. Trigger only on pushed tags matching v*.*.*.\n2. Job verify: strip the v from the tag name, compare with the version in package.json or pyproject.toml, exit 1 with a clear message on mismatch.\n3. verify also requires a heading \"## [1.4.0] - 2026-10-17\" in CHANGELOG.md and runs the full tests.\n4. Job build (needs: verify) writes dist/ and runs sha256sum dist/* > SHA256SUMS; upload both as job artifacts.\n5. scripts/changelog-section.mjs prints the text between this heading and the next \"## [\" into notes.md.\n6. Job publish (needs: build) downloads the artifacts, gets permissions: contents: write in this job only, and creates the release from notes.md with the files attached.\n7. Tags with a hyphen (v2.0.0-rc.1) become pre releases.\nQuality bar:\n- Published files are exactly the tested files.\n- A wrong tag fails before anything is published.\n- Humans write the notes in CHANGELOG.md.\nPitfalls:\n- Write permission on every job.\n- Rebuilding in the publish job, shipping untested files.\n- Moving a tag users may have fetched; release a new patch instead.\nVerify:\n- [ ] Trigger is tags only.\n- [ ] Version check exits non zero on mismatch.\n- [ ] SHA256SUMS produced and attached.\n- [ ] CHANGELOG.md has dated version headings.\nOutput: the CI workflow file release.yml, scripts/changelog-section.mjs and the CHANGELOG.md heading format.",
+  "checks": [
+    "ci.workflow",
+    "md.changelog"
+  ],
+  "examples": [
+    {
+      "input": "when I push v1.4.0 build the zip and create the release with notes",
+      "output": "release.yml: verify compares tag and package.json, build writes dist/ and SHA256SUMS, publish with contents write uses notes.md"
+    }
+  ],
+  "size": 425,
+  "version": 1
+}

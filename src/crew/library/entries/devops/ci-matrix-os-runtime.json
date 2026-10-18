@@ -1,0 +1,38 @@
+{
+  "id": "ci-matrix-os-runtime",
+  "title": "CI matrix across operating systems and runtime versions",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "ci matrix",
+    "cross platform",
+    "node versions",
+    "python versions",
+    "operating systems",
+    "compatibility",
+    "test matrix",
+    "ci"
+  ],
+  "when": "A library or command line tool must work on linux, windows and mac and on several runtime versions, and the user wants CI to prove it on each push.",
+  "inputs": [
+    "supported runtime versions",
+    "supported operating systems",
+    "test command"
+  ],
+  "prompt": "Goal: A matrix job that runs one suite on every supported OS and runtime version and names each failing combination.\nSteps:\n1. strategy.matrix.os lists the host's linux, windows and mac runner labels; matrix.node lists the majors from engines (20, 22, 24), or matrix.python 3.10 to 3.13 from requires-python.\n2. strategy.fail-fast: false so one broken cell does not cancel the rest.\n3. include adds one extra cell (newest runtime with an experimental flag); exclude drops unsupported pairs, each with a comment.\n4. The job name shows the OS and version of the cell.\n5. defaults.run.shell: bash so scripts behave alike everywhere.\n6. .gitattributes with * text=auto eol=lf keeps LF endings on every checkout.\n7. Lint, coverage and packaging run once in a separate job with needs: test.\n8. Keep the version list, the engines field and the README table identical.\nQuality bar:\n- Every cell runs the same command.\n- A failure title names OS and version.\n- The matrix stays under about 12 cells.\nPitfalls:\n- Tests that hardcode / separators or \\n endings and fail on one OS.\n- Runtime labels like latest, so the matrix changes without a commit.\n- One copied job per OS instead of a matrix.\nVerify:\n- [ ] fail-fast is false.\n- [ ] Versions match engines or requires-python.\n- [ ] Actions are pinned.\n- [ ] .gitattributes sets line endings.\nOutput: the CI workflow file matrix.yml, .gitattributes and a supported versions table in README.md.",
+  "checks": [
+    "ci.workflow"
+  ],
+  "examples": [
+    {
+      "input": "test my library on node 20, 22 and 24 on all three operating systems",
+      "output": "matrix.os with three runner labels, matrix.node [20, 22, 24], fail-fast false, shell bash, .gitattributes eol=lf"
+    }
+  ],
+  "size": 410,
+  "version": 1
+}

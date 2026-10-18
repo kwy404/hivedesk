@@ -1,0 +1,42 @@
+{
+  "id": "webhook-receiver-hmac",
+  "title": "Receiving webhooks with signature checks and idempotency",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "webhook",
+    "webhooks",
+    "signature",
+    "hmac",
+    "idempotency",
+    "replay attack",
+    "event delivery",
+    "callback endpoint",
+    "backend"
+  ],
+  "when": "An app receives webhook calls from a payment, code hosting or messaging service and must verify they are genuine, ignore replays and duplicates, and answer fast.",
+  "inputs": [
+    "provider signature scheme",
+    "event types handled"
+  ],
+  "prompt": "Goal: POST /webhooks/<provider> verifies an HMAC over the raw body, rejects stale timestamps, stores each event id once and processes it in the background.\nSteps:\n1. Read the raw body as a Buffer with a size cap before any JSON parsing; the signature covers those exact bytes.\n2. Compute createHmac(\"sha256\", WEBHOOK_SECRET).update(timestamp + \".\" + raw).digest(\"hex\") per the provider docs and compare with timingSafeEqual after checking lengths; mismatch gives 401.\n3. Refuse timestamps older than 5 minutes or in the future.\n4. Parse, then INSERT INTO webhook_events(event_id, type, received_at, payload) with event_id UNIQUE; a duplicate gets 200 and no work.\n5. Enqueue processing and reply 200 or 204 within a few seconds, since providers resend on slow or 5xx replies.\n6. During secret rotation accept either of two secrets, then drop the old one.\nQuality bar:\n- Unknown event types are stored and acknowledged.\n- Processing is idempotent by event id.\n- The secret lives in config, never in code or logs.\nPitfalls:\n- Verifying JSON.stringify(body) instead of the raw bytes.\n- Comparing signatures with ===.\n- Slow inline work that makes the provider resend.\nVerify:\n- [ ] A bad signature gives 401.\n- [ ] An old timestamp is refused.\n- [ ] The same event twice runs once.\n- [ ] Tests sign fixtures with a test secret.\nOutput: routes/webhooks.mjs, the webhook_events migration, test/webhooks.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.body-limit",
+    "sec.no-secrets",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "receber webhook de pagamento e nao processar duas vezes",
+      "output": "raw body HMAC with timingSafeEqual, 5 min window, UNIQUE event_id, enqueue then 200"
+    }
+  ],
+  "size": 402,
+  "version": 1
+}

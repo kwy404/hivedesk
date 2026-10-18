@@ -1,0 +1,41 @@
+{
+  "id": "announcement-bar",
+  "title": "Dismissible announcement bar",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "announcement bar",
+    "top bar",
+    "promo bar",
+    "notice bar",
+    "site wide message",
+    "dismissible banner",
+    "sale banner"
+  ],
+  "when": "The user wants a thin bar above the header with a short site wide message, such as a sale, shipping notice or new feature.",
+  "inputs": [
+    "the message",
+    "the link target",
+    "start and end dates if any"
+  ],
+  "prompt": "Goal: A one line message bar that links somewhere useful, stays dismissed once closed and never shifts layout on load.\nSteps:\n1. <aside aria-label=\"Announcement\"> above the header: one sentence of at most 90 characters, one link, <button type=\"button\" aria-label=\"Close announcement\">.\n2. Each message has an id such as promo-2026-11; on close save it in localStorage inside try and catch, so a new message shows again.\n3. No flash: a tiny inline head script reads the saved id and sets a class on <html> that hides the bar before paint.\n4. Optional end date: compare Date.now() with data-ends and hide the bar after it.\n5. On phones allow two lines; never use scrolling marquee text.\nQuality bar:\n- Benefit and deadline in plain words.\n- The bar scrolls away with the page.\n- Text and link at 4.5 to 1 on the bar color.\nPitfalls:\n- Storage errors in private mode that break the page script.\n- A bar that returns on every page after closing.\n- Link text such as Click here.\nVerify:\n- [ ] The bar has a name and a labeled close button.\n- [ ] Dismissal persists after reload.\n- [ ] Storage access is in try and catch.\n- [ ] No layout shift on load.\nOutput: Bar markup before the header, its CSS, the inline head script and bar.js.",
+  "checks": [
+    "html.button-type",
+    "html.link-text",
+    "js.storage-guarded",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "barra no topo avisando frete gratis ate domingo",
+      "output": "aside Announcement \"Free shipping until Sunday\", link to the offer, close saved as promo-free-shipping"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

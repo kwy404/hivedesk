@@ -1,0 +1,39 @@
+{
+  "id": "ci-test-workflow",
+  "title": "CI workflow that runs the tests on every push",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "ci",
+    "continuous integration",
+    "workflow yaml",
+    "run tests",
+    "pull request checks",
+    "pinned actions",
+    "dependency cache",
+    "automated tests"
+  ],
+  "when": "The user wants tests to run automatically on each push and pull request, with a CI YAML file that is quick, pinned and does not leak anything.",
+  "inputs": [
+    "runtime and version file",
+    "test command",
+    "branch names"
+  ],
+  "prompt": "Goal: One workflow that checks out the code, sets up the runtime with a dependency cache and runs the test command with read only permissions.\nSteps:\n1. Save tests.yml where the CI host reads workflows; name: tests.\n2. Triggers: push to main, pull_request, and workflow_dispatch for manual runs.\n3. permissions: contents: read; a concurrency group of workflow name plus branch with cancel-in-progress: true.\n4. One job test on a fixed runner label with timeout-minutes: 15.\n5. The checkout and runtime setup actions pinned to full commit SHAs, version in a trailing comment; the runtime version read from .nvmrc or .python-version, cache keyed on the lockfile.\n6. Install from the lockfile, then run what developers run (node --test, or python -m unittest discover -s tests).\n7. Upload test reports only on failure, with short retention.\nQuality bar:\n- The job fails on the first broken test within minutes.\n- One version file serves CI and developers.\n- No step needs a secret to run tests.\nPitfalls:\n- Actions referenced by @main or @master, whose code can change.\n- set -x or echo of variables that print tokens.\n- A cache not keyed on the lockfile, restoring stale packages.\n- Tests passing only thanks to global tools on the runner.\nVerify:\n- [ ] A jobs section and a timeout.\n- [ ] Every uses: line points at a SHA or exact tag.\n- [ ] permissions is read only.\n- [ ] The test command matches the README.\nOutput: the CI workflow file tests.yml and a status note in README.md.",
+  "checks": [
+    "ci.workflow",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "rodar os testes automaticamente em cada pull request",
+      "output": "tests.yml on push and pull_request, contents read, checkout and setup pinned by SHA, lockfile cache, node --test, 15 min timeout"
+    }
+  ],
+  "size": 423,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "keyboard-only-qa",
+  "title": "Keyboard only QA pass",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "keyboard testing",
+    "keyboard navigation",
+    "tab order",
+    "keyboard only",
+    "focus trap",
+    "no mouse",
+    "tab key"
+  ],
+  "when": "The user wants a page or app tested using only the keyboard: tab order, focus visibility, menus, dialogs and custom widgets.",
+  "inputs": [
+    "the pages",
+    "the main tasks to complete"
+  ],
+  "prompt": "Goal: A full keyboard walk where every task is done without a mouse, each failure recorded with the element and the key.\nSteps:\n1. Start from the address bar and press Tab: a skip link appears first and jumps to main.\n2. Tab through everything: order follows the visual order, focus always shows, nothing hidden or offscreen takes focus.\n3. Operate: Enter on links and buttons, Space on buttons and checkboxes, arrows in radio groups, tabs, menus and sliders, Escape closes menus and dialogs.\n4. Dialogs: focus moves inside on open, Tab cycles inside, Escape closes, focus returns to the opener.\n5. Widgets: no keyboard trap (2.1.2); tabindex only 0 or -1, never positive.\n6. Finish each main task (sign up, add to cart, play a level) by keyboard and note the number of key presses.\nQuality bar:\n- Each failure names element, key and result.\n- Every main task attempted.\n- Focus lost after DOM updates is reported.\nPitfalls:\n- Clicking into the page first with a mouse.\n- Missing focus dropped to body after a dialog closes.\n- Ignoring menus that open on hover only.\nVerify:\n- [ ] Skip link checked.\n- [ ] Tab order written down.\n- [ ] Dialog focus handling checked.\n- [ ] Main tasks passed or failed with notes.\nOutput: keyboard-qa.md with the tab order list and the failures.",
+  "checks": [
+    "css.focus-visible",
+    "html.skip-link",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "testa meu site so com o teclado",
+      "output": "tab order 14 stops, focus invisible on cards, Escape does not close the menu, checkout completed in 23 keys"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

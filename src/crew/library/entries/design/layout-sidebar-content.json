@@ -1,0 +1,37 @@
+{
+  "id": "layout-sidebar-content",
+  "title": "Sidebar and content layout that wraps",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "sidebar",
+    "sidebar layout",
+    "two column",
+    "side panel",
+    "filters sidebar",
+    "flex wrap",
+    "content area"
+  ],
+  "when": "The user wants a sidebar (filters, menu, profile) beside fluid content that drops below it on narrow screens.",
+  "inputs": [
+    "what the sidebar holds",
+    "sidebar before or after content in reading order"
+  ],
+  "prompt": "Goal: A two part layout where the sidebar keeps its width, the content takes the rest, and it wraps on its own when space runs out.\nSteps:\n1. Container: display: flex; flex-wrap: wrap; gap: var(--space-5).\n2. Sidebar: flex-basis: 16rem; flex-grow: 1. Content: flex-basis: 0; flex-grow: 999; min-inline-size: 60%, so it wraps once narrower than 60 percent.\n3. Choose DOM order by task: filters before results, a profile panel after the content; never reorder visually.\n4. For a full height app sidebar use grid: grid-template-columns: auto minmax(0, 1fr), sidebar sticky at top: 0 with block-size: 100dvh and overflow-y: auto.\n5. Reshape the stacked sidebar only if needed (filters as a chip row) with a container query.\nQuality bar:\n- No horizontal scroll at 320 px.\n- Content never shrinks below a readable width.\n- Sidebar links sit in a labeled nav.\nPitfalls:\n- width: 300px sidebar plus width: 100% content, which overflows.\n- order tricks that make tab order jump.\n- Two scroll areas fighting on phones.\nVerify:\n- [ ] Both parts have flex-basis and flex-grow.\n- [ ] Content has a min-inline-size.\n- [ ] It wraps cleanly at 375 px.\n- [ ] Focus order follows visual order.\nOutput: The container, aside and main markup plus the layout rules in style.css.",
+  "checks": [
+    "css.no-fixed-width",
+    "css.braces",
+    "html.main"
+  ],
+  "examples": [
+    {
+      "input": "loja com filtros na lateral e produtos ao lado",
+      "output": "flex wrap container: aside of filters 16rem, results grow 999 with min 60 percent"
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

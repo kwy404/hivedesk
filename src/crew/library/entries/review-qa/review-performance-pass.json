@@ -1,0 +1,39 @@
+{
+  "id": "review-performance-pass",
+  "title": "Performance review pass",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "performance review",
+    "performance audit",
+    "slow page",
+    "page speed",
+    "load time",
+    "jank",
+    "slow app"
+  ],
+  "when": "The user says a page or app feels slow, or wants it reviewed for load and runtime performance before release.",
+  "inputs": [
+    "the site folder",
+    "the slow interaction, if known"
+  ],
+  "prompt": "Goal: A review that finds the largest load and runtime costs in the files and code, ranked by expected gain, each with a concrete fix.\nSteps:\n1. Payload: list every HTML, CSS, JS, image and font file with its size; flag images over 200 KB and scripts over 100 KB.\n2. Load path: scripts in head without defer or type=\"module\", chained CSS @import, fonts without font-display.\n3. Images: no width and height (layout shift), no lazy loading below the fold, pixel size far above the slot, no srcset.\n4. Runtime: heavy scroll or resize handlers without requestAnimationFrame, layout thrash (reading offsetHeight after style writes in a loop), whole lists rebuilt per update.\n5. Data: repeated fetches of the same resource, results recomputed on every render, timers never cleared.\n6. Rank by gain (big, medium, small) against effort and name the top three.\nQuality bar:\n- Sizes given as numbers.\n- Each runtime finding cites a function.\n- Large wins before micro tweaks.\nPitfalls:\n- Guessing without measuring.\n- Proposing a build step or library the crew cannot use.\n- Ignoring layout shift.\nVerify:\n- [ ] Payload table written.\n- [ ] Blocking resources listed.\n- [ ] Image checks done.\n- [ ] Top three wins named.\nOutput: perf-review.md with the payload table and ranked findings.",
+  "checks": [
+    "html.script-defer",
+    "html.img-dimensions",
+    "html.lazy-images",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "my gallery page takes forever to open",
+      "output": "payload 9.4 MB, 12 photos of 700 KB at 4000 px, none lazy; top fix: resize to 1600 px and lazy load"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

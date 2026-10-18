@@ -1,0 +1,50 @@
+{
+  "id": "guess-the-number",
+  "title": "Guess the number game",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "guess the number",
+    "number game",
+    "higher or lower",
+    "kids game",
+    "math game",
+    "beginner game"
+  ],
+  "when": "The user wants the classic game where the computer picks a secret number and the player guesses with higher or lower hints.",
+  "inputs": [
+    "range",
+    "tries allowed"
+  ],
+  "prompt": "Goal: A small, polished game with input validation, helpful hints and a visible narrowing range.\nSteps:\n1. Levels 1 to 10, 1 to 100, 1 to 1000 with ceil(log2(size)) + 1 tries.\n2. logic.mjs: newGame(min, max, randomInt), guess(state, n) returning low, high, correct or invalid (outside range, not an integer, repeated), plus tries left.\n3. Form with a labeled input type=\"number\" (min, max, step 1) and a Guess submit; after each guess select the input text.\n4. Feedback in aria-live: \"Too low. 6 tries left.\"; past guesses as chips; range text \"Between 43 and 71\".\n5. Win or lose message with the secret and Play again; best tries per level in localStorage guarded.\n6. test.mjs: hints, invalid inputs, try limit, bounds.\nQuality bar:\n- Invalid input never costs a try.\n- Feedback in words.\n- Playable with Enter only.\nPitfalls:\n- Comparing strings instead of numbers.\n- Secret visible in the DOM.\n- Range bar that ignores repeated guesses.\nVerify:\n- [ ] Input labeled and typed.\n- [ ] Feedback live.\n- [ ] Rules tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (game rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.input-types",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de adivinhar o numero de 1 a 100",
+      "output": "\"Too high. 5 tries left.\", range Between 43 and 71, Play again"
+    }
+  ],
+  "size": 320,
+  "version": 1
+}

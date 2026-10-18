@@ -1,0 +1,53 @@
+{
+  "id": "inventory-tracker",
+  "title": "Inventory tracker with stock movements and low stock alerts",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "inventory",
+    "stock",
+    "inventory tracker",
+    "stock control",
+    "warehouse",
+    "products",
+    "low stock",
+    "sku"
+  ],
+  "when": "The user wants to track product stock with incoming and outgoing movements, minimum levels and alerts for low stock.",
+  "inputs": [
+    "product fields",
+    "movement reasons",
+    "units"
+  ],
+  "prompt": "Goal: Stock derived from a movement log, never edited by hand, with low stock visible at a glance.\nSteps:\n1. Product { sku, name, unit, minStock, cost } and movements { id, sku, qty (plus in, minus out), reason, at }; stock is the sum.\n2. logic.mjs: stockOf(movements, sku), applyMovement refusing an out above stock, lowStock(products, movements), valueOnHand.\n3. Products table with th headers: SKU, name, on hand, minimum, status as the word OK or Low; search by SKU or name.\n4. Stock in or out form: product select, quantity, reason (purchase, sale, adjustment, loss); errors in role=\"alert\".\n5. History per product with dates and running balance; a banner lists items at or under minimum.\n6. Persist in localStorage inventory.v1 guarded; CSV export with quoted fields.\n7. test.mjs: sums, refused negative stock, low stock list.\nQuality bar:\n- Every change has a reason and date.\n- Status readable without color.\n- SKU unique.\nPitfalls:\n- Editing the stock number directly.\n- Allowing negative stock silently.\n- Floats for unit cost.\nVerify:\n- [ ] Table uses th.\n- [ ] Form labeled.\n- [ ] Alert region present.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (movements and stock), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.table-headers",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "controle de estoque da minha loja",
+      "output": "products table with Low badge, in/out form, movement history, CSV export"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

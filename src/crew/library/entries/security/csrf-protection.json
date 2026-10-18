@@ -1,0 +1,41 @@
+{
+  "id": "csrf-protection",
+  "title": "CSRF protection for cookie based apps",
+  "category": "security",
+  "roles": [
+    "security",
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "csrf",
+    "cross site request forgery",
+    "samesite",
+    "csrf token",
+    "origin check",
+    "forms",
+    "state changing requests",
+    "cookies",
+    "security"
+  ],
+  "when": "A web app signs users in with cookies and has forms or fetch calls that change data, and cross site request forgery must be blocked.",
+  "inputs": [
+    "state changing routes",
+    "how forms and fetch calls are built"
+  ],
+  "prompt": "Goal: Every state changing request is shown to come from the app's own pages, through SameSite cookies, an Origin check and a token.\nSteps:\n1. GET, HEAD and OPTIONS never change data; every other method is checked.\n2. First layer: the session cookie uses SameSite=Lax, or Strict for admin panels.\n3. On POST, PUT, PATCH and DELETE the Origin header must equal the app origin from config; without Origin fall back to the Referer origin; with neither, refuse on browser routes.\n4. Synchronizer token: 32 random bytes kept in the server session, rendered as <input type=\"hidden\" name=\"csrf\"> and sent from fetch as X-CSRF-Token; compare with timingSafeEqual.\n5. Stateless choice: a __Host-csrf cookie plus a matching header, the token being an HMAC over the session id so a sibling subdomain cannot plant one.\n6. Failures get 403 with code csrf_failed and a log line; issue a fresh token at login.\nQuality bar:\n- JSON only APIs still check Origin.\n- Login and logout forms are protected too.\n- A test with a foreign Origin expects 403.\nPitfalls:\n- SameSite alone (old browsers, GET that changes state, sibling subdomains).\n- Tokens in URLs, leaking through Referer and logs.\n- CORS with credentials for any origin, which undoes every check.\nVerify:\n- [ ] All unsafe methods pass the check.\n- [ ] A foreign Origin gets 403.\n- [ ] Forms include the token.\n- [ ] Tokens compare in constant time.\nOutput: csrf.mjs, form template updates, test/csrf.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "proteger os formularios do painel contra CSRF",
+      "output": "SameSite=Lax, Origin check on unsafe methods, session token in hidden field and header, 403 csrf_failed"
+    }
+  ],
+  "size": 415,
+  "version": 1
+}

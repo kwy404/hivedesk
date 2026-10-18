@@ -1,0 +1,38 @@
+{
+  "id": "paginate-data",
+  "title": "Pagination for long lists",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "pagination",
+    "pages",
+    "paging",
+    "next page",
+    "page numbers",
+    "limit offset",
+    "cursor",
+    "long list"
+  ],
+  "when": "A list or API result is too long to show at once and needs pages, page numbers or cursor based paging.",
+  "inputs": [
+    "total items or an API",
+    "page size"
+  ],
+  "prompt": "Goal: Correct page math, accessible page controls, and stable paging that does not skip or repeat items when data changes.\nSteps:\n1. Client side: pageCount = Math.max(1, Math.ceil(total / size)); clamp page to 1..pageCount; slice((page - 1) * size, page * size).\n2. APIs with changing data: cursor paging (after=<last id>, ordered by a unique key); limit and offset only for static data.\n3. Return { items, total, page, size, nextCursor } and show \"Showing 21 to 40 of 236\".\n4. Controls in <nav aria-label=\"Pagination\">: Previous, Next, first, last and up to 5 numbers around the current page with ellipses; aria-current=\"page\" on the current.\n5. Keep ?page and ?size in the URL; reset to page 1 when filters change; a labeled page size select (10, 20, 50).\n6. After a change move focus to the list heading.\nQuality bar:\n- Deleting the last item of the last page never shows an empty page.\n- Disabled Previous and Next are marked as such.\n- Page controls have clear names.\nPitfalls:\n- Off by one slice math.\n- Offset paging on live data, duplicating items.\n- Hundreds of number buttons.\nVerify:\n- [ ] Page clamped.\n- [ ] aria-current on the active page.\n- [ ] URL keeps page and size.\n- [ ] Tests for first, middle, last and empty.\nOutput: js/paginate.js with paging math and control rendering, wired to the list.",
+  "checks": [
+    "js.syntax",
+    "html.nav",
+    "html.labels",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "a tabela tem 3000 pedidos, coloca paginação",
+      "output": "pages of 20, nav with Previous, 1 ... 4 5 6 ... 150, Next, aria-current, ?page=5 in the URL"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

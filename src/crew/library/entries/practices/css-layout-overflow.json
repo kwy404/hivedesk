@@ -1,0 +1,41 @@
+{
+  "id": "css-layout-overflow",
+  "title": "Fix broken CSS layout and overflow",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "designer",
+    "qa"
+  ],
+  "tags": [
+    "css",
+    "layout",
+    "overflow",
+    "horizontal scroll",
+    "flexbox",
+    "grid",
+    "broken layout",
+    "text overflow",
+    "alignment"
+  ],
+  "when": "Elements overlap, a page scrolls sideways, text spills out of cards, or flex and grid items do not line up.",
+  "inputs": [
+    "the HTML and CSS",
+    "which screen width breaks",
+    "what it should look like"
+  ],
+  "prompt": "Goal: A layout that holds at every width from 320 px up, with no sideways scroll and no text escaping its box.\nSteps:\n1. Find the widest element: temporarily add outline: 1px solid red to * and look for what crosses the viewport.\n2. Set box-sizing: border-box globally so padding does not add to widths.\n3. Replace fixed widths with max-width: 100% or min() and let flex items shrink with min-width: 0 on the item.\n4. Wrap long words and URLs with overflow-wrap: anywhere; images get max-width: 100% and height: auto.\n5. Use grid with repeat(auto-fit, minmax(16rem, 1fr)) for card rows instead of hard coded column counts.\n6. Remove the debug outline and check 320, 375, 768 and 1280 px.\nQuality bar:\n- No horizontal scroll at any tested width.\n- Content order matches the HTML order.\n- Fixes are in the stylesheet, not inline styles.\nPitfalls:\n- overflow-x: hidden on body to hide the symptom.\n- 100vw widths that ignore the scrollbar.\n- Negative margins that push content out of the container.\nVerify:\n- [ ] Long words and URLs wrap inside cards.\n- [ ] Flex children do not overflow their parent.\n- [ ] Images scale down.\n- [ ] CSS braces balance.\nOutput: The corrected stylesheet with a short note of the rules changed.",
+  "checks": [
+    "css.braces",
+    "css.box-sizing",
+    "css.no-fixed-width"
+  ],
+  "examples": [
+    {
+      "input": "my page scrolls sideways on mobile",
+      "output": "a 600px table and long URLs: wrapped the table in an overflow-x: auto box, overflow-wrap on text, min-width: 0 on flex items"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

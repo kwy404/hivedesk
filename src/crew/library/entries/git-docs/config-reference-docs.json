@@ -1,0 +1,40 @@
+{
+  "id": "config-reference-docs",
+  "title": "Configuration reference docs",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "configuration reference",
+    "config docs",
+    "settings reference",
+    "options",
+    "environment variables",
+    "config file",
+    "documentation"
+  ],
+  "when": "The user wants every configuration option of an app or tool documented in one reference page.",
+  "inputs": [
+    "the config loader code",
+    "environment variables and flags",
+    "defaults"
+  ],
+  "prompt": "Goal: A complete, accurate reference of every setting with type, default, allowed values and an example file.\nSteps:\n1. Read the config code and list every key, environment variable and flag with its default and validation.\n2. Explain the precedence order once at the top (defaults, file, environment, flags).\n3. One table per group: key, environment variable, type, default, description, allowed values or range.\n4. Note the effect of changes: restart needed or live, and security impact for sensitive options.\n5. Provide a full example config in a fenced json block and keep a matching config.example.json file.\n6. Mark deprecated keys with their replacement and the version they will be removed.\nQuality bar:\n- Every option in the code appears once.\n- Defaults match the code exactly.\n- Secrets are shown as names only.\nPitfalls:\n- Documented keys that the loader ignores.\n- Example JSON with comments or trailing commas.\n- Missing units (ms, MB).\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Code fences are closed.\n- [ ] The example config is valid JSON.\n- [ ] Local links exist.\nOutput: docs/configuration.md and config.example.json.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "json.valid",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "documente todas as opções de configuração",
+      "output": "# Configuration: precedence, tables for server, storage, logging; PORT default 3000; example JSON"
+    }
+  ],
+  "size": 326,
+  "version": 1
+}

@@ -1,0 +1,34 @@
+{
+  "id": "success-measures",
+  "title": "Defining success measures for a result",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "success",
+    "measures",
+    "metrics",
+    "outcomes",
+    "goals",
+    "kpi",
+    "how to measure"
+  ],
+  "when": "The user states a goal beyond the files (more bookings, faster checkout, fewer support questions) and the plan should say how to tell it worked.",
+  "inputs": [
+    "the user goal",
+    "what the result can observe or count"
+  ],
+  "prompt": "Goal: Two or three measures tied to the user goal, each with how it is observed and what the crew can build to support it.\nSteps:\n1. Rewrite the goal as an outcome: \"visitors book a table without calling\".\n2. Pick a measure for it that the user can see: count of form submissions, steps to complete a task, questions the FAQ answers.\n3. Add a proxy the crew can check now: the booking form is reachable in one tap from the hero.\n4. Plan what the result needs to support the measure: a clear thank you page, a visible count, a simple local log, never a remote tracker.\n5. Set a modest target only if the user has a baseline; otherwise just say what to watch.\n6. Put measures in the README so the user knows what to look at.\nQuality bar:\n- Each measure ties to the stated goal.\n- Crew proxies are checkable in the files.\n- Nothing sends data off the machine.\nPitfalls:\n- Vanity numbers (page views) that do not reflect the goal.\n- Targets invented with no baseline.\n- Adding tracking scripts from outside services.\nVerify:\n- [ ] Goal stated as outcome.\n- [ ] Two or three measures.\n- [ ] A proxy per measure.\n- [ ] Measures documented.\nOutput: A Success block in the plan summary and a section in README.md.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "I want fewer calls asking our hours",
+      "output": "measure: weekly calls about hours; proxy: hours visible above the fold and in a FAQ"
+    }
+  ],
+  "size": 345,
+  "version": 1
+}

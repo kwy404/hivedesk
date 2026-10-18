@@ -1,0 +1,41 @@
+{
+  "id": "reverse-proxy-node-app",
+  "title": "Reverse proxy in front of a Node app",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "reverse proxy",
+    "proxy config",
+    "node app",
+    "forwarded headers",
+    "websocket proxy",
+    "https termination",
+    "x-forwarded-for",
+    "deploy"
+  ],
+  "when": "A Node app runs on a server and the user wants a web server in front of it to terminate HTTPS, forward requests and serve static files.",
+  "inputs": [
+    "domain name",
+    "app port",
+    "websocket or streaming routes",
+    "upload size"
+  ],
+  "prompt": "Goal: The app listens on 127.0.0.1 only; the proxy terminates TLS, forwards headers, passes upgrades and limits request size.\nSteps:\n1. Node: server.listen(3000, \"127.0.0.1\").\n2. Proxy site: port 443 with certificate and key files; port 80 only redirects to https and serves the ACME challenge path.\n3. Forward to http://127.0.0.1:3000 setting Host, X-Forwarded-For (append the client address), X-Forwarded-Proto and X-Forwarded-Host.\n4. WebSocket and event streams: HTTP/1.1 upstream, pass Upgrade and Connection, no response buffering for streams.\n5. Timeouts: connect 5 s, read 60 s, longer only on streaming routes; body limit 10 MB or what uploads need.\n6. /static/ served from disk with long cache headers; the rest goes to Node.\n7. Node trusts forwarded headers only when the socket peer is 127.0.0.1, and takes the client IP from the last entry the proxy appended.\n8. Security headers in one place, proxy or app.\nQuality bar:\n- A plain http request gets a redirect to https.\n- App logs show the real client IP and https scheme.\n- The proxy's config test passes before every reload.\nPitfalls:\n- The app also bound to 0.0.0.0, bypassing the proxy.\n- Rate limits keyed on the client supplied first X-Forwarded-For value.\n- Reloading an untested config and taking the site down.\nVerify:\n- [ ] App binds to 127.0.0.1.\n- [ ] Forwarded headers set.\n- [ ] Upgrade headers passed.\n- [ ] Body limit and timeouts set.\nOutput: deploy/proxy.conf in the chosen proxy's syntax and the listen and trust settings in server.mjs.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "colocar um proxy na frente da minha app node com https",
+      "output": "proxy.conf: 80 redirects to 443, forwards to 127.0.0.1:3000 with X-Forwarded headers, upgrade support, 10 MB body limit; app binds 127.0.0.1"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

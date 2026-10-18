@@ -1,0 +1,42 @@
+{
+  "id": "node-folder-batch-script",
+  "title": "Node script that processes a folder of files",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "node",
+    "script",
+    "files",
+    "folder",
+    "batch",
+    "rename files",
+    "convert files",
+    "fs",
+    "automation",
+    "directory"
+  ],
+  "when": "The user wants a Node script that reads, renames, converts, sorts or summarizes many files in a folder.",
+  "inputs": [
+    "source folder",
+    "file types",
+    "what to do with each file"
+  ],
+  "prompt": "Goal: A repeatable script that walks a folder, processes each file, reports what it did and never destroys data by accident.\nSteps:\n1. Start with #!/usr/bin/env node; import from node:fs/promises and node:path; take the folder from process.argv[2] and path.resolve it.\n2. Walk with fs.readdir(dir, { recursive: true, withFileTypes: true }), filter by extension, skip dot folders and node_modules.\n3. Process one file at a time or with a concurrency of 4; join paths with path.join only.\n4. Dry run by default: print planned changes; apply with --write; never overwrite an existing file without --force.\n5. Write results to a new file or output folder and keep the original until the new one is complete.\n6. Print a summary (processed, skipped, failed) and set process.exitCode = 1 when anything failed.\nQuality bar:\n- Running twice is safe and gives the same result.\n- Errors name the file and reason, and the run continues.\n- Paths with spaces and accents work.\nPitfalls:\n- Overwriting originals by default.\n- readFileSync in a loop over thousands of big files.\n- Hardcoded / separators instead of path functions.\nVerify:\n- [ ] Shebang on line 1.\n- [ ] Dry run is the default.\n- [ ] Non zero exit code on failures.\n- [ ] Summary printed at the end.\nOutput: scripts/process.mjs and a README section with usage examples.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "renomeia todas as fotos da pasta pela data",
+      "output": "process.mjs listing planned renames to YYYY-MM-DD_name.jpg, applies with --write, summary at the end"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

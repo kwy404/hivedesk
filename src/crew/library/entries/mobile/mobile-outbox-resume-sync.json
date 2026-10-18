@@ -1,0 +1,41 @@
+{
+  "id": "mobile-outbox-resume-sync",
+  "title": "Phone outbox that flushes on resume and reconnect",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "backend"
+  ],
+  "tags": [
+    "offline sync",
+    "outbox",
+    "mobile app",
+    "background sync",
+    "reconnect",
+    "idempotency",
+    "conflicts",
+    "app resume",
+    "pending uploads"
+  ],
+  "when": "Edits made on a phone without signal must reach the server later, triggered by reconnect, app resume or the Background Sync API, without duplicates.",
+  "inputs": [
+    "write actions to queue",
+    "server endpoints",
+    "conflict rule"
+  ],
+  "prompt": "Goal: outbox.js stores pending writes on the device and drains them whenever the phone regains signal or the app comes back to the foreground.\nSteps:\n1. Each write becomes { opId: crypto.randomUUID(), method, path, body, baseVersion, tries: 0 } saved to an IndexedDB \"outbox\" store before the UI changes.\n2. drain() sends ops oldest first with header Idempotency-Key: opId and removes an op only on a 2xx or a 409 that was resolved.\n3. Triggers: window \"online\", document visibilitychange to visible, the Capacitor App \"resume\" event, and in sw.js the \"sync\" event after registration.sync.register(\"outbox\") where SyncManager exists.\n4. In the native shell prefer Network.getStatus and networkStatusChange; navigator.onLine lies on captive wifi.\n5. Retry with backoff: delay = min(60000, 1000 * 2 ** tries) plus random jitter up to 500 ms; after 8 tries mark the op \"stuck\" and show it.\n6. Conflicts: send baseVersion; on 409 keep both copies and ask the user, or apply the server copy when the field rule says server wins.\nQuality bar:\n- Killing the app mid drain loses nothing and sends nothing twice.\n- Only one drain runs at a time.\nPitfalls:\n- Background Sync is missing on some phone browsers; resume and online must still drain.\n- Retrying 4xx validation errors forever.\nVerify:\n- [ ] Ops are saved before the optimistic update.\n- [ ] Every request carries the idempotency key.\n- [ ] A drain guard flag prevents overlap.\nOutput: outbox.js, the sync listener in sw.js and the pending badge markup.",
+  "checks": [
+    "js.async-errors",
+    "js.syntax",
+    "pwa.service-worker"
+  ],
+  "examples": [
+    {
+      "input": "vendedores usam o app sem sinal e os pedidos somem, preciso enviar depois",
+      "output": "IndexedDB outbox drained on online, resume and sync events with idempotency keys and backoff"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

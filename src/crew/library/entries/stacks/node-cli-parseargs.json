@@ -1,0 +1,40 @@
+{
+  "id": "node-cli-parseargs",
+  "title": "Node command line tool with parseArgs and --help",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "cli",
+    "command line",
+    "node",
+    "arguments",
+    "flags",
+    "parseargs",
+    "help",
+    "terminal tool",
+    "options"
+  ],
+  "when": "The user wants a command line tool in Node with flags, positional arguments, a help screen and proper exit codes.",
+  "inputs": [
+    "what the command does",
+    "flags and arguments",
+    "input and output"
+  ],
+  "prompt": "Goal: A dependency free CLI that parses flags with util.parseArgs, explains itself with --help and behaves in scripts and pipes.\nSteps:\n1. Line 1 #!/usr/bin/env node; import { parseArgs } from \"node:util\".\n2. Options with types, short aliases and defaults ({ help: { type: \"boolean\", short: \"h\" }, out: { type: \"string\", short: \"o\" } }), allowPositionals and strict true.\n3. Parse inside try: on an unknown flag print the message plus \"Run with --help\" to stderr and set exit code 2.\n4. HELP text: usage line, one line summary, each option with its default, two examples; --help prints it to stdout and exits 0.\n5. Read input from a file argument, or stdin when the argument is \"-\" or stdin is not a TTY, so the tool works in pipes.\n6. Results to stdout, diagnostics to stderr; runtime errors give exit code 1 via process.exitCode.\nQuality bar:\n- Output is plain and parseable; color only on a TTY without NO_COLOR.\n- Help matches the real options.\n- Starts fast: no heavy work before parsing.\nPitfalls:\n- Hand parsing process.argv with index math.\n- Errors printed to stdout, corrupting piped output.\n- Exit code 0 after a failure.\nVerify:\n- [ ] Shebang present.\n- [ ] --help prints usage and exits 0.\n- [ ] Unknown flags exit with 2.\n- [ ] Errors go to stderr.\nOutput: bin/<name>.mjs and a \"bin\" entry in package.json naming it.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "a CLI that converts markdown files to html with an --out flag",
+      "output": "bin/md2html.mjs with parseArgs, --help text, stdin support and exit codes 0, 1, 2"
+    }
+  ],
+  "size": 380,
+  "version": 1
+}

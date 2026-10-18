@@ -1,0 +1,38 @@
+{
+  "id": "ext-messaging",
+  "title": "Messaging between popup, content script and service worker",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "extension messaging",
+    "runtime.sendmessage",
+    "onmessage",
+    "tabs.sendmessage",
+    "ports",
+    "message passing",
+    "browser extension",
+    "async reply"
+  ],
+  "when": "Parts of a browser extension must talk to each other: the popup asks the page for data, or a content script asks the service worker to fetch or store something.",
+  "inputs": [
+    "messages needed",
+    "which part answers each",
+    "long running streams"
+  ],
+  "prompt": "Goal: Typed messages, one router per context, async replies that always arrive, sender checks, and clear handling when nobody listens.\nSteps:\n1. Shape: { type: \"page/getTitle\", payload }; all types listed in messages.js and shared by every part.\n2. Popup to worker: const reply = await chrome.runtime.sendMessage({ type: \"data/save\", payload }).\n3. To a page: await chrome.tabs.sendMessage(tabId, msg); only tabs running the content script receive it.\n4. Router: chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => { const h = handlers[msg?.type]; if (!h) return false; Promise.resolve().then(() => h(msg.payload, sender)).then((r) => sendResponse({ ok: true, r }), (e) => sendResponse({ ok: false, error: String(e) })); return true; }); return true keeps the channel open.\n5. The worker accepts only sender.id === chrome.runtime.id.\n6. \"Receiving end does not exist\" means no listener: catch it and inject the script or show a hint.\n7. Streams: chrome.runtime.connect({ name: \"progress\" }) with port.onMessage and port.onDisconnect.\nQuality bar:\n- Every request gets exactly one reply.\n- Unknown types are ignored, not thrown.\nPitfalls:\n- An async listener: it returns a promise instead of true, so the reply may never arrive.\n- Trusting window.postMessage from pages without checking origin and shape.\nVerify:\n- [ ] Shared type list.\n- [ ] Router returns true for async replies.\n- [ ] sender.id checked.\n- [ ] Missing receiver handled.\nOutput: messages.js, routers in background.js and content.js, and the calls in popup.js.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors",
+    "ext.manifest-v3"
+  ],
+  "examples": [
+    {
+      "input": "o popup precisa pegar o titulo da pagina pelo content script",
+      "output": "messages.js type list, router with return true and sendResponse, sender.id check, Receiving end does not exist handled in popup.js"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

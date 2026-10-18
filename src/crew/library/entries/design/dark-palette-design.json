@@ -1,0 +1,37 @@
+{
+  "id": "dark-palette-design",
+  "title": "Dark color palette that stays readable",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "dark palette",
+    "dark colors",
+    "dark theme colors",
+    "night",
+    "surfaces",
+    "dark ui",
+    "glare"
+  ],
+  "when": "The user wants a dark look or dark theme colors and needs surfaces, text and accents that read well without glare.",
+  "inputs": [
+    "the light palette or brand color, if any",
+    "dark only, or dark next to light"
+  ],
+  "prompt": "Goal: A dark palette of layered gray surfaces, softened text and desaturated accents that passes AA on every surface level.\nSteps:\n1. Start the base at a dark gray (#121212 to #1a1b1e), not pure black, so layers still show.\n2. Show elevation by lightness: each raised surface (card, menu, dialog) is 4 to 8 percent lighter than the one below.\n3. Use off white body text (around #e6e6e6) and a secondary gray that passes 4.5 to 1 on the lightest surface.\n4. Lower accent saturation by 10 to 20 points so it does not vibrate, then retest the label on it.\n5. Separate surfaces with a 1 px border one step lighter; drop shadows barely show on dark.\n6. Put tokens under @media (prefers-color-scheme: dark) or [data-theme=\"dark\"] with color-scheme: dark so native controls match.\nQuality bar:\n- Body text between 7 and 15 to 1.\n- Every surface level has a passing text color.\n- Photos are never inverted.\nPitfalls:\n- Saturated blue on near black, which blurs.\n- Checking text only on the base surface.\n- Forgetting color-scheme, so inputs stay light.\nVerify:\n- [ ] A dark rule holds the dark tokens.\n- [ ] Surface steps are ordered.\n- [ ] Every text pair passes 4.5 to 1.\n- [ ] color-scheme: dark is set.\nOutput: The dark token block in style.css beside the light one, with the same token names.",
+  "checks": [
+    "css.dark-scheme",
+    "css.contrast",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "paleta escura para um app de notas",
+      "output": "bg #16171a, surface-1 #1f2024, surface-2 #2a2b30, text #e8e6e3, accent #7aa7e0 desaturated"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

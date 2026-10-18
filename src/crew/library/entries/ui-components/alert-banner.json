@@ -1,0 +1,41 @@
+{
+  "id": "alert-banner",
+  "title": "Inline alert banners for info, success, warning and error",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "alert",
+    "alert box",
+    "warning message",
+    "error banner",
+    "info message",
+    "notice",
+    "message box",
+    "callout"
+  ],
+  "when": "The user wants message boxes inside the page: info notes, success confirmations, warnings and errors.",
+  "inputs": [
+    "the variants needed",
+    "the message text",
+    "whether they can be dismissed"
+  ],
+  "prompt": "Goal: Alert styles that differ without color, announce only when inserted dynamically and dismiss cleanly.\nSteps:\n1. Each alert: an aria-hidden icon, a bold title word (Info, Done, Warning, Error) and one or two sentences saying what to do next.\n2. Static alerts need no role; script inserted alerts go into an existing container with role=\"status\", or role=\"alert\" for urgent errors.\n3. Tinted background, dark text at 4.5 to 1, and a 4 px border on the inline start side per variant.\n4. <button type=\"button\" aria-label=\"Dismiss message\"> removes the alert and moves focus to the next logical element.\n5. A form error summary lists each problem as a link to its field id.\nQuality bar:\n- Icon and title word tell variants apart in grayscale.\n- Error text says how to fix it.\n- Alerts align with the content column.\nPitfalls:\n- role=\"alert\" on static text, which interrupts every page load.\n- Red versus green as the only difference.\n- Something went wrong with no next step.\nVerify:\n- [ ] Four variants with distinct icons and words.\n- [ ] Dynamic messages land in an existing live container.\n- [ ] Dismiss buttons have a name.\n- [ ] Contrast reaches 4.5 to 1.\nOutput: Alert markup patterns, alert.css with the variants, a small alert.js for dismiss.",
+  "checks": [
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "caixas de aviso de erro, sucesso e atencao",
+      "output": "four alert variants with icon and title word, left border, dismiss button, error summary linking to fields"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

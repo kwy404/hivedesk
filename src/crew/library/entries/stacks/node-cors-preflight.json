@@ -1,0 +1,38 @@
+{
+  "id": "node-cors-preflight",
+  "title": "CORS headers and preflight in node:http",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "cors",
+    "cross origin",
+    "preflight",
+    "options request",
+    "access-control-allow-origin",
+    "blocked by cors",
+    "cors error",
+    "headers"
+  ],
+  "when": "A page on one origin calls an API on another (other port or domain) and requests fail with a CORS error, or the API must allow chosen sites.",
+  "inputs": [
+    "allowed origins",
+    "methods and headers the client sends",
+    "whether cookies cross origins"
+  ],
+  "prompt": "Goal: An API that answers preflight correctly and allows only the listed origins, methods and headers.\nSteps:\n1. Parse ALLOWED_ORIGINS from config (comma list such as http://localhost:5500) into a Set.\n2. If req.headers.origin is in the Set, set access-control-allow-origin to that exact origin plus vary: Origin.\n3. OPTIONS preflight: 204 with access-control-allow-methods, access-control-allow-headers (content-type, authorization) and access-control-max-age: 600, without running the route.\n4. Only when cookies or auth cross origins add access-control-allow-credentials: true; it never works with a * origin.\n5. List response headers the client reads in access-control-expose-headers (Location).\n6. Unknown origins get no CORS headers; the browser blocks them.\nQuality bar:\n- Allowed sites work for every method the API offers.\n- Same origin requests without Origin keep working.\n- Error responses carry CORS headers too, so clients can read them.\nPitfalls:\n- A * origin on an API that uses cookies.\n- Echoing any Origin back unchecked.\n- No OPTIONS route, so preflight gets 404 or 405.\nVerify:\n- [ ] OPTIONS returns 204 with methods and headers.\n- [ ] Origins are checked against the Set.\n- [ ] vary: Origin is set.\n- [ ] Unknown routes still return 404.\nOutput: cors.mjs exporting applyCors(req, res), which returns true after answering a preflight; called first in server.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status"
+  ],
+  "examples": [
+    {
+      "input": "meu front em localhost:5500 dá erro de CORS chamando a API na 3000",
+      "output": "applyCors with an allow list, 204 preflight, vary Origin, credentials only when needed"
+    }
+  ],
+  "size": 396,
+  "version": 1
+}

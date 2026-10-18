@@ -1,0 +1,41 @@
+{
+  "id": "api-docs-markdown-contract",
+  "title": "OpenAPI style API contract in Markdown",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "openapi",
+    "api contract",
+    "operation id",
+    "schemas",
+    "markdown docs",
+    "docs sync",
+    "endpoints",
+    "backend",
+    "api spec"
+  ],
+  "when": "An API needs a contract laid out the way an OpenAPI description is (operations, parameters, schemas, responses) but kept as Markdown in the repo and checked against the routes.",
+  "inputs": [
+    "the route list",
+    "request and reply shapes"
+  ],
+  "prompt": "Goal: docs/api.md with one block per operation in a fixed layout, shared schemas defined once, and a test that fails when routes and docs drift.\nSteps:\n1. Open with title, base URL, auth scheme, content types, the error body and the API version.\n2. Each operation is a heading \"### createTask: POST /api/v1/tasks\" where createTask is a unique operation id.\n3. Under it, in order: one line summary, auth needed, a parameters table (name, in, type, required, rules), body schema name, a responses table (status, schema, when), one curl example.\n4. A Schemas section defines Task, TaskInput, Error and Page once as tables (field, type, required, notes); operations name them.\n5. test/docs-sync.test.mjs reads the router route list and the \"### id: METHOD path\" headings, and asserts both sets match.\n6. If route schemas exist in code, generate the parameter tables with scripts/gen-api-docs.mjs instead of typing them.\nQuality bar:\n- Every status a route can return is listed.\n- Examples use fake data and placeholders like <token>.\n- Field names match the JSON exactly, case included.\nPitfalls:\n- Only the happy path documented.\n- Schema tables pasted into each operation, then drifting.\n- Real tokens or customer data in examples.\nVerify:\n- [ ] Every route has an operation heading.\n- [ ] Operation ids are unique.\n- [ ] Schemas appear once.\n- [ ] The sync test passes.\nOutput: docs/api.md, test/docs-sync.test.mjs, optional scripts/gen-api-docs.mjs.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.sections",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "document my API like an OpenAPI spec but in markdown",
+      "output": "docs/api.md with operation ids, parameter and response tables, shared schemas, a docs sync test"
+    }
+  ],
+  "size": 414,
+  "version": 1
+}

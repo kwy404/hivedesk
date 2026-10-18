@@ -1,0 +1,39 @@
+{
+  "id": "star-rating-input",
+  "title": "Star rating input and display",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "star rating",
+    "rating",
+    "stars",
+    "rate",
+    "review stars",
+    "feedback score",
+    "five stars"
+  ],
+  "when": "The user wants people to rate something from 1 to 5 stars, or to show an average rating.",
+  "inputs": [
+    "scale (usually 5)",
+    "whether half values show in display mode",
+    "where the value goes"
+  ],
+  "prompt": "Goal: A rating input made of real radio buttons, with hover preview, and a read only display that states the value in text.\nSteps:\n1. <fieldset> with <legend>Your rating</legend> and five <input type=\"radio\" name=\"rating\" value=\"1..5\">, each with a label holding visually hidden text 1 star to 5 stars and a star SVG with aria-hidden=\"true\".\n2. Fill stars up to the checked one with :has() or a row-reverse order and sibling selectors; hover previews the same way.\n3. Arrow keys change the value natively; style :focus-visible on the star of the focused input.\n4. Offer a No rating choice or a Clear button when a rating is optional.\n5. Display mode is not a form: text 4.5 out of 5 from 120 reviews, with stars drawn by a width percentage on an overlay, aria-hidden.\nQuality bar:\n- Stars are at least 32 px apart on touch screens.\n- The chosen value is clear without color.\n- The average shows one decimal.\nPitfalls:\n- Clickable spans with no keyboard access.\n- Star characters read aloud as text.\n- A display rating built from disabled radios.\nVerify:\n- [ ] Each radio has a label.\n- [ ] SVG stars are aria-hidden.\n- [ ] Arrow keys change the rating.\n- [ ] Display mode states the value in text.\nOutput: Rating markup, rating.css, and rating.js only if the value is used live.",
+  "checks": [
+    "html.labels",
+    "html.svg-a11y",
+    "css.focus-visible",
+    "html.no-inline-handlers"
+  ],
+  "examples": [
+    {
+      "input": "avaliacao de 1 a 5 estrelas no formulario de review",
+      "output": "fieldset Your rating, five radios with hidden labels and SVG stars, display \"4.6 out of 5 from 87 reviews\""
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

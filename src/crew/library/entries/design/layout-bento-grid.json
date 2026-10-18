@@ -1,0 +1,37 @@
+{
+  "id": "layout-bento-grid",
+  "title": "Bento grid of feature tiles",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "bento",
+    "bento grid",
+    "tiles",
+    "feature grid",
+    "mosaic",
+    "feature tiles",
+    "grid span"
+  ],
+  "when": "The user wants a bento box section: tiles of different sizes showing features, stats or images in a tight mosaic.",
+  "inputs": [
+    "5 to 8 features or stats",
+    "which one matters most"
+  ],
+  "prompt": "Goal: A mosaic of 5 to 8 tiles in two or three sizes on one grid, equal gaps, and a sensible stacked order on phones.\nSteps:\n1. Base: grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(10rem, auto); gap: var(--space-4).\n2. Size classes: .tile-wide { grid-column: span 2 }, .tile-tall { grid-row: span 2 }, .tile-big spans both.\n3. Put the key feature in the big tile at the top left; never let two big tiles touch.\n4. Below about 56em use 2 columns, below 35em one column with spans reset, keeping source order as priority order.\n5. One idea per tile: a heading, one line, optionally a stat or small image; shared radius and padding.\n6. Use grid-auto-flow: dense only when order carries no meaning.\nQuality bar:\n- Tiles align on every edge, gaps identical.\n- Text fits at every width.\n- Text on tinted tiles passes contrast.\nPitfalls:\n- Absolute positioning to fake the mosaic.\n- Too many tile sizes, which looks random.\n- Tall tiles with almost no content.\nVerify:\n- [ ] Spans reset in the phone media query.\n- [ ] Each tile has a heading.\n- [ ] Colored tiles pass 4.5 to 1.\n- [ ] No overflow at 375 px.\nOutput: The bento section markup and its grid rules in style.css.",
+  "checks": [
+    "css.media-query",
+    "css.contrast",
+    "css.no-fixed-width"
+  ],
+  "examples": [
+    {
+      "input": "secao de recursos estilo bento para meu app",
+      "output": "4 column grid, big tile for sync, wide tile for stats, tall tile for the phone shot, one column on phones"
+    }
+  ],
+  "size": 341,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "button-hierarchy",
+  "title": "Button hierarchy: primary, secondary, tertiary",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "buttons",
+    "button styles",
+    "primary button",
+    "secondary button",
+    "call to action",
+    "cta",
+    "ghost button",
+    "destructive"
+  ],
+  "when": "The user wants consistent button styles, or a screen has several actions competing for attention.",
+  "inputs": [
+    "the actions on each screen",
+    "the accent color"
+  ],
+  "prompt": "Goal: Three or four button levels with one primary per view, shared sizing, and hover, active, focus, disabled and busy states.\nSteps:\n1. Levels: primary (solid accent), secondary (outline or tint), tertiary (text, underlined), destructive (solid danger, to confirm only).\n2. Allow one primary per view or dialog; demote the rest.\n3. Base .btn: inline-flex with gap for an icon, min-height: 44px, padding-inline: var(--space-4), font-weight: 600, radius from the scale.\n4. States: :hover one ramp step darker, :active one more, :focus-visible 2px outline with offset, [aria-disabled=\"true\"] with lower contrast.\n5. Label with verb and object (Save changes) and keep the primary in the same spot everywhere, for example last in dialog footers.\n6. Use button for actions and a for navigation.\nQuality bar:\n- The primary is obvious in a squint test.\n- Labels on solid buttons pass 4.5 to 1.\n- One default size plus at most one small size.\nPitfalls:\n- Two solid buttons side by side.\n- Disabled buttons with no reason shown.\n- Clickable divs instead of buttons.\nVerify:\n- [ ] A .btn base plus level modifiers.\n- [ ] Each level has all states.\n- [ ] Buttons state their type.\n- [ ] Contrast passes.\nOutput: Button rules in style.css and the classes used in the pages.",
+  "checks": [
+    "css.focus-visible",
+    "css.contrast",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "my checkout page has 4 buttons that all look the same",
+      "output": "Pay now primary solid, Edit cart secondary outline, Continue shopping tertiary text link"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

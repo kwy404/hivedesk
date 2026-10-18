@@ -1,0 +1,39 @@
+{
+  "id": "tooltip-hint",
+  "title": "Tooltip that works on hover, focus and touch",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tooltip",
+    "hint",
+    "hover text",
+    "info icon",
+    "help text",
+    "hover label",
+    "icon label"
+  ],
+  "when": "The user wants a short text hint that appears next to an icon button or term on hover and focus.",
+  "inputs": [
+    "the trigger element",
+    "the hint text"
+  ],
+  "prompt": "Goal: A tooltip that meets WCAG 1.4.13: shown on hover and focus, hoverable, dismissable with Escape, persistent until left.\nSteps:\n1. The trigger is focusable, usually <button type=\"button\">; the tip is <div role=\"tooltip\" id=\"tip-1\"> linked by aria-describedby, or aria-labelledby for icon only buttons.\n2. Show on pointerenter and focus, hide on pointerleave and blur; Escape hides it even while hovered.\n3. Wait about 300 ms to show and 100 ms to hide so the pointer can move onto the tip.\n4. Place it above with position: absolute and bottom: 100%; flip below when getBoundingClientRect leaves under 8 px of room.\n5. On touch, a tap on the trigger toggles the tip.\nQuality bar:\n- Plain text under about 80 characters.\n- The tip never covers its own trigger.\n- A short fade, removed with reduced motion.\nPitfalls:\n- Links or buttons inside a tooltip (use a popover).\n- The title attribute as the only hint.\n- Tips on disabled buttons that cannot take focus.\nVerify:\n- [ ] role=\"tooltip\" with an id the trigger references.\n- [ ] Hover and focus both show it.\n- [ ] Escape hides it.\n- [ ] It stays on screen near edges.\nOutput: Trigger and tip markup, tooltip.css and tooltip.js wiring every [data-tooltip] trigger.",
+  "checks": [
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "tooltip nos icones da barra de ferramentas",
+      "output": "icon buttons with aria-labelledby tips, 300 ms delay, Escape to hide, flips below near the top edge"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

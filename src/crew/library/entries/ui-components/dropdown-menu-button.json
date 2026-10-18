@@ -1,0 +1,40 @@
+{
+  "id": "dropdown-menu-button",
+  "title": "Dropdown menu button for actions",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "dropdown",
+    "dropdown menu",
+    "menu button",
+    "actions menu",
+    "more options",
+    "kebab menu",
+    "overflow menu",
+    "user menu"
+  ],
+  "when": "The user wants a button that opens a short list of actions, such as Edit, Duplicate, Delete or account options.",
+  "inputs": [
+    "button label",
+    "the actions",
+    "which action is destructive"
+  ],
+  "prompt": "Goal: A menu button that follows the WAI-ARIA menu button pattern with arrow keys and clean dismissal.\nSteps:\n1. <button type=\"button\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-controls=\"m1\">, then <ul id=\"m1\" role=\"menu\" hidden> of <li role=\"none\"><button type=\"button\" role=\"menuitem\" tabindex=\"-1\">.\n2. Click, Enter, Space or ArrowDown open with focus on the first item; ArrowUp opens on the last.\n3. Inside: ArrowDown and ArrowUp wrap, Home and End jump, a typed letter moves to the next matching item.\n4. Escape closes and refocuses the button; Tab closes; choosing an item runs it and closes.\n5. Outside pointerdown closes; flip the list upward when getBoundingClientRect shows no room below.\nQuality bar:\n- The destructive item is last and labeled plainly.\n- The menu never clips off screen on phones.\n- Items are 44 px tall on touch screens.\nPitfalls:\n- Opening on hover only.\n- role=\"menu\" for page links, which need a plain disclosure.\n- aria-expanded left true after an item closes the menu.\nVerify:\n- [ ] aria-haspopup and aria-expanded on the button.\n- [ ] Arrows, Home, End and Escape work.\n- [ ] Focus returns to the button.\n- [ ] Outside click closes it.\nOutput: Menu markup next to its button, menu.css and menu.js wiring every [aria-haspopup=menu].",
+  "checks": [
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "a three dots menu on each row with edit, duplicate and delete",
+      "output": "menu button More actions, role menu with three menuitems, arrows and Escape, Delete last"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

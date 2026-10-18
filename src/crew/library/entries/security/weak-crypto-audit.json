@@ -1,0 +1,40 @@
+{
+  "id": "weak-crypto-audit",
+  "title": "Weak cryptography audit",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "weak crypto",
+    "md5",
+    "sha1",
+    "math.random",
+    "insecure random",
+    "ecb mode",
+    "hardcoded key",
+    "crypto audit",
+    "encryption",
+    "security"
+  ],
+  "when": "Code must be checked for weak or misused cryptography: MD5 or SHA-1 for security, Math.random for tokens, homemade encryption, fixed IVs or keys in source.",
+  "inputs": [
+    "source folders"
+  ],
+  "prompt": "Goal: Each crypto use is listed with its purpose, judged for that purpose and replaced by a standard primitive from node:crypto, Web Crypto or the Python secrets and hashlib modules.\nSteps:\n1. Grep for createHash, createCipheriv, createHmac, crypto.subtle, Math.random, hashlib, random., base64 sold as encryption, and XOR loops.\n2. Sort by purpose: passwords, tokens and ids, integrity, signatures, encryption at rest, plain checksums.\n3. Tokens, salts and session ids: crypto.randomBytes(32) or randomUUID in Node, crypto.getRandomValues in browsers, secrets.token_urlsafe in Python; Math.random and random.random are findings.\n4. Security hashing uses SHA-256 or stronger; MD5 and SHA-1 only for labeled non security checksums; passwords go to scrypt.\n5. Encryption: AES-256-GCM with a fresh random 12 byte IV per message and the tag checked; flag ECB, CBC without a MAC, reused IVs and keys from short strings without a KDF.\n6. Keys load from config or a key file, never source, with a key id stored beside the ciphertext for rotation.\nQuality bar:\n- No homemade algorithms.\n- Each finding states purpose, code, risk and replacement.\n- MACs and tokens compare with timingSafeEqual.\nPitfalls:\n- Rating MD5 cache keys as critical; rate by purpose.\n- Encrypting where signing was the need.\n- Changing a stored format without migrating data.\nVerify:\n- [ ] Every crypto call is in the table.\n- [ ] No Math.random for secrets.\n- [ ] Encryption is AEAD with unique IVs.\n- [ ] No keys in code.\nOutput: A crypto table in SECURITY-AUDIT.md and the fixed modules.",
+  "checks": [
+    "sec.weak-crypto",
+    "sec.no-secrets",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "o token de reset usa Math.random e md5, isso e seguro?",
+      "output": "crypto use table by purpose, randomBytes tokens, SHA-256 where needed, AES-GCM with random IV"
+    }
+  ],
+  "size": 445,
+  "version": 1
+}

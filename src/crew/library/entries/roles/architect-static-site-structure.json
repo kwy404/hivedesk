@@ -1,0 +1,37 @@
+{
+  "id": "architect-static-site-structure",
+  "title": "Architect: file structure for a static site",
+  "category": "roles",
+  "roles": [
+    "architect"
+  ],
+  "tags": [
+    "architect",
+    "file structure",
+    "folder layout",
+    "project structure",
+    "static site",
+    "directories",
+    "organize files"
+  ],
+  "when": "The architect sets up where files live for a static site or small web app before the developers start writing.",
+  "inputs": [
+    "pages and features planned",
+    "assets (images, data)",
+    "existing files"
+  ],
+  "prompt": "Goal: A flat, obvious layout that opens from index.html with relative paths and gives every file one clear job.\nSteps:\n1. Run list_files and keep what exists; never move user files without a reason written in a note.\n2. Keep pages at the root (index.html, about.html) so links stay relative and short.\n3. Use at most three folders: css/ for styles, js/ for modules, assets/ for images and data; skip folders a two file project does not need.\n4. Name files by role in lowercase with hyphens: js/cart.js, js/storage.js, assets/menu.json.\n5. Plan one entry script per page loaded with type=\"module\", importing the others with ./ paths.\n6. Write STRUCTURE.md: a tree of the files and one line per file saying what it holds and who owns it.\nQuality bar:\n- Every path works when index.html is opened from disk.\n- No file does two unrelated jobs.\n- The tree fits on one screen.\nPitfalls:\n- Absolute paths (/css/style.css) that break when opened from a folder.\n- Deep nesting such as src/app/components/ui for six files.\n- Module scripts that need a server without saying so in the README.\nVerify:\n- [ ] STRUCTURE.md starts with a # heading and lists every file.\n- [ ] All planned paths are relative.\n- [ ] At most three folders.\n- [ ] Each file has an owner.\nOutput: STRUCTURE.md with the tree and per file purpose; empty folders are not created.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "organiza a estrutura do site da escola",
+      "output": "index.html, cursos.html, css/style.css, js/main.js, assets/cursos.json, plus STRUCTURE.md"
+    }
+  ],
+  "size": 383,
+  "version": 1
+}

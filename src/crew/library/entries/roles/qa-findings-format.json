@@ -1,0 +1,34 @@
+{
+  "id": "qa-findings-format",
+  "title": "QA: writing findings with severity and fix",
+  "category": "roles",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "qa",
+    "findings",
+    "bug report",
+    "severity",
+    "fix",
+    "report",
+    "issue description"
+  ],
+  "when": "QA has found problems and must write them so the developer can fix each one in a single pass.",
+  "inputs": [
+    "the problems found",
+    "the files and lines involved"
+  ],
+  "prompt": "Goal: Findings that each name one problem, the file, the evidence and an exact fix, so a small model can apply them without asking.\nSteps:\n1. One finding per problem; never bundle \"several issues in style.css\".\n2. file: the path of the one file to change.\n3. problem: what is wrong and where, with the element, selector, function or text: \"the email input has no label\".\n4. fix: the concrete change, ideally the code: \"add <label for=\"email\">Email</label> before #email\".\n5. severity: high for broken or missing criteria, medium for partly met, low for polish.\n6. Order findings by severity, then by file, so fixes group naturally.\nQuality bar:\n- Each fix can be applied with one edit_file.\n- Problems quote the real element or line.\n- No finding without a fix.\nPitfalls:\n- Vague fixes like \"improve accessibility\".\n- A finding that names no file.\n- Repeating the same issue for every page instead of one finding per file.\nVerify:\n- [ ] Every finding has severity, file, problem, fix.\n- [ ] Each covers one problem.\n- [ ] Fixes are concrete.\n- [ ] Sorted by severity.\nOutput: The findings array of the report.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "button does nothing on the form",
+      "output": "{severity: high, file: form.js, problem: listener on #send but button id is submit, fix: query #submit}"
+    }
+  ],
+  "size": 317,
+  "version": 1
+}

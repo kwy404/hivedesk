@@ -1,0 +1,38 @@
+{
+  "id": "desktop-window-state",
+  "title": "Window size, minimum size and remembered position",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "window size",
+    "window position",
+    "remember window",
+    "min size",
+    "desktop app",
+    "multi monitor",
+    "maximize",
+    "neutralinojs"
+  ],
+  "when": "The desktop window opens too small, can be shrunk until the layout breaks, or forgets where the user left it on the last run.",
+  "inputs": [
+    "default and minimum window size",
+    "layout breakpoints"
+  ],
+  "prompt": "Goal: The window starts at a sensible size, cannot shrink below the layout minimum and reopens where the user left it, even after a monitor change.\nSteps:\n1. In modes.window set width, height, minWidth and minHeight to match the narrowest working layout; set \"center\": true for the first run.\n2. The quick path is \"useSavedState\": true in modes.window, which stores size and position between runs.\n3. For custom rules, on \"windowClose\" read Neutralino.window.getSize() and getPosition() plus a maximized flag and save them with Neutralino.storage.setData(\"window\", JSON.stringify(state)).\n4. On start read the saved state in try/catch; apply Neutralino.window.setSize({ width, height }) and Neutralino.window.move(x, y), then maximize() if it was maximized.\n5. Clamp: if the saved position is off screen or the size exceeds screen.availWidth or screen.availHeight, call center() instead.\n6. Save only on close or after a 500 ms debounce of resize, never on each event.\n7. Add CSS media queries for widths between minWidth and 900 px so the layout adapts inside the window.\nQuality bar:\n- Unplugging a second monitor never leaves the window off screen.\n- Corrupt saved data falls back to defaults.\nPitfalls:\n- Saving the maximized size as the normal size.\n- A minWidth smaller than the sidebar plus content.\nVerify:\n- [ ] minWidth and minHeight are set.\n- [ ] Saved state parses inside try/catch.\n- [ ] Off screen positions are clamped.\nOutput: the window block in neutralino.config.json and window-state.js.",
+  "checks": [
+    "neu.config",
+    "js.json-parse-guarded",
+    "css.media-query"
+  ],
+  "examples": [
+    {
+      "input": "a janela do meu app desktop sempre abre pequena e no canto errado",
+      "output": "minWidth/minHeight, saved size and position via storage, clamped to the visible screen"
+    }
+  ],
+  "size": 431,
+  "version": 1
+}

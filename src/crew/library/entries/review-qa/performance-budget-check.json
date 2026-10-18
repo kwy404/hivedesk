@@ -1,0 +1,37 @@
+{
+  "id": "performance-budget-check",
+  "title": "Performance budget check",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "ops"
+  ],
+  "tags": [
+    "performance budget",
+    "page weight",
+    "file size",
+    "budget",
+    "kilobytes",
+    "request count",
+    "size limit"
+  ],
+  "when": "The user has, or wants, size and request limits for a page or app and wants the build measured against them.",
+  "inputs": [
+    "the folder that ships",
+    "any existing budget"
+  ],
+  "prompt": "Goal: A pass or fail table of measured sizes and counts against a written budget, with offenders listed largest first.\nSteps:\n1. Write the budget if missing: page total under 500 KB, JS 150 KB, CSS 50 KB, each image 200 KB, fonts 100 KB, at most 25 requests.\n2. Measure with a small Node script: walk the folder with fs.readdirSync and fs.statSync, total by extension, and gzip sizes with zlib.gzipSync.\n3. Count requests per page: every local src and href plus module imports.\n4. Compare each line with the budget: pass, warn above 90 percent, fail above 100.\n5. List the five largest files with size and fix (resize or recompress an image, split a module, drop unused CSS).\n6. Keep the script as scripts/budget.mjs, exiting with code 1 on any fail, to run before each release.\nQuality bar:\n- Numbers in KB with one decimal.\n- Raw and gzip sizes both shown.\n- The budget lives in the project.\nPitfalls:\n- Measuring sources instead of what ships.\n- Forgetting images, usually the largest cost.\n- A budget so loose it never fails.\nVerify:\n- [ ] Budget table present.\n- [ ] Every file type measured.\n- [ ] Offenders listed.\n- [ ] Script exits non zero on failure.\nOutput: budget.md with the table, and scripts/budget.mjs.",
+  "checks": [
+    "md.h1",
+    "js.syntax",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "crie um limite de tamanho para o site e confira",
+      "output": "total 1,280 KB fails 500 KB budget; hero.jpg 640 KB, app.js 210 KB; budget.mjs exits 1"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

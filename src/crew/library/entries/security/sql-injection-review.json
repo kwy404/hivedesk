@@ -1,0 +1,40 @@
+{
+  "id": "sql-injection-review",
+  "title": "SQL injection review of a codebase",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "backend"
+  ],
+  "tags": [
+    "sql injection",
+    "sqli",
+    "query review",
+    "string concatenation",
+    "order by",
+    "like escape",
+    "prepared statements",
+    "database security",
+    "security review"
+  ],
+  "when": "The user asks to check backend or script code for SQL injection, or code builds queries with template strings, concatenation or format strings in JS or Python.",
+  "inputs": [
+    "source folders",
+    "database layer"
+  ],
+  "prompt": "Goal: Every query site is found and marked safe or vulnerable, and each vulnerable one gets a parameterized fix and a payload test.\nSteps:\n1. Find query sites: grep -nE \"(SELECT|INSERT|UPDATE|DELETE|ORDER BY)\" over .js, .mjs and .py, plus calls to query(, execute( and raw(.\n2. Flag SQL built with template interpolation, + with a variable, % formatting, f strings or .format(; trace each variable to its source.\n3. Values: switch to placeholders (?, $1, :name, or %s with a tuple in Python DB-API) and pass values separately.\n4. Identifiers (ORDER BY column, table name, ASC or DESC) cannot be bound: map choices through an allowlist object such as { name: \"name\", created: \"created_at\" }.\n5. IN lists: build \"?, ?, ?\" from the array length and bind each item; LIKE: escape % and _ in the value and add an ESCAPE clause.\n6. Check second order paths: values stored earlier and later pasted into SQL text, and dynamic SQL inside the database.\nQuality bar:\n- Each finding lists file, line, source, query, payload and fix.\n- Hand escaping is not accepted where placeholders work.\n- Tests run ' OR '1'='1 and 1; DROP TABLE x against a temp database.\nPitfalls:\n- Missing queries built in helpers far from the route.\n- Calling numeric ids safe without checking they are parsed as numbers.\n- Trusting raw() or literal() escape hatches of query builders.\nVerify:\n- [ ] All query sites are listed.\n- [ ] No SQL text holds interpolated values.\n- [ ] Identifiers pass an allowlist.\n- [ ] Payload tests pass.\nOutput: Findings in SECURITY-AUDIT.md and the fixed query modules.",
+  "checks": [
+    "sec.sql-params",
+    "md.h1",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "revisa se minha API tem SQL injection",
+      "output": "query site table, concatenated WHERE fixed with ?, ORDER BY allowlist, payload tests on a temp db"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

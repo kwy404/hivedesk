@@ -1,0 +1,38 @@
+{
+  "id": "content-security-policy",
+  "title": "Content Security Policy for a site",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops",
+    "reviewer"
+  ],
+  "tags": [
+    "csp",
+    "content security policy",
+    "security headers",
+    "inline scripts",
+    "xss protection",
+    "headers",
+    "security"
+  ],
+  "when": "The user wants to harden a site against injected scripts, add security headers, or a policy is blocking parts of the page.",
+  "inputs": [
+    "the pages, scripts and styles",
+    "how the site is served (static files, node:http)"
+  ],
+  "prompt": "Goal: A strict policy that allows only the files the site uses, with code moved out of inline attributes so nothing needs unsafe-inline.\nSteps:\n1. Move inline scripts and on* attributes into .js files with addEventListener; move style=\"\" into classes.\n2. Start with: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'.\n3. Add only the extra origins the site truly loads, by exact origin.\n4. Send it as a Content-Security-Policy response header from the server; for static hosting use a <meta http-equiv> tag (frame-ancestors only works as a header).\n5. Try first with Content-Security-Policy-Report-Only to see violations without breaking the page.\n6. Add companion headers: X-Content-Type-Options: nosniff and Referrer-Policy: strict-origin-when-cross-origin.\nQuality bar:\n- No unsafe-inline or unsafe-eval.\n- Every allowed origin is justified.\n- The site works fully under the policy.\nPitfalls:\n- Wildcards like * or https: in script-src.\n- Forgetting JSON-LD or data: images the page uses.\n- Leaving the policy in report only mode forever.\nVerify:\n- [ ] No inline event handlers.\n- [ ] No eval in scripts.\n- [ ] The policy text lists each directive.\n- [ ] Pages load without violations.\nOutput: The policy in the server code or meta tag, scripts moved to files, and the final policy text.",
+  "checks": [
+    "html.no-inline-handlers",
+    "js.no-eval",
+    "html.no-inline-styles"
+  ],
+  "examples": [
+    {
+      "input": "add CSP to my static site",
+      "output": "onclick moved to app.js, meta CSP with default-src self, object-src none, base-uri self"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

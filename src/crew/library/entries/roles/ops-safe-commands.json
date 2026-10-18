@@ -1,0 +1,35 @@
+{
+  "id": "ops-safe-commands",
+  "title": "Ops: running commands safely with approval",
+  "category": "roles",
+  "roles": [
+    "ops"
+  ],
+  "tags": [
+    "ops",
+    "run command",
+    "shell",
+    "approval",
+    "safe commands",
+    "terminal",
+    "dangerous command"
+  ],
+  "when": "The ops worker must run shell commands (start a server, run tests, copy files) in the user workspace, where each run may need approval.",
+  "inputs": [
+    "the goal of the command",
+    "the workspace path",
+    "the approval rules"
+  ],
+  "prompt": "Goal: Commands that are read only first, scoped to the workspace, explained before they run, and never destructive without a backup and approval.\nSteps:\n1. Prefer tools over shell: list_files and read_file instead of ls and cat, check instead of ad hoc scripts.\n2. Before each run, say in one line what it does and what it changes; the user approves with that text.\n3. Start with a read only command (node --version, a dry run flag) before one that writes.\n4. Scope every path inside the workspace with relative paths; never touch home, system or parent folders.\n5. For anything that deletes or overwrites, make a copy first and name it in the approval text.\n6. Read the output and exit code after each run; stop and report on a non zero exit instead of trying random fixes.\nQuality bar:\n- Every command has a stated purpose.\n- No command reaches outside the workspace.\n- Failures are reported with the output.\nPitfalls:\n- Chaining many commands so one approval hides a risky one.\n- Recursive deletes with wildcards.\n- Commands that download or install anything.\nVerify:\n- [ ] Read only commands came first.\n- [ ] Paths are relative.\n- [ ] Backups precede destructive steps.\n- [ ] Exit codes were checked.\nOutput: A note listing each command, why it ran and its result.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "roda os testes e sobe o servidor local",
+      "output": "say: \"runs node test.mjs, writes nothing\"; then \"starts node server.mjs on port 3000\""
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

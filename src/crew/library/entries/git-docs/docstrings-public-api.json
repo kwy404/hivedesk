@@ -1,0 +1,38 @@
+{
+  "id": "docstrings-public-api",
+  "title": "Docstrings for Python and public functions",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "docstrings",
+    "docstring",
+    "python docs",
+    "function documentation",
+    "jsdoc comments",
+    "params",
+    "returns",
+    "raises"
+  ],
+  "when": "The user wants each public function, class or module documented in place with docstrings or doc comments.",
+  "inputs": [
+    "the module",
+    "which functions are public"
+  ],
+  "prompt": "Goal: Every public function has a docstring that states purpose, parameters, return, errors and a short example.\nSteps:\n1. Python: a triple quoted docstring right under def or class; first line is a one sentence summary in imperative mood ending with a period.\n2. Then a blank line and sections: Args (name: meaning), Returns, Raises, and an Example with >>> lines that doctest can run.\n3. JavaScript: a /** */ block above the function with a summary, @param, @returns, @throws and @example.\n4. Add a module docstring at the top of each file with its purpose and main entry points.\n5. Describe meaning, units and valid ranges; let type hints or tags carry the types.\n6. Skip private helpers (leading underscore or not exported) unless they are tricky.\nQuality bar:\n- Summary lines fit on one line.\n- Examples are correct and minimal.\n- Errors raised are all listed.\nPitfalls:\n- Docstrings that repeat the function name.\n- Examples that would fail if run.\n- Breaking indentation in Python while inserting docstrings.\nVerify:\n- [ ] Every public function has a docstring.\n- [ ] Python indentation is consistent.\n- [ ] Brackets and quotes are balanced.\n- [ ] Scripts parse.\nOutput: The source files with docstrings added.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "add docstrings to my python module",
+      "output": "def parse_date(text): \"\"\"Parse an ISO date string.\"\"\" with Args, Returns, Raises ValueError, >>> example"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "plurals-number-date-format",
+  "title": "Plurals, numbers, dates and currency formatting",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "plurals",
+    "intl",
+    "number format",
+    "date format",
+    "currency",
+    "locale",
+    "pluralrules",
+    "relative time"
+  ],
+  "when": "Text shows \"1 items\", dates or prices appear in the wrong format for the language, or numbers need locale aware output.",
+  "inputs": [
+    "the strings with counts, dates or money",
+    "the locales supported"
+  ],
+  "prompt": "Goal: Counts, numbers, money, dates and relative times formatted by the Intl APIs for the active locale.\nSteps:\n1. Plurals: pick the message with new Intl.PluralRules(locale).select(n) and keep forms per key (items.one, items.other, plus few and many for languages that need them).\n2. Numbers: new Intl.NumberFormat(locale).format(n); percentages with style: \"percent\".\n3. Money: Intl.NumberFormat(locale, { style: \"currency\", currency: \"BRL\" }); store amounts as integer cents and divide only for display.\n4. Dates: Intl.DateTimeFormat(locale, { dateStyle: \"medium\" }); store and send ISO strings in UTC.\n5. Relative time: Intl.RelativeTimeFormat(locale, { numeric: \"auto\" }) for \"yesterday\" and \"in 3 days\".\n6. Create formatters once per locale and reuse them.\nQuality bar:\n- Zero, one and many read naturally.\n- Currency symbol and separators follow the locale.\n- Times show in the user time zone.\nPitfalls:\n- Adding \"s\" to make plurals.\n- Formatting dates by hand with getMonth() + 1 strings.\n- Parsing localized numbers back with Number().\nVerify:\n- [ ] 0, 1, 2 and 5 counts read correctly.\n- [ ] Prices show the right currency format.\n- [ ] Dates use Intl formatters.\n- [ ] Files parse.\nOutput: A format.js module with plural, number, money and date helpers, used by the views.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "mostra \"1 itens\" no carrinho",
+      "output": "Intl.PluralRules picks cart.items.one or .other; prices with Intl currency BRL: R$ 12,50"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

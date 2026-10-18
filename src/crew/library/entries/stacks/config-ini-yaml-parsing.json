@@ -1,0 +1,37 @@
+{
+  "id": "config-ini-yaml-parsing",
+  "title": "INI and simple YAML config files",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "config file",
+    "ini",
+    "yaml",
+    "configparser",
+    "settings file",
+    "parse config",
+    "conf",
+    "key value"
+  ],
+  "when": "A script must read settings from an INI file or a simple YAML style file without third party parsers.",
+  "inputs": [
+    "settings and types",
+    "language of the script"
+  ],
+  "prompt": "Goal: Settings read from a human edited file with types, defaults and clear errors, using only the standard library.\nSteps:\n1. Python INI: configparser.ConfigParser().read(path, encoding=\"utf-8\"); typed reads with getint, getfloat, getboolean and fallback=.\n2. Node INI: a small parser that skips ; and # comments, reads [section] headers and trimmed key = value pairs, and reports line numbers.\n3. YAML without a library: support only a written subset (key: value, two space nesting, \"- \" lists, comments, quoted strings) and reject tabs, anchors and block scalars.\n4. Convert types explicitly and never execute values.\n5. Merge in order: defaults, file, environment, command line flags; then check required keys.\n6. Ship an example config with every key commented.\nQuality bar:\n- Errors give file, line and key.\n- Unknown keys warn by name to catch typos.\n- The supported subset is documented.\nPitfalls:\n- Claiming full YAML support from a partial parser.\n- yes or no turned into booleans in one place but not another.\n- Silently ignoring a config file the user named that is missing.\nVerify:\n- [ ] Defaults defined in one place.\n- [ ] Typed conversions used.\n- [ ] Errors include line numbers.\n- [ ] Example config exists.\nOutput: config.py or config.mjs with load_config(path), plus config.example.ini or .yaml.",
+  "checks": [
+    "py.no-bare-except",
+    "py.balanced",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "ler as configurações de um arquivo settings.ini",
+      "output": "load_config with configparser, getint port fallback 8080, unknown key warnings, settings.example.ini"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

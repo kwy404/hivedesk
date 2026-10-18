@@ -1,0 +1,50 @@
+{
+  "id": "product-detail-page",
+  "title": "Product detail page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "product",
+    "product page",
+    "details",
+    "variants",
+    "store",
+    "specs"
+  ],
+  "when": "The user wants a page for one product with images, options, specs and a buy action.",
+  "inputs": [
+    "product name and price",
+    "images",
+    "variants such as size or color",
+    "specs and shipping info"
+  ],
+  "prompt": "Goal: A single product page that answers every buying question before the visitor has to ask.\nSteps:\n1. Above the fold: image, name, price, the variant pickers and the main action.\n2. Variant pickers as radio groups with fieldset and legend; the price and image update with the choice.\n3. Description that leads with the benefit, then a specs list (dl with dt and dd).\n4. Shipping, returns and care info as short sections or an accordion with buttons.\n5. Add Product JSON-LD with name, image, price and availability.\nQuality bar:\n- Selected variant is obvious and keyboard reachable.\n- Specs use real units.\n- The main action stays visible on phones.\nPitfalls:\n- Color swatches with no text name.\n- Hiding the price until a variant is chosen.\n- Duplicated product ids in the markup.\nVerify:\n- [ ] Variant inputs are labeled and grouped.\n- [ ] JSON-LD parses.\n- [ ] Image alt describes the product.\n- [ ] Unique ids.\nOutput: product.html (or index.html), style.css, and a small script for variant changes.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.json-ld",
+    "html.unique-ids",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "page for our ceramic mug",
+      "output": "gallery, 3 color radios with names, price 59.00, specs dl with capacity 350 ml, shipping section"
+    }
+  ],
+  "size": 287,
+  "version": 1
+}

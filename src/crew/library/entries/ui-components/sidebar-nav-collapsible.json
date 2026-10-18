@@ -1,0 +1,43 @@
+{
+  "id": "sidebar-nav-collapsible",
+  "title": "Collapsible sidebar navigation for an app",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "sidebar",
+    "side nav",
+    "sidebar menu",
+    "vertical navigation",
+    "collapsible sidebar",
+    "dashboard nav",
+    "app shell",
+    "left menu"
+  ],
+  "when": "The user wants a vertical app or dashboard sidebar with sections, icons and a way to collapse it.",
+  "inputs": [
+    "sections and their links",
+    "icons if any",
+    "the current section"
+  ],
+  "prompt": "Goal: A sidebar that keeps the current place obvious, collapses to icons on demand and becomes a panel on phones.\nSteps:\n1. Shell grid with grid-template-columns: var(--side, 15rem) 1fr; the sidebar is <nav aria-label=\"App\"> with links holding an aria-hidden icon and a text label.\n2. The current link gets aria-current=\"page\" plus a bar or background.\n3. Groups use <button type=\"button\" aria-expanded aria-controls> to show or hide their nested <ul>.\n4. A collapse <button type=\"button\" aria-pressed> sets data-collapsed, narrowing the sidebar to 4rem; labels become visually hidden, never display: none.\n5. Save the collapsed state in localStorage inside try and catch.\n6. Below 720 px open the sidebar from a Menu button as an overlay panel that Escape closes.\nQuality bar:\n- Every item keeps an accessible name in every state.\n- The main area reflows instead of being covered.\n- Keyboard order follows the visual order.\nPitfalls:\n- Storage that throws in private mode and breaks the script.\n- A fixed column that squeezes content on tablets.\n- Hover only flyouts for the collapsed state.\nVerify:\n- [ ] The sidebar is a nav with an aria-label.\n- [ ] aria-pressed and aria-expanded match the visual states.\n- [ ] Collapsed state survives a reload.\n- [ ] The panel opens and closes at 375 px.\nOutput: Shell markup, sidebar.css and sidebar.js loaded with defer.",
+  "checks": [
+    "html.nav",
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.media-query",
+    "js.storage-guarded",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "sidebar recolhivel para meu painel admin",
+      "output": "nav aria-label App with Orders, Products, Reports group, collapse button with aria-pressed saved in localStorage"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

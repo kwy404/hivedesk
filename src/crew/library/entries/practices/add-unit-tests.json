@@ -1,0 +1,38 @@
+{
+  "id": "add-unit-tests",
+  "title": "Add unit tests with node:test",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "unit tests",
+    "unit test",
+    "add tests",
+    "tests",
+    "node:test",
+    "node:assert",
+    "test file",
+    "coverage",
+    "unittest"
+  ],
+  "when": "The user wants unit tests added for existing functions, calculations or modules, using only the Node standard library (or unittest in Python).",
+  "inputs": [
+    "the module to test",
+    "its main behaviors and known bugs"
+  ],
+  "prompt": "Goal: A focused test file that runs with node --test and checks the real behavior of each public function.\nSteps:\n1. List the public functions and, for each, the normal case, an edge case and an error case.\n2. Create test/<module>.test.mjs with import { test } from \"node:test\" and import assert from \"node:assert/strict\".\n3. Name each test as a sentence: test(\"formatPrice rounds to two decimals\", ...).\n4. Use assert.equal for primitives, assert.deepEqual for objects and arrays, assert.throws or assert.rejects for errors.\n5. Keep tests independent: build inputs inside each test, use temporary folders (fs.mkdtempSync) for file work and clean them.\n6. Add \"test\": \"node --test\" to package.json scripts if a package.json exists, and run it.\nQuality bar:\n- Each test checks one behavior.\n- No test depends on the current time or network.\n- Failures print a readable diff.\nPitfalls:\n- Testing private details that break on every refactor.\n- Asserting only that no error was thrown.\n- Tests that pass when the function returns undefined.\nVerify:\n- [ ] node --test passes.\n- [ ] Breaking the function on purpose makes a test fail.\n- [ ] Error cases are covered.\n- [ ] The test file parses.\nOutput: test/<module>.test.mjs (or test_<module>.py with unittest) and the updated test script.",
+  "checks": [
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "adicione testes para utils.js",
+      "output": "test/utils.test.mjs with 9 tests for slugify, formatPrice and parseDate; node --test green"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

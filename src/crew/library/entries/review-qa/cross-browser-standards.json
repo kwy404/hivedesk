@@ -1,0 +1,36 @@
+{
+  "id": "cross-browser-standards",
+  "title": "Cross browser check with web standards",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "cross browser",
+    "browser compatibility",
+    "browser support",
+    "compatibility",
+    "fallbacks",
+    "feature detection",
+    "old browsers"
+  ],
+  "when": "The user wants a page or app checked so it works in all current browser engines, using standards and fallbacks, not hacks.",
+  "inputs": [
+    "the files",
+    "the oldest devices the audience uses"
+  ],
+  "prompt": "Goal: A compatibility report listing newer features in use, how each degrades, and fixes so the core task works in every current engine.\nSteps:\n1. Inventory features: CSS (:has(), container queries, nesting, subgrid, color-mix, dvh), JS (structuredClone, top level await, Array.prototype.at), HTML (dialog, popover, date and color inputs).\n2. Mark each as widely available, newly available or limited, and note its fallback.\n3. CSS fallbacks: safe value first, new value second (height: 100vh; height: 100dvh); risky blocks inside @supports.\n4. JS detection: test the feature itself (\"showModal\" in HTMLDialogElement.prototype) and keep content visible if a module fails.\n5. Known differences: date input formats, autoplay rules, form validation bubbles, smooth scrolling, mobile toolbar height.\n6. Test in the three main engines plus one phone; note engine and version per issue.\nQuality bar:\n- Core content and main action work everywhere.\n- Enhancements fail quietly.\n- No user agent sniffing.\nPitfalls:\n- Prefixed hacks without the standard property.\n- Testing in one engine only.\n- Detecting features from the user agent string.\nVerify:\n- [ ] Feature inventory with status.\n- [ ] Fallbacks or @supports present.\n- [ ] JS detection checked.\n- [ ] Engines tested are listed.\nOutput: compat-report.md with the feature table and the issues.",
+  "checks": [
+    "md.h1",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "vai funcionar em celular antigo?",
+      "output": ":has() used for menu state, no fallback; dialog used without showModal check; fixes listed per feature"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

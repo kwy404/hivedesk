@@ -1,0 +1,36 @@
+{
+  "id": "designer-design-qa-pass",
+  "title": "Designer: design QA pass on built pages",
+  "category": "roles",
+  "roles": [
+    "designer",
+    "qa"
+  ],
+  "tags": [
+    "designer",
+    "design qa",
+    "visual check",
+    "spacing",
+    "alignment",
+    "consistency",
+    "visual bugs"
+  ],
+  "when": "Pages are built and the designer checks that the result matches the spec and looks right at phone and desktop widths.",
+  "inputs": [
+    "the spec or tokens",
+    "the built HTML and CSS"
+  ],
+  "prompt": "Goal: A list of visual defects with exact CSS fixes, applied as small patches, so the page matches the intended design.\nSteps:\n1. Open the page with preview at 375 px and at a desktop width; note anything that overflows, overlaps or wraps badly.\n2. Compare against the spec: colors, font sizes, spacing scale, radius, button styles; flag any value not in the scale.\n3. Check rhythm: equal gaps between sections, aligned left edges, consistent card heights in a row.\n4. Check states: hover and focus-visible on links and buttons, error styles on fields.\n5. Check long content: long names, three line titles, an empty list message.\n6. Fix each defect with an edit_file patch in the stylesheet, one selector at a time.\nQuality bar:\n- Every fix uses an existing token or scale value.\n- Nothing scrolls sideways at 375 px.\n- Focus is visible on every control.\nPitfalls:\n- Adding new one off values to fix one spot.\n- Fixing with !important.\n- Checking only the desktop width.\nVerify:\n- [ ] Both widths checked.\n- [ ] Off scale values replaced.\n- [ ] States present.\n- [ ] Braces balanced after patches.\nOutput: Patched style.css and a note listing each defect and its fix.",
+  "checks": [
+    "css.braces",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "revisa o visual da pagina de precos",
+      "output": "cards misaligned at 768px: grid align-items stretch; button padding 13px to var(--space-3)"
+    }
+  ],
+  "size": 334,
+  "version": 1
+}

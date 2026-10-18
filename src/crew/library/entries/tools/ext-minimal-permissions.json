@@ -1,0 +1,38 @@
+{
+  "id": "ext-minimal-permissions",
+  "title": "Minimal extension permissions with activeTab and optional grants",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "security"
+  ],
+  "tags": [
+    "extension permissions",
+    "activetab",
+    "optional permissions",
+    "host permissions",
+    "least privilege",
+    "install warning",
+    "privacy",
+    "browser extension"
+  ],
+  "when": "A browser extension asks for broad access and the user wants fewer install warnings, an easier review and less risk, while keeping every feature working.",
+  "inputs": [
+    "current manifest",
+    "feature list",
+    "sites each feature needs"
+  ],
+  "prompt": "Goal: A manifest that requests only what each feature uses, relies on activeTab for user triggered actions and asks for the rest at runtime.\nSteps:\n1. List each feature and its API calls, map every call to a permission, and delete permissions no call needs.\n2. Prefer \"activeTab\": a click on the action, a context menu item or a command grants temporary access to the current tab, with no install warning.\n3. Pair \"activeTab\" with \"scripting\" to inject code on click instead of content_scripts on every site.\n4. Skip \"tabs\" when you only need the active tab id or tabs.query; it is for reading url and title of other tabs.\n5. Rare features: \"optional_permissions\": [\"downloads\"] and \"optional_host_permissions\": [\"https://api.example.com/*\"]; call chrome.permissions.request inside a click handler and check permissions.contains before use.\n6. chrome.permissions.remove drops a grant when its feature is switched off.\n7. PERMISSIONS.md lists each permission, its feature and the warning users see; reuse the text for store justifications.\nQuality bar:\n- Each permission has a one line reason.\n- A refused optional grant degrades politely.\nPitfalls:\n- <all_urls> or *://*/* just in case.\n- permissions.request outside a user gesture, which fails.\n- A new permission in an update, which disables the extension until users accept.\nVerify:\n- [ ] No <all_urls> anywhere.\n- [ ] Each permission in PERMISSIONS.md.\n- [ ] Optional grants requested from a click.\n- [ ] manifest.json is valid JSON.\nOutput: Updated manifest.json and PERMISSIONS.md.",
+  "checks": [
+    "ext.manifest-v3",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "minha extensao pede acesso a todos os sites, da para reduzir?",
+      "output": "manifest with activeTab plus scripting, optional host permission requested on click, tabs removed, PERMISSIONS.md with reasons and warnings"
+    }
+  ],
+  "size": 440,
+  "version": 1
+}

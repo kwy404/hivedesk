@@ -1,0 +1,41 @@
+{
+  "id": "mobile-pwa-app-shell",
+  "title": "Installable PWA app shell for phones",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev"
+  ],
+  "tags": [
+    "pwa",
+    "app shell",
+    "mobile app",
+    "installable",
+    "standalone",
+    "home screen",
+    "progressive web app",
+    "phone",
+    "skeleton screen"
+  ],
+  "when": "The user wants a phone friendly web app that installs to the home screen, opens standalone and paints its frame before any data arrives.",
+  "inputs": [
+    "screens of the app",
+    "where the data comes from",
+    "brand colors"
+  ],
+  "prompt": "Goal: A static app shell (header, content slot, bottom bar) that paints instantly from cache, runs standalone from the home screen and fills in content afterwards.\nSteps:\n1. index.html holds only the frame: viewport meta with viewport-fit=cover, <link rel=\"manifest\" href=\"manifest.webmanifest\">, <header>, <main id=\"view\"> and a <nav> bar.\n2. Inline the frame CSS (under 10 KB) so first paint needs no extra request; load app.js as a module.\n3. app.js draws a skeleton in #view, fills it from IndexedDB, then refreshes from the network.\n4. sw.js precaches only the shell files (index.html, app.css, app.js, icons) so a cold start in airplane mode still shows the frame.\n5. Detect standalone with matchMedia(\"(display-mode: standalone)\").matches and hide the \"add to home screen\" hint there.\n6. Route on the client (hash or history API) so every deep path is answered by the same shell.\nQuality bar:\n- The frame is visible in under 1 second on a mid range phone after the first visit.\n- The content slot shows a skeleton, never a blank white screen.\nPitfalls:\n- Listing user data in the precache, which then goes stale forever.\n- A full screen spinner hiding the frame until the API answers.\n- Standalone mode has no browser back button; the shell needs its own.\nVerify:\n- [ ] The manifest is linked and has display standalone.\n- [ ] A service worker is registered and precaches the shell files.\n- [ ] The viewport meta includes viewport-fit=cover.\nOutput: index.html, app.css, app.js, sw.js and manifest.webmanifest.",
+  "checks": [
+    "html.viewport",
+    "pwa.manifest",
+    "pwa.service-worker",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quero que meu app web abra como aplicativo no celular, mesmo sem internet",
+      "output": "Shell with header, #view skeleton and bottom nav, precached by sw.js, standalone manifest"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

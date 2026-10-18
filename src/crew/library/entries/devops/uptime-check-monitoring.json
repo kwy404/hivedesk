@@ -1,0 +1,38 @@
+{
+  "id": "uptime-check-monitoring",
+  "title": "Simple uptime checks and alerts",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops"
+  ],
+  "tags": [
+    "uptime",
+    "monitoring",
+    "uptime check",
+    "alerts",
+    "site down",
+    "status check",
+    "downtime alert",
+    "ping"
+  ],
+  "when": "A small site or API needs to tell someone when it goes down, without running a full monitoring stack.",
+  "inputs": [
+    "URLs to check",
+    "expected text",
+    "where alerts go"
+  ],
+  "prompt": "Goal: An outside checker that polls each health URL, alerts after repeated failures, announces recovery and keeps a short history.\nSteps:\n1. Run it from another machine or network than the service, so an outage cannot silence it.\n2. check.sh per URL: curl -fsS --max-time 10 -o body.tmp -w \"%{http_code} %{time_total}\" \"$URL\"; for the home page also grep body.tmp for an expected word.\n3. A state file per URL keeps the consecutive failure count and last status.\n4. Alert on the second failure in a row, once per outage; on recovery send the downtime length.\n5. Deliver via the local mail command or an HTTP POST to a chat webhook whose URL comes from an env file.\n6. Daily extras: certificate days left, disk over 80 percent, newest backup older than 26 hours.\n7. Append each result to checks.log as one ISO timestamped line; a weekly summary prints uptime percent.\n8. Schedule every minute under flock -n.\nQuality bar:\n- One outage gives one alert and one recovery message.\n- A timeout counts as a failure.\n- Adding a URL is one line in urls.txt.\nPitfalls:\n- Checking from the server that goes down with the app.\n- Alerting on every failed run until people mute the channel.\n- A health URL that answers 200 while the app is broken.\nVerify:\n- [ ] Every request has a timeout.\n- [ ] Failure threshold and recovery message present.\n- [ ] Webhook URL read from the environment.\n- [ ] A lock prevents overlapping runs.\nOutput: monitor/check.sh, monitor/urls.txt and a Monitoring section in the ops notes.",
+  "checks": [
+    "file.nonempty",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "me avise quando meu site cair",
+      "output": "monitor/check.sh run every minute with flock, curl --max-time 10, alert on 2 failures, recovery message, checks.log history"
+    }
+  ],
+  "size": 429,
+  "version": 1
+}

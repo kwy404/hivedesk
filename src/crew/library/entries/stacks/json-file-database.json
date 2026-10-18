@@ -1,0 +1,40 @@
+{
+  "id": "json-file-database",
+  "title": "JSON file as a small database with atomic writes",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "json file",
+    "database",
+    "file storage",
+    "persistence",
+    "save data",
+    "atomic write",
+    "data file",
+    "simple db",
+    "no database"
+  ],
+  "when": "A Node app must persist a modest amount of data (up to a few thousand records) without a database server.",
+  "inputs": [
+    "record shapes",
+    "how often data changes"
+  ],
+  "prompt": "Goal: A store module that loads a JSON file, serializes writes and replaces the file atomically so a crash never corrupts data.\nSteps:\n1. File shape { \"version\": 1, \"items\": [] } so the format can migrate; create it with defaults when missing.\n2. Load once inside try and catch; if parsing fails, rename the file to data.json.corrupt-<timestamp>, log loudly, start empty, and never overwrite it silently.\n3. Atomic write: write JSON.stringify(data, null, 2) to data.json.tmp in the same folder, call handle.sync(), then fs.rename over data.json.\n4. Serialize through a promise chain: chain = chain.then(write, write), so saves never interleave; debounce 200 ms and flush on SIGINT and SIGTERM.\n5. Expose async list, get, insert, update, remove that validate input and return copies.\nQuality bar:\n- Killing the process mid save leaves the old or new file, never a broken one.\n- The file stays human readable.\nPitfalls:\n- writeFile straight onto data.json, which truncates first.\n- Two concurrent saves losing an update.\n- A temp file on another drive, where rename is not atomic.\nVerify:\n- [ ] Writes go to .tmp then rename.\n- [ ] One write queue.\n- [ ] JSON.parse in try with the corrupt file path.\n- [ ] The file has a version field.\nOutput: store.mjs exporting the data functions; the data folder listed in .gitignore when it holds user data.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "js.json-parse-guarded",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "salvar os pedidos num arquivo json em vez de banco",
+      "output": "store.mjs with orders.json { version, items }, tmp plus rename writes, queued saves"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

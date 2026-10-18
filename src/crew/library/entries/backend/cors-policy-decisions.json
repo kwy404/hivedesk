@@ -1,0 +1,40 @@
+{
+  "id": "cors-policy-decisions",
+  "title": "CORS policy decisions and misconfigurations",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "cors policy",
+    "cross origin",
+    "credentials",
+    "vary origin",
+    "null origin",
+    "origin allowlist",
+    "cors misconfiguration",
+    "backend",
+    "api"
+  ],
+  "when": "The user is about to open an API to other origins, or wants to fix a permissive CORS setup, and must decide whether CORS is needed and which origins and credentials to allow.",
+  "inputs": [
+    "the calling front ends",
+    "whether cookies cross origins"
+  ],
+  "prompt": "Goal: The narrowest cross origin policy the clients need, written down, with the dangerous combinations ruled out.\nSteps:\n1. Ask if it is needed at all: one origin for page and API, or a dev proxy for /api, needs no CORS.\n2. Keep the list per environment in config: CORS_ORIGINS=https://app.example.com in production, http://localhost:5173 only in development.\n3. Compare Origin by exact string equality; never startsWith, endsWith or an unanchored regex (example.com.evil.net and evilexample.com pass those).\n4. Refuse the literal origin \"null\", which sandboxed frames and file pages send.\n5. Cookies across origins need Allow-Credentials: true with one exact origin and a SameSite=None; Secure cookie; otherwise leave credentials off.\n6. CORS only stops browsers from reading replies; the request still runs, so writes still need auth and CSRF checks.\nQuality bar:\n- Vary: Origin on every reply whose headers depend on Origin.\n- The list is short and reviewed.\n- README.md holds a table of origin, credentials and methods.\nPitfalls:\n- Reflecting any Origin with credentials, letting any site read user data.\n- Every origin allowed on an internal admin API.\n- Believing a CORS error means the server never ran the request.\nVerify:\n- [ ] Origins match exactly.\n- [ ] The null origin is refused.\n- [ ] Credentials only with an exact origin.\n- [ ] The policy table exists.\nOutput: Origin check updates in cors.mjs and a CORS section in README.md.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "nosso CORS devolve qualquer origin com credentials, esta certo?",
+      "output": "exact allowlist per environment, null refused, credentials only for app origin, Vary: Origin"
+    }
+  ],
+  "size": 413,
+  "version": 1
+}

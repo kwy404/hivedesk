@@ -1,0 +1,46 @@
+{
+  "id": "thank-you-page",
+  "title": "Thank you and confirmation page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "thank you",
+    "confirmation",
+    "success page",
+    "after signup",
+    "order received"
+  ],
+  "when": "The user wants the page people see after they sign up, order, book or send a form.",
+  "inputs": [
+    "what was just done",
+    "what happens next and when",
+    "helpful links"
+  ],
+  "prompt": "Goal: Confirm the action, set expectations and offer one useful next step.\nSteps:\n1. h1 that confirms the exact action: Your table is booked, Order received.\n2. What happens next with timing: an email in a few minutes, a call within a day.\n3. A summary of the submitted details if available from the query string, escaped as text.\n4. One next step: add to calendar, follow, read a guide, return to the shop.\n5. Contact link for mistakes.\nQuality bar:\n- Specific, reassuring and short.\n- Works if opened directly.\n- No dead ends.\nPitfalls:\n- Inserting query values with innerHTML.\n- Generic thanks with no next step.\n- Upsell walls.\nVerify:\n- [ ] h1 confirms the action.\n- [ ] Any dynamic text uses textContent.\n- [ ] A next step link exists.\n- [ ] Scripts parse.\nOutput: thanks.html with shared styles and an optional small script.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "js.safe-dom",
+    "js.syntax",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "página de obrigado depois da compra",
+      "output": "h1 Order received, email within 5 minutes, delivery in 2 days, link back to the shop"
+    }
+  ],
+  "size": 238,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "line-length-rhythm",
+  "title": "Readable line length and vertical rhythm",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "line length",
+    "measure",
+    "readability",
+    "vertical rhythm",
+    "paragraph spacing",
+    "long text",
+    "article text",
+    "reading width"
+  ],
+  "when": "Long text (articles, docs, policies) feels hard to read, or the user wants steady spacing between paragraphs, headings and lists.",
+  "inputs": [
+    "the pages with long text",
+    "body font size"
+  ],
+  "prompt": "Goal: Body text at 45 to 75 characters per line with a vertical rhythm derived from the body line height.\nSteps:\n1. Cap text containers with max-width: 65ch and center them with margin-inline: auto.\n2. Set body line-height between 1.5 and 1.7; longer lines need more, captions less.\n3. Take the body line height as the rhythm unit (16 px at 1.5 gives 1.5rem) and space blocks in multiples or halves of it.\n4. Space only forward with a flow rule, .flow > * + * { margin-block-start: var(--flow-space, 1.5rem) }, so margins never double.\n5. Give headings about 2 units above and 0.5 below so they bind to the text they introduce.\n6. Keep lists, quotes and figures inside the measure; only wide tables or images break out.\nQuality bar:\n- Paragraphs never run edge to edge on wide screens.\n- Paragraph gaps are smaller than the space before headings.\n- Body text is left aligned, not justified.\nPitfalls:\n- A px max-width that ignores font size.\n- Top and bottom margins on every block.\n- Centered body paragraphs.\nVerify:\n- [ ] Text containers use a ch based max-width.\n- [ ] Body line-height is 1.5 to 1.7.\n- [ ] Block spacing uses the rhythm variable.\n- [ ] No fixed width wider than a phone.\nOutput: The reading styles (.prose or article rules) in style.css.",
+  "checks": [
+    "css.no-fixed-width",
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "os textos do meu blog estao cansativos de ler",
+      "output": ".prose max-width 65ch, line-height 1.65, flow spacing 1.5rem, h2 with 3rem above"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

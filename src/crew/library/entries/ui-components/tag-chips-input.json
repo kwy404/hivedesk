@@ -1,0 +1,42 @@
+{
+  "id": "tag-chips-input",
+  "title": "Tag chips input",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tags input",
+    "chips",
+    "tag input",
+    "tokens",
+    "keywords input",
+    "labels input",
+    "pills",
+    "multi value input"
+  ],
+  "when": "The user wants a field where typed words become removable chips, such as tags, skills, emails or keywords.",
+  "inputs": [
+    "what the chips hold",
+    "max count and length",
+    "suggested values if any"
+  ],
+  "prompt": "Goal: A chips field that adds on Enter or comma, removes by button or Backspace, and submits the values with the form.\nSteps:\n1. A <label for=\"tag-input\">, a <ul aria-label=\"Selected tags\"> of chips, each with its text and <button type=\"button\" aria-label=\"Remove tag design\">, then the text input.\n2. Enter or comma adds the trimmed value; ignore empty values and case insensitive duplicates; enforce max length and count with a message.\n3. Backspace in an empty input moves focus to the last chip remove button instead of deleting at once.\n4. After removing a chip, focus the next chip or the input.\n5. Keep <input type=\"hidden\" name=\"tags\"> in sync with the values joined by commas.\n6. Announce Tag design added or removed in role=\"status\"; build chips with createElement and textContent.\nQuality bar:\n- Chips wrap onto new lines at 375 px.\n- Paste of a comma list adds several chips.\n- The field looks like one input.\nPitfalls:\n- Chips inserted with innerHTML from what the user typed.\n- Backspace that deletes chips by accident.\n- Values that never reach the form submit.\nVerify:\n- [ ] The text input has a label.\n- [ ] Remove buttons name their chip.\n- [ ] The hidden field holds every value.\n- [ ] Adds and removals are announced.\nOutput: Field markup, chips.css and chips.js.",
+  "checks": [
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "campo de habilidades que vira etiquetas ao apertar enter",
+      "output": "label Skills, chip list with Remove buttons, Enter and comma add, hidden input skills=css,js"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "micro-interactions",
+  "title": "Hover and press micro interactions",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "hover",
+    "hover effect",
+    "press",
+    "active state",
+    "micro interaction",
+    "button feedback",
+    "card hover",
+    "tactile"
+  ],
+  "when": "The user wants buttons, cards and links to feel responsive with hover, press, toggle and copied or saved feedback.",
+  "inputs": [
+    "the interactive elements",
+    "the accent color and shadow tokens"
+  ],
+  "prompt": "Goal: Small, fast state changes on every interactive element that confirm hover, press and completion without slowing anyone.\nSteps:\n1. List interactive elements and give each a rest, hover, active, focus-visible and disabled look.\n2. Hover: one subtle change (background one step darker, or a thicker underline), inside @media (hover: hover) so touch screens do not keep sticky hover.\n3. Press: :active with transform: scale(0.98) or translateY(1px) over 80 to 120 ms so taps feel physical.\n4. Card hover: translateY(-2px) and the next shadow token, with one stretched link (::after inset 0) making the whole card clickable.\n5. Copy or toggle feedback: swap the label (Copied) for 1.5 s and announce it in an aria-live=\"polite\" region.\n6. Wrap movement in a prefers-reduced-motion rule; keep the color feedback when motion is off.\nQuality bar:\n- Feedback starts within 100 ms.\n- Focus and hover look different.\n- No layout shift on hover.\nPitfalls:\n- Actions that only appear on hover.\n- Slow 500 ms button transitions.\n- Bolding text on hover, which shifts the line.\nVerify:\n- [ ] Each interactive class has hover, active and focus-visible rules.\n- [ ] Hover rules sit in @media (hover: hover).\n- [ ] A reduced motion rule exists.\n- [ ] Feedback text reaches a live region.\nOutput: Interaction states in style.css and the small feedback script, if any.",
+  "checks": [
+    "css.reduced-motion",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "make the cards and buttons feel more alive",
+      "output": "hover lift 2px with shadow-2, press scale 0.98 at 100ms, Copied label for 1.5s announced politely"
+    }
+  ],
+  "size": 387,
+  "version": 1
+}

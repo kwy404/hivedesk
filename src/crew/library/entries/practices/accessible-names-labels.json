@@ -1,0 +1,40 @@
+{
+  "id": "accessible-names-labels",
+  "title": "Accessible names and labels for screen readers",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "writer",
+    "qa"
+  ],
+  "tags": [
+    "screen reader",
+    "labels",
+    "aria-label",
+    "alt text",
+    "accessible name",
+    "icon button",
+    "form labels",
+    "accessibility"
+  ],
+  "when": "Controls, icons, images or links are announced badly or not at all by screen readers, or forms lack labels.",
+  "inputs": [
+    "the page markup",
+    "what each control does"
+  ],
+  "prompt": "Goal: Every control, image and landmark has a short, accurate accessible name and fields carry their hints and errors.\nSteps:\n1. Form fields: a visible <label for> per input; group radios and checkboxes in fieldset with legend.\n2. Hints and errors: link with aria-describedby; set aria-invalid=\"true\" on fields with errors.\n3. Icon only buttons get aria-label naming the action (Delete invoice 42), and the inner svg gets aria-hidden=\"true\".\n4. Images: alt describes the content and purpose; decorative images get alt=\"\"; charts get a text summary.\n5. Links: text that makes sense alone; repeated \"Read more\" gets context with visually hidden text.\n6. Name landmarks when repeated: two nav elements get aria-label=\"Main\" and aria-label=\"Footer\".\nQuality bar:\n- Names match the visible text where there is one.\n- Names are short and start with the key word.\n- No redundant words like \"button\" or \"image of\".\nPitfalls:\n- Placeholder used as the only label.\n- aria-label on a div with no role, which is ignored.\n- Alt text that repeats the file name.\nVerify:\n- [ ] Every input has a label.\n- [ ] Every img has alt.\n- [ ] Links have meaningful text.\n- [ ] Inline SVGs have a title or aria-hidden.\nOutput: Updated HTML with labels, names and descriptions, and a visually-hidden utility class in CSS if needed.",
+  "checks": [
+    "html.labels",
+    "html.img-alt",
+    "html.link-text",
+    "html.svg-a11y"
+  ],
+  "examples": [
+    {
+      "input": "o leitor de tela fala só \"botão\" nos ícones",
+      "output": "aria-label=\"Edit task\" and \"Delete task\" on icon buttons, svg aria-hidden, labels for 6 inputs"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

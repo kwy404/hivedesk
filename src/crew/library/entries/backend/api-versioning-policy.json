@@ -1,0 +1,41 @@
+{
+  "id": "api-versioning-policy",
+  "title": "API versioning and deprecation policy",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "api versioning",
+    "v1 v2",
+    "breaking changes",
+    "deprecation",
+    "sunset header",
+    "backward compatible",
+    "api",
+    "backend",
+    "migration notes"
+  ],
+  "when": "An API has outside clients and must change without breaking them: decide what counts as breaking, how versions are named and routed, and how old ones are retired.",
+  "inputs": [
+    "the planned change",
+    "known clients"
+  ],
+  "prompt": "Goal: A written rule for breaking versus additive changes, path based major versions over shared code, and a deprecation process with headers and dates.\nSteps:\n1. Additive: new optional fields, new endpoints, new enum values if clients were told to ignore unknown ones. Breaking: removed or renamed fields, changed types or meaning, new required input, changed status codes.\n2. Put the major in the path: /api/v1/..., /api/v2/...; no minor numbers in URLs.\n3. Both versions call the same service functions; thin adapters (toV1(task), toV2(task)) hold the differences.\n4. Once v1 is deprecated, each reply carries Deprecation: true, Sunset: <HTTP date> and a Link to the migration notes.\n5. Count v1 calls per client key to know who still depends on it.\n6. Record each change in CHANGELOG.md under its API version with the migration step.\nQuality bar:\n- A contract test per version pins reply shapes.\n- Versions overlap for a stated period (for example 6 months).\n- Unknown versions get 404 listing the supported ones.\nPitfalls:\n- Quietly breaking v1 while adding v2.\n- Copying the whole codebase per version.\n- Version headers that clients forget to send.\nVerify:\n- [ ] Breaking rules are written in docs/versioning.md.\n- [ ] Deprecated replies carry Deprecation and Sunset.\n- [ ] Adapters, not forks.\n- [ ] CHANGELOG.md has a migration note.\nOutput: routes/v1 and routes/v2 adapters, docs/versioning.md, CHANGELOG.md.",
+  "checks": [
+    "md.h1",
+    "md.changelog",
+    "js.syntax",
+    "node.http-status"
+  ],
+  "examples": [
+    {
+      "input": "need to rename a field but the mobile app still uses the old API",
+      "output": "/api/v2 adapter, v1 kept with Deprecation and Sunset headers, usage counts, changelog note"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

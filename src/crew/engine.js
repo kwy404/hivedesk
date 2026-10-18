@@ -1,4 +1,5 @@
 // The hive: request, planner, task graph, workers taking turns, tools, QA, done.
+import path from 'node:path';
 import { BUILTIN, BUILTIN_IDS, hireWorker } from './workers.js';
 import { TaskGraph } from './taskgraph.js';
 import { Memory } from './memory.js';
@@ -6,12 +7,38 @@ import { makePlan } from './planner.js';
 import { runTask } from './worker.js';
 import { checkWorkspace } from '../tools/check.js';
 import { modelFamily } from './prompts/index.js';
+import { runWithOrigin, crewOrigin } from '../core/origin.js';
 import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, answerBrief, isVague, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
+import { say, localeOf, languageName } from './say.js';
+import { INTENT_SCHEMA, keywordIntent, decideIntent, intentMessages, replyMessages, cleanReply } from './talk.js';
+import { looksLikeGitIntent, parseRules } from '../github/intent.js';
+import { validate, extractJson } from '../brain/schema.js';
+import { startDomain, jobCrew } from './domains/flow.js';
 
 const MAX_FIX_ROUNDS = 3;
 /** Mel stops a job that uses more model turns than this (a loop that does not converge). */
 const JOB_TURN_BUDGET = 160;
 let chatSeq = 0;
+
+/**
+ * For "a.html: links to style.css, which does not exist" when css/style.css is there: the exact
+ * change, since a small model rewrites the same broken link round after round otherwise.
+ */
+export function linkHints(issues, files) {
+  const out = [];
+  for (const issue of issues) {
+    const m = /^(.+?): links to (.+?), which does not exist/.exec(issue);
+    if (!m) continue;
+    const [, from, ref] = m;
+    const name = path.posix.basename(ref.split(/[?#]/)[0]);
+    const found = files.filter((f) => path.posix.basename(f) === name && f !== from);
+    if (found.length !== 1) continue;
+    const rel = path.posix.relative(path.posix.dirname(from), found[0]) || name;
+    const hint = `In ${from}, change the link "${ref}" to "${rel}": that file exists.`;
+    if (!out.includes(hint)) out.push(hint);
+  }
+  return out.length ? `\n\nHow to fix the links:\n- ${out.join('\n- ')}` : '';
+}
 
 /** A signal that aborts when any of the given signals aborts (AbortSignal.any is not in Node 18). */
 function anySignal(signals) {
@@ -51,6 +78,21 @@ export class Hive {
     /** Hive City hooks (src/city/), optional: the worker a task runs with (room tools) and extra memories for its prompt. */
     this.adaptWorker = null;
     this.extraMemories = null;
+    /** The language of the user's desktop (the last one a command carried): what the crew answers in. */
+    this.lang = 'en';
+    /** Chat messages waiting for "start as a task" or "just talk": message id -> what was asked. */
+    this.choices = new Map();
+    /** Talk turns in flight (chat answers and intent checks); their errors are handled, never thrown. */
+    this.talks = new Set();
+    this.classifyTimeoutMs = opts.classifyTimeoutMs ?? 90_000;
+    this.answerTimeoutMs = opts.answerTimeoutMs ?? 240_000;
+    /** Open clarifying question cards (src/crew/domains/questions.js): id -> { card, run, resolve }. */
+    this.questions = new Map();
+  }
+
+  setLang(tag) {
+    if (typeof tag === 'string' && tag.trim()) this.lang = localeOf(tag.trim());
+    return this.lang;
   }
 
   get state() {
@@ -83,11 +125,30 @@ export class Hive {
     return new Map(this.state.crew.map((w) => [w.id, w]));
   }
 
-  chat(from, text, taskId, channel = 'general', jobId) {
+  chat(from, text, taskId, channel = 'general', jobId, extra) {
     const data = { id: `m_${Date.now().toString(36)}_${++chatSeq}`, channel, from, text };
     if (taskId) data.taskId = taskId;
+    if (extra) Object.assign(data, extra);
     this.bus.emit('chat.message', data, jobId ? { jobId } : {});
     return data.id;
+  }
+
+  /**
+   * A message from the crew in the user's language. The key and parameters travel with it, so the
+   * desktop shows it in the language picked later too.
+   * @param {{ lang?: string, taskId?: string, channel?: string, jobId?: string, choices?: any[], replyTo?: string }} [o]
+   */
+  say(from, key, params = {}, o = {}) {
+    const lang = localeOf(o.lang || this.lang);
+    const extra = { i18n: { key, params } };
+    if (o.choices) extra.choices = o.choices;
+    if (o.replyTo) extra.replyTo = o.replyTo;
+    return this.chat(from, say(lang, key, params), o.taskId, o.channel || 'general', o.jobId, extra);
+  }
+
+  /** Mel and the crew narrate a job in the language it was asked in. */
+  _jobSay(job, from, key, params, taskId, replyTo) {
+    return this.say(from, key, params, { lang: job?.lang || 'en', taskId, jobId: job?.id, replyTo });
   }
 
   // ---- crew ----
@@ -134,23 +195,161 @@ export class Hive {
   }
 
   // ---- chat from the user ----
-  userChat(channel, text) {
+  /**
+   * A message the user wrote in #general or a worker's direct chat. A build or change request starts
+   * a job (with that worker as the lead in a direct chat), a question or small talk gets an answer
+   * from the model, and when it is not clear the crew asks with two buttons.
+   * @param {{ lang?: string, jobs?: boolean, owner?: boolean }} [opts] jobs: the sender may start jobs from the chat;
+   *   owner: false for a guest or a peer (their text never goes into running jobs' notes)
+   *   (the host's desktop says so; a Code together guest's message never carries it)
+   */
+  userChat(channel, text, opts = {}) {
     const ch = typeof channel === 'string' && (channel === 'general' || /^dm:[\w-]+$/.test(channel)) ? channel : 'general';
     const msg = String(text || '').trim().slice(0, 2000);
     if (!msg) throw Object.assign(new Error('empty message'), { code: 'bad_request' });
+    if (opts.lang) this.setLang(opts.lang);
+    const lang = this.lang;
     const id = this.chat('user', msg, undefined, ch);
     const target = ch.startsWith('dm:') ? ch.slice(3) : '*';
-    if (this.active.size) {
+    const running = this._runningJobs().length > 0;
+    // Only the owner's own chat reaches running jobs as notes; a guest's or a peer's text never becomes a user message there.
+    if (this.active.size && opts.owner !== false) {
       for (const run of this.active.values()) {
         const list = run.notes.get(target) || [];
         list.push(msg);
         run.notes.set(target, list.slice(-5));
       }
-    } else {
-      const who = target === '*' ? 'mel' : target;
-      if (this.crewById().has(who)) this.chat(who, 'Got it. Type a request in the top bar and the crew will start a job.', undefined, ch);
     }
+    const who = target === '*' ? 'mel' : target;
+    if (!this.crewById().has(who)) return id;
+    // GitHub and changelog requests get Mel's confirmation card from src/github/ instead.
+    if ((ch === 'general' || ch === 'dm:mel') && looksLikeGitIntent(msg)) {
+      const rules = parseRules(msg);
+      if (rules.intent !== 'none' && rules.confidence >= 0.6) return id;
+    }
+    this._track(this._talk({ id, channel: ch, text: msg, who, lang, running, jobs: opts.jobs === true }));
     return id;
+  }
+
+  _track(p) {
+    const q = p.catch(() => {}).finally(() => this.talks.delete(q));
+    this.talks.add(q);
+    return q;
+  }
+
+  /** Jobs the user started that are still going (city hops and their one task jobs are not counted). */
+  _runningJobs() {
+    return this.state.jobs.filter((j) => this.active.has(j.id) && !j.cityTaskId);
+  }
+
+  /** Is this worker busy with a task or with planning in a running job? */
+  _inJob(workerId) {
+    for (const run of this.active.values()) {
+      if (!run.graph) { if (workerId === 'mel') return true; continue; }
+      if (run.graph.all().some((t) => t.status === 'running' && t.assignee === workerId)) return true;
+    }
+    return false;
+  }
+
+  /** One model turn for the chat, with a time limit; the worker goes back to idle after it. */
+  async _chatTurn(workerId, messages, options, ms) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    timer.unref?.();
+    try {
+      return await this.scheduler.turn({ workerId, messages, options, signal: ctrl.signal });
+    } finally {
+      clearTimeout(timer);
+      if (!this._inJob(workerId)) this.bus.emit('worker.status', { workerId, status: 'idle' });
+    }
+  }
+
+  async _classify(text, who, lang) {
+    const kw = keywordIntent(text, lang);
+    let model = null;
+    if (this.scheduler.hasBrain) {
+      try {
+        const r = await this._chatTurn(who, intentMessages(text, this.crewById().get(who)), { schema: INTENT_SCHEMA, maxTokens: 40, temperature: 0 }, this.classifyTimeoutMs);
+        const json = r.json ?? extractJson(r.text);
+        if (!validate(INTENT_SCHEMA, json).length) model = json;
+      } catch { /* the keyword rules decide */ }
+    }
+    return { intent: decideIntent(model, kw), request: kw.request, model, keywords: kw };
+  }
+
+  async _talk({ id, channel, text, who, lang, running, jobs }) {
+    const c = await this._classify(text, who, lang);
+    this.bus.live('chat.intent', { messageId: id, channel, intent: c.intent, model: c.model?.intent || null, keywords: c.keywords.intent || null });
+    if (c.intent === 'request') {
+      if (!jobs) return this.say(who, 'crew.talk.hostOnly', {}, { lang, channel, replyTo: id });
+      if (running) {
+        // The running job already got the message as a note; a separate job is one click away.
+        return this.say(who, 'crew.talk.noted', {}, { lang, channel, replyTo: id, choices: this._offer(id, { channel, text: c.request, who, lang, jobs }, ['task']) });
+      }
+      return this._startFromChat({ channel, who, lang, request: c.request, replyTo: id });
+    }
+    if (c.intent === 'ambiguous' && jobs) {
+      return this.say(who, 'crew.talk.ambiguous', {}, { lang, channel, replyTo: id, choices: this._offer(id, { channel, text: c.request, who, lang, jobs }, ['task', 'chat']) });
+    }
+    return this._answer({ channel, who, lang, text, replyTo: id });
+  }
+
+  _offer(id, ask, ids) {
+    this.choices.set(id, ask);
+    while (this.choices.size > 50) this.choices.delete(this.choices.keys().next().value);
+    return ids.map((c) => ({ id: c, key: `crew.talk.choice.${c}` }));
+  }
+
+  /** The command `chat.choose`: the user picked "start as a task" or "just talk" for a message. */
+  chooseChat(messageId, choice, opts = {}) {
+    const ask = this.choices.get(messageId);
+    if (!ask) throw Object.assign(new Error('that choice is no longer open'), { code: 'conflict' });
+    if (!['task', 'chat'].includes(choice)) throw Object.assign(new Error('choice must be task or chat'), { code: 'bad_request' });
+    if (opts.lang) this.setLang(opts.lang);
+    this.choices.delete(messageId);
+    this.bus.emit('chat.chosen', { messageId, channel: ask.channel, choice });
+    const lang = opts.lang ? this.lang : ask.lang;
+    if (choice === 'task') return this._startFromChat({ channel: ask.channel, who: ask.who, lang, request: ask.text, replyTo: messageId });
+    this._track(this._answer({ channel: ask.channel, who: ask.who, lang, text: ask.text, replyTo: messageId }));
+    return {};
+  }
+
+  /** Starts a job from the chat: the normal flow (brief, plan, crew), with the worker asked directly as the lead. */
+  _startFromChat({ channel, who, lang, request, replyTo }) {
+    const lead = channel.startsWith('dm:') && who !== 'mel' && who !== 'qa' ? who : undefined;
+    // In #general Mel's first line about the job is the reply itself.
+    const melHere = who === 'mel' && channel === 'general';
+    let started;
+    try {
+      started = this.createJob({ request, lang, ...(lead ? { lead } : {}), ...(melHere ? { replyTo } : {}) });
+    } catch (err) {
+      this.say(who, 'crew.talk.startFailed', { error: String(err.message || err).slice(0, 200) }, { lang, channel, replyTo });
+      return {};
+    }
+    const short = request.length > 160 ? `${request.slice(0, 157)}...` : request;
+    if (melHere && !started.flow) return { jobId: started.jobId || null };
+    const key = started.flow ? 'crew.talk.startedFlow' : lead ? 'crew.talk.startedLead' : who === 'mel' ? 'crew.talk.startedMel' : 'crew.talk.started';
+    this.say(who, key, { request: short }, { lang, channel, replyTo, jobId: started.jobId || undefined });
+    return { jobId: started.jobId || null };
+  }
+
+  /** A real answer from the model, as the worker who was asked, in the user's language. */
+  async _answer({ channel, who, lang, text, replyTo }) {
+    const worker = this.crewById().get(who) || this.crewById().get('mel');
+    if (!this.scheduler.hasBrain) return this.say(who, 'crew.talk.noModel', {}, { lang, channel, replyTo });
+    const s = this.state;
+    const messages = replyMessages({
+      worker, text, lang, crew: s.crew, files: this.toolbox.ws.list().map((f) => f.path),
+      jobs: s.jobs, tasks: s.tasks, history: (s.chat[channel] || []).filter((m) => m.from !== 'system').slice(-7, -1)
+    });
+    try {
+      const r = await this._chatTurn(who, messages, { maxTokens: 320, temperature: 0.5, talk: true }, this.answerTimeoutMs);
+      const answer = cleanReply(r.text, worker);
+      if (!answer) return this.say(who, 'crew.talk.empty', {}, { lang, channel, replyTo });
+      return this.chat(who, answer, undefined, channel, undefined, { replyTo });
+    } catch (err) {
+      return this.say(who, 'crew.talk.failed', { error: String(err.message || err).slice(0, 200) }, { lang, channel, replyTo });
+    }
   }
 
   // ---- jobs ----
@@ -168,14 +367,26 @@ export class Hive {
       refine: spec.refine === undefined ? this.state.settings.refine !== false : !!spec.refine,
       createdAt: new Date().toISOString(), taskIds: []
     };
+    if (spec.lang) this.setLang(spec.lang);
+    const lang = localeOf(spec.lang || this.lang);
+    if (lang !== 'en') job.lang = lang;
+    // A job asked for in a worker's direct chat: that worker leads it (Mel still plans it).
+    const lead = typeof spec.lead === 'string' ? this.state.crew.find((w) => w.id === spec.lead && w.id !== 'mel') : null;
+    if (lead) job.lead = lead.id;
     // A city hop (src/city/): one given task, no brief, no planner, no report.
     const plan = Array.isArray(spec.plan) && spec.plan.length ? spec.plan : null;
-    if (plan) { job.refine = false; job.cityTaskId = String(spec.cityTaskId || '').slice(0, 40) || undefined; }
+    if (plan) {
+      job.refine = false;
+      job.cityTaskId = String(spec.cityTaskId || '').slice(0, 40) || undefined;
+      // A native 1.0 task run by the crew (src/tasks/crew-executor.js): its board task, so the job's steps join it.
+      if (typeof spec.taskRef === 'string' && spec.taskRef) job.taskRef = spec.taskRef.slice(0, 120);
+    }
     const ctrl = new AbortController();
-    const run = { ctrl, notes: new Map(), promise: null };
+    const run = { ctrl, notes: new Map(), promise: null, replyTo: typeof spec.replyTo === 'string' ? spec.replyTo : undefined };
     this.active.set(jobId, run);
-    this.bus.emit('job.created', { job }, { jobId });
-    run.promise = (plan ? this._runPlanned(job, run, plan) : this._runJob(job, run, spec.playbookId)).catch((err) => {
+    const created = this.bus.emit('job.created', { job }, { jobId });
+    // Everything the job does from here is the crew's doing, caused by job.created (src/core/origin.js).
+    run.promise = runWithOrigin(crewOrigin('mel'), () => (plan ? this._runPlanned(job, run, plan) : this._runJob(job, run, spec.playbookId)), created.seq).catch((err) => {
       if (ctrl.signal.aborted) return;
       this.bus.emit('job.failed', { error: String(err?.message || err) }, { jobId });
     }).finally(() => {
@@ -203,7 +414,7 @@ export class Hive {
       if (t && !['done', 'failed', 'skipped', 'blocked'].includes(t.status)) this.bus.emit('task.status', { taskId: id, status: 'skipped', note: 'cancelled' }, { jobId });
     }
     this.bus.emit('job.cancelled', { by: 'user' }, { jobId });
-    this.chat('mel', 'Job cancelled. The files written so far stay in the workspace.', undefined, 'general', jobId);
+    this._jobSay(job || { id: jobId }, 'mel', 'crew.say.cancelled');
     return true;
   }
 
@@ -211,21 +422,23 @@ export class Hive {
     const jobId = job.id;
     const signal = run.ctrl.signal;
     const ev = { jobId };
-    // The crew chosen in the setup (settings.crew); hired workers and Mel always take part.
-    const active = this.state.settings.crew;
-    const crew = Array.isArray(active) ? this.state.crew.filter((w) => w.id === 'mel' || !w.builtin || active.includes(w.id)) : this.state.crew;
-    const crewById = this.crewById();
     run.budget = { turns: 0, max: JOB_TURN_BUDGET };
-    if (!this.scheduler.hasBrain) {
-      this.chat('system', 'No model yet: the job waits until a model is ready. See the model status in the top bar or open Settings.', undefined, 'general', jobId);
-    }
+    if (!this.scheduler.hasBrain) this._jobSay(job, 'system', 'crew.say.noModel');
+    // 0. The domain (src/crew/domains/flow.js): what kind of project, the questions that change the plan,
+    // the specialist and the offline skeleton. A security audit finishes here, read only.
+    const dom = await startDomain(this, job, run);
+    if (signal.aborted || dom.done || dom.cancelled) return;
+    // The crew chosen in the setup (settings.crew); hired workers and Mel always take part, and of the
+    // domain specialists only the one this job needs.
+    const crew = jobCrew(this.state, dom.specialist);
+    const crewById = this.crewById();
     // 1. The prompt refiner: Mel turns the request into a brief, the user approves, edits or keeps the original.
     if (job.refine) {
-      this.chat('mel', `On it: "${job.request}". First I will write it up as a clear brief for you to check.`, undefined, 'general', jobId);
+      this._jobSay(job, 'mel', 'crew.say.onItBrief', { request: job.request }, undefined, run.replyTo);
       await this._refine(job, run);
       if (signal.aborted) return;
     } else {
-      this.chat('mel', `On it: "${job.request}". Let me make a plan.`, undefined, 'general', jobId);
+      this._jobSay(job, 'mel', 'crew.say.onItPlan', { request: job.request }, undefined, run.replyTo);
     }
     const work = job.brief || job.request;
     // What we know: a few relevant memories (keyword and recency scoring), shown in the UI as "used".
@@ -235,6 +448,8 @@ export class Hive {
       run.memories = used.map((m) => m.text);
       if (used.length) this.bus.emit('memory.used', { items: used.map((m) => ({ id: m.id, text: m.text, kind: m.kind, scope: m.scope })) }, ev);
     }
+    // A user who writes in another language gets a site in that language (small models default to English).
+    if (job.lang && job.lang !== 'en') run.memories.push(`The user speaks ${languageName(job.lang)}: write every visible text in the files in ${languageName(job.lang)}, with <html lang="${job.lang}">.`);
     // Playbook retrieval.
     let playbook = null;
     let score = 0;
@@ -249,12 +464,24 @@ export class Hive {
     if (playbook) {
       this.playbooks.markUsed(playbook.id);
       this.bus.emit('playbook.used', { playbookId: playbook.id, score }, ev);
-      this.chat('mel', `This looks like an earlier job ("${playbook.title}"), so I am reusing its playbook.`, undefined, 'general', jobId);
+      this._jobSay(job, 'mel', 'crew.say.playbook', { title: playbook.title });
     }
     const files = this.toolbox.ws.list().map((f) => f.path);
-    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, merge: modelFamily(this.state.brain) === 'small', notes: [...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal });
+    const lead = job.lead ? crewById.get(job.lead) : null;
+    const leadNote = lead ? [`The user asked ${lead.name} (${lead.role}) directly: ${lead.name} leads this job, so give the main work to ${lead.id}.`] : [];
+    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, merge: modelFamily(this.state.brain) === 'small', notes: [...dom.notes, ...leadNote, ...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal, domain: dom.domain });
     if (signal.aborted) return;
-    if (plan.error) this.chat('system', `The planner answer was not usable (${plan.error}). Using a ${plan.source === 'playbook' ? 'saved playbook' : 'simple default plan'}.`, undefined, 'general', jobId);
+    // The plan came from a remote brain: every write and run of this job now needs the host (SEC-3).
+    if (plan.remote && !this.toolbox.originOf?.({ jobId })) {
+      this.toolbox.markOrigin?.(jobId, { kind: 'remote', brainId: plan.remote.brainId, label: plan.remote.label, ...(plan.remote.peerId ? { peerId: plan.remote.peerId } : {}) });
+    }
+    if (plan.error) this._jobSay(job, 'system', 'crew.say.plannerFallback', { error: plan.error, source: plan.source === 'playbook' ? 'playbook' : 'default' });
+    // The lead (or the domain specialist) takes the first build task when the plan left them out (QA keeps checking).
+    const owner = lead || (dom.specialist ? crew.find((w) => w.id === dom.specialist) : null);
+    if (owner && crew.some((w) => w.id === owner.id) && !plan.tasks.some((t) => t.assignee === owner.id)) {
+      const first = plan.tasks.find((t) => t.kind !== 'qa' && t.assignee !== 'qa');
+      if (first) first.assignee = owner.id;
+    }
 
     const jobNum = jobId.slice(2);
     const graph = new TaskGraph();
@@ -264,9 +491,10 @@ export class Hive {
     }));
     this.bus.emit('job.planned', playbook ? { tasks: tasks.map((t) => ({ ...t })), playbookId: playbook.id } : { tasks: tasks.map((t) => ({ ...t })) }, ev);
     const lines = tasks.map((t, i) => `${i + 1}. ${crewById.get(t.assignee)?.name || t.assignee}: ${t.title}`);
-    this.chat('mel', `${plan.summary ? plan.summary + '\n' : ''}Plan:\n${lines.join('\n')}`, undefined, 'general', jobId);
+    const planSummary = plan.source === 'fallback' ? say(job.lang, 'crew.say.planDefault') : plan.source === 'playbook' ? say(job.lang, 'crew.say.planPlaybook', { title: playbook?.title || '' }) : plan.summary;
+    this._jobSay(job, 'mel', 'crew.say.plan', { summary: planSummary ? `${planSummary}\n` : '', lines: lines.join('\n') });
     await this._drive(job, run, {
-      graph, tasks, preexisting: new Set(files), fixRounds: 0, nextIdx: tasks.length + 1,
+      graph, tasks, preexisting: new Set(files.filter((f) => !dom.seeded.includes(f))), fixRounds: 0, nextIdx: tasks.length + 1,
       qaPassed: !crew.some((w) => w.id === 'qa'), openIssues: [], playbook, score
     });
   }
@@ -328,6 +556,8 @@ export class Hive {
       let checks;
       if (task.kind === 'qa') {
         checks = checkWorkspace(this.toolbox.ws);
+        // The checks of the playbooks picked for this job's tasks (src/crew/library/hook.js).
+        if (this.playbookChecks) checks = this.playbookChecks(checks, graph.all());
         extra = `Automatic checks: ${checks.passed ? `all passed (${checks.checked.length} files)` : `issues:\n- ${checks.issues.join('\n- ')}`}`;
         // Small models review better when the files are right in front of them.
         let budget = 6000;
@@ -345,7 +575,7 @@ export class Hive {
       }
       const control = { ctrl: new AbortController() };
       controls.set(task.id, control);
-      const p = runTask({
+      const p = runWithOrigin(crewOrigin(worker.id), () => runTask({
         job, task, worker, graph, crewById, scheduler: this.scheduler, toolbox: this.toolbox, memory: this.memory, bus: this.bus,
         signal: anySignal([signal, control.ctrl.signal]), maxTurns: this.maxTurns, extra, userNotes, preexisting: st.preexisting, budget: run.budget,
         family: modelFamily(this.state.brain), contextTokens: this.state.brain?.ctx || undefined,
@@ -358,7 +588,7 @@ export class Hive {
           return r.issues.filter((i) => task.kind === 'fix' || !/ links to /.test(i));
         },
         chat: (from, text, taskId) => this.chat(from, text, taskId, 'general', jobId)
-      }).then((res) => ({ task, worker, res, checks, control }), (err) => ({ task, worker, err, checks, control }));
+      })).then((res) => ({ task, worker, res, checks, control }), (err) => ({ task, worker, err, checks, control }));
       active.set(task.id, p);
       busy.add(task.assignee);
     };
@@ -399,14 +629,15 @@ export class Hive {
         this.bus.emit('qa.report', { taskId: task.id, passed: report.passed, issues: report.issues }, ev);
         graph.setStatus(task.id, 'done');
         this.bus.emit('task.status', { taskId: task.id, status: 'done', note: report.passed ? 'passed' : `${report.issues.length} issues` }, ev);
-        this.chat(worker.id, report.passed ? 'All checks passed.' : `Found ${report.issues.length} issues:\n- ${report.issues.join('\n- ')}`, task.id, 'general', jobId);
+        if (report.passed) this._jobSay(job, worker.id, 'crew.say.qaPassed', {}, task.id);
+        else this._jobSay(job, worker.id, 'crew.say.qaIssues', { count: report.issues.length, issues: report.issues.join('\n- ') }, task.id);
         st.qaPassed = report.passed;
         st.openIssues = report.passed ? [] : report.issues;
         if (!report.passed && st.fixRounds < MAX_FIX_ROUNDS && this.crewById().has('dev')) {
           st.fixRounds++;
           const fix = graph.add({
             id: `t_${jobNum}_${st.nextIdx++}`, jobId, title: `Fix the QA issues (round ${st.fixRounds})`,
-            detail: `QA found these problems. Read the files and fix each one:\n- ${report.issues.join('\n- ')}`,
+            detail: `QA found these problems. Read the files and fix each one:\n- ${report.issues.join('\n- ')}${linkHints(report.issues, this.toolbox.ws.list().map((f) => f.path))}`,
             assignee: 'dev', dependsOn: [task.id], status: 'pending', attempts: 0, kind: 'fix'
           });
           this.bus.emit('task.added', { task: { ...fix } }, ev);
@@ -419,8 +650,15 @@ export class Hive {
       } else {
         graph.setStatus(task.id, res.status);
         this.bus.emit('task.status', { taskId: task.id, status: res.status, note: res.summary }, ev);
-        if (res.status === 'done') this.chat(worker.id, `Done: ${res.summary}`, task.id, 'general', jobId);
-        else this.chat(worker.id, `I could not finish "${task.title}": ${res.summary}`, task.id, 'general', jobId);
+        if (res.status === 'done') this._jobSay(job, worker.id, 'crew.say.taskDone', { summary: res.summary }, task.id);
+        else this._jobSay(job, worker.id, 'crew.say.taskFailed', { title: task.title, summary: res.summary }, task.id);
+      }
+      // Hand offs (PLAN.md section 10): a finished task makes the work of another worker ready. An event, not a guess.
+      if (graph.get(task.id)?.status === 'done') {
+        for (const next of graph.ready()) {
+          if (!next.dependsOn.includes(task.id) || next.assignee === worker.id) continue;
+          this.bus.emit('task.handoff', { taskId: next.id, from: worker.id, to: next.assignee, title: next.title, kind: next.kind, reason: `${task.title} is done` }, ev);
+        }
       }
       this.bus.emit('worker.status', { workerId: worker.id, status: 'idle' }, ev);
     }
@@ -434,7 +672,7 @@ export class Hive {
     if (buildTasks.length && buildTasks.every((t) => t.status === 'failed' || t.status === 'blocked')) {
       this.bus.emit('job.failed', { error: `${failed.length} tasks failed` }, ev);
       if (st.quiet) return;
-      this.chat('mel', 'This job did not work out. You can retry a task from its menu, try a smaller request, or use a bigger model.', undefined, 'general', jobId);
+      this._jobSay(job, 'mel', 'crew.say.jobFailed');
       await this._report(job, run);
       return;
     }
@@ -444,7 +682,9 @@ export class Hive {
     this.bus.emit('job.done', { summary, files: outFiles }, ev);
     if (st.quiet) return;
     const url = this.previewUrl();
-    this.chat('mel', `${summary} Files: ${outFiles.join(', ') || 'none'}.${url ? ' Open the Live preview to see it.' : ''}`, undefined, 'general', jobId);
+    const said = failed.length ? say(job.lang, 'crew.say.sumFailed', { count: failed.length })
+      : st.qaPassed ? say(job.lang, 'crew.say.sumPassed', { skipped }) : say(job.lang, 'crew.say.sumOpen', { count: st.openIssues.length });
+    this._jobSay(job, 'mel', 'crew.say.finished', { summary: said, files: outFiles.join(', ') || say(job.lang, 'crew.say.none'), preview: url ? 'yes' : 'no' });
     if (st.tasks && !failed.length && !skipped && st.qaPassed && !(st.playbook && st.score >= 0.6)) {
       // Save the original plan (without the fix rounds) as a playbook.
       const base = st.tasks.filter((t) => t.kind !== 'fix');
@@ -467,20 +707,22 @@ export class Hive {
     try {
       const r = await this.scheduler.turn({
         workerId: 'mel', jobId, signal: run.ctrl.signal,
-        messages: briefMessages(job.request, this.toolbox.ws.list().map((f) => f.path)),
+        messages: briefMessages(job.decisions ? `${job.request}
+
+${job.decisions}` : job.request, this.toolbox.ws.list().map((f) => f.path)),
         options: { schema: BRIEF_SCHEMA, maxTokens: 900, temperature: 0.2 }
       });
       brief = normalizeBrief(r.json, job.request);
     } catch (err) {
       if (run.ctrl.signal.aborted) return;
-      this.chat('system', `The brief could not be written (${err.message}). The crew works from your request as written.`, undefined, 'general', jobId);
+      this._jobSay(job, 'system', 'crew.say.briefFailed', { error: err.message });
       job.brief = null;
       this.bus.emit('brief.approved', { brief: null, text: job.request, source: 'original' }, ev);
       return;
     }
     brief.text = briefText(brief);
     this.bus.emit('brief.proposed', { original: job.request, brief, vague: isVague(job.request) }, ev);
-    this.chat('mel', 'Here is the brief. Use it, edit it, or keep your original request.', undefined, 'general', jobId);
+    this._jobSay(job, 'mel', 'crew.say.briefReady');
     const decision = await new Promise((resolve, reject) => {
       run.briefWaiter = resolve;
       if (this.autoApproveBriefMs) {
@@ -518,7 +760,9 @@ export class Hive {
     try {
       const r = await this.scheduler.turn({
         workerId: 'mel', jobId, signal: run.ctrl.signal,
-        messages: reportMessages({ request: job.request, brief: job.brief, report }),
+        messages: reportMessages({ request: job.decisions ? `${job.request}
+
+${job.decisions}` : job.request, brief: job.brief, report }),
         options: { schema: REPORT_SCHEMA, maxTokens: 700, temperature: 0.3 }
       });
       const improvedPrompt = String(r.json?.improvedPrompt || '').trim();
@@ -531,7 +775,7 @@ export class Hive {
       prompt = fallbackPrompt({ request: job.request, brief: job.brief, report });
     }
     this.bus.emit('job.report', { report, ...prompt }, { jobId });
-    this.chat('mel', `Report: ${report.files.length} files changed, ${report.checks.filter((c) => c.ok).length} of ${report.checks.length} checks passed${report.missing.length ? `, ${report.missing.length} things still missing` : ''}. The improved prompt is in the Report window.`, undefined, 'general', jobId);
+    this._jobSay(job, 'mel', 'crew.say.report', { files: report.files.length, passed: report.checks.filter((c) => c.ok).length, checks: report.checks.length, missing: report.missing.length });
   }
 
   /** The command `session.continue`: a new job that picks up where a past session ended. */
@@ -691,5 +935,6 @@ export class Hive {
   async close() {
     for (const [, run] of this.active) run.ctrl.abort();
     await Promise.allSettled([...this.active.values()].map((r) => r.promise));
+    this.choices.clear();
   }
 }

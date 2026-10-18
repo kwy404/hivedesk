@@ -1,0 +1,41 @@
+{
+  "id": "sql-file-migrations",
+  "title": "Embedded SQL file database with numbered migrations",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "database migrations",
+    "schema migrations",
+    "embedded database",
+    "sql file database",
+    "migrate",
+    "user_version",
+    "schema changes",
+    "backend",
+    "local database"
+  ],
+  "when": "A small backend keeps its data in an embedded SQL database file and needs the schema created and evolved by ordered migration files instead of scattered CREATE TABLE calls.",
+  "inputs": [
+    "current tables",
+    "the planned change"
+  ],
+  "prompt": "Goal: migrations/NNN_name.sql files applied in order, each once, inside a transaction, tracked in the database itself.\nSteps:\n1. Open one file from config (DATA_DIR/app.db) with the embedded driver the project uses (recent Node versions ship a DatabaseSync class); run PRAGMA foreign_keys = ON and PRAGMA journal_mode = WAL right after opening.\n2. Name files 001_init.sql, 002_tasks_due_date.sql; a shipped file is never edited, a new one is added.\n3. Track progress in schema_migrations(version INTEGER PRIMARY KEY, name TEXT, applied_at TEXT), or PRAGMA user_version for one number.\n4. migrate.mjs reads the folder, sorts by number and runs each pending file as BEGIN, the SQL, the INSERT into schema_migrations, COMMIT; on error ROLLBACK and exit code 1.\n5. Changes ALTER cannot do: create the new table, copy rows, drop the old, rename, all in one file.\n6. Run migrate before listen at startup, and alone with node scripts/migrate.mjs --dry-run to list pending files.\nQuality bar:\n- A fresh database and an upgraded one end with the same schema.\n- Copy the .db file (or VACUUM INTO) before migrating production.\n- A test applies all files to an empty temp database.\nPitfalls:\n- Two processes migrating at once; migrate from one place only.\n- Gaps or duplicate numbers; fail on them.\n- Data fixes hidden inside schema files.\nVerify:\n- [ ] Running twice changes nothing.\n- [ ] A failing file rolls back and stops.\n- [ ] Numbers increase without gaps.\n- [ ] The test builds a database from zero.\nOutput: migrations/*.sql, scripts/migrate.mjs, db.mjs, test/migrate.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "preciso adicionar uma coluna sem perder os dados do banco local",
+      "output": "003_add_due_date.sql, schema_migrations table, transaction per file, dry run flag, test from empty"
+    }
+  ],
+  "size": 450,
+  "version": 1
+}

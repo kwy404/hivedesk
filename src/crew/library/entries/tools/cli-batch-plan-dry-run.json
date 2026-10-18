@@ -1,0 +1,38 @@
+{
+  "id": "cli-batch-plan-dry-run",
+  "title": "Batch file CLI with a plan, dry run and undo log",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "batch rename",
+    "dry run",
+    "plan and apply",
+    "undo",
+    "conflict detection",
+    "bulk file changes",
+    "atomic write",
+    "cli"
+  ],
+  "when": "A CLI renames, moves or rewrites many files at once and the user wants to preview every change, catch conflicts before touching disk, and undo a run.",
+  "inputs": [
+    "kind of change",
+    "root folder",
+    "naming rule"
+  ],
+  "prompt": "Goal: Plan every operation first, check conflicts, show the plan, then apply with atomic writes and an undo journal.\nSteps:\n1. Plan phase: scan inputs into an array of { op: \"rename\" | \"write\" | \"delete\", from, to } without touching disk.\n2. Check the plan: two sources to one target, an existing target outside the plan, cycles (a to b, b to a), paths leaving the root after path.resolve; list all conflicts, exit 2.\n3. --dry-run is the default: print \"rename  old.txt -> new.txt\" per operation plus totals; --json prints the plan; exit 0.\n4. --apply runs operations in plan order; cycles go through temporary names (name.tmp-<random>).\n5. Writes go to a temp file in the same folder, then fs.rename over the target, so a crash never leaves half a file.\n6. Before each operation append its reverse to .batch-undo.jsonl; batch undo replays it backwards, then removes it.\n7. Stop at the first failure, report done and remaining counts, exit 1, keep the journal for undo.\nQuality bar:\n- Dry run and apply share the same plan code.\n- A second apply changes nothing.\n- Undo restores names and contents exactly.\nPitfalls:\n- Case only renames (a.txt to A.txt) on case insensitive disks; go through a temp name.\n- Planning and applying in one loop, so conflicts appear halfway.\nVerify:\n- [ ] Dry run is default and touches nothing.\n- [ ] Conflict check runs before any change.\n- [ ] Temp file then rename for writes.\n- [ ] Journal written before each step.\nOutput: bin/batch.mjs, src/plan.mjs, src/apply.mjs and tests for plan conflicts.",
+  "checks": [
+    "js.syntax",
+    "node.exit-code",
+    "node.shebang"
+  ],
+  "examples": [
+    {
+      "input": "renomear 2000 fotos por data com previa antes e como desfazer",
+      "output": "bin/batch.mjs building a plan, conflict check, --dry-run listing, --apply with temp then rename, .batch-undo.jsonl and batch undo"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

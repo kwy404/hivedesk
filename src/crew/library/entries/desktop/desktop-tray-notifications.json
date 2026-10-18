@@ -1,0 +1,38 @@
+{
+  "id": "desktop-tray-notifications",
+  "title": "System tray icon and desktop notifications",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "system tray",
+    "tray icon",
+    "notifications",
+    "desktop app",
+    "minimize to tray",
+    "menu bar icon",
+    "neutralinojs",
+    "reminders"
+  ],
+  "when": "The desktop app should keep running in the tray, offer a small tray menu, and show OS notifications for events such as finished jobs or reminders.",
+  "inputs": [
+    "tray menu actions",
+    "events that notify"
+  ],
+  "prompt": "Goal: tray.js adds a tray icon with Show, Pause and Quit, hides the window to the tray on close if the user chose so, and sends short notifications.\nSteps:\n1. Neutralino.os.setTray({ icon: \"/resources/icons/tray.png\", menuItems: [{ id: \"show\", text: \"Show\" }, { id: \"pause\", text: \"Pause reminders\" }, { text: \"-\" }, { id: \"quit\", text: \"Quit\" }] }).\n2. Handle Neutralino.events.on(\"trayMenuItemClicked\", (e) => ...) by e.detail.id: show calls Neutralino.window.show() and focus(), quit calls Neutralino.app.exit().\n3. Ship tray icons at 16, 32 and 48 px with simple shapes readable on light and dark bars.\n4. Close behavior is a setting: when \"keep running in tray\" is on, windowClose calls Neutralino.window.hide(); the first time, notify that the app is still running.\n5. Notify with Neutralino.os.showNotification(\"Export done\", \"report.pdf saved\", \"INFO\"); keep it short.\n6. Throttle to one notification per kind per minute and skip them while the window is focused.\n7. Add os.setTray, os.showNotification, window.show, window.hide and window.focus to the allow list.\nQuality bar:\n- Quit from the tray always ends the process.\n- Notifications respect a do not disturb setting in the app.\nPitfalls:\n- Some linux desktops hide tray icons; the app must stay usable without one.\n- Hiding to tray with no way to know the app is still running.\nVerify:\n- [ ] Tray menu has a Quit item.\n- [ ] Close to tray is optional.\n- [ ] Allow list covers the tray and notification calls.\nOutput: tray.js, icons in resources/icons and the allow list lines.",
+  "checks": [
+    "neu.config",
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quero que meu app fique na bandeja do sistema e avise quando terminar",
+      "output": "setTray with Show/Pause/Quit, optional hide on close, throttled showNotification"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

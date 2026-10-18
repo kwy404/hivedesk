@@ -1,0 +1,40 @@
+{
+  "id": "virtual-joystick-touch-controls",
+  "title": "Touch controls for phone games with a virtual joystick",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "touch controls",
+    "virtual joystick",
+    "mobile game",
+    "phone game",
+    "pointer events",
+    "on screen buttons",
+    "multitouch",
+    "thumb stick",
+    "game"
+  ],
+  "when": "A canvas game must be playable on a phone with a thumb stick on the left half and action buttons on the right, without the page scrolling or zooming.",
+  "inputs": [
+    "actions needing buttons",
+    "portrait or landscape"
+  ],
+  "prompt": "Goal: Thumb friendly controls that feed the same actions as the keyboard.\nSteps:\n1. Set touch-action: none and user-select: none on the canvas and the controls layer; use pointerdown, pointermove, pointerup and pointercancel, not touch events.\n2. Joystick: a pointerdown in the left half stores pointerId and origin, then canvas.setPointerCapture(e.pointerId).\n3. On pointermove of that pointerId take dx and dy from the origin, clamp the length to 60 CSS px, output x = dx / 60 and y = dy / 60 with a 0.15 dead zone.\n4. Draw the base ring at the origin and the knob at the clamped offset at 40 percent opacity.\n5. Action buttons on the right are real <button type=\"button\"> elements of at least 56 px, set on pointerdown and cleared on pointerup and pointercancel.\n6. Track each finger by pointerId in a Map so steering and firing work together.\n7. Show the touch layer only when matchMedia(\"(pointer: coarse)\").matches, and pad it with env(safe-area-inset-bottom).\nQuality bar:\n- Two thumbs never interfere with each other.\n- No bounce, pinch zoom or text selection while playing.\nPitfalls:\n- Ignoring pointercancel, leaving the stick stuck after a system gesture or call.\n- A fixed stick position that is hard to reach on big phones; a floating origin is easier.\n- Tiny buttons at the screen edge where system gestures live.\nVerify:\n- [ ] Holding the stick and tapping fire both register.\n- [ ] Lifting a finger outside the canvas releases it.\n- [ ] Layout fits a 360 px wide viewport.\nOutput: js/touch.js, the controls markup in index.html and the rules in style.css.",
+  "checks": [
+    "js.syntax",
+    "html.button-type",
+    "html.viewport",
+    "css.media-query"
+  ],
+  "examples": [
+    {
+      "input": "quero jogar meu jogo no celular com um analógico na tela",
+      "output": "floating left stick via pointer capture, two right buttons, multitouch map, no page scroll"
+    }
+  ],
+  "size": 449,
+  "version": 1
+}

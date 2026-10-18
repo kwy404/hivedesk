@@ -1,0 +1,40 @@
+{
+  "id": "security-headers-checklist",
+  "title": "HTTP security headers checklist",
+  "category": "security",
+  "roles": [
+    "security",
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "security headers",
+    "hsts",
+    "x-content-type-options",
+    "referrer-policy",
+    "permissions-policy",
+    "x-frame-options",
+    "cross-origin-opener-policy",
+    "http headers",
+    "security"
+  ],
+  "when": "A server or static host sends replies and the standard protective HTTP headers must be set correctly for pages, APIs and downloads.",
+  "inputs": [
+    "server entry point",
+    "whether the site is HTTPS only"
+  ],
+  "prompt": "Goal: One function sets a reviewed header set on every reply, tuned per reply kind, and a test checks it on the running server.\nSteps:\n1. Pages: Content-Security-Policy (its own playbook), X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin, Permissions-Policy: camera=(), microphone=(), geolocation=() unless used.\n2. Framing: frame-ancestors 'none' in the policy plus X-Frame-Options: DENY for old browsers.\n3. HTTPS only sites: Strict-Transport-Security: max-age=31536000; includeSubDomains, only after every subdomain serves HTTPS; never on localhost.\n4. Isolation: Cross-Origin-Opener-Policy: same-origin and Cross-Origin-Resource-Policy: same-origin for private assets.\n5. APIs: Content-Type with charset on JSON, Cache-Control: no-store on personal data, no X-Powered-By and no detailed Server header.\n6. User file downloads: Content-Disposition: attachment with an encoded safe filename, plus nosniff.\nQuality bar:\n- Error replies and 404s carry the headers too.\n- Each header has a one line reason next to it.\n- A test fetches a page, an API route and a 404 and asserts the set.\nPitfalls:\n- HSTS includeSubDomains before every subdomain is ready, locking users out.\n- X-XSS-Protection: 1, which is obsolete; send 0 or omit it.\n- Headers set on main routes but missing on static files.\nVerify:\n- [ ] One helper covers all replies.\n- [ ] 404 replies carry the headers.\n- [ ] No X-Powered-By.\n- [ ] The header test passes.\nOutput: security-headers.mjs, wiring in server.mjs, test/headers.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "quais headers de seguranca meu servidor node deve mandar",
+      "output": "applySecurityHeaders for every reply, HSTS only on HTTPS, nosniff, Referrer-Policy, header test"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

@@ -1,0 +1,35 @@
+{
+  "id": "layout-sticky-footer",
+  "title": "Sticky footer on short pages",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "sticky footer",
+    "footer",
+    "footer at bottom",
+    "full height",
+    "min-height",
+    "short page",
+    "dvh"
+  ],
+  "when": "The footer floats mid screen on short pages and the user wants it at the bottom of the window without covering content.",
+  "inputs": [
+    "the page wrapper structure"
+  ],
+  "prompt": "Goal: A footer at the viewport bottom on short pages and after the content on long ones, without fixed positioning.\nSteps:\n1. Make the body or a wrapper a column: display: flex; flex-direction: column; min-height: 100vh; then min-height: 100dvh for phones with moving toolbars.\n2. Give main flex: 1 0 auto so it absorbs free space; header and footer keep flex-shrink: 0.\n3. Grid version if preferred: grid-template-rows: auto 1fr auto on the wrapper.\n4. Reset body margin to 0 and remove stray height: 100% rules that fight the layout.\n5. Keep the footer in normal flow; position: fixed hides the last lines of content and breaks at high zoom.\nQuality bar:\n- No gap under the footer on a tall window.\n- Long content pushes the footer down.\n- Works at 200 percent zoom.\nPitfalls:\n- height: 100vh instead of min-height, which clips long pages.\n- Only 100vh on phones, where the toolbar hides the footer.\n- A fixed footer covering form buttons.\nVerify:\n- [ ] Wrapper uses min-height with vh then dvh.\n- [ ] main grows with flex or 1fr.\n- [ ] Footer is not position: fixed.\n- [ ] header, main and footer are direct children.\nOutput: Wrapper rules in style.css; header, main and footer as direct children of the wrapper.",
+  "checks": [
+    "html.main",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "o rodape fica no meio da tela na pagina de contato",
+      "output": "body flex column with min-height 100dvh, main flex 1 0 auto, footer in normal flow"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

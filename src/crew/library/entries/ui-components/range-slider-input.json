@@ -1,0 +1,39 @@
+{
+  "id": "range-slider-input",
+  "title": "Range slider with value readout",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "range slider",
+    "range input",
+    "price range",
+    "volume control",
+    "min max slider",
+    "value slider",
+    "budget slider"
+  ],
+  "when": "The user wants a slider to choose a number or a min and max range, such as a price filter, volume or budget.",
+  "inputs": [
+    "min, max and step",
+    "units and format",
+    "single value or a range"
+  ],
+  "prompt": "Goal: A native range input with a live readout, units for screen readers, a styled track and an optional two thumb range.\nSteps:\n1. <label for=\"price\"> and <input type=\"range\" id=\"price\" min=\"0\" max=\"500\" step=\"10\" value=\"150\">, then <output for=\"price\">.\n2. On input, write the formatted value (Intl.NumberFormat) into the output and set aria-valuetext with units, such as 150 reais.\n3. Fill the track with a linear-gradient driven by a --pct custom property updated in JS.\n4. Style the thumb (at least 24 px) through both vendor prefixed thumb pseudo elements and keep a :focus-visible ring.\n5. Range: two inputs labeled Minimum price and Maximum price overlaid on one track; on input keep min at or below max.\nQuality bar:\n- Arrow keys, Page Up and Home work as native.\n- The readout sits near the thumb.\n- Step values make sense for the task.\nPitfalls:\n- A div slider rebuilt by hand with no keyboard support.\n- Only a number with no unit for screen readers.\n- Two thumbs that can cross.\nVerify:\n- [ ] Each range input has a label.\n- [ ] The output updates on input.\n- [ ] aria-valuetext carries units.\n- [ ] The focus ring shows on the thumb.\nOutput: Slider markup, slider.css and slider.js.",
+  "checks": [
+    "html.labels",
+    "html.aria-live",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "filtro de preco minimo e maximo com slider",
+      "output": "two labeled range inputs on one track, output showing R$ 100 to R$ 400, aria-valuetext with currency"
+    }
+  ],
+  "size": 342,
+  "version": 1
+}

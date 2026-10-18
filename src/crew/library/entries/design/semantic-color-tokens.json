@@ -1,0 +1,38 @@
+{
+  "id": "semantic-color-tokens",
+  "title": "Semantic color tokens for UI states",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "semantic colors",
+    "status colors",
+    "success",
+    "warning",
+    "error color",
+    "info",
+    "alert colors",
+    "color tokens"
+  ],
+  "when": "The user needs consistent colors for meaning (success, warning, danger, info, selected, disabled) across messages, badges and inputs.",
+  "inputs": [
+    "the base palette",
+    "which states the UI shows"
+  ],
+  "prompt": "Goal: Purpose named color tokens so every message, badge and input state uses the same tested colors.\nSteps:\n1. List the states the UI really has: success, warning, danger, info, selected, disabled.\n2. Give each three tokens: --color-danger (icons, borders), --color-danger-bg (soft tint), --color-danger-text (dark shade for text on the tint).\n3. Test each -text on its -bg at 4.5 to 1, and each strong color against the page at 3 to 1.\n4. Keep warning text dark: use a deep brown amber for text and bright amber only for icons.\n5. Point components at tokens: .alert-danger, input[aria-invalid=\"true\"] and .badge-danger read the same variables.\n6. Pair every state color with a word or icon so it works for color blind users.\nQuality bar:\n- No raw hex outside :root.\n- Danger and success differ in lightness, not only hue.\n- Disabled uses aria-disabled and lower contrast, not color alone.\nPitfalls:\n- Red and green that merge with deuteranopia.\n- Yellow text on white.\n- The brand accent reused as info, so links and notices blur.\nVerify:\n- [ ] Each state has strong, bg and text tokens.\n- [ ] Tint and text pairs pass 4.5 to 1.\n- [ ] Components reference the tokens.\n- [ ] Messages carry text, not only color.\nOutput: The semantic token block in style.css and the component rules that use it.",
+  "checks": [
+    "css.custom-properties",
+    "css.contrast",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "define colors for success, error and warning messages",
+      "output": "--color-danger #c62828, --color-danger-bg #fdecea, --color-danger-text #7f1d1d used by .alert and invalid inputs"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

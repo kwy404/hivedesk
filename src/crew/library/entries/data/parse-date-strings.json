@@ -1,0 +1,36 @@
+{
+  "id": "parse-date-strings",
+  "title": "Parsing date strings safely",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "parse date",
+    "date string",
+    "date format",
+    "invalid date",
+    "dd/mm/yyyy",
+    "iso date",
+    "convert date",
+    "string to date"
+  ],
+  "when": "Dates arrive as text (CSV imports, typed input, old records) in formats like 17/10/2026, 2026-10-17 or 10/17/2026 and must become reliable values.",
+  "inputs": [
+    "formats present",
+    "whether the source is day first or month first"
+  ],
+  "prompt": "Goal: Explicit, format driven parsing that rejects impossible and ambiguous dates instead of guessing.\nSteps:\n1. Use new Date(string) only for full ISO 8601 with an offset; write one parser per known format.\n2. Anchored regexes per format, such as /^(\\d{4})-(\\d{2})-(\\d{2})$/ and /^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/, with DMY or MDY fixed by the source, never guessed per value.\n3. Check month 1 to 12 and day within that month (leap year: divisible by 4 and not 100, or by 400); bound the year.\n4. Expand two digit years with a pivot (00 to 49 as 2000s) only when the source uses them.\n5. Return { y, m, d } or \"YYYY-MM-DD\", else null with a reason; attach the source zone before turning date times into instants.\n6. For typed input prefer <input type=\"date\">, whose value is already YYYY-MM-DD.\nQuality bar:\n- 31/02/2026 is rejected, not rolled into March.\n- Failures say which part is wrong.\n- Tests cover leap days and month ends.\nPitfalls:\n- Date rolling invalid days into the next month.\n- Guessing DMY or MDY per row.\n- Date.parse on non ISO text, which differs between engines.\nVerify:\n- [ ] Anchored regex per format.\n- [ ] Day checked against the month.\n- [ ] 29/02 tested in leap and common years.\n- [ ] No new Date(userText).\nOutput: js/parse-date.js exporting parseDate(text, { format }) and tests.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "o csv do banco tem datas 05/03/2026 e meu app lê como 3 de maio",
+      "output": "parseDate(text, { format: \"DMY\" }) with range checks, null plus reason, tests for 29/02"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

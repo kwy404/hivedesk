@@ -1,0 +1,37 @@
+{
+  "id": "join-merge-datasets",
+  "title": "Joining and merging two datasets",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "join",
+    "merge datasets",
+    "combine data",
+    "lookup",
+    "vlookup",
+    "left join",
+    "match records",
+    "enrich data"
+  ],
+  "when": "Data from two sources must be combined by a shared key (orders with customers, prices with products, two exports of one list).",
+  "inputs": [
+    "both datasets",
+    "the key",
+    "which rows to keep"
+  ],
+  "prompt": "Goal: Joins in linear time with a Map, explicit rules for missing keys, multiple matches and conflicting fields, and a report.\nSteps:\n1. Normalize keys on both sides with one function (trim, case, leading zeros, number versus string).\n2. Index the right side: Map from key to record, or to an array when keys repeat.\n3. Name the join: inner (matches only), left (all left rows, right fields null), full (both, with unmatched lists).\n4. Multiple matches: keep first, expand to extra rows, or flag as conflict, and count them.\n5. Conflicting field names: namespace right side fields (customer.name) or apply a stated precedence.\n6. Return { rows, unmatchedLeft, unmatchedRight, duplicates } and print the counts.\nQuality bar:\n- Matched plus unmatched equals the input sizes.\n- No nested loops over both sides.\n- The join type is stated in output and docs.\nPitfalls:\n- \"007\" and 7 matched or missed by accident.\n- Right fields overwriting left fields of the same name.\n- Unmatched rows dropped silently.\nVerify:\n- [ ] Shared key normalization.\n- [ ] Map index used.\n- [ ] Unmatched lists returned.\n- [ ] Tests for missing, duplicate and conflicting keys.\nOutput: js/join.js exporting join(left, right, { key, type }) with tests on small fixtures.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "juntar a planilha de pedidos com a de clientes pelo CPF",
+      "output": "left join on digits only CPF, 12 orders unmatched listed, customer fields namespaced"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

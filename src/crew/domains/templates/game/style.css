@@ -1,0 +1,9 @@
+:root { --bg: #0b0d14; --text: #f4f1ea; --muted: #b7b2a6; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
+main { display: grid; gap: 8px; justify-items: center; padding: 12px; width: 100%; }
+h1 { margin: 0; font-size: 20px; }
+canvas { width: min(360px, 100%); height: auto; aspect-ratio: 9 / 16; border-radius: 12px; touch-action: none; background: #10131c; }
+canvas:focus-visible { outline: 3px solid #6fd3ff; }
+#status { margin: 0; color: var(--muted); min-height: 1.5em; text-align: center; }
+@media (max-height: 700px) { canvas { width: min(300px, 100%); } }

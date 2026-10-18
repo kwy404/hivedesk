@@ -1,0 +1,35 @@
+{
+  "id": "review-reply",
+  "title": "Reply to code review comments",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "code review",
+    "review comments",
+    "reply",
+    "feedback",
+    "reviewer",
+    "address comments",
+    "respond"
+  ],
+  "when": "The user received review comments on a change and wants to respond to each and update the code.",
+  "inputs": [
+    "the review comments",
+    "the related code"
+  ],
+  "prompt": "Goal: Every comment gets a clear, polite reply and either a change, an explanation or a follow up, with nothing left ambiguous.\nSteps:\n1. List the comments and classify each: must fix, suggestion, question, or out of scope.\n2. For fixes, make the change and reply with what changed and where (\"Done, moved validation into parseOrder in 3f2a1c\").\n3. For suggestions you decline, give the reason in one or two sentences and offer an alternative if there is one.\n4. For questions, answer directly, and improve the code or a comment if the question shows it was unclear.\n5. For out of scope items, propose a follow up issue with a short title.\n6. Finish with a summary comment listing what changed since the last review.\nQuality bar:\n- Replies are specific and short.\n- Tone is thankful and neutral, never defensive.\n- Changes are in new commits so reviewers see the delta.\nPitfalls:\n- Resolving threads without replying.\n- Silently ignoring a comment.\n- Large unrelated changes during review.\nVerify:\n- [ ] Each comment has a reply.\n- [ ] Each fix is referenced.\n- [ ] Declines include reasons.\n- [ ] No placeholder text.\nOutput: Replies per comment as text, plus the code changes.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "me ajuda a responder os comentários do revisor",
+      "output": "5 replies: 3 fixed with commit refs, 1 declined with reason, 1 follow up issue proposed"
+    }
+  ],
+  "size": 337,
+  "version": 1
+}

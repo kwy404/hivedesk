@@ -1,0 +1,51 @@
+{
+  "id": "dice-roller",
+  "title": "Dice roller with notation and history",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "dice",
+    "dice roller",
+    "roll dice",
+    "rpg dice",
+    "d20",
+    "tabletop",
+    "board game helper"
+  ],
+  "when": "The user wants to roll virtual dice, from a quick d6 to role playing notation like 2d6+3 or 4d6 keep highest 3, with a history.",
+  "inputs": [
+    "dice types",
+    "notation needed"
+  ],
+  "prompt": "Goal: Unbiased rolls, correct notation parsing and a readable breakdown of every result.\nSteps:\n1. logic.mjs parse(\"2d6+3\", \"d20\", \"4d6kh3\") into { count, sides, keep, modifier } or an error text; limits 1 to 100 dice, 2 to 1000 sides.\n2. roll(spec, randomInt) with randomInt from crypto.getRandomValues and rejection sampling; returns { rolls, kept, total }.\n3. Quick buttons d4, d6, d8, d10, d12, d20, d100 and a form with a labeled notation input and a Roll submit.\n4. Show each die and the total; dropped dice crossed out and marked \"dropped\"; total in aria-live.\n5. Roll keyframe animation of 400 ms, skipped under prefers-reduced-motion.\n6. Last 20 rolls with time in localStorage guarded; Clear.\n7. test.mjs: valid and invalid notation, keep highest, totals with a fake random, even spread over 6,000 rolls.\nQuality bar:\n- Error explains the notation.\n- Totals are big and clear.\n- History is easy to scan.\nPitfalls:\n- Math.random modulo bias.\n- Accepting 99999d99999.\n- Hiding which dice were dropped.\nVerify:\n- [ ] Form labeled with submit.\n- [ ] Total live.\n- [ ] Parser tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (parse and roll), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "rolador de dados para RPG",
+      "output": "d20 button, \"4d6kh3\" gives 5 4 3 (1 dropped) = 12, history"
+    }
+  ],
+  "size": 341,
+  "version": 1
+}

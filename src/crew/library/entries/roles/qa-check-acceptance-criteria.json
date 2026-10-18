@@ -1,0 +1,36 @@
+{
+  "id": "qa-check-acceptance-criteria",
+  "title": "QA: testing each acceptance criterion",
+  "category": "roles",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "qa",
+    "acceptance criteria",
+    "verify criteria",
+    "test criteria",
+    "pass fail",
+    "requirements check",
+    "evidence"
+  ],
+  "when": "QA receives finished work and must decide, criterion by criterion, whether it meets what was asked.",
+  "inputs": [
+    "acceptance criteria",
+    "the changed files",
+    "check results"
+  ],
+  "prompt": "Goal: A verdict per criterion with evidence from the files, and passed true only when every criterion is met.\nSteps:\n1. Copy the criteria into your thought as a numbered list.\n2. For each, decide how to test it: read_file and find the element or text, run a script or test, or use a check result.\n3. Collect evidence: the file and the exact element, line or output that proves pass or fail.\n4. Mark partial when a criterion is met in one place but not another (two of three pages).\n5. Test behavior criteria by tracing the code path: event listener, handler, the change it makes.\n6. Set passed to false if any criterion fails or is partial, and write one finding per failing criterion.\nQuality bar:\n- Every criterion has evidence.\n- The verdict follows the criteria, not overall impression.\n- Behavior is traced, not assumed.\nPitfalls:\n- Passing because the files look complete.\n- Testing only the first page of a multi page job.\n- Failing work for things no criterion asked.\nVerify:\n- [ ] All criteria were tested.\n- [ ] Each has a file reference.\n- [ ] Partial counts as fail.\n- [ ] Findings match the failures.\nOutput: report with passed and findings, one per failing criterion.",
+  "checks": [
+    "text.no-placeholder",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "criteria: hours for each day, tel link, works at 375 px",
+      "output": "pass 1 (ul in #hours), fail 2: phone is plain text in footer, finding high"
+    }
+  ],
+  "size": 338,
+  "version": 1
+}

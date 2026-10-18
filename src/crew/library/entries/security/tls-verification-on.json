@@ -1,0 +1,40 @@
+{
+  "id": "tls-verification-on",
+  "title": "Keep TLS certificate verification on",
+  "category": "security",
+  "roles": [
+    "security",
+    "backend",
+    "devops"
+  ],
+  "tags": [
+    "tls",
+    "ssl",
+    "certificate verification",
+    "rejectunauthorized",
+    "verify false",
+    "self signed certificate",
+    "https client",
+    "man in the middle",
+    "security"
+  ],
+  "when": "Code calling HTTPS services turns certificate checks off (rejectUnauthorized: false, NODE_TLS_REJECT_UNAUTHORIZED=0, verify=False) or hits certificate errors, and needs a fix that keeps checks on.",
+  "inputs": [
+    "client code and scripts",
+    "the failing endpoint"
+  ],
+  "prompt": "Goal: All outbound TLS checks the chain and hostname; private or self signed endpoints are trusted by adding their CA, never by turning checks off.\nSteps:\n1. Search code, config, scripts and CI for rejectUnauthorized: false, NODE_TLS_REJECT_UNAUTHORIZED, checkServerIdentity overrides, verify=False, ssl._create_unverified_context, CERT_NONE and curl -k.\n2. Find why each was added: self signed dev server, intercepting proxy, internal CA, expired certificate, wrong hostname.\n3. Internal CA: pass ca: readFileSync(\"certs/internal-ca.pem\") to an https.Agent or set NODE_EXTRA_CA_CERTS; in Python verify=\"certs/internal-ca.pem\".\n4. Local development: a local CA and localhost certificate trusted on the dev machine only; never ship a disabling flag.\n5. Hostname mismatch or expiry: fix the certificate on the server; do not override checkServerIdentity.\n6. Startup guard: exit with an error when NODE_TLS_REJECT_UNAUTHORIZED is \"0\" in production.\nQuality bar:\n- Shipped code has zero disabled checks.\n- CA files are public certificates only.\n- TLS 1.2 minimum where you configure clients or servers.\nPitfalls:\n- A \"just this call\" bypass that later becomes the shared client.\n- Committing the CA private key next to the certificate.\n- Pinning a leaf certificate that expires and breaks the app.\nVerify:\n- [ ] The search finds no disabled checks.\n- [ ] Private endpoints work with an explicit CA.\n- [ ] The production guard exists.\n- [ ] No private key files are in the repo.\nOutput: Fixed client code, certs/README.md about the CA, findings in SECURITY-AUDIT.md.",
+  "checks": [
+    "sec.no-secrets",
+    "js.syntax",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "coloquei rejectUnauthorized false porque o servidor interno usa certificado proprio",
+      "output": "ca option with internal-ca.pem, bypass removed, production guard for NODE_TLS_REJECT_UNAUTHORIZED"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

@@ -1,4 +1,7 @@
 // Mel's planner: request (plus a similar playbook, when there is one) to a small task graph.
+// The domain of the job (src/crew/domains/) brings its stack notes and its specialist, who gets the build
+// work a plan leaves without a valid owner.
+import { DOMAINS } from './domains/index.js';
 
 const MAX_TASKS = 6;
 
@@ -39,7 +42,7 @@ export function planMessages({ request, crew, playbook, files, notes }) {
     `- As few tasks as possible: 2 to ${MAX_TASKS}. A small job needs only 2 or 3.`,
     '- One task per file (or per few files): never split one file across several tasks.',
     '- Each task says which files to create or change and what goes in them.',
-    '- Use relative file names like index.html, style.css, app.js.',
+    '- Use relative file names (index.html, style.css, app.js, or the files of the skeleton named in the notes).',
     '- dependsOn lists the numbers of earlier tasks that must finish first (tasks are numbered from 1).',
     '- End with one qa task that checks the work.',
     '- Only use these workers:',
@@ -72,8 +75,8 @@ export function kindFor(assignee) {
  * zero based indices, and exactly one final QA task that depends on everything else.
  * @returns {Array<{ title: string, detail: string, assignee: string, dependsOn: number[], kind: string }>}
  */
-export function normalizePlan(raw, crewIds, request) {
-  const fallbackAssignee = crewIds.includes('dev') ? 'dev' : crewIds.find((id) => id !== 'mel' && id !== 'qa') || crewIds[0];
+export function normalizePlan(raw, crewIds, request, prefer) {
+  const fallbackAssignee = prefer && crewIds.includes(prefer) ? prefer : crewIds.includes('dev') ? 'dev' : crewIds.find((id) => id !== 'mel' && id !== 'qa') || crewIds[0];
   let tasks = (raw?.tasks || []).slice(0, MAX_TASKS).map((t, i) => {
     const assignee = crewIds.includes(t.assignee) && t.assignee !== 'mel' ? t.assignee : fallbackAssignee;
     const deps = [...new Set((t.dependsOn || []).map((d) => Number(d) - 1).filter((d) => Number.isInteger(d) && d >= 0 && d < i))];
@@ -85,11 +88,11 @@ export function normalizePlan(raw, crewIds, request) {
       kind: kindFor(assignee)
     };
   });
-  if (!tasks.length) tasks = defaultPlan(request, crewIds);
+  if (!tasks.length) tasks = defaultPlan(request, crewIds, prefer);
   // Keep QA tasks only at the end, as a single check.
   const qaTasks = tasks.filter((t) => t.assignee === 'qa');
   const build = tasks.filter((t) => t.assignee !== 'qa');
-  if (!build.length) return defaultPlan(request, crewIds);
+  if (!build.length) return defaultPlan(request, crewIds, prefer);
   const remap = new Map();
   tasks.forEach((t, i) => { if (t.assignee !== 'qa') remap.set(i, build.indexOf(t)); });
   for (const t of build) t.dependsOn = t.dependsOn.map((d) => remap.get(d)).filter((d) => d !== undefined);
@@ -106,8 +109,8 @@ export function normalizePlan(raw, crewIds, request) {
   return build;
 }
 
-export function defaultPlan(request, crewIds) {
-  const dev = crewIds.includes('dev') ? 'dev' : crewIds.find((id) => id !== 'mel') || 'dev';
+export function defaultPlan(request, crewIds, prefer) {
+  const dev = prefer && crewIds.includes(prefer) ? prefer : crewIds.includes('dev') ? 'dev' : crewIds.find((id) => id !== 'mel') || 'dev';
   const tasks = [{ title: 'Build it', detail: `Create the files for: ${request}`, assignee: dev, dependsOn: [], kind: 'build' }];
   if (crewIds.includes('qa')) tasks.push({ title: 'Check the work', detail: 'Run the checks and report problems.', assignee: 'qa', dependsOn: [0], kind: 'qa' });
   return tasks;
@@ -144,8 +147,9 @@ export function mergeByWorker(tasks) {
   });
 }
 
-export async function makePlan({ scheduler, request, crew, playbook, files, notes, jobId, signal, merge = false }) {
+export async function makePlan({ scheduler, request, crew, playbook, files, notes, jobId, signal, merge = false, domain }) {
   const ids = crew.map((w) => w.id);
+  const prefer = DOMAINS[domain]?.specialist || undefined;
   const assignees = ids.filter((id) => id !== 'mel');
   try {
     const result = await scheduler.turn({
@@ -153,14 +157,15 @@ export async function makePlan({ scheduler, request, crew, playbook, files, note
       messages: planMessages({ request, crew, playbook, files, notes }),
       options: { schema: planSchema(assignees), maxTokens: 1200, temperature: 0.2 }
     });
-    let tasks = normalizePlan(result.json, ids, request);
+    let tasks = normalizePlan(result.json, ids, request, prefer);
     if (merge) tasks = mergeByWorker(tasks);
-    return { tasks, summary: String(result.json?.summary || '').slice(0, 400), source: 'model' };
+    // A plan written by a model on another machine is untrusted: the caller marks the whole job with its origin.
+    return { tasks, summary: String(result.json?.summary || '').slice(0, 400), source: 'model', ...(result.remote ? { remote: result.remote } : {}) };
   } catch (err) {
     if (signal?.aborted) throw err;
     if (playbook) {
-      return { tasks: normalizePlan({ tasks: playbook.tasks.map((t) => ({ ...t, dependsOn: (t.dependsOn || []).map((d) => d + 1) })) }, ids, request), summary: `Using the playbook "${playbook.title}".`, source: 'playbook', error: String(err.message) };
+      return { tasks: normalizePlan({ tasks: playbook.tasks.map((t) => ({ ...t, dependsOn: (t.dependsOn || []).map((d) => d + 1) })) }, ids, request, prefer), summary: `Using the playbook "${playbook.title}".`, source: 'playbook', error: String(err.message) };
     }
-    return { tasks: defaultPlan(request, ids), summary: 'I could not plan this in detail, so Dev builds it and QA checks it.', source: 'fallback', error: String(err.message) };
+    return { tasks: defaultPlan(request, ids, prefer), summary: 'I could not plan this in detail, so Dev builds it and QA checks it.', source: 'fallback', error: String(err.message) };
   }
 }

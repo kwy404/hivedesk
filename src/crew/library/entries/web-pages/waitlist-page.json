@@ -1,0 +1,50 @@
+{
+  "id": "waitlist-page",
+  "title": "Waitlist and early access page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "waitlist",
+    "early access",
+    "signup",
+    "launch",
+    "coming soon",
+    "email capture"
+  ],
+  "when": "The user wants a page to collect emails before a launch or for early access.",
+  "inputs": [
+    "product name and promise",
+    "where emails go",
+    "launch timing"
+  ],
+  "prompt": "Goal: A short page with one promise and one email field that works and respects privacy.\nSteps:\n1. Headline with the promise, one supporting line and the expected launch time if known.\n2. Email form: label, type=\"email\", autocomplete=\"email\", required, and a submit button with a clear verb.\n3. Validate on submit, show errors next to the field and a success message in an aria-live region.\n4. Without a backend, store nothing secretly: send to the endpoint the user named or say the form needs one.\n5. Add three short reasons to join and a privacy line about how the email is used.\nQuality bar:\n- The form works by keyboard and screen reader.\n- Copy is honest about timing.\n- The page is light: no large scripts.\nPitfalls:\n- A fake success message when nothing was saved.\n- Placeholder used as the only label.\n- Asking for more fields than needed.\nVerify:\n- [ ] Email input has a label and type email.\n- [ ] Success and error messages are announced.\n- [ ] Submit button exists.\n- [ ] One h1.\nOutput: index.html, style.css and form.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.input-types",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "lista de espera para meu app de receitas",
+      "output": "h1 promise, email field with label, success message, privacy line"
+    }
+  ],
+  "size": 296,
+  "version": 1
+}

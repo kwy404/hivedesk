@@ -1,0 +1,37 @@
+{
+  "id": "geolocation-permission",
+  "title": "Geolocation with permission handling",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "geolocation",
+    "location",
+    "gps",
+    "near me",
+    "current position",
+    "permission",
+    "my location",
+    "coordinates"
+  ],
+  "when": "The app needs the user position (near me search, distance, check in, local weather) and must handle permission and errors.",
+  "inputs": [
+    "why location is needed",
+    "manual fallback (city, postal code)"
+  ],
+  "prompt": "Goal: Location requested only on a clear user action, with every outcome handled and a manual fallback.\nSteps:\n1. Show a \"Use my location\" button with the reason; never request on page load.\n2. Feature detect \"geolocation\" in navigator; query navigator.permissions for \"geolocation\" to adapt the message when already denied.\n3. getCurrentPosition(ok, fail, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }); watchPosition only for live tracking, with clearWatch.\n4. Handle error.code 1 (denied: explain how to allow, offer manual entry), 2 (unavailable), 3 (timeout: offer retry).\n5. Always offer a labeled city or postal code field.\n6. Round coordinates to 3 decimals (about 100 m) before storing or showing, and respect coords.accuracy.\nQuality bar:\n- The page works fully without location.\n- Status and errors go to an aria-live region.\n- Location is kept only as long as needed.\nPitfalls:\n- Asking on load, which people deny by reflex.\n- A precise pin drawn from a low accuracy fix.\n- Plain http, where the API is blocked; use HTTPS or localhost.\nVerify:\n- [ ] Request happens in a click handler.\n- [ ] All three error codes handled.\n- [ ] Manual fallback input with a label.\n- [ ] aria-live status region.\nOutput: js/location.js exporting getPosition() as a promise, plus the button, fallback form and status in the HTML.",
+  "checks": [
+    "js.syntax",
+    "html.aria-live",
+    "html.labels"
+  ],
+  "examples": [
+    {
+      "input": "mostrar as lojas mais perto de mim",
+      "output": "Use my location button, getPosition with 10 s timeout, denied message plus CEP field fallback"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

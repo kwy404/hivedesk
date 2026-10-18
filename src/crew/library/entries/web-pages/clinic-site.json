@@ -1,0 +1,50 @@
+{
+  "id": "clinic-site",
+  "title": "Clinic or health practice site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "clinic",
+    "doctor",
+    "dentist",
+    "therapist",
+    "health",
+    "appointments",
+    "medical"
+  ],
+  "when": "The user wants a site for a clinic, dentist, physiotherapist, psychologist or other health practice.",
+  "inputs": [
+    "practice name and specialties",
+    "professionals and credentials",
+    "insurance or payment",
+    "booking and contact"
+  ],
+  "prompt": "Goal: A calm, trustworthy and very accessible site that helps patients book and know what to expect.\nSteps:\n1. Hero with specialty, location and a Book an appointment action plus the phone.\n2. Treatments or services explained in plain language, without promising outcomes.\n3. Professionals with registration numbers if given, and languages spoken.\n4. First visit section: what to bring, how long it takes, payment and insurance.\n5. Accessibility info of the building, parking, and an emergency note telling people to call local emergency services.\nQuality bar:\n- Large readable text and strong contrast.\n- No medical claims the user did not give.\n- Forms ask only for what booking needs.\nPitfalls:\n- Collecting health details in an unprotected form.\n- Jargon without explanation.\n- Tiny phone numbers.\nVerify:\n- [ ] Phone as tel link in hero.\n- [ ] Contrast passes.\n- [ ] Emergency note present.\n- [ ] Headings ordered.\nOutput: index.html and style.css; booking by phone or a minimal form.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "css.contrast",
+    "html.heading-order",
+    "html.labels",
+    "html.json-ld"
+  ],
+  "examples": [
+    {
+      "input": "site para minha clínica odontológica",
+      "output": "hero with book and phone, treatments in plain words, dentists with CRO, first visit info"
+    }
+  ],
+  "size": 283,
+  "version": 1
+}

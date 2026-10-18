@@ -1,0 +1,41 @@
+{
+  "id": "image-gallery-lightbox",
+  "title": "Image gallery with lightbox viewer",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "gallery",
+    "image gallery",
+    "lightbox",
+    "photo gallery",
+    "thumbnails",
+    "photo viewer",
+    "enlarge image",
+    "fullscreen image"
+  ],
+  "when": "The user wants a grid of thumbnails that opens each image large in an overlay with next and previous controls.",
+  "inputs": [
+    "image files and captions",
+    "thumbnail and full sizes"
+  ],
+  "prompt": "Goal: A thumbnail grid of real links that a dialog lightbox enhances with keyboard, swipe and focus return.\nSteps:\n1. Grid of <a href=\"photos/large-1.jpg\"> each wrapping a thumbnail <img> with alt, width, height and loading=\"lazy\" after the first row.\n2. JS intercepts the click and opens <dialog aria-label=\"Image viewer\"> with a large img, a figcaption, a counter 3 of 12 and Previous, Next and Close buttons.\n3. Keys: ArrowLeft and ArrowRight move, Home and End jump, Escape closes natively.\n4. Swipe with pointer events: a horizontal move over 50 px changes image.\n5. The large image fits with max-height: 85dvh and object-fit: contain; preload the next one.\n6. On close, return focus to the thumbnail that opened it.\nQuality bar:\n- The large image alt matches the thumbnail alt.\n- Controls are 44 px and visible on dark backdrops.\n- Without JS the links open the full image.\nPitfalls:\n- Divs with background images instead of img and alt.\n- Loading every full size image at page load.\n- A viewer with no visible Close.\nVerify:\n- [ ] The dialog has a name and a Close button.\n- [ ] Thumbnails have alt, width and height.\n- [ ] Arrow keys move between images.\n- [ ] Focus returns to the thumbnail.\nOutput: Gallery markup, gallery.css and lightbox.js.",
+  "checks": [
+    "html.dialog-a11y",
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.button-type",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "galeria de fotos da obra com ampliacao",
+      "output": "grid of 12 thumbnail links, dialog viewer with caption, 3 of 12 counter, arrows and swipe, focus back to thumb"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

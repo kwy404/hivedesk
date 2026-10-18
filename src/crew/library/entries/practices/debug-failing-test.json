@@ -1,0 +1,37 @@
+{
+  "id": "debug-failing-test",
+  "title": "Debug a failing test",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "failing test",
+    "test fails",
+    "assertion",
+    "debug test",
+    "node:test",
+    "red test",
+    "expected actual",
+    "unittest"
+  ],
+  "when": "A test fails or broke after a change and the user wants to know whether the code or the test is wrong, and fix it.",
+  "inputs": [
+    "the failing test output",
+    "the test file and the code under test"
+  ],
+  "prompt": "Goal: A clear verdict (code bug or wrong test), a fix in the right place, and a green run of the whole suite.\nSteps:\n1. Run only the failing test (node --test --test-name-pattern=\"name\" or python -m unittest module.Class.test) to get a fast loop.\n2. Read the assertion diff: compare expected and actual exactly, including types, order, whitespace and floating point.\n3. Decide which is wrong by checking the requirement, not by which is easier to change.\n4. Look for hidden inputs: current date, time zone, random values, shared state from earlier tests, file system leftovers.\n5. Fix the code if the behavior is wrong; fix the test if the expectation was wrong, and say why.\n6. Run the full suite to confirm nothing else changed.\nQuality bar:\n- The test still checks something meaningful after the change.\n- Tests are isolated: each sets up its own data.\n- Time and randomness are injected or fixed.\nPitfalls:\n- Loosening assertions until they pass.\n- Skipping the test.\n- Updating expected values by copying the actual output without checking it.\nVerify:\n- [ ] The target test passes.\n- [ ] The full suite passes.\n- [ ] The reason for the failure is written down.\n- [ ] Files parse.\nOutput: The corrected code or test and a two line explanation of the verdict.",
+  "checks": [
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "esse teste quebrou depois da minha mudança",
+      "output": "expected \"1.50\" got \"1.5\": the formatter changed; restored toFixed(2) in formatPrice, suite green"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

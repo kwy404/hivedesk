@@ -1,0 +1,43 @@
+{
+  "id": "accessibility-audit",
+  "title": "Accessibility audit and fixes",
+  "category": "practices",
+  "roles": [
+    "qa",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "audit",
+    "screen reader",
+    "keyboard",
+    "aria",
+    "accessible"
+  ],
+  "when": "The user asks to check or improve the accessibility of a page or app, or to meet WCAG.",
+  "inputs": [
+    "the HTML, CSS and scripts",
+    "the main user tasks"
+  ],
+  "prompt": "Goal: A prioritized list of WCAG problems found in the files and the fixes applied, so the core tasks work by keyboard and screen reader.\nSteps:\n1. Structure: lang on html, one h1, headings in order, landmarks (header, nav, main, footer), a skip link to main.\n2. Names: every img has alt (empty for decoration), every control has a label, icon buttons have aria-label, links say where they go.\n3. Keyboard: every action reachable with Tab, Enter and Space, no traps, visible :focus-visible styles, logical order.\n4. Color: text contrast 4.5 to 1 (3 to 1 for large text and UI borders), and no meaning by color alone.\n5. Dynamic content: status messages in aria-live regions, dialogs with role, name, focus moved in and returned.\n6. Write findings as: issue, WCAG criterion, location, fix; fix the critical ones first.\nQuality bar:\n- Native elements are used before ARIA.\n- Every finding points to a file and element.\n- Fixes do not change the visual design more than needed.\nPitfalls:\n- Adding role=\"button\" to a div instead of using a button.\n- aria-label that disagrees with visible text.\n- Removing outlines without a replacement.\nVerify:\n- [ ] Images have alt and controls have labels.\n- [ ] Focus styles exist.\n- [ ] Links have real text.\n- [ ] The page has lang and a main landmark.\nOutput: Fixed HTML and CSS, plus a findings list with severity and status.",
+  "checks": [
+    "html.lang",
+    "html.img-alt",
+    "html.labels",
+    "html.link-text",
+    "html.main",
+    "css.focus-visible",
+    "html.heading-order"
+  ],
+  "examples": [
+    {
+      "input": "revise a acessibilidade do meu site",
+      "output": "14 findings: 5 missing labels, icon buttons unnamed, no focus style; all critical fixed"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

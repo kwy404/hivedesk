@@ -1,0 +1,35 @@
+{
+  "id": "staff-the-crew",
+  "title": "Staffing the crew: who does what",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "assign",
+    "staffing",
+    "who does what",
+    "assignee",
+    "workers",
+    "team",
+    "hire",
+    "roles"
+  ],
+  "when": "The plan has tasks and the foreman must choose an assignee for each from the available workers and hired agents.",
+  "inputs": [
+    "the task list",
+    "the workers and their roles",
+    "any hired specialists"
+  ],
+  "prompt": "Goal: Each task given to the worker whose role fits its main file type, with load balanced and the author never checking its own work.\nSteps:\n1. Match by output: HTML structure and JS to dev, CSS and visual layout to designer, copy, README and docs to writer, checking to qa.\n2. Prefer a hired specialist when its role names the task (a hired SEO writer for meta descriptions).\n3. Give a mixed task to the owner of its hardest part, and say in the detail which other worker it may ask with say.\n4. Balance load: if one worker has three tasks and another none, move a task that fits both.\n5. Keep checking independent: QA and review go to someone who did not write the files.\n6. Never assign a build task to the foreman.\nQuality bar:\n- Every assignee fits the main file type.\n- No worker is idle while another has a queue, when roles allow.\n- Checkers did not author the work.\nPitfalls:\n- Everything to dev by default.\n- Designer asked to write logic.\n- A writer task created before there is anything to describe.\nVerify:\n- [ ] Each task has an assignee from the crew list.\n- [ ] Assignees match file types.\n- [ ] QA is separate from authors.\n- [ ] Load is reasonable.\nOutput: The assignee field set on every task, with a short reason for any non obvious choice.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "quem faz o que no site da clinica?",
+      "output": "dev: index.html and form.js; designer: style.css; writer: page copy and README; qa: criteria"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

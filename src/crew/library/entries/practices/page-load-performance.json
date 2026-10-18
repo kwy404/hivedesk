@@ -1,0 +1,39 @@
+{
+  "id": "page-load-performance",
+  "title": "Improve page load performance",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "performance",
+    "page speed",
+    "slow page",
+    "load time",
+    "optimize",
+    "web vitals",
+    "lcp",
+    "render blocking"
+  ],
+  "when": "A web page loads slowly, shows content late, shifts while loading, or the user asks to make the site faster.",
+  "inputs": [
+    "the HTML, CSS, scripts and images",
+    "which page is slow"
+  ],
+  "prompt": "Goal: The main content renders fast with no layout shift, and nothing render blocking or oversized is left on the first view.\nSteps:\n1. Inventory what loads: count files and sizes of images, scripts, styles and fonts; the biggest items come first.\n2. Resize and compress images to their displayed size, give each width and height, and add loading=\"lazy\" to images below the first screen.\n3. Make scripts non blocking: defer or type=\"module\" in the head, and remove unused libraries.\n4. Keep CSS small and in one file; inline only a few lines of critical CSS if the page is tiny.\n5. Fonts: at most two families and weights, font-display: swap, and preload only the main one.\n6. Defer work not needed at start (charts, maps, heavy widgets) until visible or on interaction.\nQuality bar:\n- The hero text appears without waiting for scripts.\n- No layout shift from images or fonts.\n- Total first load is as small as the content allows.\nPitfalls:\n- Lazy loading the main hero image.\n- Huge background images used as decoration.\n- Loading the same script twice.\nVerify:\n- [ ] Scripts in the head use defer or module.\n- [ ] Images have width and height.\n- [ ] Images after the first are lazy.\n- [ ] Scripts parse.\nOutput: Updated HTML, CSS and assets plus a short list of what was reduced and by how much.",
+  "checks": [
+    "js.syntax",
+    "html.script-defer",
+    "html.img-dimensions",
+    "html.lazy-images"
+  ],
+  "examples": [
+    {
+      "input": "meu site demora muito pra abrir",
+      "output": "4 MB of photos resized to 180 KB, scripts deferred, fonts cut to one family with swap"
+    }
+  ],
+  "size": 371,
+  "version": 1
+}

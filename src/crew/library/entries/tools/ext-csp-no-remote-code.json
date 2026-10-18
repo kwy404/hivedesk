@@ -1,0 +1,39 @@
+{
+  "id": "ext-csp-no-remote-code",
+  "title": "Extension CSP and shipping no remote code",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "security"
+  ],
+  "tags": [
+    "extension csp",
+    "remote code",
+    "eval",
+    "vendored libraries",
+    "sandbox page",
+    "wasm",
+    "store policy",
+    "browser extension"
+  ],
+  "when": "A browser extension loads scripts from a CDN, uses eval or template engines that compile strings, or must pass the store rule that all code ships in the package.",
+  "inputs": [
+    "current scripts and libraries",
+    "features needing eval or wasm",
+    "remote data used"
+  ],
+  "prompt": "Goal: All executable code inside the package, extension pages on the default strict policy, and anything fetched treated as data only.\nSteps:\n1. Find remote code: <script src=\"https://...\">, import(\"https://...\"), importScripts(url), eval, new Function, setTimeout with a string.\n2. Copy each needed library once into vendor/ with its license file, and record versions in vendor/README.md; load by relative path.\n3. Keep or tighten the default policy: \"content_security_policy\": { \"extension_pages\": \"script-src 'self'; object-src 'self'\" }; remote origins in script-src fail to load.\n4. WebAssembly needs 'wasm-unsafe-eval' in extension_pages, with the .wasm file shipped in the package.\n5. Libraries that need eval move to a sandbox page (\"sandbox\": { \"pages\": [\"sandbox.html\"] }) embedded as an iframe and reached by postMessage; it gets no extension APIs.\n6. Remote config or rules arrive as JSON, are validated against a schema and never executed.\nQuality bar:\n- No script tag or import in the package points at http.\n- Everything works offline except features that fetch data.\nPitfalls:\n- Adding 'unsafe-eval' to extension_pages, which Manifest V3 rejects.\n- Fetching code and running it through a blob URL, a store violation.\nVerify:\n- [ ] No remote script sources or imports.\n- [ ] No eval or new Function in extension pages.\n- [ ] vendor/ lists versions and licenses.\n- [ ] The policy names no remote origins.\nOutput: vendor/ with libraries, updated HTML and JS files, and content_security_policy in manifest.json.",
+  "checks": [
+    "ext.no-remote-code",
+    "js.no-eval",
+    "ext.manifest-v3"
+  ],
+  "examples": [
+    {
+      "input": "minha extensao carrega uma biblioteca de um CDN, a loja vai recusar?",
+      "output": "library copied to vendor/ with version and license, default extension_pages policy, eval code moved to a sandbox page, remote rules fetched as JSON only"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

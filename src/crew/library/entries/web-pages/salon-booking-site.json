@@ -1,0 +1,52 @@
+{
+  "id": "salon-booking-site",
+  "title": "Salon or barber site with services",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "salon",
+    "barber",
+    "beauty",
+    "spa",
+    "booking",
+    "appointments",
+    "price list"
+  ],
+  "when": "The user wants a site for a hair salon, barbershop, nail studio, spa or beauty service.",
+  "inputs": [
+    "name",
+    "services with duration and price",
+    "team",
+    "booking method",
+    "hours"
+  ],
+  "prompt": "Goal: Show the style and the services and make booking an appointment simple.\nSteps:\n1. Hero with name, style in a few words and a Book now action.\n2. Service list grouped by type: name, duration, price; consistent alignment.\n3. Team cards with specialties.\n4. Booking: a form for service, preferred professional, date and time, name and phone, or a phone link.\n5. Gallery of work with alt text, lazy loaded after the first images.\nQuality bar:\n- Durations and prices are explicit.\n- Booking fields are labeled.\n- The look matches the brand without hurting contrast.\nPitfalls:\n- Gallery images that weigh megabytes.\n- Booking that promises confirmation it cannot send.\n- Thin decorative fonts for prices.\nVerify:\n- [ ] Service list uses lists or a table with headers.\n- [ ] Form labels.\n- [ ] Images have alt and lazy loading.\n- [ ] Contrast passes.\nOutput: index.html, style.css and booking.js if validation is needed.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.lazy-images",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "site da minha barbearia com agendamento",
+      "output": "services with 30 min and prices, 3 barbers, booking form with date and time"
+    }
+  ],
+  "size": 263,
+  "version": 1
+}

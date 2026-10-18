@@ -1,0 +1,38 @@
+{
+  "id": "error-offline-states-design",
+  "title": "Error, offline and failure state design",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "error state",
+    "error screen",
+    "offline",
+    "failure message",
+    "something went wrong",
+    "retry",
+    "partial failure"
+  ],
+  "when": "The user needs designed screens and inline states for when loading, saving or connecting fails, instead of a blank or broken area.",
+  "inputs": [
+    "the operations that can fail per view",
+    "what the user can do about each"
+  ],
+  "prompt": "Goal: Each failure state says what failed, keeps the user work, and offers a way forward, sized to how much of the screen failed.\nSteps:\n1. Map failures by scope: one field (inline), one widget (card level), the whole view (page level), the connection (offline banner).\n2. Inline and card level: keep the surrounding layout, swap only the failed part for a short message and a Retry button.\n3. Page level: a heading in plain words (We could not load your orders), one line on what to do, Retry plus a safe exit link such as Back to home.\n4. Offline: a slim banner listening to the online and offline events, with saved work queued and a note that it will sync.\n5. Keep everything the user typed; never clear a form because a save failed.\n6. Use role=\"alert\" for new errors, calm wording with no blame, and put any code in a small secondary line.\nQuality bar:\n- Failure size matches what actually failed.\n- Each state has one clear next action.\n- Error text and icon pass contrast.\nPitfalls:\n- Oops! with no next step.\n- Full page errors for one failed widget.\n- Error states that wipe the form.\nVerify:\n- [ ] Failures mapped per view and scope.\n- [ ] Each has message and action.\n- [ ] Alert role present.\n- [ ] Retry keeps input.\nOutput: Markup and styles for each failure state in the page files and style.css.",
+  "checks": [
+    "html.aria-live",
+    "html.button-type",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "what should the dashboard show when the sales data fails to load",
+      "output": "sales card shows \"Could not load sales\" with Retry, rest of dashboard stays, offline banner when the connection drops"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

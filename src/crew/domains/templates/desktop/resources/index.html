@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' ws://127.0.0.1:* ws://localhost:*; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+  <title>My Desktop App</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="js/neutralino.js" defer></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main id="main">
+    <h1>Notes</h1>
+    <label for="note">Your note</label>
+    <textarea id="note" rows="12"></textarea>
+    <div class="row">
+      <button type="button" id="save">Save</button>
+      <button type="button" id="export">Export as file</button>
+    </div>
+    <p id="status" role="status"></p>
+  </main>
+</body>
+</html>

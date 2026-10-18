@@ -1,0 +1,33 @@
+{
+  "id": "definition-of-done",
+  "title": "Definition of done for a crew job",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "qa"
+  ],
+  "tags": [
+    "done",
+    "definition of done",
+    "finished",
+    "complete",
+    "ready",
+    "finish line",
+    "ship it"
+  ],
+  "when": "The crew needs one shared finish line for a job: when to stop adding, when QA can pass, when the user gets the result.",
+  "inputs": [
+    "acceptance criteria",
+    "the kind of output (page, script, docs)"
+  ],
+  "prompt": "Goal: A short, fixed list that every task meets before done, so no worker stops early and no worker keeps polishing forever.\nSteps:\n1. Start from the acceptance criteria: all of them pass.\n2. Add the file rules: every planned file exists, none is empty, none has TODO or lorem ipsum.\n3. Add the type rules: pages pass the HTML basics (lang, title, viewport, one h1), scripts pass node --check, JSON parses.\n4. Add the usage rule: the user can open or run it from the README or one obvious file, with no build or install.\n5. Add the stop rule: once all lines pass, call done; extra ideas go into a note for the user, not into the files.\n6. Put the list in the plan summary so every worker sees the same bar.\nQuality bar:\n- Each line is a fact that can be checked in the workspace.\n- The list fits in six lines.\n- It is the same for every task in the job.\nPitfalls:\n- Done meaning \"I wrote something\" for the worker and \"it works\" for QA.\n- Gold plating after the bar is met.\n- A done list that only a human with a browser could check.\nVerify:\n- [ ] Criteria, files, type rules, usage and stop rule are all present.\n- [ ] No line needs network access.\n- [ ] QA can test each line with read_file or check.\n- [ ] Extra ideas go to a note.\nOutput: A \"Done means\" block of four to six lines in the plan summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "when is the portfolio job finished?",
+      "output": "Done means: criteria pass, files nonempty, html basics pass, open index.html works, extras noted"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

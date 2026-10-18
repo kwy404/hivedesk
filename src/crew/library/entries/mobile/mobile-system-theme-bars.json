@@ -1,0 +1,40 @@
+{
+  "id": "mobile-system-theme-bars",
+  "title": "System theme, dark mode and status bar colors on phones",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "dark mode",
+    "system theme",
+    "status bar",
+    "theme-color",
+    "color-scheme",
+    "mobile app",
+    "prefers-color-scheme",
+    "splash"
+  ],
+  "when": "The phone app should follow the system light or dark setting, including the browser bar, status bar, splash and form controls, without a white flash.",
+  "inputs": [
+    "light and dark color tokens",
+    "web app or Capacitor shell"
+  ],
+  "prompt": "Goal: The whole phone chrome (page, status bar, browser bar, native controls) switches with the system theme and stays in sync with a manual choice.\nSteps:\n1. <meta name=\"color-scheme\" content=\"light dark\"> and CSS :root { color-scheme: light dark; } so scrollbars and inputs follow the theme.\n2. Two theme-color metas: <meta name=\"theme-color\" media=\"(prefers-color-scheme: light)\" content=\"#ffffff\"> and one for dark with the dark header color.\n3. Tokens in :root and @media (prefers-color-scheme: dark) { :root { ... } }, plus [data-theme=\"dark\"] for a manual override.\n4. Set data-theme from storage in a tiny inline script in head before CSS paints, to avoid a flash on launch.\n5. Listen to matchMedia(\"(prefers-color-scheme: dark)\").addEventListener(\"change\", apply) when the choice is \"system\".\n6. Capacitor: in apply() call StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }) and StatusBar.setBackgroundColor where supported.\n7. The manifest background_color is used for the splash; pick a neutral that suits both themes.\nQuality bar:\n- No white flash when launching in dark mode.\n- Status bar icons stay readable on both themes.\nPitfalls:\n- Updating CSS but not the theme-color meta.\n- Pure black and pure white text, which smear on OLED screens; use near black and off white.\nVerify:\n- [ ] color-scheme meta and CSS property present.\n- [ ] Dark tokens under prefers-color-scheme.\n- [ ] A change listener updates the bars.\nOutput: head tags in index.html, theme.css and theme.js.",
+  "checks": [
+    "css.dark-scheme",
+    "css.media-query",
+    "css.custom-properties",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "meu app fica branco piscando no modo escuro do celular",
+      "output": "color-scheme meta, two theme-color metas, inline theme script, StatusBar style synced"
+    }
+  ],
+  "size": 429,
+  "version": 1
+}

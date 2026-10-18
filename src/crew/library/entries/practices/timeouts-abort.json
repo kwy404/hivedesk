@@ -1,0 +1,35 @@
+{
+  "id": "timeouts-abort",
+  "title": "Timeouts and cancellation with AbortController",
+  "category": "practices",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "timeout",
+    "abortcontroller",
+    "cancel request",
+    "hanging request",
+    "abort",
+    "deadline",
+    "fetch timeout"
+  ],
+  "when": "Requests or tasks can hang forever, the UI waits without end, or the user wants a cancel button.",
+  "inputs": [
+    "the slow or external operations",
+    "acceptable wait per operation"
+  ],
+  "prompt": "Goal: Every external call has a deadline and can be cancelled, with clean errors and no work left running.\nSteps:\n1. For fetch, pass signal: AbortSignal.timeout(8000), or combine user cancel and timeout with AbortSignal.any([ctrl.signal, AbortSignal.timeout(8000)]).\n2. Pass the same signal down to every sub step so one cancel stops the whole chain.\n3. Distinguish errors: TimeoutError means too slow, AbortError means the user cancelled; show different messages.\n4. In Node servers set server.requestTimeout and headersTimeout, and time out calls to other services too.\n5. For custom work, check signal.aborted in loops and listen for the abort event to clean up timers and streams.\n6. Show progress after about one second and a Cancel button for long operations.\nQuality bar:\n- No call can wait without a limit.\n- Cancelling leaves the app in a consistent state.\n- Timeouts are configurable values, not magic numbers.\nPitfalls:\n- Promise.race with a timer that leaves the request running.\n- Treating user cancel as an error to report.\n- One global timeout for very different operations.\nVerify:\n- [ ] Every fetch has a signal.\n- [ ] Cancel stops network activity.\n- [ ] Timeouts produce a clear message.\n- [ ] Files parse.\nOutput: Updated calls with signals, a small helper for combined signals, and the UI cancel control if needed.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "a página fica carregando para sempre quando a API não responde",
+      "output": "AbortSignal.timeout(8000) on fetch, Cancel button, \"Taking too long, try again\" message"
+    }
+  ],
+  "size": 382,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "review-python",
+  "title": "Python script code review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "python review",
+    "python",
+    "review py",
+    "script review",
+    "pep 8",
+    "exceptions",
+    "argparse"
+  ],
+  "when": "The user wants a Python script or small module (standard library only) reviewed for bugs, error handling and clarity.",
+  "inputs": [
+    "the .py files",
+    "how the script is run"
+  ],
+  "prompt": "Goal: A review of entry point, arguments, exceptions, file and encoding use, and testability, with a fix per line.\nSteps:\n1. Entry: work runs under if __name__ == \"__main__\": main(); argparse arguments have help text; failures end with sys.exit(1).\n2. Exceptions: no bare except or broad except Exception that swallows; catch FileNotFoundError, ValueError, json.JSONDecodeError and print to stderr.\n3. Files: pathlib.Path, open in a with block with encoding=\"utf-8\" (newline=\"\" for csv), no absolute paths baked in.\n4. Correctness: mutable defaults (def f(x=[])), float money instead of decimal.Decimal, shadowed builtins such as list, id, input.\n5. Structure: small pure functions unittest can import; no work done at import time.\n6. Style: snake_case names, UPPER_CASE constants, type hints on public functions, no mixed tabs and spaces.\nQuality bar:\n- Each finding has line, severity and a code suggestion.\n- Crashes and data loss first.\n- Standard library suggestions only.\nPitfalls:\n- Approving broad excepts that hide bugs.\n- Ignoring encoding, which breaks on accented text.\n- Formatting nits over logic.\nVerify:\n- [ ] Main guard present or flagged.\n- [ ] Every except names an exception.\n- [ ] File opens use utf-8 and with.\n- [ ] A verdict is stated.\nOutput: review.md with the verdict and findings by severity.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "revisa meu script python que renomeia fotos",
+      "output": "blocker: bare except hides PermissionError at line 31, major: no main guard, minor: open without encoding"
+    }
+  ],
+  "size": 378,
+  "version": 1
+}

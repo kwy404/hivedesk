@@ -1,0 +1,38 @@
+{
+  "id": "puzzle-undo-move-stack",
+  "title": "Puzzle game with undo, restart and move counter",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "puzzle game",
+    "undo",
+    "restart level",
+    "move counter",
+    "box pushing",
+    "level select",
+    "logic puzzle",
+    "game"
+  ],
+  "when": "A grid puzzle such as box pushing, sliding blocks or light switching needs unlimited undo, instant restart, a move counter and a level select that remembers solved levels.",
+  "inputs": [
+    "puzzle rules",
+    "number of levels"
+  ],
+  "prompt": "Goal: Players experiment freely because every move can be taken back and progress is kept.\nSteps:\n1. Level state is small and plain: { player: [x, y], boxes: [[x, y]], moves: 0 }; walls and goals come from the static level data.\n2. Before each move push structuredClone(state) onto history, capped at 5000 entries by dropping the oldest.\n3. Undo (Z or Backspace, plus a button) pops history; Restart (R) pushes the current state and then resets, so a restart can be undone too.\n4. A blocked move (a wall or two boxes in a row) adds no history, counts no move, and plays a soft bump.\n5. isSolved(state) is true when every goal holds a box; then lock input, say \"Solved in N moves\" in an aria-live region and store best moves per level id in guarded localStorage.\n6. The level select is a grid of buttons with solved marks and best moves; solving unlocks the next level.\n7. Before shipping, prove each level solvable with a breadth first search script run in Node.\nQuality bar:\n- Holding Z rewinds smoothly with key repeat.\n- Undo after solving reopens the level for play.\nPitfalls:\n- Keeping only the last move, so pushes cannot be undone exactly.\n- Counting undo as a move or wiping best moves on undo.\n- Arrow keys scrolling the page while playing.\nVerify:\n- [ ] node:test: box push, blocked push, undo returning a deepEqual state, solved detection.\n- [ ] Solved marks survive a reload.\nOutput: puzzle.mjs (rules and history), ui.js, levels.json and test/puzzle.test.mjs.",
+  "checks": [
+    "js.storage-guarded",
+    "html.aria-live",
+    "node.test-runner",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "puzzle de empurrar caixas com desfazer ilimitado",
+      "output": "snapshot history with cap, undoable restart, blocked moves free, best moves per level, BFS check"
+    }
+  ],
+  "size": 421,
+  "version": 1
+}

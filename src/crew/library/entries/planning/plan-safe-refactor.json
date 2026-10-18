@@ -1,0 +1,34 @@
+{
+  "id": "plan-safe-refactor",
+  "title": "Planning a safe refactor",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "refactor",
+    "restructure",
+    "cleanup",
+    "reorganize",
+    "legacy code",
+    "split file",
+    "rename"
+  ],
+  "when": "The user wants existing code reorganized (split a big file, rename, remove duplication) without changing what it does.",
+  "inputs": [
+    "the files to change",
+    "how the code is run or opened",
+    "any existing tests"
+  ],
+  "prompt": "Goal: A refactor plan in small steps where behavior is pinned by a test or a recorded output before anything moves.\nSteps:\n1. First task: read the files and record current behavior: a test.mjs on the pure functions, or the exact output of a run.\n2. Write the target layout: which functions move to which file, which names change, which exports stay.\n3. Order the moves so each step leaves a working program: extract, import, then delete the old copy.\n4. One task per moved module; each detail lists functions to move and the import line to add.\n5. Forbid behavior changes in the same job; bugs found go to notes for a later fix.\n6. End with a QA task that reruns the recorded test or output and compares.\nQuality bar:\n- Behavior is pinned before the first move.\n- Each step leaves the code runnable.\n- Public names used by other files keep working.\nPitfalls:\n- Rewriting from scratch and calling it a refactor.\n- Fixing bugs mid refactor so the comparison breaks.\n- Moving code without updating every import.\nVerify:\n- [ ] The first task captures behavior.\n- [ ] Every moved function has a destination.\n- [ ] No task changes behavior.\n- [ ] QA compares with the recorded result.\nOutput: Plan: baseline task, move tasks in order, QA compare task; target layout in the summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "separa esse app.js de 600 linhas em modulos",
+      "output": "test.mjs pins totals and parsing; move storage.js, then ui.js; app.js imports both; QA reruns test"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

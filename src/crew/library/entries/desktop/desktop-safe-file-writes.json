@@ -1,0 +1,40 @@
+{
+  "id": "desktop-safe-file-writes",
+  "title": "Reading and writing user files safely",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "security"
+  ],
+  "tags": [
+    "file write",
+    "atomic save",
+    "backup",
+    "file corruption",
+    "desktop app",
+    "path safety",
+    "encoding",
+    "filesystem",
+    "data loss"
+  ],
+  "when": "The desktop app saves user documents and must never leave a half written or corrupted file after a crash, a full disk or a bad path.",
+  "inputs": [
+    "file types written",
+    "where files live"
+  ],
+  "prompt": "Goal: files.js reads and writes user files with atomic saves, a backup copy, size limits and clear errors.\nSteps:\n1. Atomic save: write to path + \".tmp\", read it back and compare length, then Neutralino.filesystem.move(tmp, path) to replace the original.\n2. Before replacing, copy the old file to path + \".bak\" with Neutralino.filesystem.copy; keep one backup.\n3. Before reading call Neutralino.filesystem.getStats(path); refuse files over 50 MB with a message instead of freezing.\n4. Read text as UTF-8; strip a leading BOM (\\uFEFF); keep the original line endings and write them back the same way.\n5. Parse JSON in try/catch; on failure offer to open the .bak copy.\n6. Paths from the app (recent list, settings) must stay inside expected folders: reject values containing \"..\" segments after normalizing.\n7. Map errors to text: NE_FS_FILRDER (cannot read), NE_FS_FILWRER (cannot write), and a full disk message.\n8. Never write into the app install folder; it can be read only.\nQuality bar:\n- Killing the app mid save leaves the old or the new file, never a mix.\n- The user always sees which file failed.\nPitfalls:\n- Writing straight over the original file.\n- Reading binary files as text and saving them back broken.\nVerify:\n- [ ] Saves go through a .tmp file and a move.\n- [ ] JSON parsing is guarded.\n- [ ] Large files are refused before reading.\nOutput: files.js and its use in doc.js.",
+  "checks": [
+    "js.async-errors",
+    "js.json-parse-guarded",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "o app travou salvando e o arquivo do cliente corrompeu",
+      "output": "Atomic save via .tmp then move, one .bak copy, 50 MB guard, BOM handling, mapped error codes"
+    }
+  ],
+  "size": 398,
+  "version": 1
+}

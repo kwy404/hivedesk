@@ -1,0 +1,55 @@
+{
+  "id": "budget-tracker-app",
+  "title": "Budget tracker for income, expenses and categories",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "budget",
+    "budget tracker",
+    "expense tracker",
+    "expenses",
+    "income",
+    "money",
+    "finance",
+    "spending",
+    "personal finance"
+  ],
+  "when": "The user wants to record income and expenses by category and month, see the balance and how spending compares to a monthly budget.",
+  "inputs": [
+    "currency and locale",
+    "categories",
+    "monthly limits per category"
+  ],
+  "prompt": "Goal: Exact money math, a clear monthly balance and per category budget status that reads without relying on color.\nSteps:\n1. Store amounts as integer cents; parseAmount accepts 12,50 and 12.50 and rejects negatives and text.\n2. Transaction { id, type: income | expense, amountCents, category, date: YYYY-MM-DD, note }; budgets { category: limitCents }.\n3. logic.mjs: parseAmount, totals(list, month) giving income, expense, balance, byCategory(list, month), budgetStatus(spent, limit) as ok, near (80 percent) or over.\n4. Form: amount with inputmode=\"decimal\", income or expense radios in a fieldset with legend, category select, date defaulting to today.\n5. input type=\"month\" filters the table and summary cards; format with Intl.NumberFormat in the chosen currency.\n6. Category bars show width plus text \"R$ 420 of 500, near limit\"; save transactions and budgets in localStorage budget.v1 guarded.\n7. test.mjs: parseAmount, totals across months, budgetStatus at 79, 80 and 101 percent.\nQuality bar:\n- 0.10 plus 0.20 shows 0.30.\n- Balance sign is written, not only colored.\n- Table has a total row.\nPitfalls:\n- Floats for money.\n- Dates from toISOString that shift a day in negative time zones.\n- Deleting without undo.\nVerify:\n- [ ] Amounts saved as integers.\n- [ ] Month filter changes summary and table.\n- [ ] Labels on every field.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (money and totals), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.table-headers",
+    "html.input-types",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "controle de gastos mensal com categorias",
+      "output": "cents storage, month picker, cards Income/Expense/Balance, category bars with limits"
+    }
+  ],
+  "size": 413,
+  "version": 1
+}

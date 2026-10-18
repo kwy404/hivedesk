@@ -1,0 +1,38 @@
+{
+  "id": "sparkline-inline",
+  "title": "Sparklines inside tables and cards",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "sparkline",
+    "mini chart",
+    "tiny chart",
+    "inline chart",
+    "small graph",
+    "kpi",
+    "dashboard",
+    "trend line"
+  ],
+  "when": "A table, list or stat card needs a tiny trend line next to a number (last 30 days, recent prices).",
+  "inputs": [
+    "series per row",
+    "the headline number"
+  ],
+  "prompt": "Goal: Word sized SVG sparklines that show shape and the last value, render by the hundred, and have text equivalents.\nSteps:\n1. viewBox=\"0 0 100 24\" with preserveAspectRatio=\"none\", sized in CSS to 6em by 1.5em so it sits in a line of text.\n2. Scale y to the series min and max with 2 units of padding; x by index.\n3. A single polyline with a points string, stroke currentColor, width 1.5, vector-effect: non-scaling-stroke.\n4. Mark the last point with a small circle.\n5. Print the latest value and the change (\"+12% vs 30 days ago\") as text beside it, with a sign, not color alone.\n6. aria-hidden=\"true\" when the text already says the trend, else an aria-label with first, last, min and max; draw a mid line for flat data, skip series under 2 points.\nQuality bar:\n- Hundreds render fast (one element each).\n- Lines stay sharp at any size.\n- The number is the message; the line supports it.\nPitfalls:\n- Axes or legends on a sparkline.\n- Division by zero on flat series.\n- Rows with different scales shown as comparable without saying so.\nVerify:\n- [ ] viewBox and non-scaling stroke.\n- [ ] Flat and short series handled.\n- [ ] aria-hidden or aria-label on each.\n- [ ] Change shown as text.\nOutput: js/sparkline.js exporting sparkline(values) that returns an svg element for tables or cards.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.svg-a11y"
+  ],
+  "examples": [
+    {
+      "input": "mini gráfico de tendência ao lado de cada ação na tabela",
+      "output": "sparkline(values) polyline per row, last point dot, \"+3.2%\" text next to it"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

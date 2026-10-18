@@ -1,0 +1,43 @@
+{
+  "id": "cookie-consent-banner",
+  "title": "Privacy first cookie consent banner",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "cookie banner",
+    "cookie consent",
+    "cookies",
+    "consent banner",
+    "gdpr",
+    "lgpd",
+    "privacy banner",
+    "tracking consent"
+  ],
+  "when": "The user wants a cookie or tracking consent banner where rejecting is as easy as accepting.",
+  "inputs": [
+    "which cookie categories exist",
+    "the privacy policy link",
+    "scripts that need consent"
+  ],
+  "prompt": "Goal: A non blocking consent banner that loads no optional script before a choice and lets users change their mind later.\nSteps:\n1. <section aria-labelledby=\"cc-title\"> fixed at the bottom: heading, two plain sentences, the policy link; no overlay on the page.\n2. Three buttons of equal size and style: Reject all, Accept all, Choose; Choose reveals labeled category checkboxes, essential checked and disabled, others unchecked.\n3. Store { version, date, categories } as JSON in localStorage, reads and writes in try and catch, JSON.parse guarded.\n4. Optional scripts wait as <script type=\"text/plain\" data-category=\"analytics\"> and run by creating a new script element only after consent.\n5. A Cookie settings link in the footer reopens the banner; bump the version when categories change.\nQuality bar:\n- Reject takes one click, like Accept.\n- Purposes in plain words (Measure visits).\n- At most a third of a phone screen.\nPitfalls:\n- Pre-checked optional categories.\n- Tracking that runs before the choice.\n- A close X that silently counts as acceptance.\nVerify:\n- [ ] Reject all and Accept all look the same.\n- [ ] Every checkbox has a label.\n- [ ] No optional script runs without stored consent.\n- [ ] Storage and JSON.parse are guarded.\nOutput: Banner markup before the closing body tag, consent.css and consent.js.",
+  "checks": [
+    "html.labels",
+    "html.button-type",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "banner de cookies LGPD com opcao de recusar",
+      "output": "bottom section with Reject all, Accept all and Choose, analytics script activated only after consent, footer link to reopen"
+    }
+  ],
+  "size": 378,
+  "version": 1
+}

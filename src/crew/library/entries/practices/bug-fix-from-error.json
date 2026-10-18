@@ -1,0 +1,39 @@
+{
+  "id": "bug-fix-from-error",
+  "title": "Fix a bug from an error message and stack trace",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "bug",
+    "fix",
+    "error",
+    "exception",
+    "stack trace",
+    "typeerror",
+    "referenceerror",
+    "crash",
+    "debug",
+    "traceback"
+  ],
+  "when": "The user pastes an error, exception, traceback or crash report, or says something throws, and wants it fixed.",
+  "inputs": [
+    "the full error text and stack trace",
+    "the steps that trigger it",
+    "the files named in the trace"
+  ],
+  "prompt": "Goal: Find the root cause from the trace, fix it at the source with the smallest change, and prove the error is gone.\nSteps:\n1. Read the error type and message exactly: TypeError, ReferenceError, SyntaxError and RangeError each point to a different class of bug.\n2. Walk the stack from the top frame that is in the project (skip platform internals) and open that file and line.\n3. Ask what value was there at runtime and why: trace the variable back to where it was set or passed in.\n4. Reproduce it: write the smallest input or step list that triggers it, ideally as a failing test.\n5. Fix the cause (wrong order, missing return, bad assumption about data), not the symptom; add a guard only where missing data is valid.\n6. Run the reproduction again, then the related flows, to confirm the fix and no new errors.\nQuality bar:\n- The explanation names the line, the bad value and why it was bad.\n- The fix is minimal and local.\n- A test or repro step now covers the case.\nPitfalls:\n- Wrapping the code in try and catch that swallows the error.\n- Fixing the line in the trace when the bad value came from a caller.\n- Guessing without reading the actual message.\nVerify:\n- [ ] The reproduction no longer throws.\n- [ ] No new console errors on the main flow.\n- [ ] The changed files parse.\n- [ ] The cause is written in one or two sentences.\nOutput: The fixed source files, a test or repro when practical, and a short note: cause, fix, how it was verified.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "TypeError: Cannot read properties of undefined (reading map) at render (app.js:42)",
+      "output": "items was undefined before fetch finished; initialize state.items = [] and render after load; test added"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

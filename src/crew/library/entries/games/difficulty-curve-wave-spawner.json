@@ -1,0 +1,39 @@
+{
+  "id": "difficulty-curve-wave-spawner",
+  "title": "Difficulty curves and wave spawning",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "difficulty",
+    "waves",
+    "enemy spawner",
+    "spawn",
+    "difficulty curve",
+    "progression",
+    "balancing",
+    "endless mode",
+    "game"
+  ],
+  "when": "Enemies arrive in waves or over time and the challenge must ramp smoothly, with data driven waves, breathing room between peaks and an optional relaxed mode.",
+  "inputs": [
+    "enemy types",
+    "session length"
+  ],
+  "prompt": "Goal: Spawning driven by a data table and a curve function, tunable without touching game code.\nSteps:\n1. data/waves.json: [{ \"at\": 0, \"enemies\": [{ \"type\": \"grunt\", \"count\": 5, \"every\": 0.8 }] }, { \"at\": 20, ... }] with a boss on every 5th wave.\n2. The spawner counts elapsed game time (paused time does not count) and keeps a queue of pending spawns with due times.\n3. After the scripted waves, endless mode uses difficulty(t) = 1 + 0.6 * Math.log1p(t / 30) to scale count, speed and interval, each with a cap.\n4. Leave a calm gap of 4 to 6 s after each peak; a wave starts early only when the field is clear.\n5. Spawn points are outside the camera view, at least 150 px from the player and never inside walls.\n6. Assist option \"Relaxed\" multiplies enemy speed and damage by 0.7 and is stored with the settings.\n7. Per wave, log time to clear and damage taken to a debug overlay for tuning.\nQuality bar:\n- The first 30 s teach the basics with a single enemy type.\n- Enemies on screen are capped so the frame rate holds.\nPitfalls:\n- Linear growth forever, which becomes impossible and then boring.\n- Spawning on top of the player, a cheap death.\n- Wall clock time, so pausing skips waves.\nVerify:\n- [ ] A node:test file checks that difficulty(t) rises and respects its caps.\n- [ ] waves.json parses and every enemy type exists.\n- [ ] No spawn lands closer than 150 px in a 1000 spawn run.\nOutput: js/spawner.js, data/waves.json and test/spawner.test.mjs.",
+  "checks": [
+    "json.valid",
+    "node.test-runner",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quero ondas de inimigos que ficam mais difíceis aos poucos",
+      "output": "waves.json script, log curve endless mode with caps, calm gaps, safe spawn points, tests"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

@@ -1,0 +1,42 @@
+{
+  "id": "file-import-json-csv",
+  "title": "Import a JSON or CSV file with a file input",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "import",
+    "upload file",
+    "file input",
+    "open file",
+    "import csv",
+    "import json",
+    "drop file",
+    "filereader",
+    "load file"
+  ],
+  "when": "The user wants to load data from a file on their computer into a web app (contacts, transactions, a saved project) without a server.",
+  "inputs": [
+    "expected fields",
+    "file formats accepted",
+    "replace or merge behavior"
+  ],
+  "prompt": "Goal: A safe import flow: pick or drop a file, check size and type, parse, preview, map columns and confirm before changing data.\nSteps:\n1. <label for=\"file\">Choose a file</label> with <input type=\"file\" id=\"file\" accept=\".csv,.json\">, plus an optional drop zone that also opens the picker by keyboard.\n2. Check file.size (5 MB max) and the extension, then read with await file.text() inside try and catch.\n3. JSON.parse inside try; CSV through a quote aware parser; strip a BOM.\n4. Validate every record and collect errors with row numbers instead of stopping at the first.\n5. Preview the first 10 rows in a table with th headers, counts of valid and invalid rows, and mapping selects when headers differ from field names.\n6. Apply on confirm (Replace or Merge), announce \"Imported 120 rows, skipped 3\" in a status region, and reset input.value so the same file can be chosen again.\nQuality bar:\n- Nothing changes before the user confirms.\n- Large files show progress or parse in a worker.\n- Errors name row and field.\nPitfalls:\n- Trusting file.type, which is often empty.\n- Rendering imported text with innerHTML.\n- Duplicates when the same file is imported twice; match ids.\nVerify:\n- [ ] File input labeled with accept.\n- [ ] JSON.parse guarded.\n- [ ] Preview table has headers.\n- [ ] Result announced in an aria-live region.\nOutput: js/import.js with read, parse, validate and apply steps, plus the import panel markup.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "js.safe-dom",
+    "html.labels",
+    "html.aria-live",
+    "html.table-headers"
+  ],
+  "examples": [
+    {
+      "input": "importar meus contatos de um arquivo csv",
+      "output": "file input .csv/.json, 10 row preview table, column mapping, Merge or Replace, \"Imported 86 contacts\""
+    }
+  ],
+  "size": 407,
+  "version": 1
+}

@@ -1,0 +1,50 @@
+{
+  "id": "currency-converter",
+  "title": "Currency converter with stored exchange rates",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "currency converter",
+    "currency",
+    "exchange rate",
+    "money converter",
+    "dollar",
+    "euro",
+    "forex"
+  ],
+  "when": "The user wants to convert amounts between currencies offline, using a local rates file or rates the user enters, with the rate date visible.",
+  "inputs": [
+    "currencies",
+    "base currency and rates",
+    "rate date"
+  ],
+  "prompt": "Goal: Offline conversions through one base, with editable rates and honest labeling that the rates are not live.\nSteps:\n1. rates.json { base: \"USD\", date, rates: { EUR: 0.92, BRL: 5.4 } }; fetch, parse in try and catch; user edits override it in localStorage guarded.\n2. logic.mjs: convert(amount, from, to, table) = amount / rate[from] x rate[to] with the base at 1; crossRate for \"1 EUR = 5.87 BRL\".\n3. Round only for display with Intl.NumberFormat(locale, { style: \"currency\", currency }) so each currency gets its decimals.\n4. UI: amount with inputmode=\"decimal\", from and to selects showing code and name, swap, result in output with aria-live, and \"Rates from 2026-10-01\".\n5. Rates editor: positive finite numbers only, field error on 0 or text.\n6. Favorite pairs as one click buttons.\n7. test.mjs: via base, cross rate, same currency, invalid rate throws.\nQuality bar:\n- Rate date always visible.\n- Zero decimal currencies show no cents.\n- Swap keeps the amount.\nPitfalls:\n- Claiming rates are live.\n- Rounding the rate before multiplying.\n- Dividing by a missing rate.\nVerify:\n- [ ] JSON.parse guarded.\n- [ ] Inputs labeled.\n- [ ] Output live.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs, rates.json, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "convert dollars to reais and euros offline",
+      "output": "rates.json with date, editable rates, swap, \"1 USD = 5.40 BRL\""
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

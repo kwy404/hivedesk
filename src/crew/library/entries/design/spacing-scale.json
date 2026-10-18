@@ -1,0 +1,38 @@
+{
+  "id": "spacing-scale",
+  "title": "Spacing scale on a 4 or 8 px grid",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "spacing",
+    "spacing scale",
+    "padding",
+    "margin",
+    "gap",
+    "8px grid",
+    "4px grid",
+    "layout spacing"
+  ],
+  "when": "The user wants consistent padding, margins and gaps, or says the layout feels uneven, cramped or random.",
+  "inputs": [
+    "density: comfortable or compact",
+    "current spacing values to replace"
+  ],
+  "prompt": "Goal: A spacing scale of about nine named steps on a 4 px base, used for every padding, margin and gap.\nSteps:\n1. Choose the base: 4 px for dense app UI, 8 px multiples for content pages.\n2. Define steps that grow faster at the top: --space-1 0.25rem, 2 0.5rem, 3 0.75rem, 4 1rem, 5 1.5rem, 6 2rem, 7 3rem, 8 4rem, 9 6rem.\n3. Apply inside out: padding within a component is smaller than the gap between components, which is smaller than section spacing.\n4. Use gap on flex and grid containers instead of margins on children.\n5. Let section padding respond to the viewport: padding-block: clamp(var(--space-6), 6vw, var(--space-9)).\n6. Replace each stray value (13px, 18px, 22px) with the nearest step.\nQuality bar:\n- Every spacing value is a token or 0.\n- Related items sit closer than unrelated ones.\n- Adjacent touch targets keep var(--space-2) apart.\nPitfalls:\n- Mixing rem and px steps.\n- A bottom margin on the last child inside cards.\n- One gap size everywhere, which flattens grouping.\nVerify:\n- [ ] The scale sits on :root.\n- [ ] No raw px spacing outside it.\n- [ ] Containers use gap.\n- [ ] Item, group and section spacing use different steps.\nOutput: Spacing tokens on :root and the rewritten padding, margin and gap rules in style.css.",
+  "checks": [
+    "css.custom-properties",
+    "css.braces",
+    "css.box-sizing"
+  ],
+  "examples": [
+    {
+      "input": "os espacamentos do site estao todos diferentes",
+      "output": "--space-1 to --space-9 on :root, card padding --space-5, grid gap --space-6, sections --space-8"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

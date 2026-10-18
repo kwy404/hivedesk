@@ -1,0 +1,42 @@
+{
+  "id": "sortable-data-table",
+  "title": "Sortable data table",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "table",
+    "data table",
+    "sortable table",
+    "sort columns",
+    "filter table",
+    "responsive table",
+    "spreadsheet view",
+    "column sort"
+  ],
+  "when": "The user wants a table of records whose columns can be sorted, and maybe filtered, that still works on phones.",
+  "inputs": [
+    "the columns and their types",
+    "the rows or a data file",
+    "default sort"
+  ],
+  "prompt": "Goal: A real HTML table with sortable column buttons, correct aria-sort, type aware sorting and a scroll wrapper for phones.\nSteps:\n1. <table> with a <caption>, <thead> of <th scope=\"col\">; sortable headers wrap their text in <button type=\"button\">.\n2. Only the sorted column carries aria-sort=\"ascending\" or \"descending\"; a second click flips it.\n3. Sort by data-type per column: numbers and dates from a raw data-value (ISO for dates), text with Intl.Collator({ numeric: true }).\n4. Sort a copy of the rows (stable) and re-append the tr nodes; never rebuild with innerHTML.\n5. Announce Sorted by Price, ascending in a role=\"status\" region.\n6. Wrap the table in <div role=\"region\" aria-labelledby=\"caption-id\" tabindex=\"0\"> with overflow-x: auto for narrow screens.\nQuality bar:\n- Numbers are right aligned with tabular-nums.\n- The sort direction shows as an arrow plus aria-sort.\n- Headers stay readable when the table scrolls.\nPitfalls:\n- Sorting numbers as text (10 before 9).\n- Divs styled as a table.\n- Parsing formatted values such as 1.234,50 instead of raw data-value.\nVerify:\n- [ ] th headers with scope and a caption exist.\n- [ ] aria-sort is on the sorted column only.\n- [ ] Dates and numbers sort correctly.\n- [ ] The wrapper scrolls at 375 px.\nOutput: Table markup or a render from data, table.css and table-sort.js.",
+  "checks": [
+    "html.table-headers",
+    "html.button-type",
+    "html.aria-live",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "tabela de pedidos que ordena por data, cliente e valor",
+      "output": "caption Orders, th buttons with aria-sort, numeric and date sorting from data-value, status Sorted by Total"
+    }
+  ],
+  "size": 380,
+  "version": 1
+}

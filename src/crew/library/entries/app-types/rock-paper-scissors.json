@@ -1,0 +1,50 @@
+{
+  "id": "rock-paper-scissors",
+  "title": "Rock paper scissors against the computer",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "rock paper scissors",
+    "jokenpo",
+    "hand game",
+    "mini game",
+    "best of three",
+    "game vs computer"
+  ],
+  "when": "The user wants rock paper scissors against the computer, with rounds, a match score and maybe a computer that adapts.",
+  "inputs": [
+    "match length",
+    "difficulty"
+  ],
+  "prompt": "Goal: A quick, fair round loop with clear results and an optional opponent that learns the player habits.\nSteps:\n1. logic.mjs: BEATS = { rock: \"scissors\", paper: \"rock\", scissors: \"paper\" }; outcome(a, b) returns win, lose or draw.\n2. Computer pick: uniform random by default; Adaptive mode predicts the player most frequent next move after their last one and counters it.\n3. Match best of 3, 5 or 7: first to ceil(n / 2); matchWinner(score, n).\n4. Three large buttons with text and icon; keys R, P, S.\n5. Reveal with a short shake animation, none under prefers-reduced-motion; result sentence in aria-live: \"Rock beats scissors. You win the round.\"\n6. Round history list and overall stats in localStorage guarded.\n7. test.mjs: all 9 pairs, match winner, adaptive counter pick.\nQuality bar:\n- Result is a sentence, not only an icon.\n- Score always visible.\n- One handed on phones.\nPitfalls:\n- A computer that sees the player move before choosing in fair mode.\n- Draws counted as wins.\n- Animations that block the next round.\nVerify:\n- [ ] Outcome table tested.\n- [ ] Status live.\n- [ ] Reduced motion rule present.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (rules and picks), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "pedra papel tesoura melhor de 5",
+      "output": "three buttons, \"You 2 x 1 Computer\", adaptive mode toggle"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

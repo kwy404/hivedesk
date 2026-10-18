@@ -1,0 +1,35 @@
+{
+  "id": "estimate-tasks",
+  "title": "Estimating task size for the crew",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "estimate",
+    "effort",
+    "size",
+    "how long",
+    "turns",
+    "complexity",
+    "sizing",
+    "too big"
+  ],
+  "when": "The foreman must judge whether a task fits one worker run, or the user asks how big or how long a job is.",
+  "inputs": [
+    "the task list",
+    "expected file sizes",
+    "the model context limit"
+  ],
+  "prompt": "Goal: Each task sized as S, M or L in turns and lines, with every L split, so no task runs out of turns or context.\nSteps:\n1. Count the output: S writes one file under 80 lines, M one or two files under 200 lines, L anything more.\n2. Count the reading: each existing file the worker must read costs context; more than three large files makes the task L.\n3. Count the unknowns: a new API, a tricky algorithm or a vague spec moves the size up one step.\n4. Translate to turns: S about 3 turns, M about 6, L over 10, which is past what a small model does well.\n5. Split every L by file or by feature until all tasks are S or M.\n6. Report the total as task count and rough turns, never as hours or days of human work.\nQuality bar:\n- Each size has a reason in one phrase (two files, new parser).\n- No L remains in the final plan.\n- Totals add up from the task sizes.\nPitfalls:\n- Sizing by how simple it sounds instead of lines and files.\n- Ignoring the cost of reading existing code.\n- Promising a time to the user that the crew cannot keep.\nVerify:\n- [ ] Every task has S or M and a reason.\n- [ ] L tasks were split.\n- [ ] Reading cost was counted for edits.\n- [ ] The total is in tasks and turns.\nOutput: Size and reason appended to each task detail, plus one line with the total.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "how big is a quiz app with 10 questions?",
+      "output": "3 tasks: dev app.js M (logic + data), designer style.css S, qa S; about 12 turns"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

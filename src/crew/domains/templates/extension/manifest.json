@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Page Notes",
+  "version": "0.1.0",
+  "description": "Keep a short note for each website, saved in your browser.",
+  "action": { "default_popup": "popup.html", "default_title": "Page Notes" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["storage", "activeTab"],
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+Y" }, "description": "Open Page Notes" }
+  },
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'" }
+}

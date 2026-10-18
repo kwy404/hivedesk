@@ -1,0 +1,38 @@
+{
+  "id": "algorithm-performance",
+  "title": "Speed up slow loops and algorithms",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "performance",
+    "slow code",
+    "algorithm",
+    "complexity",
+    "loop",
+    "big o",
+    "optimize",
+    "nested loops",
+    "map",
+    "set"
+  ],
+  "when": "A script or function is slow on larger data, a loop takes seconds, or the page freezes while processing.",
+  "inputs": [
+    "the slow function",
+    "typical and maximum data sizes"
+  ],
+  "prompt": "Goal: Measured speedup by fixing the complexity first, with identical results.\nSteps:\n1. Measure before changing: performance.now() around the call with realistic data size; record the time.\n2. Find nested work: a find, filter, includes or indexOf inside a loop makes it quadratic.\n3. Build a Map or Set index once (byId = new Map(items.map(i => [i.id, i]))) and look up in constant time.\n4. Avoid repeated work: hoist invariant calculations out of loops, sort once, cache results of pure functions by key.\n5. Avoid building strings or arrays with repeated spreading in a loop; push then join.\n6. Measure again with the same data and confirm the outputs match the old version.\nQuality bar:\n- The gain is measured, not assumed.\n- The code stays readable.\n- Results are identical on a sample set.\nPitfalls:\n- Micro tuning syntax while an O(n squared) loop remains.\n- Caching data that can change without invalidation.\n- Optimizing code that runs once on ten items.\nVerify:\n- [ ] Before and after timings are written down.\n- [ ] Outputs match for the sample data.\n- [ ] No lookup inside a loop scans a whole array.\n- [ ] Files parse.\nOutput: The optimized function and a short note: cause, change, timings.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "this report script takes 40 seconds for 50k rows",
+      "output": "replaced orders.find inside the loop with a Map index: 40 s to 0.3 s, same totals"
+    }
+  ],
+  "size": 344,
+  "version": 1
+}

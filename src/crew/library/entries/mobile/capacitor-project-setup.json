@@ -1,0 +1,42 @@
+{
+  "id": "capacitor-project-setup",
+  "title": "Capacitor project setup around an existing web build",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "capacitor",
+    "mobile app",
+    "native app",
+    "capacitor.config.json",
+    "webdir",
+    "hybrid app",
+    "cap sync",
+    "wrap web app",
+    "app store"
+  ],
+  "when": "The user wants to turn a working web app into an installable store app with Capacitor and needs the config, the scripts and an honest view of the native tooling.",
+  "inputs": [
+    "web build command and output folder",
+    "app name",
+    "reverse domain app id"
+  ],
+  "prompt": "Goal: The web build wrapped by Capacitor with a correct capacitor.config.json, repeatable sync scripts and a README that states the native tooling needs.\nSteps:\n1. Add @capacitor/core and @capacitor/cli, then run npx cap init \"Field Notes\" com.acme.fieldnotes --web-dir dist.\n2. capacitor.config.json: { \"appId\": \"com.acme.fieldnotes\", \"appName\": \"Field Notes\", \"webDir\": \"dist\" }; appId never changes after release.\n3. webDir is the folder holding the built index.html, not src; build first, then npx cap sync.\n4. Add each target with npx cap add plus the platform name; this creates native project folders that you commit.\n5. Be honest: compiling needs each platform SDK and its vendor IDE installed (a JDK for one target, a mac with the vendor IDE for the other); npx cap open hands off to that IDE.\n6. server.url (live reload from the LAN dev server) stays out of the committed config.\n7. package.json scripts: \"build\" and \"cap:sync\" that runs the build then npx cap sync.\nQuality bar:\n- A fresh clone builds with two commands.\nPitfalls:\n- Shipping server.url, so the store app loads from a laptop.\n- Absolute asset paths that break inside the WebView.\nVerify:\n- [ ] capacitor.config.json has appId, appName and webDir.\n- [ ] The webDir folder contains index.html after the build.\n- [ ] No server.url in the committed config.\n- [ ] README lists the SDKs and IDEs needed.\nOutput: capacitor.config.json, package.json scripts and a README build section.",
+  "checks": [
+    "capacitor.config",
+    "json.valid",
+    "pkg.scripts",
+    "file.readme"
+  ],
+  "examples": [
+    {
+      "input": "transforma meu app web em app de loja com Capacitor",
+      "output": "capacitor.config.json (appId, appName, webDir dist), cap:sync script, README naming the SDKs and IDEs"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

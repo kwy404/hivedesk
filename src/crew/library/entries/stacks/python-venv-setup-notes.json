@@ -1,0 +1,42 @@
+{
+  "id": "python-venv-setup-notes",
+  "title": "Python project setup: venv and requirements",
+  "category": "stacks",
+  "roles": [
+    "writer",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "python",
+    "venv",
+    "virtual environment",
+    "requirements",
+    "requirements.txt",
+    "setup",
+    "install",
+    "pip",
+    "how to run"
+  ],
+  "when": "A Python project needs setup instructions or a requirements file, or the user asks how to run the code on a fresh machine.",
+  "inputs": [
+    "minimum Python version",
+    "entry point",
+    "test command"
+  ],
+  "prompt": "Goal: A README setup section and project files that let anyone create an isolated environment and run the project in a few commands.\nSteps:\n1. State the minimum Python version and how to check it (python3 --version).\n2. Show creation and activation: python3 -m venv .venv, then source .venv/bin/activate on POSIX shells or .venv\\Scripts\\activate on other systems.\n3. requirements.txt: a single comment line when only the standard library is used, otherwise exact pins with ==.\n4. Give run and test commands exactly as typed (python -m app, python -m unittest).\n5. Add .venv/, __pycache__/ and *.pyc to .gitignore.\n6. Troubleshooting list: command not found, wrong interpreter, activation blocked by script policy.\nQuality bar:\n- Every command is in a fenced block and pastes as is.\n- Works on a machine with only Python installed.\n- Nothing is installed globally.\nPitfalls:\n- pip install with sudo.\n- Committing the .venv folder.\n- Listing packages the code never imports.\nVerify:\n- [ ] README has a Setup section with fenced commands.\n- [ ] requirements.txt exists.\n- [ ] .gitignore lists .venv.\n- [ ] Run and test commands match real entry points.\nOutput: README.md with Setup and Run sections, requirements.txt and .gitignore.",
+  "checks": [
+    "file.readme",
+    "md.h1",
+    "md.sections",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "como alguém roda meu projeto python do zero?",
+      "output": "README Setup: python3 -m venv .venv, activate per shell, requirements.txt stdlib note, run and test commands"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

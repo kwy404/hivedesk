@@ -1,0 +1,40 @@
+{
+  "id": "radio-cards-checkbox-group",
+  "title": "Radio cards and checkbox groups",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "radio buttons",
+    "radio cards",
+    "checkbox group",
+    "choice cards",
+    "option cards",
+    "plan picker",
+    "multiple choice",
+    "select all"
+  ],
+  "when": "The user wants options shown as selectable cards or grouped checkboxes, such as plan choice, shipping method or interests.",
+  "inputs": [
+    "the options with title and short description",
+    "single or multiple choice",
+    "minimum selections"
+  ],
+  "prompt": "Goal: Native radios and checkboxes styled as cards, grouped with a legend, with visible focus and checked states.\nSteps:\n1. <fieldset> with a <legend>; each option is <label class=\"card\"><input type=\"radio\" name=\"ship\" value=\"express\"> title and one line</label>.\n2. Keep the input visible or visually hidden but focusable; style the card with .card:has(:checked) and .card:has(:focus-visible).\n3. Show the checked state with a thicker border plus a check icon, not color alone.\n4. Checkbox groups with a minimum: call setCustomValidity on the first box until one is checked.\n5. A Select all checkbox sets indeterminate when only some are checked.\n6. Lay cards out with repeat(auto-fit, minmax(12rem, 1fr)).\nQuality bar:\n- Arrow keys move between radios natively.\n- The whole card is clickable.\n- Descriptions are short and comparable.\nPitfalls:\n- display: none on the inputs, killing keyboard use.\n- Divs with click handlers instead of inputs.\n- Radios with different name attributes in one group.\nVerify:\n- [ ] Every input sits inside or is pointed to by a label.\n- [ ] Each group has a fieldset and legend.\n- [ ] Checked and focus states are visible.\n- [ ] Cards stack at 375 px.\nOutput: Group markup in the form and choices.css, plus a small script only for the select all and minimum rules.",
+  "checks": [
+    "html.labels",
+    "css.focus-visible",
+    "css.media-query",
+    "html.no-inline-handlers"
+  ],
+  "examples": [
+    {
+      "input": "opcoes de frete em cartoes: normal, expresso, retirada",
+      "output": "fieldset Shipping method, three radio cards with price and days, :has(:checked) border and check icon"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

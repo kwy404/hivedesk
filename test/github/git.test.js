@@ -98,6 +98,8 @@ describe('git in the workspace (local bare remote, no network)', () => {
     expect(calls[0].env.GIT_CONFIG_VALUE_0).toMatch(/^Authorization: Basic /);
     expect(calls[0].env.GIT_TERMINAL_PROMPT).toBe('0');
     expect(calls[0].args).toContain('credential.helper=');
+    for (const c of ['gpg.program=', 'core.sshCommand=', 'core.fsmonitor=false', 'commit.gpgSign=false']) expect(calls[0].args).toContain(c);
+    expect(calls[0].args.some((a) => a.startsWith('core.hooksPath='))).toBe(true);
   });
 
   it('removes secrets from git output and URLs', async () => {

@@ -1,0 +1,42 @@
+{
+  "id": "modal-dialog",
+  "title": "Modal dialog with the native dialog element",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "modal",
+    "dialog",
+    "popup",
+    "pop up",
+    "confirm dialog",
+    "overlay",
+    "modal window",
+    "confirmation"
+  ],
+  "when": "The user wants a modal window: a confirmation, a short form or a message that blocks the page until answered.",
+  "inputs": [
+    "the trigger",
+    "dialog title and content",
+    "the actions (confirm, cancel)"
+  ],
+  "prompt": "Goal: A modal built on <dialog> and showModal() with a title, a close control, a focus trap and focus returned to the trigger.\nSteps:\n1. <dialog id=\"confirm\" aria-labelledby=\"confirm-title\"> with an h2 title, the content and actions; open it from a <button type=\"button\"> with showModal().\n2. Actions in <form method=\"dialog\"> with <button value=\"cancel\">Cancel</button> and <button value=\"ok\">; read dialog.returnValue on close.\n3. A visible Close button in the header; Escape works natively.\n4. Backdrop click: close when event.target is the dialog itself (wrap content in an inner div).\n5. Style ::backdrop translucent dark; width: min(90vw, 32rem); max-height: 85vh with the body scrolling inside.\n6. On the close event return focus to the trigger; autofocus the least destructive control.\nQuality bar:\n- showModal makes the page inert, no hand made trap.\n- The title says what is being decided.\n- Destructive buttons name the thing (Delete 3 photos).\nPitfalls:\n- show() instead of showModal(), leaving the page interactive.\n- A div overlay with no Escape.\n- A modal on page load before any user action.\nVerify:\n- [ ] aria-labelledby points at the title.\n- [ ] A Close or Cancel control exists.\n- [ ] Escape and backdrop click close it.\n- [ ] Focus returns to the trigger.\nOutput: Dialog markup near the end of body, dialog styles in style.css and dialog.js.",
+  "checks": [
+    "html.dialog-a11y",
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "popup de confirmacao antes de apagar um item",
+      "output": "dialog aria-labelledby, \"Delete this order?\" title, form method dialog with Cancel and Delete order, focus back to trigger"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

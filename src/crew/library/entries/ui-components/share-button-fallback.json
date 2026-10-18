@@ -1,0 +1,39 @@
+{
+  "id": "share-button-fallback",
+  "title": "Share button with Web Share API and fallback",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "share",
+    "share button",
+    "web share",
+    "share link",
+    "social share",
+    "send link",
+    "share page"
+  ],
+  "when": "The user wants a Share button that opens the native share sheet on phones and offers simple options elsewhere.",
+  "inputs": [
+    "title and text to share",
+    "the canonical URL",
+    "networks the user wants as fallback"
+  ],
+  "prompt": "Goal: One Share button that uses navigator.share when available and a small fallback menu of copy and share links otherwise.\nSteps:\n1. <button type=\"button\" class=\"share\">Share</button>; the URL comes from the canonical link or location.href without tracking parameters.\n2. If navigator.share exists and navigator.canShare({ url }) is true, call share({ title, text, url }) in try and catch; ignore AbortError, which means the user cancelled.\n3. Fallback: open a small panel with Copy link (clipboard), an email link with encodeURIComponent subject and body, and share URLs for the networks the user named.\n4. Fallback links that leave the page use target=\"_blank\" rel=\"noopener\".\n5. Report Link copied or Could not share in a role=\"status\" region.\nQuality bar:\n- Only one Share control per item.\n- Shared text is short and makes sense alone.\n- Network links carry text names, not only icons.\nPitfalls:\n- A row of ten network icons nobody uses.\n- Treating a cancel as an error.\n- Sharing a URL full of tracking parameters.\nVerify:\n- [ ] The button has type=\"button\".\n- [ ] Native share is feature detected.\n- [ ] Fallback links have rel=\"noopener\".\n- [ ] Results are announced.\nOutput: Button and fallback panel markup, share.css and share.js.",
+  "checks": [
+    "html.button-type",
+    "html.external-rel",
+    "html.aria-live",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "botao compartilhar no artigo",
+      "output": "Share button calling navigator.share on phones, fallback panel with Copy link and email, status Link copied"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

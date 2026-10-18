@@ -1,0 +1,39 @@
+{
+  "id": "dependency-update-routine",
+  "title": "Routine for updating dependencies safely",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "dependency updates",
+    "outdated packages",
+    "lockfile",
+    "security advisory",
+    "upgrade packages",
+    "base image update",
+    "maintenance",
+    "changelog reading"
+  ],
+  "when": "Dependencies are months behind, an advisory was reported, or the user wants a regular, low risk habit for keeping packages and base images current.",
+  "inputs": [
+    "manifest and lockfile",
+    "test command",
+    "base image tag"
+  ],
+  "prompt": "Goal: A monthly routine that updates in small tested batches, one commit each, with a fast path for security fixes.\nSteps:\n1. Start from passing tests on main and a clean working tree.\n2. List outdated packages with the package manager's outdated command and advisories with its audit command; also the base image tag.\n3. Group patch and minor bumps of dev tools together; each runtime dependency major gets its own branch.\n4. Read the changelog or migration notes before each major and copy breaking items into the commit message.\n5. Update, let the package manager regenerate the lockfile (never hand edit it), run all tests, start the app and walk the main flow.\n6. One group per commit (\"Update parser to 5.0.0, rename parse option\") so bisect finds culprits.\n7. Advisory path: check if the vulnerable code is reachable, update only that package, ship a patch the same day when it is.\n8. Remove packages nothing imports; log date and results in DEPENDENCIES.md.\nQuality bar:\n- The lockfile is committed with every manifest change.\n- Each update can be reverted alone.\n- No major lands unread.\nPitfalls:\n- Updating everything at once, then guessing which upgrade broke the build.\n- An automatic audit fix that quietly installs a breaking major.\n- Ranges such as * or latest in an application manifest.\nVerify:\n- [ ] Tests pass after each group.\n- [ ] Lockfile and manifest agree.\n- [ ] Majors have notes in their commits.\n- [ ] DEPENDENCIES.md has the date.\nOutput: Updated manifest and lockfile in small commits and DEPENDENCIES.md with the log.",
+  "checks": [
+    "json.valid",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "minhas dependencias estao muito desatualizadas",
+      "output": "grouped updates in separate commits, majors after reading migration notes, advisory fast path, DEPENDENCIES.md log with date"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

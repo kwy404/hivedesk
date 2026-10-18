@@ -1,0 +1,39 @@
+{
+  "id": "list-search-filter-sort",
+  "title": "Search, filter and sort a list",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "search",
+    "filter",
+    "sort",
+    "list",
+    "table",
+    "search box",
+    "facets",
+    "order by",
+    "find items"
+  ],
+  "when": "The user has a list or table (products, contacts, tasks) and wants a search box, filter controls and sortable columns.",
+  "inputs": [
+    "item fields",
+    "which fields filter and sort"
+  ],
+  "prompt": "Goal: Instant, combinable search, filters and sorting over in memory data, with state in the URL and results announced.\nSteps:\n1. One state { q, filters, sort: { key, dir } }; derive the visible list with a pure view(items, state).\n2. Search: lowercase, NFD and strip marks (/\\p{Diacritic}/gu) on both sides; every query word must match a precomputed search text per item.\n3. Filters: labeled selects or checkboxes, AND across groups and OR within one, with counts per option.\n4. Sort: comparator per key (Intl.Collator for text, timestamps for dates) with an id tie breaker; the header button sets aria-sort on its th.\n5. Debounce input 150 ms; render with textContent; \"12 of 240 results\" in a role=\"status\" region, plus a Clear filters button.\n6. Sync state to the URL with URLSearchParams and history.replaceState, and restore it on load.\nQuality bar:\n- No typing lag on 5 thousand items.\n- Accents and case never affect matching.\n- Sort state is visible in the header.\nPitfalls:\n- Filtering the source array in place.\n- Rebuilding search text on every keystroke.\n- Sort buttons with no state for screen readers.\nVerify:\n- [ ] view() is pure and tested.\n- [ ] aria-sort on the sorted column.\n- [ ] Result count in a status region.\n- [ ] The URL reflects the state.\nOutput: js/list-view.js with state, view and render, plus search, filter and table markup.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.labels",
+    "html.aria-live"
+  ],
+  "examples": [
+    {
+      "input": "busca e filtro por categoria na lista de produtos",
+      "output": "search box ignoring accents, category checkboxes with counts, sortable price column, \"8 of 64\" status"
+    }
+  ],
+  "size": 389,
+  "version": 1
+}

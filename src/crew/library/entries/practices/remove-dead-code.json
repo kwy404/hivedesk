@@ -1,0 +1,35 @@
+{
+  "id": "remove-dead-code",
+  "title": "Remove dead and unused code",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "dead code",
+    "unused code",
+    "cleanup",
+    "remove",
+    "unused functions",
+    "unused css",
+    "refactor"
+  ],
+  "when": "The user wants to clean a project of unused functions, variables, files, CSS rules or commented out blocks.",
+  "inputs": [
+    "the project files",
+    "entry points (HTML pages, node scripts)"
+  ],
+  "prompt": "Goal: A smaller codebase with every removal proven unused, and nothing that is still reached at runtime deleted.\nSteps:\n1. Start from the entry points and list what they load: script tags, imports, CSS links, files read at runtime.\n2. For each candidate function or variable, search the whole project for its name, including HTML, string lookups and dynamic keys.\n3. For CSS, search class names in HTML and in scripts (classList.add, className); keep classes built from strings.\n4. Delete commented out code blocks; history keeps them if the project uses version control.\n5. Remove one group at a time and run the app or tests after each group.\n6. Delete files that nothing imports or links, after checking build or run scripts that may name them.\nQuality bar:\n- Each deletion has a reason (no references found).\n- Behavior and output are unchanged.\n- Leftover imports and exports are cleaned too.\nPitfalls:\n- Deleting a function called through an object key or an event name string.\n- Removing CSS for states added by script (is-open, active).\n- Removing public exports a user of the library still calls.\nVerify:\n- [ ] Every removed name has no remaining reference.\n- [ ] Pages load with no new errors in the console.\n- [ ] Tests or the main flow still pass.\n- [ ] Files parse.\nOutput: The cleaned files and a list of what was removed and why.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "clean up unused stuff in this project",
+      "output": "removed 6 unused functions, 2 orphan files and 40 lines of unused CSS; app unchanged"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

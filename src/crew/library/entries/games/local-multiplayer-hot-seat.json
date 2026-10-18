@@ -1,0 +1,39 @@
+{
+  "id": "local-multiplayer-hot-seat",
+  "title": "Local multiplayer: shared keyboard and hot seat turns",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "local multiplayer",
+    "two player",
+    "same keyboard",
+    "hot seat",
+    "couch coop",
+    "pass and play",
+    "split controls",
+    "game"
+  ],
+  "when": "Two to four people play on one device, either at the same time with split keyboard zones and gamepads, or taking turns with a pass the device screen between turns.",
+  "inputs": [
+    "number of players",
+    "simultaneous or turns"
+  ],
+  "prompt": "Goal: Fair simultaneous play on shared hardware, and clean turn handoffs that hide private information.\nSteps:\n1. Player slots: players[i] = { name, color, shape, device } where device is \"keys-left\" (WASD plus F and G), \"keys-right\" (arrows plus K and L) or a gamepad index.\n2. Join screen: each person presses any button on their device to claim the next slot; the slot shows color plus shape for colorblind players.\n3. Keyboards drop some key combinations (ghosting); keep the zones far apart and test with both players holding three keys.\n4. The input layer answers per player: input.isDown(playerIndex, \"fire\").\n5. Hot seat: a turn order array and a handoff screen \"Pass to Ana\" that hides secret hands until a Ready button is pressed.\n6. An optional turn timer pauses on the handoff screen; announce the active player in an aria-live region.\n7. A HUD row shows each score; a rematch keeps names and rotates who starts.\n8. Save the turn match state in guarded localStorage so a closed tab can resume.\nQuality bar:\n- Both players control at once without stealing input from each other.\n- A hot seat player never sees the other hand during a handoff.\nPitfalls:\n- Bindings packed into one keyboard row, which ghost.\n- One global key Set without per player mapping.\n- The same player always starting, which is unfair.\nVerify:\n- [ ] Three keys per player held together all register.\n- [ ] The handoff screen covers private information.\n- [ ] Reloading resumes the current turn.\nOutput: js/players.js, js/hotseat.js and the join and handoff screens in index.html.",
+  "checks": [
+    "html.aria-live",
+    "js.storage-guarded",
+    "js.syntax",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "two players on the same keyboard, and a pass and play mode",
+      "output": "device slots with join screen, per player input, ghosting safe zones, handoff screen, saved turns"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

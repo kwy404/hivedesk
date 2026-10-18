@@ -1,0 +1,47 @@
+{
+  "id": "printable-page",
+  "title": "Printable flyer, menu or invoice page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "print",
+    "printable",
+    "flyer",
+    "invoice",
+    "a4",
+    "pdf",
+    "print styles"
+  ],
+  "when": "The user wants a page meant to be printed or saved as PDF: a flyer, menu, certificate or invoice.",
+  "inputs": [
+    "content",
+    "paper size",
+    "brand colors"
+  ],
+  "prompt": "Goal: A page that looks right on screen and prints exactly on the chosen paper size.\nSteps:\n1. Set @page size (A4 or Letter) and margins; design to that width in mm or cm.\n2. Use print safe colors and black text; check that backgrounds are not required for meaning.\n3. Avoid breaks inside items with break-inside: avoid; force breaks between pages where needed.\n4. Hide screen only controls in @media print and show a Print button on screen.\n5. Totals and numbers aligned with tabular figures.\nQuality bar:\n- Prints on the intended number of pages.\n- Readable at arm length.\n- No cut text at the edges.\nPitfalls:\n- Relying on background colors that browsers skip in print.\n- Viewport units in print.\n- Huge images that slow printing.\nVerify:\n- [ ] @media print and @page rules exist.\n- [ ] Print button is a button.\n- [ ] Contrast passes.\n- [ ] Viewport present.\nOutput: One HTML file with its print stylesheet.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "css.contrast",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "cardápio para imprimir em A4",
+      "output": "@page A4, two column menu, prices aligned, print button hidden in print"
+    }
+  ],
+  "size": 261,
+  "version": 1
+}

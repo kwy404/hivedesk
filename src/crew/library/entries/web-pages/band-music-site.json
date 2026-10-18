@@ -1,0 +1,50 @@
+{
+  "id": "band-music-site",
+  "title": "Band or musician site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "band",
+    "musician",
+    "music",
+    "tour dates",
+    "concert",
+    "album",
+    "artist"
+  ],
+  "when": "The user wants a site for a band, musician, DJ or singer with shows and releases.",
+  "inputs": [
+    "artist name and genre",
+    "upcoming shows",
+    "releases",
+    "booking contact"
+  ],
+  "prompt": "Goal: A bold artist page with the next shows, the music and a booking contact.\nSteps:\n1. Hero with the artist name and the newest release or next show.\n2. Shows list: date with time element, city, venue, ticket link; past shows hidden or moved down.\n3. Music section with releases, cover art with alt text and audio elements with controls if files are given.\n4. Short bio and press photos.\n5. Booking and press contact with email.\nQuality bar:\n- Audio never autoplays.\n- Show dates are easy to scan.\n- Style is bold but text stays readable.\nPitfalls:\n- Autoplaying music.\n- Expired shows at the top.\n- Embedding heavy third party players on load.\nVerify:\n- [ ] audio elements have controls.\n- [ ] time elements with datetime.\n- [ ] Ticket links have clear text.\n- [ ] Contrast passes.\nOutput: index.html and style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text",
+    "css.contrast",
+    "html.external-rel"
+  ],
+  "examples": [
+    {
+      "input": "site for my indie band Os Faróis",
+      "output": "hero with new single, 4 show dates with tickets, discography, booking email"
+    }
+  ],
+  "size": 234,
+  "version": 1
+}

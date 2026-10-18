@@ -1,0 +1,41 @@
+{
+  "id": "api-key-quotas-sliding-window",
+  "title": "Per API key quotas with a sliding window",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "quota",
+    "api key",
+    "usage limits",
+    "sliding window",
+    "daily limit",
+    "429",
+    "plans",
+    "backend",
+    "multi process"
+  ],
+  "when": "An API serves several clients by API key and needs per key limits per minute and per day that survive restarts and several processes, with headers telling clients their remaining budget.",
+  "inputs": [
+    "plans and their limits",
+    "how keys are issued"
+  ],
+  "prompt": "Goal: A limiter keyed by API key with a sliding minute window and a daily quota stored in the database, reported in response headers.\nSteps:\n1. Identify the caller by a hashed API key lookup before other work; keyless calls get a small per address allowance.\n2. Minute window: estimate = current count + previous count * (1 - fraction of the window elapsed); refuse when estimate >= limit.\n3. Daily quota: row usage(key_hash, day, count) bumped with UPDATE usage SET count = count + 1 WHERE key_hash = ? AND day = ? AND count < ?, and judged by the changed row count, so parallel processes cannot overshoot.\n4. Limits come from the key plan table (free: 60 per minute, 1000 per day).\n5. Refusals: 429 with Retry-After seconds plus RateLimit-Limit, RateLimit-Remaining and RateLimit-Reset; code quota_exceeded for the day, rate_limited for bursts.\n6. Run the check before body parsing and heavy queries.\nQuality bar:\n- Days roll over in UTC.\n- Docs say whether failed calls count.\n- A fake clock test covers the window edge.\nPitfalls:\n- Read then write counters that race across processes.\n- Date.now() inside the limiter; inject a clock instead.\n- Logging raw API keys.\nVerify:\n- [ ] The daily counter uses one conditional update.\n- [ ] 429 carries Retry-After.\n- [ ] Burst and quota have separate codes.\n- [ ] The clock is injectable.\nOutput: quota.mjs, the usage table migration, test/quota.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "sec.sql-params",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "each customer key should get 1000 calls a day",
+      "output": "plan table, sliding minute window, atomic daily counter, 429 with quota_exceeded and RateLimit headers"
+    }
+  ],
+  "size": 401,
+  "version": 1
+}

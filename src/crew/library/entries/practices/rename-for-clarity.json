@@ -1,0 +1,35 @@
+{
+  "id": "rename-for-clarity",
+  "title": "Rename variables and functions for clarity",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "rename",
+    "naming",
+    "variable names",
+    "function names",
+    "readability",
+    "refactor",
+    "clarity"
+  ],
+  "when": "The user says the code is hard to read because of vague names (data, tmp, x, handle2) and wants better naming.",
+  "inputs": [
+    "the files to clean up",
+    "domain words the user uses"
+  ],
+  "prompt": "Goal: Names that tell the reader what a value holds or what a function does, applied consistently across every file.\nSteps:\n1. List the vague names and, for each, read where it is assigned and used to learn its real meaning.\n2. Pick names from the domain of the user: invoiceTotal instead of sum, overdueInvoices instead of list2.\n3. Use verbs for functions (loadSettings), nouns for values (settings), is or has for booleans (isOpen, hasErrors), plural for arrays.\n4. Put units in names when they matter: timeoutMs, widthPx, priceCents.\n5. Rename every reference, including exports, imports, HTML ids used by scripts, and keys read from storage.\n6. Keep stored data keys and public API names stable, or add a compatibility read for the old key.\nQuality bar:\n- One concept has one name everywhere.\n- Short names only for tiny scopes (i in a three line loop).\n- No abbreviations a newcomer must guess.\nPitfalls:\n- A text replace that also changes strings and other identifiers containing the word.\n- Renaming a localStorage key and losing saved user data.\n- Mixing two languages in names.\nVerify:\n- [ ] Search for each old name returns nothing (or only the compatibility read).\n- [ ] Exports and imports still match.\n- [ ] Scripts find their elements by the new ids.\n- [ ] Files parse.\nOutput: Edited files and a short table of old name to new name.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "os nomes das variáveis estão horríveis, melhora",
+      "output": "d -> dueDate, arr -> openTickets, calc() -> computeLateFee(); storage key kept"
+    }
+  ],
+  "size": 386,
+  "version": 1
+}

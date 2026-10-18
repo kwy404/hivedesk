@@ -1,0 +1,36 @@
+{
+  "id": "commit-message",
+  "title": "Commit message",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "commit",
+    "commit message",
+    "git",
+    "git commit",
+    "message",
+    "conventional commits",
+    "subject line"
+  ],
+  "when": "The user asks for a commit message, or work is ready to commit and needs a clear description of the change.",
+  "inputs": [
+    "the diff or a summary of changes",
+    "the project commit convention if any"
+  ],
+  "prompt": "Goal: A commit message with a precise subject and a body that explains why, readable in a one line log.\nSteps:\n1. Read the diff and name the single main change; if there are several unrelated changes, suggest separate commits.\n2. Subject: imperative mood, up to about 50 to 72 characters, no trailing period (\"Fix rounding in invoice totals\").\n3. Follow the project convention if it has one (for example \"fix(cart): ...\" prefixes); otherwise plain subject lines.\n4. Leave one blank line, then a body wrapped at about 72 columns: the problem, why this approach, side effects.\n5. Add references at the end (Fixes #123) and a BREAKING CHANGE: line when behavior changes for users.\n6. Mention tests added or how it was verified when useful.\nQuality bar:\n- The subject says what changed, the body says why.\n- Specific nouns: file, function or feature names.\n- No filler like \"update stuff\" or \"misc\".\nPitfalls:\n- Describing how the code works line by line.\n- Past tense subjects (\"Fixed\").\n- One commit message for many unrelated changes.\nVerify:\n- [ ] Subject is imperative and short.\n- [ ] Blank line between subject and body.\n- [ ] Body explains the reason.\n- [ ] No placeholder text.\nOutput: The commit message as plain text, ready for git commit -F or the editor.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "gera a mensagem de commit pra essa mudança",
+      "output": "Fix double submit on checkout form / body: button disabled while pending; re-enabled in finally"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

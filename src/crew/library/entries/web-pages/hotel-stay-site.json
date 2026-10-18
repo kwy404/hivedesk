@@ -1,0 +1,51 @@
+{
+  "id": "hotel-stay-site",
+  "title": "Hotel or guesthouse site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "hotel",
+    "guesthouse",
+    "inn",
+    "rooms",
+    "booking",
+    "travel",
+    "accommodation"
+  ],
+  "when": "The user wants a site for a hotel, inn, hostel, cabin or vacation rental.",
+  "inputs": [
+    "property name and place",
+    "room types with capacity and price",
+    "amenities",
+    "policies",
+    "contact"
+  ],
+  "prompt": "Goal: Help travelers compare rooms and send a booking request with dates.\nSteps:\n1. Hero with name, place and an availability request with check in, check out and guests.\n2. Room cards: photo, name, capacity, bed type, price per night and key amenities.\n3. Amenities list with text labels; policies for check in time, cancellation, pets and children.\n4. Location: address, distance to main points, how to arrive.\n5. Booking request form or contact; state that the request is confirmed by reply.\nQuality bar:\n- Date inputs use type=\"date\" with labels.\n- Policies are easy to find.\n- Prices say per night and taxes.\nPitfalls:\n- Calendars that are not keyboard accessible.\n- Price without taxes surprise.\n- Huge carousels.\nVerify:\n- [ ] Date fields labeled.\n- [ ] Room cards include capacity and price.\n- [ ] Policies section exists.\n- [ ] Works at 375 px.\nOutput: index.html with rooms, amenities, location and booking request; style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.json-ld"
+  ],
+  "examples": [
+    {
+      "input": "site para minha pousada na praia",
+      "output": "hero with dates form, 3 room types with prices, policies, how to arrive"
+    }
+  ],
+  "size": 268,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "mobile-touch-screen-reader-a11y",
+  "title": "Touch screen accessibility: screen readers and text size",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "accessibility",
+    "screen reader",
+    "mobile app",
+    "dynamic type",
+    "text size",
+    "a11y",
+    "touch",
+    "zoom",
+    "focus order"
+  ],
+  "when": "The phone app must work with the built in phone screen readers, large system text and zoom, not only with sighted single finger use.",
+  "inputs": [
+    "main user flows",
+    "custom controls in the app"
+  ],
+  "prompt": "Goal: The core flows work with a phone screen reader using swipe and double tap, at 200 percent text size and with pinch zoom.\nSteps:\n1. Swipe order follows DOM order: put markup in reading order and avoid CSS order or absolute positioning that reorders meaning.\n2. Native elements first: <button>, <a href>, <input> with <label>; icon only buttons get aria-label.\n3. Size text in rem and let containers grow: no fixed heights on cards, buttons or bars; test with the system font size at its largest.\n4. Keep pinch zoom: never set maximum-scale=1 or user-scalable=no.\n5. After a route change move focus to the new screen h1 (tabindex=\"-1\") and update document.title.\n6. Announce async results in an aria-live=\"polite\" region: \"3 items saved\".\n7. Every swipe or drag action has a button alternative reachable by the screen reader.\n8. Group card content so one swipe reads the whole card, with the main link wrapping the title.\nQuality bar:\n- Each control reads as name, role and state.\n- Nothing is clipped at large text sizes.\nPitfalls:\n- Custom div buttons that the reader skips.\n- Toasts that vanish before they are read.\n- Labels that say \"button\" twice.\nVerify:\n- [ ] Every control has an accessible name.\n- [ ] The viewport allows zoom.\n- [ ] An aria-live region exists for status.\n- [ ] Large text test noted in the findings.\nOutput: fixed HTML and CSS plus a findings list per screen.",
+  "checks": [
+    "html.labels",
+    "html.viewport",
+    "html.aria-live",
+    "css.min-font-size"
+  ],
+  "examples": [
+    {
+      "input": "testar meu app com leitor de tela no celular",
+      "output": "Findings per screen, focus to h1 on route change, aria-live status, rem text, zoom allowed"
+    }
+  ],
+  "size": 398,
+  "version": 1
+}

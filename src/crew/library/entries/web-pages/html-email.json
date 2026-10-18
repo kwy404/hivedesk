@@ -1,0 +1,40 @@
+{
+  "id": "html-email",
+  "title": "HTML email newsletter",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "email",
+    "newsletter",
+    "html email",
+    "email template",
+    "campaign"
+  ],
+  "when": "The user wants an HTML email template for a newsletter, receipt or announcement.",
+  "inputs": [
+    "content blocks",
+    "brand colors",
+    "call to action link"
+  ],
+  "prompt": "Goal: An email that renders in strict mail clients: table layout, inline critical styles, readable without images.\nSteps:\n1. Use a 600 px wide centered table with role=\"presentation\" and nested tables for columns.\n2. Inline the styles that matter; keep a small style block only for media queries.\n3. Every image has alt text, width and height, and the message still makes sense with images off.\n4. Buttons as bulletproof links: a table cell with background and a padded anchor.\n5. Add preheader text, a plain text version, and an unsubscribe line.\nQuality bar:\n- Readable at 320 px with the media query.\n- Text is real text, not images.\n- Links have full URLs.\nPitfalls:\n- CSS grid or flex in emails.\n- Image only emails.\n- Relying on web fonts.\nVerify:\n- [ ] Images have alt and dimensions.\n- [ ] Layout tables use role presentation.\n- [ ] A plain text version exists.\n- [ ] One CTA link.\nOutput: email.html and email.txt.",
+  "checks": [
+    "html.doctype",
+    "html.title",
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.link-text",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "email da newsletter mensal da loja",
+      "output": "600 px table layout, header, 3 product blocks, button link, footer with unsubscribe, text version"
+    }
+  ],
+  "size": 264,
+  "version": 1
+}

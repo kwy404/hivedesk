@@ -1,0 +1,36 @@
+{
+  "id": "git-recover-mistakes",
+  "title": "Undo and recover from git mistakes",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "undo commit",
+    "git revert",
+    "git reset",
+    "reflog",
+    "amend",
+    "recover",
+    "lost commit",
+    "git"
+  ],
+  "when": "The user committed the wrong thing, lost work, committed to the wrong branch, or wants to undo a pushed change.",
+  "inputs": [
+    "what happened",
+    "whether the commits were already pushed or shared"
+  ],
+  "prompt": "Goal: The safest command for the situation, preserving work, with shared history rewritten only when it is safe.\nSteps:\n1. Ask or infer whether the commit was pushed: shared commits are undone with git revert, local ones may be rewritten.\n2. Last local commit message or files wrong: fix and run git commit --amend.\n3. Undo the last local commit but keep changes: git reset --soft HEAD~1; discard uncommitted edits to one file: git restore <file>.\n4. Committed to the wrong branch: create the right branch at HEAD, then move the old branch back with git reset --keep HEAD~1.\n5. Lost commits after a reset or rebase: find them with git reflog and restore with git branch rescue <hash>.\n6. Before anything destructive, save a safety point: git branch backup-before-fix.\nQuality bar:\n- Each command is explained before it is run.\n- Shared history is never force pushed without agreement.\n- Work is backed up first.\nPitfalls:\n- git reset --hard with uncommitted work.\n- Force pushing over teammates commits.\n- Reverting a merge without -m.\nVerify:\n- [ ] The situation is identified (pushed or local).\n- [ ] A backup branch is created before risky steps.\n- [ ] The final git log matches the goal.\n- [ ] No placeholder text.\nOutput: The exact commands in order with one line explanations.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "commitei na branch errada, como desfaço?",
+      "output": "git branch feat/report, git reset --keep HEAD~1 on main, git switch feat/report"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

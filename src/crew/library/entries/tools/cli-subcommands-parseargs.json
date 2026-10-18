@@ -1,0 +1,39 @@
+{
+  "id": "cli-subcommands-parseargs",
+  "title": "CLI subcommands and repeated options with parseArgs",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "subcommands",
+    "util.parseargs",
+    "repeated flags",
+    "negated flags",
+    "multiple values",
+    "git style commands",
+    "cli",
+    "command dispatch"
+  ],
+  "when": "A Node command line tool needs several commands (tool add, tool list, tool remove), each with its own flags, options that repeat, or --no- style switches.",
+  "inputs": [
+    "list of commands",
+    "flags per command",
+    "global flags"
+  ],
+  "prompt": "Goal: A dispatcher that takes the command from the first positional and parses that command's own option table with util.parseArgs in strict mode.\nSteps:\n1. const [cmd, ...rest] = process.argv.slice(2); a commands map { add: { options, run }, list: {...} }; a missing or unknown cmd prints the command list to stderr with exit code 2.\n2. Handle global flags (--help, --version) before dispatch; each command parses rest with parseArgs({ args: rest, options, strict: true, allowPositionals: true }).\n3. Repeated values: { tag: { type: \"string\", short: \"t\", multiple: true, default: [] } } turns -t a -t b into an array.\n4. Negated switches: allowNegative: true (Node 22.4 or 20.16 and later) makes --no-color set color to false; on older Node use tokens: true and map names starting with no- yourself.\n5. Validate after parsing (Number.isInteger, enum lists, path.resolve); errors read \"tool add: --count must be a whole number\".\n6. Each run(values, positionals) is async and returns an exit code; main assigns it to process.exitCode.\nQuality bar:\n- Every command rejects flags it does not define.\n- Errors name the command and the flag.\nPitfalls:\n- One shared option table, so add silently accepts list flags.\n- A string default on a multiple option instead of an array.\nVerify:\n- [ ] Unknown command and unknown flag both exit 2.\n- [ ] A multiple option returns an array.\n- [ ] --no- handling present.\n- [ ] Shebang and ESM imports.\nOutput: bin/tool.mjs (dispatcher) and src/commands/<name>.mjs per command.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "cli.help"
+  ],
+  "examples": [
+    {
+      "input": "a todo CLI with add, list and done commands, add takes several --tag values",
+      "output": "bin/todo.mjs dispatching to src/commands/add.mjs etc., tag with multiple true, allowNegative for --no-color, exit 2 on unknown command"
+    }
+  ],
+  "size": 431,
+  "version": 1
+}

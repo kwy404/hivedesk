@@ -1,0 +1,38 @@
+{
+  "id": "clean-console-warnings",
+  "title": "Clean up console errors and warnings",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "console errors",
+    "console warnings",
+    "warnings",
+    "deprecation warning",
+    "console",
+    "cleanup",
+    "noise",
+    "devtools"
+  ],
+  "when": "The browser console or Node output shows errors, warnings or leftover debug logs that the user wants gone.",
+  "inputs": [
+    "the console output",
+    "the files involved"
+  ],
+  "prompt": "Goal: A silent console in normal use: every warning fixed at its cause and debug output removed.\nSteps:\n1. Copy the full list and group by type: script errors, 404s for missing files, deprecations, accessibility or form warnings, debug logs.\n2. Fix missing files first (wrong relative paths, missing favicon, source map references), since they often cause the others.\n3. Fix each warning at its cause: duplicate ids, password fields outside forms, missing autocomplete, mixed content, non passive listeners.\n4. For Node deprecation warnings, run with --trace-deprecation to find the call and use the replacement API.\n5. Remove leftover console.log calls or route them through a debug flag; keep console.error for real failures.\n6. Reload with a cleared console and repeat the main flows.\nQuality bar:\n- Zero errors in normal flows.\n- Warnings are fixed, not filtered.\n- Real errors are still reported.\nPitfalls:\n- Overriding console.warn to hide messages.\n- Deleting error logging along with debug logs.\n- Ignoring 404s for icons and maps.\nVerify:\n- [ ] No missing file references.\n- [ ] Ids are unique.\n- [ ] No leftover debug logs in browser code.\n- [ ] Files parse.\nOutput: The fixed files and a list of warnings resolved.",
+  "checks": [
+    "js.syntax",
+    "html.unique-ids",
+    "js.no-console-log"
+  ],
+  "examples": [
+    {
+      "input": "o console está cheio de avisos vermelhos",
+      "output": "fixed 3 wrong paths, 2 duplicate ids, a deprecated API call and removed 14 debug logs"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

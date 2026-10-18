@@ -1,0 +1,49 @@
+{
+  "id": "app-promo-page",
+  "title": "Mobile app promotion page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "mobile app",
+    "app promo",
+    "download",
+    "app landing",
+    "screenshots",
+    "features"
+  ],
+  "when": "The user wants a page that promotes a mobile app and sends people to download it.",
+  "inputs": [
+    "app name and promise",
+    "key features",
+    "screenshots",
+    "download links"
+  ],
+  "prompt": "Goal: Show the app in action and make downloading obvious on the visitor own device.\nSteps:\n1. Hero with the promise, a screenshot in a device frame drawn with CSS, and download buttons with text labels.\n2. Three to five features, each with a screenshot and a one line benefit.\n3. How it works in three numbered steps.\n4. Short testimonials only if the user gave them; ratings never invented.\n5. Final download block and a support link.\nQuality bar:\n- Screenshots have descriptive alt text.\n- Download buttons name the platform in text.\n- Fast on mobile.\nPitfalls:\n- Official store badge images the user did not provide.\n- Fake ratings.\n- Heavy video backgrounds.\nVerify:\n- [ ] Download links have clear text.\n- [ ] Images lazy load after the hero.\n- [ ] One h1.\n- [ ] Works at 375 px.\nOutput: index.html and style.css.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text",
+    "html.lazy-images",
+    "html.img-dimensions"
+  ],
+  "examples": [
+    {
+      "input": "página para divulgar meu app de hábitos",
+      "output": "hero with screenshot, 4 features, 3 steps, download links with platform names"
+    }
+  ],
+  "size": 234,
+  "version": 1
+}

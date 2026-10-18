@@ -1,0 +1,53 @@
+{
+  "id": "markdown-notes-app",
+  "title": "Notes app with Markdown, search and autosave",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "notes",
+    "notes app",
+    "note taking",
+    "markdown notes",
+    "notebook",
+    "memo",
+    "autosave",
+    "journal"
+  ],
+  "when": "The user wants a notes app: a list of notes, an editor, search and autosave in the browser, with simple Markdown formatting in the view mode.",
+  "inputs": [
+    "single list or folders",
+    "Markdown needed or plain text",
+    "export needs"
+  ],
+  "prompt": "Goal: A two pane notes app that never loses text, finds notes instantly and renders formatting without unsafe HTML.\nSteps:\n1. Note { id, title, body, updatedAt }; when title is empty use the first line of the body.\n2. Sidebar list (newest first) with a search input, and an editor textarea with a View toggle; one pane at a time under 700 px with a Back button.\n3. Autosave: debounce input 400 ms, set updatedAt, write localStorage notes.v1 in try and catch, show \"Saved\" in a role=\"status\" element.\n4. logic.mjs: createNote, updateNote, deleteNote, searchNotes over title and body, sortByUpdated, parseMarkdown(text) returning a token tree.\n5. Turn tokens into nodes with createElement and textContent; links only for http, https and mailto.\n6. Delete with an Undo button for 5 seconds; export all notes as a .md download.\n7. test.mjs: search, order, title fallback, and that parseMarkdown keeps <script> as text.\nQuality bar:\n- Typing never lags on a long note.\n- Closing the tab mid edit keeps the text.\n- Search ignores case and accents.\nPitfalls:\n- Writing storage on every keystroke.\n- javascript: links in rendered notes.\n- The selected note vanishing when a search clears.\nVerify:\n- [ ] Reload restores notes and the last open one.\n- [ ] Rendered view has no innerHTML from note text.\n- [ ] Saved status is announced.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (panes, autosave, rendering), logic.mjs (notes and Markdown tokens), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "quero um app de anotacoes simples com busca",
+      "output": "sidebar + editor, debounce autosave, View mode with headings and lists, notes.v1"
+    }
+  ],
+  "size": 420,
+  "version": 1
+}

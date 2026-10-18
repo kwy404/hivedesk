@@ -1,0 +1,39 @@
+{
+  "id": "vertical-timeline",
+  "title": "Vertical timeline of milestones",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "timeline",
+    "history",
+    "milestones",
+    "roadmap",
+    "chronology",
+    "company history",
+    "vertical timeline",
+    "events timeline"
+  ],
+  "when": "The user wants a timeline of events, such as company history, a project roadmap or a career path.",
+  "inputs": [
+    "the events with date, title and text",
+    "order (oldest or newest first)",
+    "status labels for a roadmap"
+  ],
+  "prompt": "Goal: An ordered list styled as a vertical line with dots, alternating on wide screens and single sided on phones.\nSteps:\n1. <ol class=\"timeline\"> with one <li> per event: a <time datetime=\"2019-03\">, an h3 title and one short paragraph.\n2. Draw the line with ::before on the list (2 px wide) and the dots with ::before on each item.\n3. From about 860 px alternate items left and right of a centered line using a three column grid; below it, line at the left, one column.\n4. Roadmap status is a text badge (Done, In progress, Planned), not only a dot color.\n5. An optional reveal on scroll uses opacity only and is off under prefers-reduced-motion.\nQuality bar:\n- Dates use one format.\n- Each entry fits in about 40 words.\n- The reading order matches the visual order on both layouts.\nPitfalls:\n- A plain div list where order carries no meaning.\n- Dates only in a decorative circle.\n- Content hidden until animation, invisible without JS.\nVerify:\n- [ ] Events are in an ol with time elements.\n- [ ] One column at 375 px.\n- [ ] Status badges are text.\n- [ ] Reduced motion shows everything at once.\nOutput: The timeline markup and timeline.css.",
+  "checks": [
+    "css.media-query",
+    "css.reduced-motion",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "linha do tempo da historia da empresa desde 2010",
+      "output": "ol of six events with time datetime, centered line alternating on desktop, left line on phones"
+    }
+  ],
+  "size": 327,
+  "version": 1
+}

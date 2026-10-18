@@ -1,0 +1,40 @@
+{
+  "id": "python-cli-argparse-tests",
+  "title": "Testable Python CLI with argparse and unittest",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "python cli tests",
+    "unittest",
+    "console script",
+    "pyproject.toml",
+    "redirect_stdout",
+    "subprocess test",
+    "python -m",
+    "entry point"
+  ],
+  "when": "A Python command line tool needs automated tests for parsing, output and exit codes, and a proper entry point so it installs as a command.",
+  "inputs": [
+    "commands and arguments",
+    "expected outputs",
+    "package name"
+  ],
+  "prompt": "Goal: A package with main(argv) as entry point, a console script, and unittest tests for parsing, output and exit codes, in process and end to end.\nSteps:\n1. Layout: src/tool/__init__.py, src/tool/cli.py with build_parser() and def main(argv=None) -> int, ending with if __name__ == \"__main__\": raise SystemExit(main()); src/tool/__main__.py does the same.\n2. pyproject.toml: [project] name, version, requires-python = \">=3.10\"; [project.scripts] tool = \"tool.cli:main\".\n3. Only main() turns errors into exit codes.\n4. tests/test_cli.py: with contextlib.redirect_stdout(io.StringIO()) as buf: code = main([\"count\", str(path)]); then assertEqual(code, 0) and check buf.getvalue().\n5. Usage errors: with self.assertRaises(SystemExit) as cm: main([\"--bogus\"]); assertEqual(cm.exception.code, 2); check stderr via redirect_stderr.\n6. End to end: subprocess.run([sys.executable, \"-m\", \"tool\", \"--help\"], capture_output=True, text=True, env={**os.environ, \"PYTHONPATH\": \"src\"}), assert returncode 0.\n7. Fixtures in a tempfile.TemporaryDirectory() from setUp, cleaned with self.addCleanup.\nQuality bar:\n- Tests never touch the real home or working folder.\n- Exit codes 0, 1 and 2 each have a test.\nPitfalls:\n- sys.exit inside helpers, which makes them hard to test.\n- A bare except in main swallowing SystemExit and KeyboardInterrupt.\nVerify:\n- [ ] Main guard and __main__.py present.\n- [ ] Console script in pyproject.toml.\n- [ ] SystemExit code asserted.\n- [ ] No bare except.\nOutput: src/tool/cli.py, src/tool/__main__.py, pyproject.toml and tests/test_cli.py.",
+  "checks": [
+    "py.main-guard",
+    "py.no-bare-except",
+    "file.test",
+    "py.indent"
+  ],
+  "examples": [
+    {
+      "input": "preciso testar minha CLI python feita com argparse",
+      "output": "src/tool/cli.py with main(argv) -> int, console script in pyproject.toml, tests/test_cli.py with redirect_stdout, SystemExit code 2 and a subprocess run"
+    }
+  ],
+  "size": 445,
+  "version": 1
+}

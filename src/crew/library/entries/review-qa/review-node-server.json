@@ -1,0 +1,39 @@
+{
+  "id": "review-node-server",
+  "title": "Node HTTP server code review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "node review",
+    "server review",
+    "http server",
+    "api review",
+    "backend review",
+    "node:http",
+    "routes"
+  ],
+  "when": "The user wants a Node server or API built on node:http and the standard library reviewed for correctness, safety and robustness.",
+  "inputs": [
+    "the server files",
+    "the expected routes"
+  ],
+  "prompt": "Goal: A server review confirming routing, status codes, body handling, error paths and resource use, with findings per route.\nSteps:\n1. Write the route table (method, path, handler) from the code and compare it with what is expected; unknown paths must give 404, wrong methods 405.\n2. Bodies: size limit enforced while reading chunks (413 past it), JSON.parse in try with a 400, fields validated before use.\n3. Responses: correct status codes, Content-Type: application/json; charset=utf-8 on JSON, exactly one res.end per request, no stack traces to clients.\n4. Static files: paths resolved with path.resolve and rejected outside the root (../ traversal); no sync fs calls per request.\n5. Process: error handlers on server and streams, port from process.env.PORT with a default, clean close on SIGINT.\n6. Data files: writes go to a temp file then rename; concurrent writes are serialized.\nQuality bar:\n- Each finding names the route and line.\n- Security issues are blockers.\n- Fixes use node: modules only.\nPitfalls:\n- Reviewing only the happy path.\n- Missing double responses (headers already sent).\n- Trusting the client Content-Length.\nVerify:\n- [ ] Route table in the review.\n- [ ] Body limit and bad JSON checked.\n- [ ] 404 and 405 behavior checked.\n- [ ] Traversal checked for static serving.\nOutput: review.md with the route table and findings by severity.",
+  "checks": [
+    "node.http-status",
+    "node.body-limit",
+    "node.json-content-type",
+    "js.syntax",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "review my node server before I put it on the office network",
+      "output": "route table of 6, blocker: /files serves ../ paths, major: no body limit on POST /notes, 405 missing"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

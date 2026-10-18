@@ -1,0 +1,38 @@
+{
+  "id": "web-component-custom-element",
+  "title": "Reusable Web Component (custom element)",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "web component",
+    "custom element",
+    "shadow dom",
+    "customelements",
+    "component",
+    "reusable widget",
+    "template",
+    "slot"
+  ],
+  "when": "The user wants a reusable widget as its own HTML tag that works on any page without a framework.",
+  "inputs": [
+    "tag name",
+    "attributes it accepts",
+    "events it emits"
+  ],
+  "prompt": "Goal: A custom element with a clear tag, attributes and events, encapsulated styles and proper cleanup.\nSteps:\n1. Name it with a hyphen (rating-stars) and register once: if (!customElements.get(name)) customElements.define(name, Klass).\n2. Constructor: only super() and attachShadow({ mode: \"open\" }); build content in connectedCallback, when attributes are ready.\n3. List static observedAttributes and update in attributeChangedCallback; mirror key attributes as properties.\n4. Clone a <template> with its own <style> into the shadow root; theme through custom properties and ::part; <slot> for user content.\n5. Emit changes with new CustomEvent(\"change\", { detail, bubbles: true, composed: true }); remove document listeners and timers in disconnectedCallback.\nQuality bar:\n- Keyboard usable, with accessible names inside the shadow root.\n- Works from markup alone: tag plus attributes.\n- Upgrades cleanly when the script loads late.\nPitfalls:\n- Reading attributes or children in the constructor.\n- Writing attribute values into innerHTML, which allows injection; use textContent.\n- Forgetting composed: true, so events never leave the shadow root.\nVerify:\n- [ ] The tag has a hyphen and define is guarded.\n- [ ] observedAttributes lists every reactive attribute.\n- [ ] disconnectedCallback cleans up.\n- [ ] A demo page uses the tag with real content.\nOutput: components/<name>.js defining the element and a demo index.html importing it as a module.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "js.no-eval"
+  ],
+  "examples": [
+    {
+      "input": "make a <star-rating> tag I can reuse",
+      "output": "star-rating element with value and max attributes, radio buttons in shadow DOM, change event with detail.value"
+    }
+  ],
+  "size": 415,
+  "version": 1
+}

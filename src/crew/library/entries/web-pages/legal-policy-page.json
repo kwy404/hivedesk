@@ -1,0 +1,46 @@
+{
+  "id": "legal-policy-page",
+  "title": "Privacy policy and terms page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "privacy policy",
+    "terms",
+    "legal",
+    "cookies",
+    "lgpd",
+    "gdpr"
+  ],
+  "when": "The user wants the layout and plain language structure for a privacy policy, terms or cookie page.",
+  "inputs": [
+    "business name and country",
+    "what data is collected and why",
+    "contact for data requests"
+  ],
+  "prompt": "Goal: A readable policy page with a clear structure, written plainly, that the user then reviews with a lawyer.\nSteps:\n1. Say at the top that the text is a starting point to review with a legal professional.\n2. Sections: who we are, what we collect, why, how long, who we share with, your rights, contact, changes.\n3. Use only the data practices the user described; mark unknowns as questions for the user in chat, not in the page.\n4. Table of contents with anchor links and a last updated date.\n5. Short sentences and lists; no legalese where plain words work.\nQuality bar:\n- Every section matches what the site really does.\n- The contact for requests is clear.\n- Readable width and size.\nPitfalls:\n- Copying generic policies that claim practices the site does not have.\n- Presenting the text as legal advice.\n- Hiding the update date.\nVerify:\n- [ ] Table of contents links resolve to ids.\n- [ ] Last updated date present.\n- [ ] Headings ordered.\n- [ ] One h1.\nOutput: privacy.html (and terms.html if asked) with shared styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.unique-ids",
+    "html.heading-order"
+  ],
+  "examples": [
+    {
+      "input": "política de privacidade para meu site de agendamento",
+      "output": "TOC, 8 sections on name, phone and booking data, rights and contact, last updated date"
+    }
+  ],
+  "size": 294,
+  "version": 1
+}

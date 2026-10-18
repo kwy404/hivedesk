@@ -1,0 +1,38 @@
+{
+  "id": "desktop-file-drag-drop",
+  "title": "Drag and drop of files into a desktop window",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "drag and drop",
+    "drop files",
+    "file drop",
+    "desktop app",
+    "import files",
+    "drop zone",
+    "multiple files",
+    "file api"
+  ],
+  "when": "Users want to drag documents or images from the file manager into the desktop app window to open or import them.",
+  "inputs": [
+    "accepted file types",
+    "what happens after a drop"
+  ],
+  "prompt": "Goal: drop.js accepts files dropped anywhere on the window, highlights the target, filters types and imports each file with feedback.\nSteps:\n1. On document, listen to dragenter and dragover with event.preventDefault() so the WebView does not navigate to the file; set event.dataTransfer.dropEffect = \"copy\".\n2. Show an overlay on dragenter; count enter and leave events so child elements do not make it flicker.\n3. On drop: preventDefault, hide the overlay, take [...event.dataTransfer.files].\n4. Filter by extension and size (for example .csv and .json under 20 MB); list skipped files with the reason.\n5. Read content with await file.text() or file.arrayBuffer() and pass it to the importer; process files one by one with a progress line.\n6. Do not rely on a full file path from the drop: the WebView usually hides it; to save back to the same file, ask with the Save dialog.\n7. Keep a visible \"Import files\" button that opens Neutralino.os.showOpenDialog for keyboard and accessibility users.\n8. Announce the result in an aria-live region: \"3 files imported, 1 skipped\".\nQuality bar:\n- Dropping an unsupported file never navigates away from the app.\n- Large drops show progress and stay responsive.\nPitfalls:\n- Forgetting preventDefault on dragover, which disables drop.\n- Reading all files at once into memory.\nVerify:\n- [ ] dragover and drop call preventDefault.\n- [ ] Types and sizes are filtered.\n- [ ] A button alternative exists.\nOutput: drop.js, overlay markup and styles.",
+  "checks": [
+    "js.async-errors",
+    "html.aria-live",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "arrastar planilhas CSV pra dentro do app desktop",
+      "output": "Window wide drop overlay, type and size filter, file.text import queue, aria-live summary, Import button"
+    }
+  ],
+  "size": 424,
+  "version": 1
+}

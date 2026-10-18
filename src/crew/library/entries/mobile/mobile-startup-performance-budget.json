@@ -1,0 +1,41 @@
+{
+  "id": "mobile-startup-performance-budget",
+  "title": "Startup time and bundle size budget for phones",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "performance",
+    "startup time",
+    "bundle size",
+    "performance budget",
+    "mobile app",
+    "slow phone",
+    "code splitting",
+    "lcp",
+    "inp"
+  ],
+  "when": "The app feels slow to open on mid range phones and the user wants numeric budgets for startup and JavaScript size, plus a way to hold them.",
+  "inputs": [
+    "current bundle files and sizes",
+    "the first screen users see"
+  ],
+  "prompt": "Goal: Written budgets for startup on a mid range phone and a script that fails when the shipped JavaScript grows past them.\nSteps:\n1. Set budgets in budget.json: startup JS at most 150 KB compressed, CSS 30 KB, largest contentful paint under 2.5 s and interaction delay (INP) under 200 ms on a 4x CPU slowdown with a slow 4G profile.\n2. Measure in the page with PerformanceObserver for \"largest-contentful-paint\" and \"event\" entries; add performance.mark(\"app-ready\") when the first screen is usable.\n3. Split code: load screens with dynamic import() on navigation; the first screen gets only what it needs.\n4. Defer non critical work (analytics, prefetch) with requestIdleCallback or a setTimeout fallback after first paint.\n5. Preload the hero image or font with <link rel=\"preload\"> only when it is on the first screen.\n6. check-size.mjs reads each file in dist, gzips it with node:zlib gzipSync and exits with code 1 when a budget is exceeded.\n7. Run the check in CI and print a table of file, size and budget.\nQuality bar:\n- Budgets are numbers, not wishes.\n- The first screen works before secondary chunks load.\nPitfalls:\n- Measuring only on a fast laptop.\n- One large dependency for a tiny feature.\n- Long tasks over 50 ms during startup from parsing big JSON.\nVerify:\n- [ ] budget.json parses.\n- [ ] check-size.mjs exits non zero over budget.\n- [ ] Screens are loaded with import().\nOutput: budget.json, check-size.mjs and a perf section in the README.",
+  "checks": [
+    "json.valid",
+    "node.exit-code",
+    "node.esm",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "meu app demora 6 segundos pra abrir no celular",
+      "output": "budget.json (150 KB JS, LCP 2.5 s), import() per screen, check-size.mjs failing CI over budget"
+    }
+  ],
+  "size": 418,
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "id": "contributing-guide",
+  "title": "CONTRIBUTING guide",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "contributing",
+    "contributing.md",
+    "contributors",
+    "open source",
+    "development setup",
+    "guidelines",
+    "how to contribute"
+  ],
+  "when": "The user wants contributors to know how to set up, change, test and submit work to the project.",
+  "inputs": [
+    "setup and test commands",
+    "branch and review process",
+    "style rules"
+  ],
+  "prompt": "Goal: A CONTRIBUTING.md that takes a new contributor from clone to an accepted change without asking questions.\nSteps:\n1. Open with a welcome line and the kinds of contributions wanted (bugs, docs, features, tests).\n2. ## Development setup: requirements and exact commands to install, run and test.\n3. ## Making a change: branch naming, small focused commits, commit message format, and adding or updating tests.\n4. ## Code style: the few rules that matter and how to check them.\n5. ## Submitting: what a pull request description must include and what reviewers check.\n6. ## Reporting bugs and proposing features, linking to SECURITY.md for vulnerabilities and to a code of conduct if one exists.\nQuality bar:\n- Commands are copy pasteable and tested.\n- Expectations are explicit (tests required, one change per request).\n- Friendly and short.\nPitfalls:\n- Rules nobody follows in the current code.\n- Links to files that do not exist.\n- Long legal text.\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Setup and test commands are in closed code fences.\n- [ ] Linked files exist.\n- [ ] Has the main sections.\nOutput: CONTRIBUTING.md at the project root, linked from the README.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.local-links",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "create a contributing guide for my repo",
+      "output": "# Contributing, setup with node --test, branch names fix/ and feat/, PR checklist, bug reports"
+    }
+  ],
+  "size": 335,
+  "version": 1
+}

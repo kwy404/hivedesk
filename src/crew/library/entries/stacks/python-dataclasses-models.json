@@ -1,0 +1,39 @@
+{
+  "id": "python-dataclasses-models",
+  "title": "Data models with Python dataclasses",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "python",
+    "dataclass",
+    "dataclasses",
+    "model",
+    "class",
+    "record",
+    "type hints",
+    "typing",
+    "struct"
+  ],
+  "when": "Python code passes dicts or tuples of related fields around, or the user wants clean model classes with defaults and validation.",
+  "inputs": [
+    "entities and fields",
+    "which values may change"
+  ],
+  "prompt": "Goal: Typed dataclasses with safe defaults, validation in __post_init__, and clean conversion to and from dicts and JSON.\nSteps:\n1. Use @dataclass(frozen=True, slots=True) for values and plain @dataclass for mutable state.\n2. Annotate every field; mutable defaults via field(default_factory=list), never [] or {}.\n3. Validate in __post_init__, raising ValueError that names the field; fixed choices as enum.Enum.\n4. from_dict classmethod: pick known keys, convert types (datetime.fromisoformat, Decimal for money), and reject or ignore extras on purpose.\n5. to_dict with asdict plus isoformat for datetimes and .value for enums, so json.dumps works.\n6. Hide caches and secrets with field(repr=False, compare=False).\nQuality bar:\n- Invalid objects cannot be built.\n- from_dict(to_dict(x)) == x holds.\n- Hints are precise (list[str], int | None).\nPitfalls:\n- Mutable defaults shared by all instances.\n- float for money.\n- Subclass fields without defaults after fields with defaults (TypeError).\nVerify:\n- [ ] Every field annotated.\n- [ ] default_factory for lists and dicts.\n- [ ] __post_init__ validates.\n- [ ] A round trip test exists.\nOutput: models.py with the dataclasses and conversion helpers.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except"
+  ],
+  "examples": [
+    {
+      "input": "transforma esses dicionários de pedido em classes",
+      "output": "Order and OrderLine dataclasses, Decimal prices, Status enum, from_dict/to_dict round trip"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

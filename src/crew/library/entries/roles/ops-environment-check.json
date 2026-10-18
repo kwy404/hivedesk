@@ -1,0 +1,35 @@
+{
+  "id": "ops-environment-check",
+  "title": "Ops: checking the environment before work",
+  "category": "roles",
+  "roles": [
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "ops",
+    "environment",
+    "setup check",
+    "node version",
+    "python version",
+    "prerequisites",
+    "works on my machine"
+  ],
+  "when": "Before running or testing a project, ops confirms the machine has what it needs, or a run failed and the environment is suspect.",
+  "inputs": [
+    "the project type",
+    "the commands the README gives"
+  ],
+  "prompt": "Goal: A short report of runtime versions, folders and ports, with each gap explained and a fix the user can apply.\nSteps:\n1. Read README and any package.json or script headers to learn what the project expects (Node 18 or newer, Python 3.10, a port).\n2. Check runtimes with read only commands: node --version, python --version (or python3).\n3. Check the workspace: required files exist, data folders are present, file names match imports (case matters on some systems).\n4. Check the port the server uses is free by starting it briefly and reading the error if it is in use.\n5. Check write access by writing a small file in the workspace and deleting it, with approval.\n6. Report each item as ok or problem with the exact fix (install a newer Node yourself, change PORT, rename file).\nQuality bar:\n- Only read only or reversible commands.\n- Each problem has a fix.\n- Expectations come from the project, not guesses.\nPitfalls:\n- Installing runtimes or packages without the user.\n- Assuming python means version 3.\n- Ignoring case mismatches in import paths.\nVerify:\n- [ ] Runtime versions recorded.\n- [ ] Required files checked.\n- [ ] Port checked.\n- [ ] Report lists fixes.\nOutput: ENVIRONMENT.md or a note with each item as ok or problem plus fix.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "nao roda aqui, ve o que falta",
+      "output": "node v16 found, project needs 18 for fetch: user updates Node; PORT 3000 in use: set PORT=3001"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

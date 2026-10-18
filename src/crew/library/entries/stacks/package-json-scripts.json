@@ -1,0 +1,37 @@
+{
+  "id": "package-json-scripts",
+  "title": "package.json scripts for a dependency free project",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "package.json",
+    "scripts",
+    "project setup",
+    "node project",
+    "start script",
+    "run scripts",
+    "engines",
+    "type module"
+  ],
+  "when": "A Node project needs a package.json, consistent commands to start, develop and test, or the user asks how to run the project.",
+  "inputs": [
+    "entry file",
+    "tasks the project has"
+  ],
+  "prompt": "Goal: A minimal valid package.json whose scripts call only Node, so the project runs right after cloning with no installs.\nSteps:\n1. Fields: name (lowercase, hyphens), version \"0.1.0\", description, \"type\": \"module\", \"private\": true unless publishing, license, \"engines\": { \"node\": \">=20\" }.\n2. Scripts: \"start\": \"node server.mjs\", \"dev\": \"node --watch server.mjs\", \"test\": \"node --test\", plus tasks like \"build\": \"node scripts/build.mjs\".\n3. Move anything longer than one command into scripts/*.mjs instead of shell syntax that differs between systems (&&, rm, cp, export).\n4. For a CLI add \"bin\": { \"toolname\": \"bin/toolname.mjs\" } and a \"files\" list.\n5. Omit dependencies; if one seems required, say so in README instead of adding it. Document each script there in one line.\nQuality bar:\n- Valid JSON: no comments, no trailing commas.\n- Every script runs in any shell.\n- Script names use the usual verbs: start, dev, test, build.\nPitfalls:\n- rm -rf or cp in scripts; use fs.rm and fs.cp in a Node script.\n- Inline variables (PORT=4000 node ...), which some shells reject.\n- A placeholder test script that always fails.\nVerify:\n- [ ] The JSON parses.\n- [ ] name, version, type and test exist.\n- [ ] Each referenced file exists.\n- [ ] No dependencies block.\nOutput: package.json at the project root and a Scripts section in README.md.",
+  "checks": [
+    "json.valid",
+    "pkg.scripts"
+  ],
+  "examples": [
+    {
+      "input": "como eu rodo esse projeto? cria o package.json",
+      "output": "package.json with type module, engines node >=20, start, dev with --watch, test with node --test"
+    }
+  ],
+  "size": 382,
+  "version": 1
+}

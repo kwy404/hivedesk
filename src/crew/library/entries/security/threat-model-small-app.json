@@ -1,0 +1,41 @@
+{
+  "id": "threat-model-small-app",
+  "title": "Threat model for a small app",
+  "category": "security",
+  "roles": [
+    "security",
+    "architect",
+    "reviewer"
+  ],
+  "tags": [
+    "threat model",
+    "stride",
+    "attack surface",
+    "trust boundaries",
+    "data flow",
+    "risks",
+    "assets",
+    "abuse cases",
+    "security"
+  ],
+  "when": "Before building or shipping a small web app, API, extension or desktop app, the user wants to know what could go wrong security wise and which defenses matter most.",
+  "inputs": [
+    "what the app does",
+    "who uses it",
+    "what data it keeps"
+  ],
+  "prompt": "Goal: A one page threat model naming assets, entry points, trust boundaries and the top threats, each with a mitigation and a test.\nSteps:\n1. Assets: what is worth stealing or breaking (accounts, personal data, payment state, admin powers, the host machine).\n2. Data flow as a text list: browser to API, API to database, API to outside services, admin panel, background jobs; mark each trust boundary where data moves from less to more trusted.\n3. Entry points: every route, form, upload, webhook, file import, CLI argument and message handler.\n4. Walk each boundary with STRIDE (spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege) and write one concrete threat per letter that applies, such as \"a viewer edits the id in PATCH /tasks/:id to change a task they do not own\".\n5. Rate likelihood and impact low, medium or high and keep the top 5 to 10.\n6. For each, write the mitigation, where it lives in code and how it is tested.\nQuality bar:\n- Every threat names a real route or component.\n- Accepted risks are written with a reason.\n- One or two pages, updated when an entry point is added.\nPitfalls:\n- Generic checklist items with no link to this app.\n- Skipping admin and support tools, which hold the most power.\n- Treating the internal network as trusted by default.\nVerify:\n- [ ] Assets, entry points and boundaries are listed.\n- [ ] Each top threat has a mitigation and a test.\n- [ ] Ratings are present.\n- [ ] Accepted risks are recorded.\nOutput: docs/threat-model.md.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "what could go wrong with my small booking app before launch",
+      "output": "assets, data flow with boundaries, STRIDE threats per route, top 8 with mitigations and tests"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

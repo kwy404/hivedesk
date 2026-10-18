@@ -1,0 +1,38 @@
+{
+  "id": "split-large-file",
+  "title": "Split a large file into modules",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect",
+    "reviewer"
+  ],
+  "tags": [
+    "split file",
+    "modules",
+    "es modules",
+    "import",
+    "export",
+    "refactor",
+    "large file",
+    "organize code"
+  ],
+  "when": "A single script has grown into hundreds of lines and the user wants it organized into several modules.",
+  "inputs": [
+    "the large file",
+    "how it is loaded (script tag, node entry point)"
+  ],
+  "prompt": "Goal: A few cohesive ES modules with explicit imports and exports, loaded the same way, with identical behavior.\nSteps:\n1. Group the top level code by responsibility: state, pure logic, storage, rendering, event wiring, startup.\n2. Draw the dependency direction first: logic imports nothing from rendering; rendering may import logic; main imports all.\n3. Move each group to its own file (state.js, logic.js, storage.js, view.js, main.js) and export only what other files use.\n4. Replace shared globals with exported functions or a single state object passed in.\n5. In the browser load only main.js with <script type=\"module\" src=\"main.js\"></script>; in Node use relative imports with the .js extension.\n6. Remove the old file content once every function has a single home.\nQuality bar:\n- No circular imports.\n- Each module has one reason to change.\n- Import paths are relative and include the extension.\nPitfalls:\n- Module scripts opened from file:// may be blocked; note that a local server is needed.\n- Leaving copies of the same function in two files.\n- Exporting everything by default, which hides the real interface.\nVerify:\n- [ ] Every import name is exported by its target.\n- [ ] The page or script starts without errors.\n- [ ] No file over about 300 lines remains.\n- [ ] main.js is the only entry point.\nOutput: The new module files, the updated HTML script tag or entry point, and a one line map of what each file owns.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "app.js has 900 lines, split it",
+      "output": "state.js, todo-logic.js, storage.js, view.js and main.js with type=\"module\""
+    }
+  ],
+  "size": 409,
+  "version": 1
+}

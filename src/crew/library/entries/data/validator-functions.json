@@ -1,0 +1,37 @@
+{
+  "id": "validator-functions",
+  "title": "Reusable validator functions",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "validators",
+    "validation rules",
+    "validate",
+    "input validation",
+    "rules",
+    "check values",
+    "shared validation",
+    "is valid"
+  ],
+  "when": "The same rules (required, length, email, range, date) are needed in several forms, or in both the page and a Node server.",
+  "inputs": [
+    "fields and rules",
+    "message language"
+  ],
+  "prompt": "Goal: A tiny library of pure, composable validators returning error codes and messages, usable in the browser and in Node.\nSteps:\n1. Each validator is (value, ctx) => null when valid, or { code, params } when not.\n2. Factories: required(), minLength(3), maxLength(80), between(1, 99), oneOf(list), matches(regex, code), email(), isoDate().\n3. Compose per field: { age: [optional(), integer(), between(0, 130)] }; stop at the first error per field.\n4. validate(obj, rules) returns { ok, errors }; cross field rules receive the whole object as ctx.\n5. Messages live in a map by code with {min} style params, so text can be translated without touching rules.\n6. Normalize (trim, NFC) in a separate step; validators never change values and use no DOM or Node APIs.\nQuality bar:\n- The page and the server import the same file.\n- Empty optional fields skip other rules.\n- Codes are stable strings for tests.\nPitfalls:\n- Validators that throw instead of returning errors.\n- Treating 0 or false as missing.\n- Message text hardcoded inside rules.\nVerify:\n- [ ] Validators are pure.\n- [ ] Tests for valid, invalid and empty per validator.\n- [ ] validate returns ok and errors.\n- [ ] Message map keyed by code.\nOutput: js/validators.js (ES module) and a test file covering every rule.",
+  "checks": [
+    "js.syntax",
+    "js.strict-equality",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "quero as mesmas regras de validação no front e no servidor",
+      "output": "validators.js with required, minLength, email, between; shared by form.js and server.mjs"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

@@ -1,0 +1,36 @@
+{
+  "id": "reviewer-diff-review",
+  "title": "Reviewer: reviewing a diff",
+  "category": "roles",
+  "roles": [
+    "reviewer"
+  ],
+  "tags": [
+    "reviewer",
+    "diff",
+    "code review",
+    "review changes",
+    "changed files",
+    "pull request",
+    "patch review"
+  ],
+  "when": "A task arrives in the Review room and the reviewer reads the changed files against the task and its criteria.",
+  "inputs": [
+    "the diff or changed files",
+    "task title, detail and criteria"
+  ],
+  "prompt": "Goal: A review of what changed (not the whole project) that finds correctness, safety and criteria problems with specific line comments.\nSteps:\n1. Read the task first so you know what the change should do.\n2. Read the diff file by file; for each hunk ask: is it needed for the task, is it correct, could it break something nearby.\n3. Check correctness: wrong conditions, off by one, missing await, unhandled empty input, ids that do not exist.\n4. Check safety: innerHTML from data, eval, unguarded JSON.parse or localStorage, files deleted by accident.\n5. Check that every criterion is touched by some change; a review after no changes fails with nothing changed.\n6. Write each comment with file, the line or snippet, the problem and the suggested change.\nQuality bar:\n- Comments point at lines.\n- Only changed code is reviewed.\n- Each blocking comment has a fix.\nPitfalls:\n- Reviewing untouched files and asking for unrelated changes.\n- Approving a diff that does not meet the criteria.\n- Comments without a suggestion.\nVerify:\n- [ ] Every changed file was read.\n- [ ] Correctness and safety were checked.\n- [ ] Criteria mapped to changes.\n- [ ] Comments are specific.\nOutput: A verdict (passed or not) and issues, each as file, snippet, problem, fix.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "review the cart total change",
+      "output": "cart.js line with items.reduce: misses quantity, fix: sum price * qty; otherwise ok"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

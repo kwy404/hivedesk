@@ -1,0 +1,36 @@
+{
+  "id": "focus-management",
+  "title": "Manage focus in dynamic interfaces",
+  "category": "practices",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "focus",
+    "focus management",
+    "modal focus",
+    "focus trap",
+    "single page",
+    "route change",
+    "accessibility",
+    "dialog"
+  ],
+  "when": "Content opens, closes or changes without a page load (dialogs, route changes, deleted items, inline errors) and focus gets lost.",
+  "inputs": [
+    "the dynamic interactions",
+    "where the user should land after each"
+  ],
+  "prompt": "Goal: After every dynamic change, keyboard and screen reader focus lands on a sensible element and never falls back to the top of the page.\nSteps:\n1. For a dialog, use the dialog element with showModal(): it traps focus; move focus to the first field or the heading, and on close return it to the trigger.\n2. On view or route change, move focus to the new h1 with tabindex=\"-1\" and update document.title.\n3. When deleting an item, move focus to the next item, or the previous, or the list heading when empty.\n4. On a failed form submit, focus the first invalid field or an error summary at the top.\n5. Remember the element that opened a popup in a variable before opening it.\n6. Never steal focus on page load or on a timer.\nQuality bar:\n- Focus moves only after user actions.\n- The focused element is visible and scrolled into view.\n- Return focus targets still exist.\nPitfalls:\n- Focusing a removed element, which drops focus to body.\n- Custom focus traps that forget Shift+Tab.\n- Calling focus() before the element is visible.\nVerify:\n- [ ] Closing the dialog returns focus to its button.\n- [ ] Deleting an item keeps focus in the list.\n- [ ] Route change focuses the new heading.\n- [ ] Focus styles exist.\nOutput: The updated scripts with a small focus helper and focus styles in CSS.",
+  "checks": [
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "after closing the modal the focus goes to the top",
+      "output": "store opener, dialog.showModal(), on close opener.focus(); delete moves focus to next row"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

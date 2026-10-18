@@ -1,0 +1,36 @@
+{
+  "id": "link-asset-check",
+  "title": "Broken link and missing asset check",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "broken links",
+    "dead links",
+    "missing files",
+    "404",
+    "missing images",
+    "link checker",
+    "assets"
+  ],
+  "when": "The user wants every link, image, script, stylesheet and font reference in a site checked for broken paths.",
+  "inputs": [
+    "the site folder"
+  ],
+  "prompt": "Goal: A list of every local reference pointing at a missing file or wrong anchor, plus suspect external links, each with a fix.\nSteps:\n1. Collect references: a href, img src and srcset, link href, script src, source src, url() in CSS, and import paths in JS.\n2. Resolve each local path relative to its own file and check the file exists with the same letter case, since servers are case sensitive.\n3. Anchors: every href=\"#id\" and page.html#id has a matching id.\n4. External links: rel=\"noopener\" with target=\"_blank\", https used, mailto and tel written correctly (tel:+5511...).\n5. Script it with fs and a regex in a small Node file that prints the missing ones and exits 1 if any.\n6. Report file, line, reference, problem and fix.\nQuality bar:\n- Zero missing local files when done.\n- Letter case mismatches caught.\n- Anchors verified.\nPitfalls:\n- Root absolute paths (/img/a.png) that break when opened from disk.\n- Unencoded spaces in file names.\n- Skipping url() in CSS.\nVerify:\n- [ ] All reference types collected.\n- [ ] Paths resolved relative to their file.\n- [ ] Anchors checked.\n- [ ] Report gives fixes.\nOutput: links-report.md, and scripts/check-links.mjs if written.",
+  "checks": [
+    "md.local-links",
+    "html.external-rel",
+    "html.link-text",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "check if any image or link is broken on my site",
+      "output": "Logo.PNG referenced as logo.png, #precos anchor missing, fonts/inter.woff2 absent; check-links.mjs exits 1"
+    }
+  ],
+  "size": 337,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "injection-risks",
+  "title": "Prevent command, SQL and path traversal injection",
+  "category": "practices",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "injection",
+    "sql injection",
+    "command injection",
+    "path traversal",
+    "security",
+    "child_process",
+    "shell",
+    "directory traversal"
+  ],
+  "when": "Server or script code builds shell commands, SQL queries or file paths from user input, or the user wants an injection review.",
+  "inputs": [
+    "the server or script code",
+    "which inputs come from users"
+  ],
+  "prompt": "Goal: User input can never change the structure of a command, query or path; it is always passed as data.\nSteps:\n1. Commands: use execFile or spawn with an argument array and shell: false; never exec with a string built from input.\n2. Validate command arguments against an allowlist and put \"--\" before user values so they cannot become options.\n3. SQL: use parameterized queries with placeholders (? or $1) for values; allowlist table and column names, never interpolate them.\n4. Paths: resolve with path.resolve(root, input), then reject unless the result starts with root plus path.sep; reject null bytes.\n5. Prefer looking up user choices by id in a map instead of using raw strings as paths or names.\n6. Return generic errors to clients and log the detail on the server.\nQuality bar:\n- Each finding names the input, the sink and the fix.\n- Allowlists, not denylists.\n- Tests include malicious inputs (../../etc/passwd, ; rm, ' OR 1=1).\nPitfalls:\n- Escaping quotes by hand.\n- Checking for \"..\" before decoding URL escapes.\n- Using path.join and assuming it stays inside the folder.\nVerify:\n- [ ] No shell string contains user input.\n- [ ] Queries use placeholders.\n- [ ] File access checks the resolved path prefix.\n- [ ] Files parse.\nOutput: Fixed modules and a short findings table.",
+  "checks": [
+    "js.syntax",
+    "js.no-eval"
+  ],
+  "examples": [
+    {
+      "input": "meu servidor serve arquivos pelo nome que vem na URL",
+      "output": "resolve under ./public, reject paths outside, 404 for missing; test with ../ inputs"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

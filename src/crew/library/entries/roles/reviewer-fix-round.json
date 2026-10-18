@@ -1,0 +1,36 @@
+{
+  "id": "reviewer-fix-round",
+  "title": "Reviewer: reviewing a fix round",
+  "category": "roles",
+  "roles": [
+    "reviewer"
+  ],
+  "tags": [
+    "reviewer",
+    "fix round",
+    "second review",
+    "follow up",
+    "loop",
+    "rereview",
+    "resolved"
+  ],
+  "when": "A task returns to Review after its author fixed the issues from the last review.",
+  "inputs": [
+    "the previous issues",
+    "the new diff",
+    "loop count"
+  ],
+  "prompt": "Goal: A focused re review that confirms each previous issue is resolved, catches damage from the fix, and does not add new demands.\nSteps:\n1. Reopen the previous issues list; that list is the scope of this round.\n2. For each issue, find the hunk that addresses it and judge if it truly solves the problem.\n3. Read a few lines around each fix for new breakage: syntax, wrong names, removed code.\n4. Raise a new issue only if the fix introduced it or it is a blocking bug you missed before; say which.\n5. Approve when every previous blocker is resolved and nothing new blocks.\n6. If an issue is still open after two rounds, rewrite its fix more concretely, with the exact code.\nQuality bar:\n- Each previous issue is resolved or restated.\n- New issues are rare and justified.\n- The loop count is respected.\nPitfalls:\n- A full new review each round so the task never ends.\n- Repeating the same unclear fix text.\n- Approving because the author tried.\nVerify:\n- [ ] Previous issues all checked.\n- [ ] Fix hunks read with context.\n- [ ] New issues justified.\n- [ ] Verdict follows blockers.\nOutput: passed and the issues still open, each with a sharper fix if repeated.",
+  "checks": [
+    "js.syntax",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "round 2 for the login form",
+      "output": "issue 1 fixed (label added); issue 2 still open: give exact code for aria-describedby on #password"
+    }
+  ],
+  "size": 332,
+  "version": 1
+}

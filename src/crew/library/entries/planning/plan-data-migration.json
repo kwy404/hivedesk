@@ -1,0 +1,35 @@
+{
+  "id": "plan-data-migration",
+  "title": "Planning a data migration",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "ops"
+  ],
+  "tags": [
+    "migration",
+    "migrate",
+    "data format",
+    "schema change",
+    "convert data",
+    "backup",
+    "upgrade data"
+  ],
+  "when": "Stored data must change shape: a new field, a renamed key, CSV to JSON, or a new localStorage version, without losing records.",
+  "inputs": [
+    "current data format with a sample",
+    "target format",
+    "where the data lives"
+  ],
+  "prompt": "Goal: A migration plan that backs up first, converts with a tested script, verifies counts and can be undone.\nSteps:\n1. Write old and new shapes side by side with one real record in each.\n2. Task 1 backs up: copy the data file to a dated name, or export the stored value, before any change.\n3. Task 2 writes the converter as a pure function plus a test with real samples, including empty and odd records.\n4. Task 3 runs the converter, writes the new file, and keeps a version field (version: 2) so code can tell formats apart.\n5. Task 4 verifies: record count matches, a few records compared by hand, the app reads the new format.\n6. Write the rollback: restore the backup and the old reader.\nQuality bar:\n- No step changes data before the backup exists.\n- The converter is tested on edge cases.\n- Counts before and after are compared.\nPitfalls:\n- Converting in place with no copy.\n- Dropping records that fail to parse without a report.\n- App code that cannot read either version during the switch.\nVerify:\n- [ ] Backup task comes first.\n- [ ] Converter has a test.\n- [ ] A version field is planned.\n- [ ] Rollback steps are written.\nOutput: A plan of backup, convert, run, verify tasks with the shapes and the rollback in the summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "mudar o contacts.csv para JSON com telefone separado",
+      "output": "backup contacts.csv, convert.mjs plus test, write contacts.json v2, compare 120 rows"
+    }
+  ],
+  "size": 354,
+  "version": 1
+}

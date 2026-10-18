@@ -1,0 +1,37 @@
+{
+  "id": "camera-follow-scrolling",
+  "title": "Camera follow and world scrolling",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "camera",
+    "scrolling",
+    "side scroller",
+    "follow camera",
+    "viewport",
+    "parallax",
+    "screen shake",
+    "world coordinates",
+    "game"
+  ],
+  "when": "The world is larger than the screen and a camera must follow the player smoothly, stay inside the level bounds, and convert between screen and world coordinates.",
+  "inputs": [
+    "level size in pixels",
+    "follow style"
+  ],
+  "prompt": "Goal: A camera object that keeps the player in view without jitter and never shows outside the level.\nSteps:\n1. camera = { x, y, w, h } in world pixels, with w and h equal to the canvas size in CSS pixels.\n2. Dead zone: move only when the player leaves a central box of 30 by 40 percent of the view.\n3. Smooth follow: camera.x += (targetX - camera.x) * (1 - Math.exp(-8 * dt)), which is refresh rate independent.\n4. Clamp camera.x between 0 and level.pixelWidth - camera.w, same for y; center the level when it is smaller than the view.\n5. Draw with ctx.save(); ctx.translate(-Math.round(camera.x), -Math.round(camera.y)); world; ctx.restore(); then the HUD in screen space.\n6. Parallax: draw a background layer at -camera.x * 0.3, wrapped with the modulo of its tile width.\n7. Screen shake adds a decaying random offset only at draw time, never to camera.x, and is off under prefers-reduced-motion.\n8. Pointer to world: worldX = e.offsetX + camera.x, worldY = e.offsetY + camera.y.\nQuality bar:\n- Pixel art does not shimmer while the camera moves.\n- Only tiles inside the view rectangle are drawn.\nPitfalls:\n- Drawing the HUD inside the translated block, so it scrolls away.\n- A lerp with a fixed factor per frame, which changes with refresh rate.\n- Rounding the camera before smoothing, which causes stutter.\nVerify:\n- [ ] The camera stops cleanly at the level edges.\n- [ ] Shake is disabled with reduced motion.\n- [ ] Clicks hit the right world tile after scrolling.\nOutput: js/camera.js and its use in js/game.js.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "a tela precisa seguir o personagem no mapa grande",
+      "output": "dead zone camera with exponential smoothing, bounds clamp, parallax layer, reduced motion shake"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

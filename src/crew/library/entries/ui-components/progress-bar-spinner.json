@@ -1,0 +1,39 @@
+{
+  "id": "progress-bar-spinner",
+  "title": "Progress bar and loading spinner",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "progress bar",
+    "spinner",
+    "loading",
+    "loader",
+    "loading indicator",
+    "busy indicator",
+    "upload progress",
+    "percent complete"
+  ],
+  "when": "The user wants to show progress of a task, such as an upload or a long operation, or a spinner while something loads.",
+  "inputs": [
+    "known percentage or unknown duration",
+    "what is loading"
+  ],
+  "prompt": "Goal: Native progress for known amounts, a labeled spinner for unknown ones, and announcements at start and end only.\nSteps:\n1. Known progress: <progress id=\"up\" max=\"100\" value=\"0\"> named by aria-labelledby on a visible label (Uploading photo), with a percent text next to it.\n2. Unknown duration: <progress> without value, or a spinner element with visually hidden text Loading inside a role=\"status\" region.\n3. Set aria-busy=\"true\" on the region being updated; set it back and announce Loaded or the error in the same status region when done.\n4. Show the spinner only after 300 ms and keep it at least 500 ms once shown, to avoid a flash.\n5. Spin with a CSS rotation animation; under prefers-reduced-motion use a slow opacity pulse.\n6. Style progress with appearance: none and the vendor prefixed bar and value pseudo elements.\nQuality bar:\n- Percent text and bar always agree.\n- The spinner sits where the content will appear.\n- Errors replace the spinner with a message and a Retry.\nPitfalls:\n- Announcing every percent change.\n- A spinner that never stops after an error.\n- A fake progress bar that does not track real work.\nVerify:\n- [ ] The progress has an accessible name.\n- [ ] A status region announces the end.\n- [ ] Reduced motion stops the spin.\n- [ ] aria-busy is cleared.\nOutput: Markup patterns, progress.css and progress.js helpers.",
+  "checks": [
+    "html.aria-live",
+    "css.reduced-motion",
+    "html.no-inline-handlers",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "barra de progresso no envio de arquivo e spinner ao carregar",
+      "output": "progress labeled Uploading photo with 45 percent text, spinner with hidden Loading in role status, pulse under reduced motion"
+    }
+  ],
+  "size": 386,
+  "version": 1
+}

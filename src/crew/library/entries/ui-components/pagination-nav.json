@@ -1,0 +1,39 @@
+{
+  "id": "pagination-nav",
+  "title": "Pagination links",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "pagination",
+    "page numbers",
+    "next page",
+    "previous page",
+    "pager",
+    "paging",
+    "pages navigation"
+  ],
+  "when": "The user wants page number links for a long list of results, posts or products.",
+  "inputs": [
+    "total pages",
+    "current page",
+    "URL pattern for pages"
+  ],
+  "prompt": "Goal: Pagination with real links that work without JS, a clear current page, a compact window of numbers and a phone layout.\nSteps:\n1. <nav aria-label=\"Pagination\"> with a <ul> of Previous, page numbers and Next; each is a link to ?page=n.\n2. The current page carries aria-current=\"page\" and a filled style; numbers get visually hidden Page text before the digit.\n3. Window: first, last, current plus or minus one, with an ellipsis item that is plain text.\n4. On the first or last page show Previous or Next as plain text, not a dead link.\n5. Below 480 px show only Previous, Page 3 of 12 and Next.\n6. If paging client side, update with history.pushState, handle popstate and focus the results heading.\nQuality bar:\n- Each link has at least a 44 px hit area.\n- The current page is clear without color.\n- URLs are shareable and bookmarkable.\nPitfalls:\n- Buttons instead of links, which breaks open in new tab.\n- Showing all 80 page numbers.\n- Focus left at the bottom after loading a new page of results.\nVerify:\n- [ ] A nav labeled Pagination wraps the list.\n- [ ] aria-current marks the current page.\n- [ ] Links have real hrefs.\n- [ ] The compact layout shows at 375 px.\nOutput: Pagination markup or a render function, pagination.css, and pagination.js only for client side paging.",
+  "checks": [
+    "html.nav",
+    "html.link-text",
+    "css.focus-visible",
+    "css.media-query"
+  ],
+  "examples": [
+    {
+      "input": "paginacao para a lista de produtos com 12 paginas",
+      "output": "nav Pagination with Previous, 1, ..., 4, 5, 6, ..., 12, Next, aria-current on 5, compact view under 480 px"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

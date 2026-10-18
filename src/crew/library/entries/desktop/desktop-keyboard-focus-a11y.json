@@ -1,0 +1,40 @@
+{
+  "id": "desktop-keyboard-focus-a11y",
+  "title": "Keyboard only use and focus in a desktop app",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "accessibility",
+    "keyboard only",
+    "focus",
+    "tab order",
+    "desktop app",
+    "screen reader",
+    "a11y",
+    "focus trap",
+    "roving tabindex"
+  ],
+  "when": "Desktop users who never touch the mouse must reach every panel, list and dialog by keyboard with focus always visible.",
+  "inputs": [
+    "main panels of the window",
+    "custom widgets (lists, trees, grids)"
+  ],
+  "prompt": "Goal: Every task in the window can be done by keyboard, focus moves predictably between panels and is always visible.\nSteps:\n1. Panels: F6 and Shift+F6 cycle focus between sidebar, list and editor; each panel is a landmark with a name.\n2. Lists and trees use roving tabindex: the active item has tabindex=\"0\", others \"-1\"; Arrow keys move, Home and End jump, Enter opens.\n3. Dialogs use <dialog> with showModal(); focus goes to the first field, Escape closes, focus returns to the opener.\n4. :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px } on every interactive element, with 3 to 1 contrast against the background.\n5. Show shortcuts in tooltips and menus; Mod+/ opens a shortcut list.\n6. Toolbars: one tab stop, arrows between buttons; icon buttons have aria-label.\n7. Test: unplug the mouse and finish open, edit, save and settings; log any step that fails.\n8. Check with the OS screen reader that each control reads name, role and state.\nQuality bar:\n- No keyboard trap anywhere.\n- Focus never lands on a hidden element.\nPitfalls:\n- tabindex values above 0, which scramble the order.\n- Removing outlines because they look odd on click; use :focus-visible.\nVerify:\n- [ ] Focus styles exist for all controls.\n- [ ] Dialogs restore focus on close.\n- [ ] Keyboard test log covers the core tasks.\nOutput: focus.js, the focus CSS and a keyboard test log.",
+  "checks": [
+    "css.focus-visible",
+    "html.labels",
+    "html.dialog-a11y"
+  ],
+  "examples": [
+    {
+      "input": "usuário do meu app desktop usa só teclado e se perde",
+      "output": "F6 panel cycling, roving tabindex lists, dialog focus return, focus-visible ring, test log"
+    }
+  ],
+  "size": 393,
+  "version": 1
+}

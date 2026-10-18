@@ -1,0 +1,51 @@
+{
+  "id": "typing-speed-test",
+  "title": "Typing speed test with WPM and accuracy",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "typing test",
+    "typing speed",
+    "wpm",
+    "words per minute",
+    "keyboard practice",
+    "typing game",
+    "accuracy"
+  ],
+  "when": "The user wants a typing test that measures words per minute and accuracy over a timed passage.",
+  "inputs": [
+    "passages or language",
+    "test lengths"
+  ],
+  "prompt": "Goal: Honest WPM and accuracy with clear per character feedback that works with any keyboard, including mobile.\nSteps:\n1. Passages in a local array; render each character as a span built with createElement to mark correct, wrong and current.\n2. Capture text in a labeled input or textarea, not document keydown, so mobile keyboards and composition work; the timer starts at the first character.\n3. logic.mjs: compare(target, typed) per char states, wpm = correct chars / 5 / minutes, rawWpm, accuracy = correct / typed.\n4. Modes 30 s, 60 s or full passage; time left shown, result announced in aria-live at the end.\n5. Results: WPM, accuracy, errors; best per mode in localStorage guarded; Restart button and Escape.\n6. Ignore pasted text and say so.\n7. test.mjs: wpm with a fixed elapsed time, accuracy after corrections, extra characters.\nQuality bar:\n- Current character is obvious.\n- Errors shown with color plus underline.\n- No layout shift while typing.\nPitfalls:\n- Timing from the page load.\n- Counting backspaced characters as errors forever with no raw versus net split.\n- Keydown capture that breaks accented input.\nVerify:\n- [ ] Input labeled.\n- [ ] Results live.\n- [ ] Math tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (scoring), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "teste de velocidade de digitacao",
+      "output": "60 s passage, green and red letters, 52 WPM, 96 percent accuracy"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "file-upload-handling",
+  "title": "Safe file upload handling",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "file upload",
+    "upload",
+    "multipart",
+    "file input",
+    "image upload",
+    "size limit",
+    "mime type",
+    "security"
+  ],
+  "when": "The app lets users upload images, documents or CSV files, in the browser only or to a Node server.",
+  "inputs": [
+    "allowed file types and maximum size",
+    "where files are stored"
+  ],
+  "prompt": "Goal: Uploads are limited in size and type, stored under safe generated names, and never executed or served as HTML.\nSteps:\n1. In the form: <input type=\"file\" accept=\"image/png,image/jpeg\"> with a label, and check file.size and file.type in script for fast feedback.\n2. On the server, enforce the limit while streaming: count bytes and stop with 413 when over the maximum.\n3. Check the real type by magic bytes (PNG starts 89 50 4E 47, JPEG FF D8 FF, PDF 25 50 44 46), not the extension or client type.\n4. Save with a generated name (crypto.randomUUID() plus a known extension) in a folder outside the code and the web root when possible.\n5. Serve uploads with the stored Content-Type, Content-Disposition: attachment for non images, and X-Content-Type-Options: nosniff.\n6. Show progress and a clear error per file, and clean up partial files on failure.\nQuality bar:\n- The user sees the limits before choosing a file.\n- Server checks repeat every client check.\n- Original file names are never used as paths.\nPitfalls:\n- Reading the whole upload into memory before checking size.\n- Accepting SVG or HTML uploads and serving them inline.\n- Trusting the extension.\nVerify:\n- [ ] Too large files get 413.\n- [ ] Wrong types are rejected with a message.\n- [ ] Stored names are generated.\n- [ ] The form input has a label.\nOutput: Upload form markup, client checks, and the server handler with limits.",
+  "checks": [
+    "node.body-limit",
+    "node.http-status",
+    "js.syntax",
+    "html.labels"
+  ],
+  "examples": [
+    {
+      "input": "os usuários vão enviar fotos de perfil",
+      "output": "accept png and jpeg up to 2 MB, magic byte check, saved as uuid.jpg, 413 and 415 errors"
+    }
+  ],
+  "size": 399,
+  "version": 1
+}

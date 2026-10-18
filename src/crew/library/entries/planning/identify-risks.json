@@ -1,0 +1,34 @@
+{
+  "id": "identify-risks",
+  "title": "Identifying risks before work starts",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "risk",
+    "risks",
+    "unknowns",
+    "mitigation",
+    "what could go wrong",
+    "danger",
+    "uncertainty"
+  ],
+  "when": "A job has unknowns: a tricky algorithm, existing files that must not break, data from the user, or limits of the local model.",
+  "inputs": [
+    "the plan draft",
+    "existing files",
+    "crew constraints"
+  ],
+  "prompt": "Goal: The three to five real risks of this job, each with a likelihood, an impact and a planned response inside the tasks.\nSteps:\n1. Scan five sources: unclear spec, existing code that could break, hard logic, user data that could be lost, size beyond a small model.\n2. Write each risk as cause and effect: \"the date math is tricky, so totals per month could be wrong\".\n3. Rate likelihood and impact as low, medium or high; keep only medium or high on either.\n4. Give each kept risk a response that changes the plan: a test task, a backup copy, a smaller first step, a question to the user.\n5. Put the response in the task detail where it applies, not only in a risk list.\n6. Name one early signal per risk that tells QA it happened.\nQuality bar:\n- Risks are specific to this job.\n- Every kept risk changed a task.\n- Signals are observable in files or checks.\nPitfalls:\n- Generic risks like \"bugs may occur\".\n- A risk list nobody acts on.\n- Ignoring the risk of overwriting the user files.\nVerify:\n- [ ] Three to five risks with ratings.\n- [ ] Each has a response in a task.\n- [ ] Each has a signal.\n- [ ] Data loss was considered for edits.\nOutput: A Risks block in the summary (risk, rating, response, signal) and the matching task changes.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "change the existing checkout script to add coupons",
+      "output": "Risk: breaking totals (high). Response: dev writes test.mjs for totals first; signal: test fails"
+    }
+  ],
+  "size": 355,
+  "version": 1
+}

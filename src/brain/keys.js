@@ -25,13 +25,15 @@ export class KeyStore {
     if (!PROVIDERS[provider]) throw Object.assign(new Error(`unknown provider ${provider}`), { code: 'bad_request' });
     const cur = this.data.providers[provider] || {};
     const next = { ...cur };
-    if (typeof key === 'string' && key.trim()) next.key = key.trim();
     if (typeof model === 'string' && model.trim()) next.model = model.trim();
     if (typeof baseUrl === 'string') {
       const u = baseUrl.trim().replace(/\/$/, '');
       if (u && !/^https?:\/\//.test(u)) throw Object.assign(new Error('the base URL must start with http:// or https://'), { code: 'bad_request' });
+      // A key is bound to the address it was saved for: a new base URL never inherits the old key.
+      if ((u || undefined) !== cur.baseUrl) delete next.key;
       next.baseUrl = u || undefined;
     }
+    if (typeof key === 'string' && key.trim()) next.key = key.trim();
     if (!next.key && provider !== 'compatible') throw Object.assign(new Error('an API key is needed'), { code: 'bad_request' });
     if (provider === 'compatible' && !next.baseUrl) throw Object.assign(new Error('a base URL is needed'), { code: 'bad_request' });
     this.data.providers[provider] = next;

@@ -1,0 +1,39 @@
+{
+  "id": "cli-help-from-option-table",
+  "title": "Generate help and usage errors from one option table",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "help screen",
+    "option table",
+    "usage error",
+    "did you mean",
+    "typo suggestion",
+    "--version",
+    "generated help",
+    "cli"
+  ],
+  "when": "A CLI's help text keeps drifting from the real flags, or the user wants friendly usage errors that suggest the right option after a typo.",
+  "inputs": [
+    "current options",
+    "examples to show",
+    "version source"
+  ],
+  "prompt": "Goal: One option array drives the parser config, the --help screen and the usage errors, so they can never disagree.\nSteps:\n1. src/options.mjs exports OPTIONS = [{ name: \"out\", short: \"o\", type: \"string\", arg: \"FILE\", desc: \"write result to FILE\", default: \"stdout\" }, ...].\n2. Build the parseArgs options object from it with Object.fromEntries; never type the table twice.\n3. renderHelp(): usage line, summary, then one row per option, \"-o, --out FILE\" padded with padEnd to the widest left column, then desc and \"(default: stdout)\".\n4. Append an Examples block from an EXAMPLES array.\n5. On err.code === \"ERR_PARSE_ARGS_UNKNOWN_OPTION\", find the closest known name by Levenshtein distance; within 2 edits print \"unknown option --ouput, did you mean --out?\", then \"Run tool --help\", all on stderr, exit 2.\n6. --version prints only the number from package.json (createRequire or a JSON import).\n7. test/help.test.mjs asserts each OPTIONS name appears in renderHelp() and no other flag does.\nQuality bar:\n- Help fits 80 columns and shows defaults.\n- Usage errors take one or two lines, never the whole help.\nPitfalls:\n- Hand written help strings that keep removed flags.\n- Suggesting names 5 edits away, which confuses more than it helps.\n- Printing --help to stderr, which breaks tool --help | less.\nVerify:\n- [ ] Parser options built from the table.\n- [ ] --help exits 0 on stdout.\n- [ ] Unknown flags exit 2 with a close suggestion.\n- [ ] A test checks help against the table.\nOutput: src/options.mjs, src/help.mjs and test/help.test.mjs.",
+  "checks": [
+    "cli.help",
+    "node.exit-code",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "my --help lists flags that no longer exist",
+      "output": "src/options.mjs table feeding parseArgs and renderHelp, did you mean suggestion within 2 edits, test that help and table agree"
+    }
+  ],
+  "size": 440,
+  "version": 1
+}

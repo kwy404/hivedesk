@@ -1,0 +1,38 @@
+{
+  "id": "json-schema-format",
+  "title": "JSON Schema for a data or config format",
+  "category": "stacks",
+  "roles": [
+    "architect",
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "json schema",
+    "schema",
+    "json format",
+    "contract",
+    "data format",
+    "config format",
+    "specification",
+    "payload"
+  ],
+  "when": "The user wants to define or document the exact shape of a JSON file, API payload or config so others can produce and check it.",
+  "inputs": [
+    "fields and meanings",
+    "which are required",
+    "example data"
+  ],
+  "prompt": "Goal: A JSON Schema (draft 2020-12) plus examples describing every field, its type, limits and whether it is required.\nSteps:\n1. Head: \"$schema\": \"https://json-schema.org/draft/2020-12/schema\", \"$id\", \"title\", \"description\".\n2. Objects: \"type\": \"object\", \"properties\", \"required\", and \"additionalProperties\": false for strict formats.\n3. Constraints: minLength, maxLength, pattern, minimum, maximum, enum, and \"format\": \"date-time\" as documentation.\n4. Reuse shared shapes (money, address) through \"$defs\" and \"$ref\".\n5. Add a top level \"version\" property; give each field a \"description\" and \"examples\".\n6. Write example files: minimal valid, full valid, and one invalid with a note saying why.\nQuality bar:\n- Every property has a type and description.\n- One naming convention throughout.\n- Dates are ISO 8601 strings; money is integer minor units.\nPitfalls:\n- Missing required lists, so every field is optional by accident.\n- null, empty string and missing all meaning the same thing.\n- Changing a field meaning without bumping version.\nVerify:\n- [ ] The schema file is valid JSON.\n- [ ] Examples match the schema on reading.\n- [ ] Each object has required.\n- [ ] Repeated shapes live in $defs.\nOutput: schema/<name>.schema.json and examples/*.json, plus a Fields table in README.",
+  "checks": [
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "document the format of our settings.json",
+      "output": "settings.schema.json with version, theme enum, fontSize 10 to 32, additionalProperties false, valid and invalid examples"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

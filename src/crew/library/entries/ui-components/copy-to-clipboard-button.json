@@ -1,0 +1,38 @@
+{
+  "id": "copy-to-clipboard-button",
+  "title": "Copy to clipboard button",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "copy",
+    "copy to clipboard",
+    "clipboard",
+    "copy button",
+    "copy code",
+    "copy link",
+    "copy text"
+  ],
+  "when": "The user wants a button that copies a code block, a link, a coupon or any text with one click.",
+  "inputs": [
+    "what text is copied",
+    "where the buttons go"
+  ],
+  "prompt": "Goal: A copy button that uses the async clipboard API, falls back cleanly and confirms the copy visually and to screen readers.\nSteps:\n1. <button type=\"button\" data-copy-target=\"coupon\"> next to the text; read the target textContent or value at click time.\n2. Call await navigator.clipboard.writeText(text) inside try and catch; it needs a secure context (https or localhost).\n3. Fallback: select the text with a Range or in a readonly input and tell the user to press Ctrl+C.\n4. Confirm: the button label turns to Copied for 2 s and a role=\"status\" region says Copied to clipboard; keep a min-width so the button does not jump.\n5. For code blocks, add one button to each pre with JS and copy the code element text.\nQuality bar:\n- Copies exactly the visible text, no extra spaces.\n- One button per copyable item.\n- Works by keyboard as any button.\nPitfalls:\n- Uncaught promise rejections when permission is denied.\n- document.execCommand as the main path.\n- A success message that also shows on failure.\nVerify:\n- [ ] Buttons have type=\"button\" and clear names.\n- [ ] Errors are caught and the fallback works.\n- [ ] A live region announces the copy.\n- [ ] The label resets after 2 s.\nOutput: Button markup next to each item and copy.js.",
+  "checks": [
+    "html.aria-live",
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "botao para copiar o cupom de desconto",
+      "output": "button Copy code next to the coupon, clipboard.writeText in try, label Copied for 2 s, status message"
+    }
+  ],
+  "size": 354,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "node-streams-large-files",
+  "title": "Streaming large files in Node",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "stream",
+    "streams",
+    "large file",
+    "big file",
+    "pipeline",
+    "memory",
+    "line by line",
+    "gzip",
+    "transform"
+  ],
+  "when": "A script must read, transform or write files too big for memory (logs, exports, CSV with millions of rows), or compress them.",
+  "inputs": [
+    "input file and size",
+    "transformation per line or chunk"
+  ],
+  "prompt": "Goal: Constant memory processing with stream.pipeline, backpressure handled, and errors closing every stream.\nSteps:\n1. Import pipeline from node:stream/promises, createReadStream and createWriteStream from node:fs, createGzip from node:zlib.\n2. Line by line: for await (const line of readline.createInterface({ input: createReadStream(file), crlfDelay: Infinity })).\n3. Transforms as async generators: async function* (source) { for await (const chunk of source) yield change(chunk); }.\n4. Compose: await pipeline(read, transform, createGzip(), createWriteStream(dst + \".tmp\")), then rename to dst.\n5. Chunks can split a line or a multi byte character; set an encoding and carry the partial tail to the next chunk.\n6. Report progress on stderr from bytes read versus stat size; on error delete the temp file and set exit code 1.\nQuality bar:\n- Memory stays flat for any file size.\n- A failure never leaves a half file under the final name.\n- Works on multi gigabyte inputs.\nPitfalls:\n- fs.readFile on a big file.\n- Chained .pipe() calls that ignore errors and leak descriptors.\n- Ignoring the return value of write() in custom writers.\nVerify:\n- [ ] pipeline from node:stream/promises.\n- [ ] Output written to .tmp, then renamed.\n- [ ] Errors caught and exit code set.\n- [ ] No readFile on the input.\nOutput: scripts/convert.mjs with the pipeline and progress output.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "filter a 6 GB log file and gzip the result",
+      "output": "pipeline(read, readline filter generator, gzip, write .tmp) then rename, progress on stderr"
+    }
+  ],
+  "size": 391,
+  "version": 1
+}

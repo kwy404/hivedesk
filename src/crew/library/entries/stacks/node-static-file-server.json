@@ -1,0 +1,41 @@
+{
+  "id": "node-static-file-server",
+  "title": "Static file server with safe paths",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "static server",
+    "file server",
+    "serve files",
+    "local server",
+    "mime types",
+    "path traversal",
+    "localhost",
+    "serve folder"
+  ],
+  "when": "The user needs a tiny local server for a folder (to test modules or a service worker) or static serving inside a Node backend.",
+  "inputs": [
+    "folder to serve",
+    "port"
+  ],
+  "prompt": "Goal: A node:http static server that serves only files inside its root, with correct MIME types, cache headers and a 404.\nSteps:\n1. Line 1 #!/usr/bin/env node; root = path.resolve(process.argv[2] || \"public\"); on EADDRINUSE print a hint and set process.exitCode = 1.\n2. Decode the pathname in try (400 on a bad escape); file = path.resolve(root, \".\" + pathname); answer 403 unless it equals root or starts with root + path.sep.\n3. Refuse dot files; answer 405 to methods other than GET and HEAD.\n4. Folders serve their index.html; missing files serve 404.html when present, else a plain 404.\n5. MIME table: html, css, js and mjs as text/javascript, json, svg, png, jpg, webp, woff2, webmanifest; default application/octet-stream.\n6. After fs.promises.stat, set content-length and stream with createReadStream(file).pipe(res), answering 500 on stream errors; cache-control: no-cache for HTML.\nQuality bar:\n- /../secret and %2e%2e cannot leave the root.\n- Module scripts load because .js is served as JavaScript.\n- Startup prints the URL.\nPitfalls:\n- Concatenating the raw URL onto the root.\n- readFileSync on every request.\n- Serving .env or other dot files.\nVerify:\n- [ ] A startsWith(root + path.sep) guard on every file.\n- [ ] The MIME table covers js and mjs.\n- [ ] Statuses 403, 404, 405 exist.\n- [ ] Files are streamed.\nOutput: serve.mjs, run as node serve.mjs [folder] [port].",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.shebang",
+    "node.exit-code",
+    "js.no-sync-in-handlers"
+  ],
+  "examples": [
+    {
+      "input": "preciso de um servidor local simples para testar meu site",
+      "output": "serve.mjs serving ./public with a MIME table, traversal guard, index.html for folders, 404 page"
+    }
+  ],
+  "size": 395,
+  "version": 1
+}

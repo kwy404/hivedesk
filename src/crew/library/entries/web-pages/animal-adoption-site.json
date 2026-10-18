@@ -1,0 +1,49 @@
+{
+  "id": "animal-adoption-site",
+  "title": "Animal adoption listing",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "adoption",
+    "pets",
+    "animal shelter",
+    "dogs",
+    "cats",
+    "rescue"
+  ],
+  "when": "The user wants a page that lists animals for adoption with filters and an interest form.",
+  "inputs": [
+    "animals with name, species, age, size, temperament, photo",
+    "adoption process",
+    "contact"
+  ],
+  "prompt": "Goal: Help each animal find a home: honest profiles, easy filters and a clear adoption path.\nSteps:\n1. Animals as data rendered into cards: photo with alt describing the animal, name, species, age, size, short personality.\n2. Filters by species, size and age as labeled controls; show a count of results.\n3. Detail view with health info (vaccinated, neutered) and needs (yard, no cats).\n4. Adoption process as numbered steps with any fee.\n5. Interest form per animal: name, contact, home type, message.\nQuality bar:\n- Profiles are honest about needs.\n- Filters update the count in an aria-live region.\n- Cards are readable on phones.\nPitfalls:\n- Cards built with innerHTML from data.\n- Filters that cannot be reset.\n- Photos without alt.\nVerify:\n- [ ] Filter controls labeled.\n- [ ] Result count announced.\n- [ ] textContent for data.\n- [ ] Scripts parse.\nOutput: index.html, style.css, animals.json or data in app.js, and app.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.aria-live",
+    "js.safe-dom",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "página de adoção de cães e gatos da ONG",
+      "output": "12 animal cards, filters species and size, count of results, interest form"
+    }
+  ],
+  "size": 266,
+  "version": 1
+}

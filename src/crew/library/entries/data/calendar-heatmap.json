@@ -1,0 +1,41 @@
+{
+  "id": "calendar-heatmap",
+  "title": "Calendar heatmap of daily activity",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "calendar heatmap",
+    "heatmap",
+    "daily activity",
+    "streak",
+    "habit tracker",
+    "year view",
+    "contributions",
+    "days grid"
+  ],
+  "when": "The user wants a year or months view of daily counts (habits, workouts, commits, sales per day) as colored squares.",
+  "inputs": [
+    "counts per day",
+    "date range",
+    "first day of week"
+  ],
+  "prompt": "Goal: A week by weekday grid of days with a stepped color scale, labels, a legend and a text version.\nSteps:\n1. Aggregate to a Map of \"YYYY-MM-DD\" to count using local calendar dates, filling every day in range with zeros.\n2. Columns are weeks starting on the locale first day, rows are weekdays; 12 px squares with rx 2 on a 14 px pitch.\n3. Five steps: zero uses the surface color, quantiles of non zero counts map to 4 tints of one hue, defined as custom properties with dark theme values.\n4. Month labels from Intl.DateTimeFormat at each month start; Mon, Wed, Fri row labels.\n5. Each rect has a <title> (\"3 workouts on 12 Oct 2026\"); the grid scrolls sideways on phones with the latest week in view.\n6. Legend from Less to More, summary line (total, active days, longest streak), and an aria-label on the svg with the summary.\nQuality bar:\n- Days never shift from UTC conversion.\n- Zero days look distinct from low days.\n- Non zero steps reach 3 to 1 against the surface.\nPitfalls:\n- toISOString for day keys, which shifts days west of UTC.\n- Linear scales where one big day flattens the rest.\n- A grid wider than the screen with no scroll container.\nVerify:\n- [ ] Every day present.\n- [ ] Legend and summary shown.\n- [ ] svg labeled.\n- [ ] Color steps defined for light and dark.\nOutput: js/heatmap.js exporting calendarHeatmap(container, counts, { start, end }) and heatmap.css.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.svg-a11y",
+    "css.custom-properties",
+    "css.dark-scheme"
+  ],
+  "examples": [
+    {
+      "input": "mostrar meus dias de treino do ano em quadradinhos",
+      "output": "53 week grid, 5 green steps, legend, \"148 active days, longest streak 12\""
+    }
+  ],
+  "size": 396,
+  "version": 1
+}

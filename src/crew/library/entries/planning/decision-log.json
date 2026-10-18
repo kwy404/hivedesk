@@ -1,0 +1,35 @@
+{
+  "id": "decision-log",
+  "title": "Keeping a decision log",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "decision log",
+    "decisions",
+    "adr",
+    "record decisions",
+    "why we chose",
+    "rationale",
+    "choices"
+  ],
+  "when": "The crew makes choices that later workers or the user might question: storage, file layout, a library free approach, a dropped feature.",
+  "inputs": [
+    "the choice",
+    "options considered",
+    "the reason"
+  ],
+  "prompt": "Goal: A short DECISIONS.md where each decision has a date, context, the choice, the reason and what would change it.\nSteps:\n1. Log only decisions that shape files or are costly to undo; skip naming and small style choices.\n2. Write each entry with a number and date: \"## 3. Store notes in localStorage (2026-10-17)\".\n3. Add Context in one or two lines: the problem and the constraint (no network, no install).\n4. Add Decision, Reason, and Revisit when (the signal that would change it, such as data over 5 MB).\n5. Never edit an old entry to change its meaning; add a new entry that replaces it and link back.\n6. Point task details to the entry number when a worker must follow it.\nQuality bar:\n- Each entry fits in six lines.\n- Reasons name the constraint.\n- Replaced decisions stay visible.\nPitfalls:\n- Logging everything so nothing stands out.\n- Decisions with no reason.\n- Rewriting history when a decision changes.\nVerify:\n- [ ] Entries are numbered and dated.\n- [ ] Each has context, decision, reason, revisit.\n- [ ] Replacements link back.\n- [ ] Tasks reference entries.\nOutput: DECISIONS.md with numbered entries, owned by one task.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "why did we use one HTML file?",
+      "output": "## 2. Single page app in one file (2026-10-17): no build, small model, revisit when over 4 screens"
+    }
+  ],
+  "size": 326,
+  "version": 1
+}

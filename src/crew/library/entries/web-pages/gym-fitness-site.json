@@ -1,0 +1,50 @@
+{
+  "id": "gym-fitness-site",
+  "title": "Gym or fitness studio site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "gym",
+    "fitness",
+    "yoga",
+    "classes",
+    "schedule",
+    "membership",
+    "trainer"
+  ],
+  "when": "The user wants a site for a gym, yoga studio, dance school, martial arts or personal trainer.",
+  "inputs": [
+    "name",
+    "classes and weekly schedule",
+    "memberships and prices",
+    "trial offer",
+    "location"
+  ],
+  "prompt": "Goal: Show the classes and timetable clearly and convert visitors into a first trial visit.\nSteps:\n1. Hero with the promise and a Book a free class action if a trial exists.\n2. Weekly schedule as a table with day headers on wide screens and a per day list on phones.\n3. Class descriptions: level, duration, what to bring.\n4. Membership options with prices and what is included.\n5. Trainers with credentials the user provided; location and hours at the end.\nQuality bar:\n- Schedule is readable at 375 px.\n- Levels are explained in plain words.\n- Strong contrast for energetic colors.\nPitfalls:\n- A schedule image no one can read.\n- Neon text on dark that fails contrast.\n- Unclear trial terms.\nVerify:\n- [ ] Schedule table has th headers.\n- [ ] Prices include the period.\n- [ ] Trial action present.\n- [ ] No overflow on phones.\nOutput: index.html and style.css with schedule, classes, plans and contact.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.table-headers",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "site para estúdio de yoga com horários",
+      "output": "hero with free trial, weekly timetable table, class levels, 3 membership plans"
+    }
+  ],
+  "size": 258,
+  "version": 1
+}

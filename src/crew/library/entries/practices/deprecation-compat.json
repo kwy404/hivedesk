@@ -1,0 +1,37 @@
+{
+  "id": "deprecation-compat",
+  "title": "Deprecate APIs with backward compatibility",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "deprecation",
+    "deprecate",
+    "backward compatibility",
+    "breaking change",
+    "api change",
+    "semver",
+    "migration path"
+  ],
+  "when": "A function, option, endpoint or file format must change and existing users should keep working while they migrate.",
+  "inputs": [
+    "the old and new interface",
+    "who calls it"
+  ],
+  "prompt": "Goal: The new interface ships alongside the old one, which keeps working, warns once and is removed only in a major version.\nSteps:\n1. Implement the new API first, then make the old one a thin wrapper that maps its arguments to the new call.\n2. Warn once per process: in Node use process.emitWarning(message, \"DeprecationWarning\"); in the browser a single console.warn guarded by a flag.\n3. The message names the old thing, the replacement and the removal version: \"loadAll() is deprecated, use load({ all: true }); removed in 3.0\".\n4. Mark it in docs and JSDoc with @deprecated and add a CHANGELOG entry under Deprecated.\n5. Keep tests for the old path until it is removed.\n6. Remove only in the next major version, listing it under Removed with a migration note.\nQuality bar:\n- Old callers get the same results.\n- The warning appears once, not per call.\n- The migration is one clear change for users.\nPitfalls:\n- Changing behavior of the old name silently.\n- Warnings that flood logs.\n- Removing in a minor release.\nVerify:\n- [ ] Old and new calls both pass tests.\n- [ ] The warning text names the replacement.\n- [ ] CHANGELOG has the deprecation with a dated version heading.\n- [ ] Files parse.\nOutput: Updated source with the wrapper, JSDoc tags, tests and a CHANGELOG entry.",
+  "checks": [
+    "js.syntax",
+    "md.changelog"
+  ],
+  "examples": [
+    {
+      "input": "quero renomear a opção \"cb\" para \"onDone\" sem quebrar quem usa",
+      "output": "onDone added, cb still works with one DeprecationWarning, removal planned for 2.0"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

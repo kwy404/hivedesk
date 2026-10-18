@@ -1,0 +1,38 @@
+{
+  "id": "cli-cross-platform-paths",
+  "title": "Cross platform paths and line endings in CLIs",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "cross platform",
+    "file paths",
+    "line endings",
+    "crlf",
+    "path.join",
+    "home directory",
+    "win32",
+    "portability",
+    "cli"
+  ],
+  "when": "A command line tool must behave the same on linux, mac and win32: paths, home folders, line endings, case sensitivity and launching other programs.",
+  "inputs": [
+    "files the tool reads and writes",
+    "programs it launches",
+    "target systems"
+  ],
+  "prompt": "Goal: Every path built with node:path, any line ending accepted on read, one chosen ending on write, and programs spawned without shell assumptions.\nSteps:\n1. Build paths with path.join and path.resolve, never by gluing \"/\"; module locations via fileURLToPath(import.meta.url), not new URL(...).pathname, which breaks on drive letters and spaces.\n2. Home and temp: os.homedir() and os.tmpdir().\n3. Show paths with path.relative(process.cwd(), p); compare after path.resolve, folding case on win32 and mac.\n4. Globs and config values use forward slashes; convert with p.split(path.sep).join(\"/\").\n5. Read with text.split(/\\r?\\n/); write \"\\n\" by default, or keep a file's own ending when editing in place (detect \"\\r\\n\" in the first line); offer --eol crlf.\n6. .gitattributes: * text=auto eol=lf and *.cmd text eol=crlf; a CRLF shebang fails with \"env: node\\r\".\n7. Spawn with execFile or spawn and an args array; on win32 .cmd and .bat files need a shell, so launch Node scripts with process.execPath instead.\nQuality bar:\n- No hardcoded separators or drive letters.\n- Tests run on all three systems in CI.\n- Names with spaces and non ASCII letters work.\nPitfalls:\n- path.join on URLs; use new URL(rel, base).\n- Assuming a case sensitive file system.\n- Reserved win32 names (con, nul, aux) as output files.\nVerify:\n- [ ] No concatenated paths.\n- [ ] fileURLToPath for module paths.\n- [ ] Reader accepts CRLF.\n- [ ] .gitattributes present.\nOutput: src/paths.mjs, src/eol.mjs, .gitattributes and tests for both helpers.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "minha CLI funciona no linux mas quebra no windows",
+      "output": "src/paths.mjs with path.join and fileURLToPath, reader splitting on /\\r?\\n/, .gitattributes eol=lf, spawn with process.execPath"
+    }
+  ],
+  "size": 433,
+  "version": 1
+}

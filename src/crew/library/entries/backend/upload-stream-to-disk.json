@@ -1,0 +1,42 @@
+{
+  "id": "upload-stream-to-disk",
+  "title": "Streaming upload endpoint to disk with quotas",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "file upload",
+    "streaming upload",
+    "upload endpoint",
+    "temp file",
+    "quota",
+    "checksum",
+    "pipeline",
+    "backend",
+    "large files"
+  ],
+  "when": "A Node API must accept uploads of many megabytes, write them to disk without holding them in memory, enforce size and per user quotas and never leave partial files behind.",
+  "inputs": [
+    "maximum file size",
+    "per user quota",
+    "storage folder"
+  ],
+  "prompt": "Goal: POST /uploads streams the raw body into a temp file with a byte cap and checksum, then moves it into storage atomically.\nSteps:\n1. Clients send the file as the raw body with Content-Type and an X-File-Name header; keep multipart only for plain HTML form posts.\n2. Refuse early: Content-Length over the cap gives 413; a user whose stored total plus this size passes the quota gets 413 with code quota_exceeded.\n3. await pipeline(req, capBytes(max), hashTap, createWriteStream(tmp, { flags: \"wx\" })), where capBytes is a Transform that errors past max and hashTap feeds createHash(\"sha256\").\n4. Keep tmp on the same volume (storage/tmp/<uuid>) so the final fs.rename is atomic.\n5. In finally, on any error or client abort, unlink the temp file and reply 413, 400 or 500.\n6. On success rename to storage/files/<uuid>, insert { id, owner, size, sha256, type, originalName } and reply 201 with Location.\nQuality bar:\n- Memory stays flat for a 1 GB upload.\n- At most N uploads run per user at once.\n- Startup deletes temp files older than an hour.\nPitfalls:\n- req.on(\"data\") pushing chunks into an array.\n- Writing to the final path directly, leaving broken files on abort.\n- Using the client file name in the path.\nVerify:\n- [ ] An oversized upload stops at the cap and leaves no file.\n- [ ] An aborted upload leaves no temp file.\n- [ ] Rows store size and sha256.\n- [ ] 201 has Location.\nOutput: routes/uploads.mjs, storage layout notes in README.md, test/uploads.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.body-limit",
+    "node.http-status",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "upload de videos de 500 MB estoura a memoria do servidor",
+      "output": "pipeline to storage/tmp with byte cap and sha256, atomic rename, quota check, cleanup on abort"
+    }
+  ],
+  "size": 422,
+  "version": 1
+}

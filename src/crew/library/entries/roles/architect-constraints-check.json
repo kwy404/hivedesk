@@ -1,0 +1,37 @@
+{
+  "id": "architect-constraints-check",
+  "title": "Architect: checking a design against crew constraints",
+  "category": "roles",
+  "roles": [
+    "architect",
+    "reviewer"
+  ],
+  "tags": [
+    "architect",
+    "constraints",
+    "no build",
+    "no network",
+    "offline",
+    "standard library",
+    "dependencies",
+    "feasibility"
+  ],
+  "when": "A proposed design or plan may need things the crew cannot use: packages, a build step, a remote service, a database server.",
+  "inputs": [
+    "the design or plan",
+    "the crew constraints"
+  ],
+  "prompt": "Goal: Every part of the design confirmed to run as plain files with no install and no network, with a local replacement for anything that would not.\nSteps:\n1. Read the plan and list every external need: packages, CDNs, fonts, APIs, servers, compilers, bundlers.\n2. Check each against the rules: plain static files, relative paths, vanilla JS modules, Node and Python standard libraries only, no network.\n3. Replace each violation with a local equivalent: system font stack, inline SVG icons, localStorage or a JSON file, node:http, node:test, fetch of a local file.\n4. Check browser features: ES modules from file:// need a local server, so say how to start one with node or python -m http.server.\n5. Check data rules: nothing leaves the machine, nothing requires an account.\n6. Write a note listing each replacement and any feature that had to change.\nQuality bar:\n- No remaining external dependency.\n- Every replacement keeps the feature working.\n- Run instructions match the final design.\nPitfalls:\n- A font or icon link left in the head.\n- Assuming fetch of a JSON file works from file:// without a server.\n- Replacing a needed feature with nothing and not saying so.\nVerify:\n- [ ] No http or https URLs in code files.\n- [ ] No import of a package name without node: prefix.\n- [ ] Storage is local.\n- [ ] Changes are noted.\nOutput: A note with the constraint review and edits to the plan or files that remove violations.",
+  "checks": [
+    "text.no-placeholder",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "plan says use a charting package and a web font",
+      "output": "replace with Canvas bars in chart.js and a system font stack; note both"
+    }
+  ],
+  "size": 407,
+  "version": 1
+}

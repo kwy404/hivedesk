@@ -1,0 +1,39 @@
+{
+  "id": "pubsub-state-store",
+  "title": "Small state store with subscribe",
+  "category": "data",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "state",
+    "store",
+    "state management",
+    "pub sub",
+    "subscribe",
+    "observer",
+    "reactive",
+    "shared state",
+    "dispatch"
+  ],
+  "when": "Several parts of a vanilla JavaScript app need the same data and must update together when it changes.",
+  "inputs": [
+    "the state shape",
+    "actions that change it"
+  ],
+  "prompt": "Goal: A tiny store with one state object, named actions and subscribers, so data flows one way and views stay in sync.\nSteps:\n1. createStore(initial, reducers) keeps state private and exposes getState(), dispatch(type, payload) and subscribe(fn), which returns unsubscribe.\n2. Reducers are pure (state, payload) => next state; unknown action types throw during development.\n3. Notify with (state, prev, action) so views skip work when their slice is unchanged.\n4. Batch notifications with queueMicrotask, so several dispatches in one event render once.\n5. Selectors (visibleTodos(state)) memoized by input reference.\n6. Persist through a debounced, guarded subscriber, never inside reducers; forbid dispatch inside a reducer.\nQuality bar:\n- State is never mutated in place (freeze it in development).\n- Removed views unsubscribe.\n- One subscriber can log every change.\nPitfalls:\n- Subscribers mutating state directly.\n- Re-rendering the whole page on every change.\n- Free text action names scattered around; export constants.\nVerify:\n- [ ] subscribe returns an unsubscribe function.\n- [ ] Reducers pure and tested.\n- [ ] Notifications batched.\n- [ ] No mutable globals outside the store.\nOutput: js/store.js with createStore, and js/actions.js with reducers and selectors.",
+  "checks": [
+    "js.syntax",
+    "js.no-var",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "o carrinho e o contador do topo não ficam sincronizados",
+      "output": "createStore with cart reducers, header and cart views subscribed to their slices"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

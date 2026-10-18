@@ -1,0 +1,40 @@
+{
+  "id": "node-child-process",
+  "title": "Running external commands from Node safely",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "child process",
+    "spawn",
+    "exec",
+    "run command",
+    "subprocess",
+    "execfile",
+    "automation",
+    "shell command"
+  ],
+  "when": "A Node script must run other programs (git, a compiler, an image tool), capture their output or chain several commands.",
+  "inputs": [
+    "commands and arguments",
+    "which output matters"
+  ],
+  "prompt": "Goal: Commands run without shell injection, with captured output, timeouts, and exit codes passed back to the caller.\nSteps:\n1. Use execFile or spawn from node:child_process with an argument array: execFile(\"git\", [\"log\", \"-1\", \"--format=%H\"]).\n2. Promisify execFile and pass { cwd, timeout: 60000, maxBuffer: 10 * 1024 * 1024 }.\n3. For long or chatty commands use spawn with stdio: \"inherit\" and resolve on \"close\" with the exit code.\n4. A non zero code is a failure: report command, code and the last lines of stderr.\n5. Handle the \"error\" event: ENOENT means the program is not installed, so print a hint.\n6. Use shell: true only with fixed arguments (for .cmd wrappers), forward SIGINT to children, and exit with the child code.\nQuality bar:\n- A missing program gives one clear line, not a stack trace.\n- Each step output is visible or logged.\n- Any failed step makes the script exit non zero.\nPitfalls:\n- exec with template strings holding file names, which breaks on spaces and allows injection.\n- Ignoring maxBuffer so big output kills the command.\n- Parallel steps that depend on each other.\nVerify:\n- [ ] No exec() with interpolated strings.\n- [ ] Exit codes checked.\n- [ ] ENOENT handled.\n- [ ] Shebang and non zero exit on failure.\nOutput: scripts/<task>.mjs with a run helper and the ordered steps.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "script que comprime todas as imagens chamando uma ferramenta externa",
+      "output": "run() helper over execFile with timeout, ENOENT hint, stops at the first failing file and exits 1"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

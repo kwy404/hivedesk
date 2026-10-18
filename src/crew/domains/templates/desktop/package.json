@@ -1,0 +1,13 @@
+{
+  "name": "my-desktop-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A small desktop app on Neutralinojs: HTML, CSS and JavaScript in a native window.",
+  "scripts": {
+    "test": "node --test",
+    "setup": "npx --yes @neutralinojs/neu update",
+    "start": "npx --yes @neutralinojs/neu run",
+    "build": "npx --yes @neutralinojs/neu build --release"
+  }
+}

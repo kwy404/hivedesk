@@ -1,0 +1,49 @@
+{
+  "id": "cafe-site",
+  "title": "Coffee shop website",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "cafe",
+    "coffee",
+    "coffee shop",
+    "drinks",
+    "brunch",
+    "local business"
+  ],
+  "when": "The user wants a site for a cafe, coffee shop, tea room or juice bar.",
+  "inputs": [
+    "cafe name",
+    "drinks and food with prices",
+    "hours and address",
+    "atmosphere"
+  ],
+  "prompt": "Goal: A cozy, fast page that shows the drinks, the hours and the vibe of the place.\nSteps:\n1. Start with the name, a one line promise about the coffee or the space, and the hours for today.\n2. Drinks menu grouped by espresso, filter, cold, non coffee; sizes and prices in a compact grid.\n3. A short section on the beans or the space (wifi, power outlets, quiet hours) if the request mentions work or study.\n4. Location and hours block with tel and directions links.\n5. Optional loyalty or events teaser with one clear action.\nQuality bar:\n- The page loads fast: compressed images, no heavy scripts.\n- Menu prices align and sizes are labeled.\n- The tone matches the place: friendly and short.\nPitfalls:\n- Coffee jargon with no explanation.\n- Tiny light gray text on photos.\n- Hours that disagree between sections.\nVerify:\n- [ ] One h1 with the cafe name.\n- [ ] Menu grouped with headings.\n- [ ] Hours and address in text, phone as tel link.\n- [ ] Works at 375 px.\nOutput: index.html and style.css with the menu, about and visit sections.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.meta-description",
+    "css.contrast",
+    "html.lazy-images"
+  ],
+  "examples": [
+    {
+      "input": "coffee shop site called Grão Fino",
+      "output": "h1 Grão Fino, drinks grid with espresso 6.00, latte 9.00, visit block with hours"
+    }
+  ],
+  "size": 296,
+  "version": 1
+}

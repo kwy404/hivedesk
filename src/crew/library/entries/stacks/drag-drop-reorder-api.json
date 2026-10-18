@@ -1,0 +1,38 @@
+{
+  "id": "drag-drop-reorder-api",
+  "title": "Reordering items with the HTML drag and drop API",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "drag and drop",
+    "drag",
+    "reorder",
+    "draggable",
+    "dragstart",
+    "move items",
+    "rearrange",
+    "priority order"
+  ],
+  "when": "Items in a list or grid must be reordered or moved between groups by dragging (playlists, priorities, photo order), with a keyboard alternative.",
+  "inputs": [
+    "the list and item ids",
+    "whether items move between groups"
+  ],
+  "prompt": "Goal: Native drag and drop reordering with a clear drop indicator, a keyboard path that does the same, and saved order.\nSteps:\n1. Set draggable=\"true\" on items with a visible handle; on dragstart call dataTransfer.setData(\"text/plain\", id) and set effectAllowed = \"move\".\n2. On dragover of the list call preventDefault() (required to allow a drop) and compute the insert index from pointer Y against item midpoints.\n3. Show one insertion line at that index, cleared on dragleave, drop and dragend.\n4. On drop read the id, move it in the state array, re-render, then persist the new order.\n5. Keyboard: each item has Move up and Move down buttons (or Alt+Arrow on a focused handle); keep focus on the moved item.\n6. Announce \"Moved Item 3 to position 1 of 5\" in a role=\"status\" region; touch screens lack these events, so the buttons are the mobile path.\nQuality bar:\n- Order changes only on drop, never mid drag.\n- Keyboard and pointer give identical results.\n- The new order survives a reload.\nPitfalls:\n- Forgetting preventDefault on dragover, so drop never fires.\n- Reading dataTransfer data during dragover, where it is protected.\n- Dragging as the only way to reorder.\nVerify:\n- [ ] dragover calls preventDefault.\n- [ ] Move buttons have names and type=\"button\".\n- [ ] Status region announces moves.\n- [ ] Order is saved after each change.\nOutput: js/reorder.js exporting enableReorder(list, { onChange }), plus the item markup with handles and move buttons.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.aria-live",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "quero arrastar as músicas para mudar a ordem da playlist",
+      "output": "draggable rows with insertion line, Move up and down buttons, \"Moved to position 2 of 9\" status"
+    }
+  ],
+  "size": 418,
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "id": "combobox-autocomplete",
+  "title": "Search combobox with suggestions",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "autocomplete",
+    "combobox",
+    "search suggestions",
+    "typeahead",
+    "autosuggest",
+    "search box",
+    "suggestions dropdown",
+    "select with search"
+  ],
+  "when": "The user wants a text field that suggests matching options as you type, such as cities, products or tags.",
+  "inputs": [
+    "the option list or data file",
+    "whether free text is allowed",
+    "what choosing does"
+  ],
+  "prompt": "Goal: A WAI-ARIA combobox with a listbox popup, arrow key selection, accent insensitive matching and an announced result count.\nSteps:\n1. <label for=\"q\">; <input id=\"q\" role=\"combobox\" aria-autocomplete=\"list\" aria-expanded=\"false\" aria-controls=\"q-list\" autocomplete=\"off\">; <ul id=\"q-list\" role=\"listbox\"> of <li role=\"option\" id>.\n2. Filter on input with a 150 ms debounce, case and accent insensitive (normalize(\"NFD\") and strip combining marks), at most 8 results.\n3. ArrowDown and ArrowUp set aria-activedescendant and aria-selected while focus stays in the input; Enter chooses, Escape closes, then clears.\n4. Highlight the match with a <mark> built by createElement, never innerHTML.\n5. Choose on pointerdown with preventDefault so the input does not blur first.\n6. A role=\"status\" region says 5 suggestions or No matches.\nQuality bar:\n- The popup width matches the input.\n- Prefix matches rank above inner matches.\n- The listbox closes on blur.\nPitfalls:\n- Moving real focus into the list, which breaks typing.\n- Fetching on every keystroke without a debounce.\n- Losing the typed text on Escape.\nVerify:\n- [ ] Combobox roles and aria-controls are set.\n- [ ] aria-expanded follows the popup.\n- [ ] Arrow keys update aria-activedescendant.\n- [ ] The count is announced.\nOutput: Field markup, combobox.css and combobox.js reading the options array or a local JSON file.",
+  "checks": [
+    "html.labels",
+    "html.aria-live",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "campo de cidade com sugestoes enquanto digita",
+      "output": "role combobox input, listbox of up to 8 cities, accent insensitive filter, aria-activedescendant, count in status"
+    }
+  ],
+  "size": 393,
+  "version": 1
+}

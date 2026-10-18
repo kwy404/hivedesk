@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pao da Vila Bakery</title>
+  <meta name="description" content="Fresh sourdough, croissants and cakes baked every morning in Vila Madalena.">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Bakery", "name": "Pao da Vila"}</script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a href="#main">Skip to the content</a>
+  <header><nav aria-label="Main"><a href="index.html" aria-current="page">Home</a></nav></header>
+  <main id="main">
+    <h1>Fresh bread every morning</h1>
+    <img src="bread.jpg" alt="A loaf of sourdough on a wooden board" width="600" height="400">
+    <h2>Order a cake</h2>
+    <form id="order">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required>
+      <label>Message <textarea name="message"></textarea></label>
+      <button type="submit">Send the order</button>
+    </form>
+    <p role="status" aria-live="polite" id="status"></p>
+    <table><caption>Hours</caption><tr><th>Day</th><th>Open</th></tr><tr><td>Mon</td><td>7 to 19</td></tr></table>
+  </main>
+</body>
+</html>

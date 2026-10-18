@@ -1,0 +1,35 @@
+{
+  "id": "smoke-test-release",
+  "title": "Smoke test right after a release",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "ops"
+  ],
+  "tags": [
+    "smoke test",
+    "sanity check",
+    "release check",
+    "deploy check",
+    "after release",
+    "quick test",
+    "critical path"
+  ],
+  "when": "A new version was just published or packaged and the user wants a fast check that the critical paths work.",
+  "inputs": [
+    "the released files or address",
+    "the top three user tasks"
+  ],
+  "prompt": "Goal: A 10 minute pass over the critical paths of the released build that decides keep or roll back.\nSteps:\n1. Test the released artifact (packaged folder or deployed address), never the working copy.\n2. Load: the entry page or script opens with no console errors and no 404 for CSS, JS, images or fonts.\n3. Critical paths: run the top three user tasks end to end (for example sign up, create an item, export).\n4. Data: saved data from the previous version still loads; a new record saves and survives a reload.\n5. Version: the shown version and the changelog entry match this release.\n6. Decide: all pass means keep; a broken critical path means roll back or hotfix now, with the reason written down.\nQuality bar:\n- Done in about 10 minutes.\n- Each step has pass or fail.\n- Decision and time recorded.\nPitfalls:\n- Testing the dev copy instead of the release.\n- Growing the smoke test into a full regression.\n- Ignoring console errors because the page looks fine.\nVerify:\n- [ ] Artifact identified.\n- [ ] Console and network clean.\n- [ ] Three critical paths passed.\n- [ ] Decision recorded.\nOutput: smoke-<version>.md with steps, results and the keep or roll back decision.",
+  "checks": [
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "acabei de publicar a versao 1.4, faz um teste rapido",
+      "output": "smoke-1.4.0.md: load ok, login ok, export fails with 404 on worker.js; decision: roll back"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

@@ -1,0 +1,52 @@
+{
+  "id": "recipe-box",
+  "title": "Recipe box with ingredient scaling",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "recipe box",
+    "recipes",
+    "recipe app",
+    "cookbook",
+    "ingredients",
+    "cooking",
+    "servings",
+    "meal"
+  ],
+  "when": "The user wants an app to save their own recipes, search them by name or ingredient, and scale ingredient amounts to a number of servings.",
+  "inputs": [
+    "recipes to start with",
+    "units used",
+    "tags or categories"
+  ],
+  "prompt": "Goal: Recipes that are quick to enter, easy to follow while cooking and scale to any serving count with friendly fractions.\nSteps:\n1. Recipe { id, name, servings, tags[], ingredients: [{ qty, unit, item }], steps[] }.\n2. logic.mjs: parseIngredient(\"1 1/2 cup flour\") handling whole, fraction and decimal; scale(recipe, servings); formatQty showing 1/4, 1/3, 1/2, 2/3, 3/4.\n3. List with search over name, ingredient and tag, plus tag filter buttons.\n4. Detail: servings stepper, ingredient checkboxes to tick while cooking, steps in an ol; Wake Lock request in Cook mode when supported, in try and catch.\n5. Editor: ingredients and steps as textareas one per line, parsed on save with errors naming the line.\n6. Persist in localStorage recipes.v1 guarded; print styles hide controls.\n7. test.mjs: mixed numbers, 4 to 6 servings, fraction output.\nQuality bar:\n- Amounts read like a cook writes them.\n- Steps readable from a distance in Cook mode.\n- Items without a quantity (salt to taste) survive scaling.\nPitfalls:\n- 0.333333 cups.\n- Scaling the stored recipe instead of the view.\n- Losing the original servings.\nVerify:\n- [ ] Ingredient checkboxes labeled.\n- [ ] Scaling tested.\n- [ ] Data reloads.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (parse, scale, format), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "caderno de receitas onde eu ajusto as porcoes",
+      "output": "search, tags, servings 4 to 6 turns \"1 1/2 xicara\" into \"2 1/4\""
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "input-validation-review",
+  "title": "Input validation review",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer"
+  ],
+  "tags": [
+    "input validation review",
+    "untrusted input",
+    "length limits",
+    "type checks",
+    "redos",
+    "unicode normalization",
+    "postmessage origin",
+    "parsing",
+    "security review"
+  ],
+  "when": "A review is needed of how an app validates input from forms, query strings, headers, files, messages and JSON bodies, looking for missing limits, loose types and risky parsing.",
+  "inputs": [
+    "entry points",
+    "validation code"
+  ],
+  "prompt": "Goal: A table of every input with expected type, limits and where it is validated, plus findings for gaps and risky patterns.\nSteps:\n1. Enumerate inputs per entry point: path params, query, headers the code reads (Host, X-Forwarded-For), cookies, JSON fields, files, CLI args, postMessage events.\n2. Check the server validates type, length, range, format and allowed values; client checks alone do not count.\n3. Find regexes with nested quantifiers such as (a+)+ or (.*)* run on user input (catastrophic backtracking); require anchors and a length cap before matching.\n4. Numbers: parseInt without radix, Number on empty strings, floats for money, negative or huge quantities, NaN slipping through comparisons.\n5. Strings: normalize Unicode (NFC or NFKC) before comparing names, strip control characters before logs and file names, cap length in bytes where storage counts bytes.\n6. postMessage handlers check event.origin against an exact list; Host and similar headers never build links.\nQuality bar:\n- Security relevant bad input is refused, not silently fixed.\n- Validation runs before any side effect.\n- Findings rank by what the input reaches (SQL, files, HTML, money).\nPitfalls:\n- Denylist filters such as stripping \"<script>\".\n- Validating one copy of a field and using another raw copy.\n- Trusting hidden fields and disabled inputs.\nVerify:\n- [ ] Every input has a row.\n- [ ] Regexes on input are linear or capped.\n- [ ] postMessage checks origin.\n- [ ] Findings have fix and severity.\nOutput: The input table and findings in SECURITY-AUDIT.md.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "review how my app validates what users send",
+      "output": "input table per entry point, ReDoS regex found, missing quantity bounds, postMessage origin fix"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

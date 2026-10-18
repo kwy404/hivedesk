@@ -1,0 +1,48 @@
+{
+  "id": "portfolio-creative",
+  "title": "Creative portfolio for visual work",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "portfolio",
+    "designer",
+    "illustrator",
+    "photographer",
+    "gallery",
+    "case study",
+    "personal site"
+  ],
+  "when": "The user wants a portfolio for visual work: design, illustration, art, architecture or photography.",
+  "inputs": [
+    "name and discipline",
+    "projects with images and short descriptions",
+    "contact and availability"
+  ],
+  "prompt": "Goal: Let the work speak: a fast grid of projects, a short intro and an easy way to get in touch.\nSteps:\n1. Intro in two lines: name, discipline and the kind of clients or projects wanted.\n2. Project grid with consistent aspect ratios; each card has an image, title, year and a one line role.\n3. A detail section per highlighted project: problem, approach, result, and two or three images.\n4. About block with a short bio and the services offered.\n5. Contact with email link and availability; no forms unless asked.\nQuality bar:\n- Images have width, height and descriptive alt text.\n- Grid stays readable at 375 px (one column) and fills wide screens.\n- Typography is restrained so the images lead.\nPitfalls:\n- Autoplay sliders that hide most of the work.\n- Enormous uncompressed images.\n- Clever navigation labels nobody understands.\nVerify:\n- [ ] Every img has alt, width and height.\n- [ ] Images after the first load lazily.\n- [ ] Keyboard focus is visible on every card link.\n- [ ] One h1.\nOutput: index.html with intro, grid, project details and contact; style.css with a responsive grid.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.img-dimensions",
+    "html.lazy-images",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "portfolio for an illustrator named Bia",
+      "output": "grid of 6 projects with year and role, a case study for a book cover, email link"
+    }
+  ],
+  "size": 313,
+  "version": 1
+}

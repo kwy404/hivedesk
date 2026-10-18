@@ -1,0 +1,43 @@
+{
+  "id": "jwt-token-pitfalls",
+  "title": "Bearer tokens and JWT pitfalls",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "jwt",
+    "token auth",
+    "bearer token",
+    "access token",
+    "refresh token",
+    "token expiry",
+    "alg none",
+    "hs256",
+    "backend",
+    "api auth"
+  ],
+  "when": "An API authenticates clients with bearer tokens or signed JWTs, or the user plans to, and verification, expiry, storage and revocation must be right.",
+  "inputs": [
+    "client types (browser, mobile, service)",
+    "token lifetimes"
+  ],
+  "prompt": "Goal: Short lived signed access tokens verified strictly, plus revocable refresh tokens, using node:crypto only.\nSteps:\n1. Ask first whether same site cookie sessions are enough; tokens suit mobile apps, services and separate API hosts.\n2. Sign HS256: createHmac(\"sha256\", secret) over base64url(header) + \".\" + base64url(payload); the secret comes from config and has at least 32 random bytes.\n3. Verify: exactly 3 parts, header.alg must equal the server constant \"HS256\", recompute and compare with timingSafeEqual, then check exp, nbf, iss and aud with 60 s leeway.\n4. Access tokens live 5 to 15 minutes and carry sub, role, iat, exp and jti only; anyone can read the payload, so no personal data.\n5. Refresh tokens are random opaque strings stored hashed; rotate on each use and revoke the whole family when an old one comes back.\n6. In browsers keep the refresh token in an HttpOnly Secure cookie and the access token in memory.\nQuality bar:\n- Bad tokens get 401 with WWW-Authenticate: Bearer error=\"invalid_token\".\n- A kid header picks the key from a small map, so keys can rotate.\n- Tests cover tampered payload, alg none, expired and wrong audience.\nPitfalls:\n- Accepting alg none, or using a public key as an HMAC secret.\n- Day long tokens with no revocation.\n- Decoding without verifying and trusting the role claim.\nVerify:\n- [ ] alg is fixed by the server.\n- [ ] exp is required.\n- [ ] Refresh tokens are hashed and rotated.\n- [ ] No token in localStorage or URLs.\nOutput: auth/tokens.mjs with sign and verify, refresh routes, test/tokens.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "sec.no-secrets",
+    "sec.weak-crypto",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "add JWT login to my API for the mobile app",
+      "output": "HS256 with fixed alg, 10 min access tokens, rotating hashed refresh tokens, reuse detection"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

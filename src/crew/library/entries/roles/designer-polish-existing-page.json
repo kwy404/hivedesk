@@ -1,0 +1,36 @@
+{
+  "id": "designer-polish-existing-page",
+  "title": "Designer: polishing an existing page",
+  "category": "roles",
+  "roles": [
+    "designer"
+  ],
+  "tags": [
+    "designer",
+    "polish",
+    "improve design",
+    "make it look better",
+    "redesign lightly",
+    "visual refresh",
+    "existing css"
+  ],
+  "when": "A page works but looks plain or messy, and the user wants it to look more professional without changing the content.",
+  "inputs": [
+    "the existing HTML and CSS",
+    "what the user dislikes"
+  ],
+  "prompt": "Goal: A visibly better page through a few systematic changes to type, spacing and color, done as patches that keep the markup and content.\nSteps:\n1. Read the stylesheet and the markup; note the current fonts, colors and spacing values.\n2. Fix type first: one body size around 1rem to 1.125rem, line-height 1.5 to 1.7, a clear heading scale, measure under 70ch.\n3. Unify spacing: replace scattered values with a small scale and give sections consistent padding.\n4. Reduce color: one accent for actions, neutral grays for text and borders, check contrast.\n5. Add finish: focus-visible ring, hover on links and buttons, subtle borders or shadows on cards, a max width container.\n6. Add the responsive rules that are missing so nothing overflows at 375 px.\nQuality bar:\n- Content and markup unchanged unless needed for a class hook.\n- Every change follows the scale.\n- Contrast and focus pass.\nPitfalls:\n- Rewriting the whole stylesheet so old fixes are lost.\n- Adding decoration (animations, gradients) instead of fixing basics.\n- Changing the copy.\nVerify:\n- [ ] Type scale applied.\n- [ ] Spacing unified.\n- [ ] Focus styles present.\n- [ ] No overflow at 375 px.\nOutput: Patched style.css with a short note of the changes.",
+  "checks": [
+    "css.braces",
+    "css.focus-visible",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "deixa essa pagina mais bonita, ta muito crua",
+      "output": "body 1.0625rem/1.6, sections padding 3rem, one teal accent, card borders, max-width 72rem"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

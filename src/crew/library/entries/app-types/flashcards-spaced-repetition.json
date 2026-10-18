@@ -1,0 +1,55 @@
+{
+  "id": "flashcards-spaced-repetition",
+  "title": "Flashcards with spaced repetition",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "flashcards",
+    "flash cards",
+    "spaced repetition",
+    "study",
+    "memorize",
+    "vocabulary",
+    "learning",
+    "leitner",
+    "review"
+  ],
+  "when": "The user wants flashcards to study vocabulary or facts, where missed cards return sooner and known cards later.",
+  "inputs": [
+    "deck content",
+    "review intervals",
+    "import format"
+  ],
+  "prompt": "Goal: A study loop that shows only due cards, schedules them by a box system and can be driven fully by keyboard.\nSteps:\n1. Card { id, front, back, box: 1 to 5, due }; intervals per box 0, 1, 3, 7, 16 days.\n2. logic.mjs with now passed in: review(card, good, now) moves up a box or back to 1 and sets due; dueCards(cards, now) sorted by due; stats(cards).\n3. Study view: front, a Show answer button with aria-expanded, then Again and Good buttons; Space flips, 1 and 2 answer.\n4. Flip with a CSS transform transition; under prefers-reduced-motion swap instantly.\n5. Deck editor with labeled front and back fields, edit and delete; bulk import lines \"front ; back\".\n6. Session end: \"12 reviewed, 3 to repeat, next due tomorrow\" in aria-live; save in localStorage cards.v1 guarded.\n7. test.mjs with a fixed now: promotion, reset on Again, due order.\nQuality bar:\n- Only due cards appear in a session.\n- Answers are graded honestly: the back shows before grading.\n- Text is large enough to read at arm length.\nPitfalls:\n- Using Date.now inside logic, which makes tests flaky.\n- Box above 5 or below 1.\n- Losing progress mid session.\nVerify:\n- [ ] Keyboard flips and grades.\n- [ ] Reduced motion rule exists.\n- [ ] Due dates move forward on Good.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (scheduler), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "cartoes de estudo para vocabulario de ingles",
+      "output": "Leitner boxes 1 to 5, Show answer then Again/Good, bulk import \"dog ; cachorro\""
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

@@ -1,0 +1,47 @@
+{
+  "id": "one-page-scroll-site",
+  "title": "Single page site with anchor navigation",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "one page",
+    "single page",
+    "anchor links",
+    "sticky nav",
+    "smooth scroll",
+    "sections"
+  ],
+  "when": "The user wants all content on one long page with a nav that jumps to sections.",
+  "inputs": [
+    "sections in order",
+    "nav labels"
+  ],
+  "prompt": "Goal: A long page with a sticky nav, sections that land under the header and a working active state.\nSteps:\n1. Give every section an id that matches its nav link.\n2. Sticky header with nav; add scroll-margin-top on sections equal to the header height.\n3. Smooth scroll only inside a prefers-reduced-motion: no-preference query.\n4. Highlight the current section with IntersectionObserver setting aria-current, not scroll listeners.\n5. On phones, collapse the nav into a menu button with aria-expanded.\nQuality bar:\n- Anchors land with the heading visible.\n- Works without JavaScript, only the active state needs it.\n- Menu toggle is keyboard friendly.\nPitfalls:\n- Headings hidden under the sticky bar.\n- Forced smooth scrolling.\n- Scroll handlers on every pixel.\nVerify:\n- [ ] Every nav href matches a section id.\n- [ ] scroll-margin-top present.\n- [ ] Reduced motion respected.\n- [ ] Scripts parse.\nOutput: index.html, style.css and nav.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.nav",
+    "html.unique-ids",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "site de uma página com menu fixo",
+      "output": "sections home, services, prices, contact; sticky nav; active link via observer"
+    }
+  ],
+  "size": 269,
+  "version": 1
+}

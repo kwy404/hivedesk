@@ -1,0 +1,36 @@
+{
+  "id": "review-copy",
+  "title": "Review interface and page copy",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "writer"
+  ],
+  "tags": [
+    "copy review",
+    "proofread",
+    "spelling",
+    "grammar",
+    "typos",
+    "text review",
+    "content review"
+  ],
+  "when": "The user wants the text of a page or app checked: spelling, grammar, clarity, consistent terms and tone, and leftover filler.",
+  "inputs": [
+    "the pages",
+    "the brand voice, if defined"
+  ],
+  "prompt": "Goal: A copy review listing every typo, unclear line, inconsistent term and leftover filler with its location and corrected wording.\nSteps:\n1. Extract all visible text per page: headings, body, buttons, labels, alt text, title and meta description, error and success messages.\n2. Scan for leftovers: filler paragraphs, sample names, duplicated sentences, the wrong business name or phone.\n3. Correctness: spelling, grammar, punctuation, units, one date format, consistent heading capitalization.\n4. Clarity: sentences over 25 words, jargon, vague buttons; propose shorter wording.\n5. Consistency: one term per concept, the same prices, hours and product names on every page, one tone.\n6. Fit: text fits its box at 375 px and long words do not break buttons.\nQuality bar:\n- Each finding has location, current text, proposed text.\n- Facts cross checked between pages.\n- Page language matches its lang attribute.\nPitfalls:\n- Rewriting a voice the user chose.\n- Skipping alt and meta text.\n- Fixing a typo on one page but not its copies.\nVerify:\n- [ ] All text sources scanned.\n- [ ] Leftovers searched.\n- [ ] Facts compared across pages.\n- [ ] Proposed text given for each finding.\nOutput: copy-review.md with a table: page, location, current, proposed, reason.",
+  "checks": [
+    "md.h1",
+    "html.lang"
+  ],
+  "examples": [
+    {
+      "input": "revisa os textos do meu site antes de lancar",
+      "output": "hours differ (home 8 to 18, contact 9 to 18), 6 typos, button Submit becomes Send message"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

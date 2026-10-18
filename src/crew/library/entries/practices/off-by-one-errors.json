@@ -1,0 +1,37 @@
+{
+  "id": "off-by-one-errors",
+  "title": "Find and fix off by one errors",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "off by one",
+    "loop",
+    "index",
+    "boundary",
+    "range",
+    "array",
+    "slice",
+    "pagination",
+    "bug"
+  ],
+  "when": "Results are missing the first or last item, a loop runs one time too many, pages overlap, or dates are a day off.",
+  "inputs": [
+    "the loop or range code",
+    "an example of wrong and expected output"
+  ],
+  "prompt": "Goal: Correct boundaries with a stated convention (inclusive start, exclusive end) and tests at both edges.\nSteps:\n1. Write down the intended range in words and numbers: first index, last index, count.\n2. Adopt half open ranges [start, end): for (let i = 0; i < arr.length; i++), slice(start, end), end = start + count.\n3. Check every <= against the length; it usually reads one past the end.\n4. For pagination use start = (page - 1) * size and slice(start, start + size); state whether pages start at 1.\n5. For dates, remember months are 0 based in Date and that day counts between dates need midnight in the same time zone.\n6. Test the empty list, one item, exactly one page and one page plus one.\nQuality bar:\n- The convention is consistent across the module.\n- Edge cases have tests or a quick script.\n- No magic minus one adjustments without a comment.\nPitfalls:\n- Fixing one edge by adding 1 and breaking the other.\n- Mixing 0 based and 1 based numbers in one function.\n- Using length - 1 as an exclusive end.\nVerify:\n- [ ] First and last items are present.\n- [ ] Counts match the expected numbers.\n- [ ] Empty input returns an empty result.\n- [ ] Files parse.\nOutput: The fixed code and a small set of edge case checks.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "a paginação repete o último item na próxima página",
+      "output": "slice(start, start + size) with start = (page - 1) * size; tests for pages 1, 2 and last"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

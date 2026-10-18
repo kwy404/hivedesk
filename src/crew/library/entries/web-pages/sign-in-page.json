@@ -1,0 +1,50 @@
+{
+  "id": "sign-in-page",
+  "title": "Sign in and sign up page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "login",
+    "sign in",
+    "sign up",
+    "register",
+    "password",
+    "authentication",
+    "account"
+  ],
+  "when": "The user wants the front end of a login or registration page.",
+  "inputs": [
+    "what the account is for",
+    "fields needed",
+    "the backend endpoint if any"
+  ],
+  "prompt": "Goal: An accessible, password manager friendly sign in and sign up screen.\nSteps:\n1. One form per task with a clear h1; a link switches between sign in and sign up.\n2. Fields with labels and autocomplete: email (username), current-password or new-password.\n3. A show password toggle as a button with aria-pressed, not a checkbox hack.\n4. Errors in text next to the field and a summary at the top, announced in an aria-live region.\n5. Post to the real endpoint the user gave; never store passwords in localStorage.\nQuality bar:\n- Works with password managers.\n- Error messages do not reveal whether an email exists.\n- Large touch targets.\nPitfalls:\n- Disabling paste in password fields.\n- Placeholder as label.\n- Saving credentials on the client.\nVerify:\n- [ ] autocomplete attributes set.\n- [ ] Labels on every input.\n- [ ] Toggle is a button with type.\n- [ ] No localStorage for passwords.\nOutput: login.html, style.css and auth.js for the UI behavior.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.button-type",
+    "html.aria-live",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "tela de login e cadastro",
+      "output": "sign in form with email and password, autocomplete set, show password button, link to sign up"
+    }
+  ],
+  "size": 273,
+  "version": 1
+}

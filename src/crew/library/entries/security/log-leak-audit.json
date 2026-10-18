@@ -1,0 +1,40 @@
+{
+  "id": "log-leak-audit",
+  "title": "Audit logs for secrets and personal data",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "ops"
+  ],
+  "tags": [
+    "log audit",
+    "secrets in logs",
+    "personal data",
+    "pii in logs",
+    "token leak",
+    "log retention",
+    "redaction review",
+    "privacy",
+    "security"
+  ],
+  "when": "The user wants to see what a running app really writes to logs, error reports and debug output, and make sure passwords, tokens, keys and personal data do not leak there.",
+  "inputs": [
+    "log files or output",
+    "logger setup"
+  ],
+  "prompt": "Goal: Evidence of what each log stream holds today, a list of leaks with source lines, fixes and a retention rule.\nSteps:\n1. Collect samples: run the app locally through login, a failing request, an upload and a crash; capture stdout, stderr, log files and error report payloads.\n2. Search samples for authorization:, cookie:, password, token=, api_key, \"Bearer \", emails, phone numbers, card like digit runs and whole bodies.\n3. Trace each hit to its log call; usual sources: req or headers logged whole, errors carrying config, tokens in URL queries, query debug output.\n4. Fix at the source: log ids not objects, give the logger serializer a redact list (authorization, cookie, password, token, secret), move tokens from URLs to headers.\n5. Personal data: keep user ids, not emails or names; truncate addresses where needed; turn debug and query logs off in production.\n6. Retention: rotate with a maximum age (for example 14 days) and limit who can read logs.\nQuality bar:\n- Each leak shows a masked sample and the code line.\n- A planted fake token proves redaction in a test.\n- Outside error reporting gets the same redaction.\nPitfalls:\n- Grepping code only and missing what libraries print.\n- Redacting by key name while the value sits inside a message string.\n- Unmasked samples pasted into the report.\nVerify:\n- [ ] Samples from each stream were searched.\n- [ ] Each leak is traced to a line.\n- [ ] The redaction test passes.\n- [ ] Retention is documented.\nOutput: A logging section in SECURITY-AUDIT.md, the redaction fix, test/redact.test.mjs.",
+  "checks": [
+    "md.h1",
+    "sec.no-secrets",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "meus logs mostram o header authorization dos usuarios",
+      "output": "log samples searched, sources traced, redact list in serializer, token moved out of query, 14 day retention"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

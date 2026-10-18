@@ -1,0 +1,34 @@
+{
+  "id": "user-stories",
+  "title": "Writing user stories for a job",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "user story",
+    "user stories",
+    "as a user",
+    "persona",
+    "story",
+    "who and why",
+    "needs"
+  ],
+  "when": "The request describes what people want to do, and the plan should capture it as stories that guide tasks and criteria.",
+  "inputs": [
+    "who uses the result",
+    "what they want to do"
+  ],
+  "prompt": "Goal: Three to six user stories in the form \"As a ..., I want ..., so that ...\", each with one or two checkable criteria.\nSteps:\n1. Name the real users from the request: the shop customer, the owner, the student. Avoid \"the user\" when there are two kinds.\n2. Write one story per goal, not per screen: \"As a customer, I want to see today hours, so that I know if I can come now\".\n3. Make the \"so that\" part a real reason; if none exists, the story is probably not needed.\n4. Add one or two criteria per story in observable terms.\n5. Order stories by value to the main user and mark which ones the first version covers.\n6. Map each story to the task that delivers it.\nQuality bar:\n- Each story has a named user, an action and a reason.\n- Stories describe goals, not implementation.\n- Each story has criteria.\nPitfalls:\n- Stories that are tasks in disguise (\"As a dev, I want a JSON file\").\n- One huge story covering the whole app.\n- Reasons that repeat the want.\nVerify:\n- [ ] Three to six stories.\n- [ ] Each has criteria.\n- [ ] Each maps to a task.\n- [ ] First version stories are marked.\nOutput: A Stories block in the plan summary with criteria under each story.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "app pra alunos marcarem aulas com a professora",
+      "output": "As a student, I want to pick a free slot, so that I book without messages; As the teacher, I want ..."
+    }
+  ],
+  "size": 333,
+  "version": 1
+}

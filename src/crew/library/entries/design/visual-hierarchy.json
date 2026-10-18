@@ -1,0 +1,37 @@
+{
+  "id": "visual-hierarchy",
+  "title": "Visual hierarchy for a screen",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "visual hierarchy",
+    "hierarchy",
+    "emphasis",
+    "focal point",
+    "scanning",
+    "busy page",
+    "stand out"
+  ],
+  "when": "A page or screen feels flat or busy and the user wants the important things to stand out in the right order.",
+  "inputs": [
+    "the screen and its purpose",
+    "the one action that matters most"
+  ],
+  "prompt": "Goal: A screen where readers see the main message first, the main action second and details third, by choices you can name.\nSteps:\n1. Rank the content: write the top three things a visitor must notice, in order, before touching CSS.\n2. Rank one gets the strongest size and weight, rank two the accent (the primary button), rank three plain body text.\n3. De-emphasize instead of emphasizing more: muted secondary text, smaller labels, lighter borders.\n4. Use position: rank one early on the reading path (F pattern for text pages, Z pattern for sparse sections).\n5. Keep a full type step between levels and at most two signals (size, weight, color) on one element.\n6. Squint test: zoom out to 25 percent; the ranking should survive.\nQuality bar:\n- One focal point per section.\n- Accent only on actions and key data.\n- Muted text still passes 4.5 to 1.\nPitfalls:\n- Bold everywhere, so nothing is bold.\n- Several accent colors.\n- Decoration louder than content.\nVerify:\n- [ ] The ranking is in the reply.\n- [ ] Rank one uses the largest heading.\n- [ ] Only primary actions use the accent fill.\n- [ ] Contrast passes.\nOutput: Updated style.css (and markup order if needed) plus the three line ranking in the reply.",
+  "checks": [
+    "css.contrast",
+    "html.h1",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "minha pagina parece baguncada, nada se destaca",
+      "output": "rank 1 h1 offer at step 5, rank 2 Book now accent button, rank 3 details in muted text"
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

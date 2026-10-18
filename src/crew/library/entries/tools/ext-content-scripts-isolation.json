@@ -1,0 +1,39 @@
+{
+  "id": "ext-content-scripts-isolation",
+  "title": "Content scripts and the isolated world",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "security"
+  ],
+  "tags": [
+    "content script",
+    "isolated world",
+    "modify web page",
+    "inject script",
+    "page dom",
+    "shadow dom",
+    "browser extension",
+    "executescript"
+  ],
+  "when": "A browser extension must read or change the pages the user visits, and the user needs to know what a content script can and cannot touch.",
+  "inputs": [
+    "sites to run on",
+    "what to change on the page",
+    "when to run"
+  ],
+  "prompt": "Goal: A content script limited to the sites it needs, editing the DOM safely, keeping its styles contained and treating page data as untrusted.\nSteps:\n1. Static: \"content_scripts\": [{ \"matches\": [\"https://example.com/*\"], \"js\": [\"content.js\"], \"css\": [\"content.css\"], \"run_at\": \"document_idle\" }] with exact hosts.\n2. On demand: chrome.scripting.executeScript({ target: { tabId }, files: [\"content.js\"] }) after a click, using \"scripting\" plus \"activeTab\" and no host permission.\n3. Isolated world: the script shares the DOM with the page but not JavaScript globals.\n4. Mount UI in a host element with attachShadow({ mode: \"open\" }) so page CSS and your CSS cannot collide; prefix ids and classes.\n5. Build nodes with createElement and textContent; never innerHTML with page or remote strings.\n6. Single page sites swap content without reloads: a MutationObserver on a narrow container with a debounced handler.\n7. Guard double injection: if (!globalThis.__extLoaded) { globalThis.__extLoaded = true; init(); }.\nQuality bar:\n- Runs only on listed sites.\n- Pages look unchanged except the added UI.\nPitfalls:\n- \"<all_urls>\" for a feature used on one site.\n- Trusting values read from the page DOM.\n- Observing document.body with subtree true and heavy work per mutation.\nVerify:\n- [ ] Matches name exact hosts.\n- [ ] No innerHTML with outside strings.\n- [ ] Shadow root or prefixed styles.\n- [ ] Double injection guard.\nOutput: content.js, content.css and the content_scripts or scripting setup in manifest.json.",
+  "checks": [
+    "ext.manifest-v3",
+    "js.safe-dom",
+    "ext.no-remote-code"
+  ],
+  "examples": [
+    {
+      "input": "minha extensao precisa adicionar um botao nas paginas de um site",
+      "output": "content_scripts limited to one host, shadow root UI, textContent only, MutationObserver with debounce, double injection guard"
+    }
+  ],
+  "size": 432,
+  "version": 1
+}

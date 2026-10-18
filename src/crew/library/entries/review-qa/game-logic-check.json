@@ -1,0 +1,37 @@
+{
+  "id": "game-logic-check",
+  "title": "Game logic check with unit tests",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "game logic",
+    "game rules",
+    "collision",
+    "scoring",
+    "game bugs",
+    "seeded random",
+    "game loop"
+  ],
+  "when": "A game has rules, scoring, collisions or randomness, and the user wants its logic verified by reading the code and testing pure functions.",
+  "inputs": [
+    "the game code",
+    "the rules as the user describes them"
+  ],
+  "prompt": "Goal: Rule by rule verification of the game core with node:test on pure functions, seeded randomness and frame independent timing.\nSteps:\n1. Separate logic from drawing: rules live in pure functions (step(state, input, dt) returns the next state) in a module tests can import.\n2. Make randomness repeatable: pass a seeded generator (mulberry32 with a fixed seed) into the logic instead of Math.random.\n3. Test each rule: points per event, win and lose, level thresholds, collisions at exact edges (touching, 1 px overlap, tunneling at high speed).\n4. Timing: movement scales by dt so 30 and 120 fps travel the same distance; clamp dt to 0.1 s after a tab switch.\n5. Bounds: no runaway score, entities removed off screen, arrays that do not grow forever.\n6. Run node --test and mark each rule tested pass, tested fail or untested.\nQuality bar:\n- Every rule has a test.\n- Tests are deterministic.\n- Edge collisions included.\nPitfalls:\n- Testing through the canvas instead of the state.\n- Math.random inside logic, making failures unrepeatable.\n- Movement counted in frames.\nVerify:\n- [ ] Logic module imports without the DOM.\n- [ ] Seeded random used.\n- [ ] A test per rule exists and passes.\n- [ ] dt is clamped.\nOutput: The logic module (logic.mjs), test/game.test.mjs, and a rule status list in the reply.",
+  "checks": [
+    "file.test",
+    "js.syntax",
+    "js.no-var"
+  ],
+  "examples": [
+    {
+      "input": "check if the scoring and collisions of my breakout game are right",
+      "output": "logic.mjs step(), 11 tests: brick hit +10, corner hit, ball tunneling at speed 900 fails, dt clamp"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

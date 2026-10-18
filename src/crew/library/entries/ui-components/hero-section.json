@@ -1,0 +1,43 @@
+{
+  "id": "hero-section",
+  "title": "Hero section with headline and action",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "hero",
+    "hero section",
+    "banner",
+    "above the fold",
+    "headline",
+    "header image",
+    "masthead",
+    "intro section"
+  ],
+  "when": "The user wants the top section of a page: a big headline, a supporting line, an action button and an image or background.",
+  "inputs": [
+    "the offer in one sentence",
+    "the primary action and its target",
+    "an image file if any"
+  ],
+  "prompt": "Goal: A hero that states the offer in one headline, shows one primary action and paints fast without layout shift.\nSteps:\n1. <section aria-labelledby=\"hero-title\"> with the h1, one paragraph of at most 25 words, a primary link styled as a button and an optional quiet secondary link.\n2. Size the h1 with clamp(2rem, 5vw + 1rem, 3.75rem); cap lines near 20ch for the h1 and 60ch for the paragraph.\n3. One column on phones; from about 860 px a two column grid with align-items: center.\n4. The image gets width, height, alt and fetchpriority=\"high\", never loading=\"lazy\" above the fold; add srcset when sizes exist.\n5. Text over a photo gets a dark gradient overlay and a solid background-color fallback to keep 4.5 to 1 contrast.\n6. Keep vertical padding moderate so the button shows on a 375 by 667 screen.\nQuality bar:\n- The headline names the result for the visitor, not a slogan.\n- The button reads as a verb plus an object.\n- The section still looks finished if the image fails.\nPitfalls:\n- Lazy loading the hero image, which delays the largest paint.\n- Autoplaying background video with no pause control.\n- Two equally loud buttons.\nVerify:\n- [ ] Exactly one h1, inside the hero.\n- [ ] The image has alt, width and height.\n- [ ] The button is visible without scrolling at 375 px.\n- [ ] Text over images keeps 4.5 to 1.\nOutput: The hero markup at the top of main and its rules in style.css.",
+  "checks": [
+    "html.h1",
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.link-text",
+    "css.media-query",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "hero section for my yoga studio",
+      "output": "h1 \"Calm, strong mornings in Pinheiros\", one line, Book a class button, photo with width and height on the right"
+    }
+  ],
+  "size": 398,
+  "version": 1
+}

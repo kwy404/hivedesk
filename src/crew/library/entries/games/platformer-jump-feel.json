@@ -1,0 +1,38 @@
+{
+  "id": "platformer-jump-feel",
+  "title": "Platformer jump feel with coyote time and jump buffer",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "platformer",
+    "jump",
+    "coyote time",
+    "jump buffer",
+    "variable jump",
+    "game feel",
+    "player controller",
+    "player movement",
+    "game"
+  ],
+  "when": "A platformer jump feels stiff or unfair and needs forgiving timing windows, variable height and snappy falls.",
+  "inputs": [
+    "jump height in tiles",
+    "time to apex"
+  ],
+  "prompt": "Goal: Jumps that do what the player meant, with timing windows measured in seconds, not frames.\nSteps:\n1. coyoteTimer is set to 0.1 s every tick the player stands on ground and drops by dt in the air.\n2. jumpBuffer is set to 0.12 s when jump is pressed and drops by dt every tick.\n3. When jumpBuffer > 0 and coyoteTimer > 0: vy = -JUMP_SPEED, then set both timers to 0 so it fires once.\n4. Variable height: releasing jump while vy < 0 multiplies vy by 0.5 one time (jump cut).\n5. Falling uses gravity * 1.6; near the apex (Math.abs(vy) < 40 with jump held) use gravity * 0.5 for a short hang.\n6. Derive constants from design: with jumpHeight h of 3.5 tiles and timeToApex t of 0.38 s, g = 2 * h / (t * t) and JUMP_SPEED = g * t.\n7. Corner correction: when the head clips a ceiling edge by 4 px or less, nudge sideways instead of stopping.\n8. Landing squash and a dust puff give feedback; both are off with reduced motion.\nQuality bar:\n- Pressing jump 100 ms before landing still jumps.\n- Running off a ledge and pressing jump 80 ms late still jumps.\n- A tap gives a short hop and holding gives the full height.\nPitfalls:\n- Timing counted in frames, so the windows shrink on fast screens.\n- A double jump sneaking through the coyote window after a jump.\n- Reading onGround from before the move, which drops jumps.\nVerify:\n- [ ] node:test simulates early and late presses and expects a jump.\n- [ ] Peak height matches 3.5 tiles within 5 percent.\nOutput: js/player.mjs with the tuning constants and test/player.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "o pulo do meu jogo de plataforma parece duro e falha às vezes",
+      "output": "coyote 100 ms, buffer 120 ms, jump cut, fall gravity, constants from height and apex time"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

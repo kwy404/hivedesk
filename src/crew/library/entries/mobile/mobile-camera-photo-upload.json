@@ -1,0 +1,40 @@
+{
+  "id": "mobile-camera-photo-upload",
+  "title": "Camera capture and photo upload from a phone",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev"
+  ],
+  "tags": [
+    "camera",
+    "photo upload",
+    "image upload",
+    "capture",
+    "resize image",
+    "mobile app",
+    "exif",
+    "upload progress",
+    "take picture"
+  ],
+  "when": "Users take or pick photos on a phone and upload them; full size photos are too heavy, rotate wrong or fail on weak signal.",
+  "inputs": [
+    "max image size needed",
+    "upload endpoint",
+    "single or multiple photos"
+  ],
+  "prompt": "Goal: A photo picker that opens the camera, shrinks and re-encodes the image on the device, and uploads it with progress and retry.\nSteps:\n1. <label for=\"photo\">Add photo</label><input id=\"photo\" type=\"file\" accept=\"image/*\" capture=\"environment\">; drop capture to let users choose the gallery.\n2. On change read file = input.files[0]; reject files over 25 MB and types not starting with \"image/\".\n3. Decode with createImageBitmap(file, { imageOrientation: \"from-image\" }) so rotation from the camera is applied.\n4. Draw onto a canvas scaled so the long side is at most 1600 px, then canvas.toBlob(cb, \"image/jpeg\", 0.8); re-encoding also drops GPS EXIF data.\n5. Show a preview with URL.createObjectURL(blob) and revoke it when replaced.\n6. Upload with FormData through XMLHttpRequest so xhr.upload.onprogress can drive a <progress> element; set a timeout and offer retry.\n7. When offline, save the blob in IndexedDB and send it later.\n8. Some phones deliver HEIC files; if decoding fails, upload the original and let the server convert.\nQuality bar:\n- Uploads are usually under 500 KB.\n- The photo appears upright in the preview and on the server.\nPitfalls:\n- Reading the whole file with FileReader into a data URL, which uses far more memory.\n- Leaking object URLs on every pick.\n- Keeping location EXIF data the user did not mean to share.\nVerify:\n- [ ] The input has a label and accept=\"image/*\".\n- [ ] Resize caps the long side.\n- [ ] Progress and retry work on throttled network.\nOutput: photo.js, the input markup and upload progress styles.",
+  "checks": [
+    "html.labels",
+    "js.async-errors",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "usuario tira foto pelo celular e envia pro sistema, mas fica muito pesado",
+      "output": "capture input, createImageBitmap with orientation, 1600 px JPEG 0.8, XHR progress and retry"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

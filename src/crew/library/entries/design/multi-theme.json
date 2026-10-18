@@ -1,0 +1,38 @@
+{
+  "id": "multi-theme",
+  "title": "Multiple color themes with data-theme",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "themes",
+    "theme switcher",
+    "multiple themes",
+    "color themes",
+    "data-theme",
+    "high contrast",
+    "theme picker"
+  ],
+  "when": "The user wants several themes (light, dark, high contrast, seasonal or brand variants) that visitors can pick.",
+  "inputs": [
+    "which themes",
+    "the semantic token names"
+  ],
+  "prompt": "Goal: Themes as token overrides on [data-theme] values, switchable at runtime, remembered, and each passing contrast.\nSteps:\n1. Keep one set of semantic token names; each theme only reassigns them: [data-theme=\"dark\"] { --color-bg: #15161a; --color-text: #e8e6e3 }.\n2. With no saved choice follow the system with a prefers-color-scheme: dark block; a choice sets data-theme on the html element.\n3. Add a high contrast theme (text 15 to 1 or more, visible borders, no shadows) and leave forced-colors mode alone.\n4. Build the picker as a labeled select or radio group (System, Light, Dark, High contrast), not unlabeled color dots.\n5. Save the choice in localStorage inside try and catch, and apply it from a tiny head script before first paint to avoid a flash.\n6. Set color-scheme per theme so native controls follow.\nQuality bar:\n- Every theme passes 4.5 to 1 for text.\n- Switching needs no reload.\n- Charts and images stay legible in each theme.\nPitfalls:\n- A duplicated stylesheet per theme.\n- Blocked storage in private mode breaking the page.\n- A light flash before the saved theme applies.\nVerify:\n- [ ] Theme blocks only override tokens.\n- [ ] A dark theme exists.\n- [ ] The picker has a label.\n- [ ] Storage access is guarded.\nOutput: Theme blocks in tokens.css or style.css and theme.js for the picker.",
+  "checks": [
+    "css.dark-scheme",
+    "css.contrast",
+    "html.labels",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "let users pick light, dark or high contrast",
+      "output": "select with System, Light, Dark, High contrast; [data-theme] token overrides; choice saved with try and catch"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

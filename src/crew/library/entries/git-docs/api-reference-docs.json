@@ -1,0 +1,39 @@
+{
+  "id": "api-reference-docs",
+  "title": "HTTP API reference documentation",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "api reference",
+    "api docs",
+    "endpoints",
+    "http api",
+    "request response",
+    "rest docs",
+    "documentation"
+  ],
+  "when": "The user wants reference documentation for an HTTP API: endpoints, parameters, request and response bodies, errors.",
+  "inputs": [
+    "the server routes",
+    "authentication method",
+    "example data"
+  ],
+  "prompt": "Goal: A reference where each endpoint has method, path, parameters, example request and response, and errors, all matching the code.\nSteps:\n1. Intro: base URL, content type, authentication, rate limits and the shared error format.\n2. One ## section per resource and one ### per endpoint titled like GET /api/tasks/:id.\n3. Parameters table per endpoint: name, location (path, query, body), type, required, description.\n4. Example request (method, path, headers, body) and example response with status, in fenced blocks tagged http and json.\n5. List the error statuses each endpoint can return with the code and meaning.\n6. Keep examples realistic and consistent (same ids and names across sections).\nQuality bar:\n- Every route in the code is documented.\n- JSON examples are valid.\n- Field names match the code exactly.\nPitfalls:\n- Documenting fields the server never returns.\n- Examples with trailing commas.\n- Missing error cases.\nVerify:\n- [ ] Each endpoint has request and response examples.\n- [ ] Code fences are closed.\n- [ ] Starts with a # heading.\n- [ ] Has at least two ## sections.\nOutput: docs/api.md (or an API section in the README).",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "md.sections",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "documente os endpoints da minha API",
+      "output": "# Tasks API, auth, ## Tasks with GET, POST, PATCH, DELETE, request examples and error tables"
+    }
+  ],
+  "size": 328,
+  "version": 1
+}

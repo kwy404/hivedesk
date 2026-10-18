@@ -1,0 +1,38 @@
+{
+  "id": "zero-downtime-deploy-systemd",
+  "title": "Zero downtime deploy on a single server with systemd",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "backend"
+  ],
+  "tags": [
+    "zero downtime",
+    "deploy",
+    "single server",
+    "systemd",
+    "release folders",
+    "symlink switch",
+    "rolling restart",
+    "vps"
+  ],
+  "when": "One server runs the app under systemd and the user wants to ship a new version without dropping requests, with an instant way back.",
+  "inputs": [
+    "app start command",
+    "proxy in front",
+    "data and upload folders"
+  ],
+  "prompt": "Goal: Versioned release folders, an atomic symlink switch and two instances, so one serves while the other restarts.\nSteps:\n1. Layout: /srv/app/releases/20261017-1530/ per release, /srv/app/shared/ for .env and uploads, /srv/app/current pointing at the live one.\n2. Template unit app@.service: WorkingDirectory=/srv/app/current, ExecStart=/usr/bin/node server.mjs, Environment=PORT=%i; run app@3001 and app@3002.\n3. The proxy balances both ports and retries the other upstream on connection errors.\n4. deploy.sh copies the build into a new release folder, installs from the lockfile there, links shared files and smoke starts it on a spare port.\n5. Atomic switch: ln -s releases/NEW /srv/app/current.tmp && mv -T /srv/app/current.tmp /srv/app/current.\n6. systemctl restart app@3001, wait for /readyz 200, then restart app@3002.\n7. Keep 5 releases; rollback is the same switch to the previous folder plus both restarts.\n8. The app drains in flight requests on SIGTERM; TimeoutStopSec=20.\nQuality bar:\n- A request loop during deploy sees no failures.\n- Rollback takes under a minute.\n- Schema changes stay compatible with the previous release.\nPitfalls:\n- ln -sfn over the live link, which deletes it for a moment.\n- Restarting both instances at once.\n- Installing dependencies inside the live folder.\nVerify:\n- [ ] Template unit takes the port from %i.\n- [ ] The switch uses mv -T.\n- [ ] Each restart waits for readiness.\n- [ ] Last 5 releases kept.\nOutput: deploy/app@.service, deploy/deploy.sh and a Deploy section in README.md.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "deploy without downtime on my single vps",
+      "output": "releases/ folders, current symlink swapped with mv -T, app@3001 and app@3002 restarted one by one after /readyz, deploy.sh keeping 5 releases"
+    }
+  ],
+  "size": 437,
+  "version": 1
+}

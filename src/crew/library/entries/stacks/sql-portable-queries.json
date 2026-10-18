@@ -1,0 +1,39 @@
+{
+  "id": "sql-portable-queries",
+  "title": "Portable SQL schema and queries",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "sql",
+    "database",
+    "query",
+    "queries",
+    "schema",
+    "tables",
+    "join",
+    "select",
+    "index",
+    "migration"
+  ],
+  "when": "The user needs SQL tables, queries, joins or reports that should run on common relational databases without vendor features.",
+  "inputs": [
+    "entities and relations",
+    "reports needed"
+  ],
+  "prompt": "Goal: Standard SQL with clear constraints and indexes, parameterized queries, and readable joins and aggregates.\nSteps:\n1. Schema: snake_case names, primary key id, NOT NULL by default, foreign keys with ON DELETE rules, CHECK for ranges, UNIQUE for natural keys.\n2. Portable types: INTEGER, VARCHAR(n), TEXT, DECIMAL(12,2) for money, DATE, TIMESTAMP in UTC.\n3. Queries list columns explicitly, use JOIN ... ON with aliases, and filter in WHERE before GROUP BY.\n4. Aggregates: GROUP BY all plain columns, HAVING for totals, COALESCE for null sums, COUNT(DISTINCT x).\n5. Paginate with ORDER BY a unique key and keyset filters (WHERE id > ?) plus LIMIT.\n6. Index foreign keys and frequent filter columns; use placeholders for every value and transactions for multi statement changes.\nQuality bar:\n- A comment states the intent above each query.\n- Null checks use IS NULL.\n- Migrations are numbered and run in order.\nPitfalls:\n- Concatenating user input into SQL.\n- Floats for money.\n- Vendor syntax such as backtick quoting or AUTO_INCREMENT when portability was asked.\nVerify:\n- [ ] Primary and foreign keys declared.\n- [ ] No SELECT * in app queries.\n- [ ] Values passed as parameters.\n- [ ] Indexes match frequent filters.\nOutput: schema.sql, migrations/001_*.sql and queries.sql with named, commented queries.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "tabelas de alunos, cursos e matrículas com relatório por curso",
+      "output": "students, courses, enrollments with FKs, report query counting students per course with LEFT JOIN"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

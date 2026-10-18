@@ -1,0 +1,40 @@
+{
+  "id": "desktop-localization",
+  "title": "Localizing a desktop app",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "localization",
+    "translation",
+    "i18n",
+    "language",
+    "desktop app",
+    "plural rules",
+    "rtl",
+    "locale",
+    "menus"
+  ],
+  "when": "The desktop app must ship in several languages, including menus, dialogs, tray items and native message boxes, with the OS language as the default.",
+  "inputs": [
+    "languages to support",
+    "where strings appear (menus, dialogs, tray)"
+  ],
+  "prompt": "Goal: All visible text, including native dialog titles and tray labels, comes from locale files, the OS language is picked first and the user can switch.\nSteps:\n1. Files resources/locales/en.json and pt-BR.json with nested keys: { \"menu\": { \"file\": \"File\" }, \"dialog\": { \"unsaved\": \"Save changes to {name}?\" } }.\n2. Default language: the saved setting, else navigator.language matched to the closest file (pt-BR, then pt, then en).\n3. t(key, vars) looks up the key, falls back to English, replaces {name} placeholders and reports missing keys once in the log.\n4. Plurals with new Intl.PluralRules(lang).select(n) and keys like \"items.one\" and \"items.other\".\n5. Dates and numbers with Intl.DateTimeFormat and Intl.NumberFormat; never build them by hand.\n6. Native strings too: pass t() results to showMessageBox, showOpenDialog titles, filter names and setTray menu items; rebuild the tray after a language change.\n7. For right to left languages set document.dir = \"rtl\" and use logical CSS (margin-inline-start).\n8. A test checks every locale file has the same keys as en.json.\nQuality bar:\n- No hard coded English left in the UI or native dialogs.\n- Layouts survive strings 40 percent longer.\nPitfalls:\n- Joining sentence parts in code, which breaks word order.\n- Forgetting to translate shortcut hints and file filter names.\nVerify:\n- [ ] Locale files parse and share keys.\n- [ ] Dialog and tray text uses t().\n- [ ] html lang matches the current language.\nOutput: resources/locales/*.json, i18n.js and a key parity test.",
+  "checks": [
+    "json.valid",
+    "html.lang",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "traduzir meu app desktop para inglês e espanhol",
+      "output": "locales/*.json with nested keys, t() with fallback, PluralRules, translated dialogs and tray, key parity test"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

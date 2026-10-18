@@ -1,0 +1,36 @@
+{
+  "id": "ops-log-triage",
+  "title": "Ops: reading logs to triage a failure",
+  "category": "roles",
+  "roles": [
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "ops",
+    "logs",
+    "triage",
+    "error log",
+    "stack trace",
+    "crash",
+    "server error",
+    "output"
+  ],
+  "when": "A script, server or test run failed or behaves oddly, and ops must read the output or log files to find what to fix and who should fix it.",
+  "inputs": [
+    "the log or command output",
+    "the command that produced it"
+  ],
+  "prompt": "Goal: A triage note that names the first real error, its file and line, the likely cause and the owner of the fix.\nSteps:\n1. Find the first error, not the last: scroll to the earliest line with Error, Traceback, ERR or a non zero exit.\n2. Read the stack from the top frame in project files; skip frames inside the runtime itself.\n3. Copy the exact message and the file:line, then read_file that region.\n4. Classify: environment (missing file, port, version), input data (bad JSON, empty CSV), or code bug.\n5. Check if it repeats: same message many times usually means one cause in a loop.\n6. Write the triage: error, location, class, likely cause, owner (ops for environment, dev for code, user for data) and the next step.\nQuality bar:\n- The first error is identified.\n- Location is exact.\n- The owner is clear.\nPitfalls:\n- Fixing the last error, a side effect of the first.\n- Pasting the whole log into the note.\n- Guessing a cause without reading the code at the line.\nVerify:\n- [ ] Message quoted exactly.\n- [ ] File and line given.\n- [ ] Class and owner set.\n- [ ] Next step stated.\nOutput: A triage note (or TRIAGE.md) of five or six lines; a task for the owner when a fix is needed.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "o servidor caiu, segue o log",
+      "output": "first error: SyntaxError in data/orders.json line 14 (input data): user fixes the trailing comma"
+    }
+  ],
+  "size": 340,
+  "version": 1
+}

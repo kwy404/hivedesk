@@ -1,0 +1,51 @@
+{
+  "id": "sliding-tiles-merge-game",
+  "title": "Sliding number tiles merge puzzle",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "sliding tiles",
+    "merge tiles",
+    "number puzzle",
+    "tile game",
+    "puzzle game",
+    "swipe game",
+    "merge game"
+  ],
+  "when": "The user wants the 4x4 puzzle where all tiles slide in one direction and equal numbers merge into their double, with score and undo.",
+  "inputs": [
+    "board size",
+    "target tile"
+  ],
+  "prompt": "Goal: Exact merge rules, responsive swipes and quick animations on a 4x4 board.\nSteps:\n1. logic.mjs slideRow(row): compact, merge equal neighbors once per move (2 2 2 2 gives 4 4), return { row, gained }; move(board, dir) by rotating and reusing slideRow; canMove(board).\n2. Only after a move that changed the board, spawn a 2 (90 percent) or 4 in a random empty cell with injectable random.\n3. Input: arrows and WASD, pointer swipes (30 px threshold, dominant axis), and on screen buttons.\n4. Tiles as absolutely positioned elements moved with transform transitions of 120 ms; none under prefers-reduced-motion.\n5. Score, best (localStorage guarded) and one step Undo; \"Moved left, plus 16\" and game over in aria-live.\n6. Reaching the target tile (default 2048) shows a win message with Keep going.\n7. test.mjs: merge rules, no spawn without change, canMove on a full board.\nQuality bar:\n- A tile merges once per move.\n- Swipes do not scroll the page.\n- Tile values readable with contrast at every color.\nPitfalls:\n- Merging 4 4 8 into 16 in one move.\n- Spawning after a move that changed nothing.\n- Rendering by rebuilding innerHTML.\nVerify:\n- [ ] Merge cases tested.\n- [ ] Status live.\n- [ ] Reduced motion rule exists.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (board rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a sliding number merge puzzle game",
+      "output": "4x4 board, swipe and arrows, score and best, undo, win at the target tile"
+    }
+  ],
+  "size": 379,
+  "version": 1
+}

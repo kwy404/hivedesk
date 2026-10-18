@@ -1,0 +1,35 @@
+{
+  "id": "verify-acceptance-criteria",
+  "title": "Verify acceptance criteria one by one",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "reviewer"
+  ],
+  "tags": [
+    "acceptance criteria",
+    "requirements",
+    "definition of done",
+    "user story",
+    "verify done",
+    "traceability",
+    "criteria check"
+  ],
+  "when": "A task is reported done and each acceptance criterion must be checked against the actual files, not assumed.",
+  "inputs": [
+    "the acceptance criteria",
+    "the delivered files"
+  ],
+  "prompt": "Goal: A criteria table where each item is marked pass, fail or not testable, with the evidence (file, line, output) that proves it.\nSteps:\n1. Copy the criteria verbatim from the task; if there are none, derive 3 to 6 from the request and mark them derived.\n2. Split compound criteria (works on mobile and saves data) into single checkable statements.\n3. Pick the most direct check for each: read a file, run a command, run a test, or follow manual steps.\n4. Run it and record the evidence: file and line, command output, or the observed result.\n5. Pass only with evidence; fail with what is missing; not testable with the reason and what would make it testable.\n6. Summarize n of m passing and list the fix needed for each fail.\nQuality bar:\n- No pass without evidence.\n- Criteria wording is not bent to fit the result.\n- Each fail is specific enough to become a task.\nPitfalls:\n- Trusting the worker summary over the files.\n- Merging several criteria into one pass.\n- Quietly skipping hard to check criteria.\nVerify:\n- [ ] Every criterion has a row.\n- [ ] Each row has evidence.\n- [ ] Summary counts are right.\n- [ ] Fail rows have a fix.\nOutput: acceptance.md with the table (criterion, check, evidence, status) and the summary.",
+  "checks": [
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "confere se a tarefa cumpriu todos os criterios",
+      "output": "5 of 6 pass; fail: \"form shows success message\" has no status region in contact.html; fix listed"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

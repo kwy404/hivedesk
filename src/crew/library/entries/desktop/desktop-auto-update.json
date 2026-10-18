@@ -1,0 +1,40 @@
+{
+  "id": "desktop-auto-update",
+  "title": "Auto update strategy for a desktop app and its limits",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "auto update",
+    "updater",
+    "new version",
+    "desktop app",
+    "update check",
+    "release channel",
+    "neutralinojs",
+    "semver"
+  ],
+  "when": "The desktop app should tell users about new versions or update itself, and the user needs a plan that is honest about what can update in place.",
+  "inputs": [
+    "where releases are hosted",
+    "current version",
+    "how often to check"
+  ],
+  "prompt": "Goal: A check for updates flow with a manifest file, a clear prompt and a written note on what the updater can and cannot replace.\nSteps:\n1. Host update.json next to releases: { \"applicationId\": \"com.acme.notesdesk\", \"version\": \"1.3.0\", \"resourcesURL\": \"https://example.com/r/1.3.0/resources.neu\", \"data\": { \"notes\": \"Fixes export\" } }.\n2. Check at most once a day and from a menu item: const m = await Neutralino.updater.checkForUpdates(url); compare m.version with NL_VERSION using a semver compare.\n3. Show the notes and ask; on yes call Neutralino.updater.install(), then Neutralino.app.restartProcess().\n4. Limit: this replaces resources.neu only (HTML, CSS, JS); a new Neutralinojs binary or installer change needs a full new installer.\n5. For full releases, open the download page with Neutralino.os.open(url) and let the user run the signed installer.\n6. Serve over HTTPS only and publish a SHA-256 of each file; failed checks are silent, never blocking start.\n7. Offer an \"auto check\" setting and show the version in About.\nQuality bar:\n- Update checks never delay startup.\n- A failed update leaves the old version working.\nPitfalls:\n- Downloading over plain HTTP, which lets a network attacker ship code.\n- Promising silent full updates without a signed installer and an update service.\nVerify:\n- [ ] update.json parses with version and resourcesURL.\n- [ ] Install runs only after user consent.\n- [ ] README has an update limits section.\nOutput: update.json sample, updater.js and README update notes.",
+  "checks": [
+    "json.valid",
+    "js.async-errors",
+    "file.readme"
+  ],
+  "examples": [
+    {
+      "input": "meu app desktop precisa avisar quando tiver versão nova",
+      "output": "update.json manifest, daily checkForUpdates, install after consent, README note on binary updates"
+    }
+  ],
+  "size": 432,
+  "version": 1
+}

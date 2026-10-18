@@ -1,0 +1,52 @@
+{
+  "id": "todo-list-app",
+  "title": "Todo list app with filters and saved tasks",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "todo",
+    "to do list",
+    "todo app",
+    "tasks",
+    "task list",
+    "checklist",
+    "task manager"
+  ],
+  "when": "The user wants a todo list, task list or checklist app to add, check off, edit and delete tasks that stay after a reload.",
+  "inputs": [
+    "extra task fields (due date, priority)",
+    "filters wanted",
+    "visual style"
+  ],
+  "prompt": "Goal: A fast task list where adding, completing, editing and filtering work by mouse and keyboard and nothing is lost on reload.\nSteps:\n1. Model a task as { id, text, done, createdAt } in one array; ids from crypto.randomUUID().\n2. logic.mjs pure functions returning new arrays: addTask (trims, rejects empty), toggleTask, editTask, removeTask, clearDone, filterTasks(list, all | active | done).\n3. Form with a labeled text input and a submit button; Enter adds, the input clears and keeps focus.\n4. Each task is an li with a checkbox, its text in a label, Edit (Enter saves, Escape cancels) and Delete with an aria-label naming the task.\n5. Filter buttons with aria-pressed and a \"3 tasks left\" counter in an aria-live=\"polite\" element.\n6. Save to localStorage key tasks.v1 after each change inside try and catch; on load parse in try and catch and fall back to [].\n7. test.mjs with node:assert: add (empty rejected), toggle, edit, remove, every filter.\nQuality bar:\n- Task text goes in with textContent, so <b>hi</b> shows literally.\n- Every action works by keyboard with visible focus.\n- Long task text wraps at 375 px.\nPitfalls:\n- Rebuilding the list from an innerHTML string.\n- Focus lost after delete; move it to the next task or the input.\n- Saving only on page unload.\nVerify:\n- [ ] Reload keeps tasks and done state.\n- [ ] Spaces-only text adds nothing.\n- [ ] Counter sits in an aria-live region.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (DOM and storage), logic.mjs (pure task functions), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.button-type",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "faz um app de lista de tarefas que salva no navegador",
+      "output": "form + list with checkboxes, filters All/Active/Done, \"2 tasks left\", tasks.v1 in localStorage"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

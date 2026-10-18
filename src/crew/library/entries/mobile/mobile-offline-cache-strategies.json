@@ -1,0 +1,40 @@
+{
+  "id": "mobile-offline-cache-strategies",
+  "title": "Offline caching strategy per request type",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev"
+  ],
+  "tags": [
+    "offline",
+    "cache strategy",
+    "service worker",
+    "stale while revalidate",
+    "network first",
+    "cache first",
+    "mobile app",
+    "runtime caching",
+    "flaky network"
+  ],
+  "when": "The user has a service worker but needs the right caching rule for each kind of request on spotty phone connections: assets, images, API calls and pages.",
+  "inputs": [
+    "list of asset types",
+    "API base path",
+    "how fresh data must be"
+  ],
+  "prompt": "Goal: sw.js routes each fetch to a fitting strategy so the app is fast on a weak signal and honest about stale data.\nSteps:\n1. In the fetch listener classify: request.mode === \"navigate\", request.destination (\"script\", \"style\", \"font\", \"image\"), or url.pathname.startsWith(\"/api/\").\n2. Hashed build files (app.3f9a.js): cache first from \"static-v3\"; a new hash means a new URL, so no expiry is needed.\n3. Images: stale while revalidate from \"img-v1\"; after each put trim the oldest keys so at most 60 remain.\n4. API GET: network first with a 4 second timeout using Promise.race, then the cached copy; the page shows \"saved copy\" with the time it stored beside the data.\n5. Navigations: try the network, fall back to caches.match(\"./offline.html\") or the cached shell.\n6. Skip non GET requests, responses where response.ok is false, and URLs carrying tokens in the query.\n7. Wrap every handler body in try/catch and always return a Response, even new Response(\"\", { status: 504 }).\nQuality bar:\n- Each cache has a name, a version and a size limit.\n- The user can tell fresh data from saved data.\nPitfalls:\n- Opaque cross origin responses, which count several MB each against quota.\n- Caching a 500 error page and serving it forever.\n- A timeout that never clears and keeps the request hanging.\nVerify:\n- [ ] sw.js parses and every branch returns a Response.\n- [ ] Image cache trimming runs after put.\n- [ ] Slow 3G throttling still renders the page from cache.\nOutput: sw.js with a strategy per route and offline.html.",
+  "checks": [
+    "pwa.service-worker",
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "meu app no celular fica travado quando o sinal cai, como cachear a API?",
+      "output": "sw.js: cache first for hashed assets, SWR images capped at 60, API network first with 4 s timeout"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

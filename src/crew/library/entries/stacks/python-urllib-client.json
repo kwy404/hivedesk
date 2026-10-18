@@ -1,0 +1,40 @@
+{
+  "id": "python-urllib-client",
+  "title": "HTTP client in Python with urllib.request",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "http",
+    "urllib",
+    "api client",
+    "download",
+    "request",
+    "json",
+    "get",
+    "post"
+  ],
+  "when": "A Python script must call an HTTP API or download a file using only the standard library.",
+  "inputs": [
+    "endpoints",
+    "auth method",
+    "expected responses"
+  ],
+  "prompt": "Goal: A small client that sets timeouts and headers, handles HTTP and network errors, decodes JSON safely and retries politely.\nSteps:\n1. Build urllib.request.Request(url, data=body, headers={\"Accept\": \"application/json\", \"User-Agent\": \"tool/1.0\"}, method=\"POST\").\n2. Query strings with urllib.parse.urlencode; JSON bodies with json.dumps(payload).encode(\"utf-8\") plus Content-Type: application/json.\n3. Always urlopen(req, timeout=10) in a with block.\n4. Catch HTTPError first (it has .code and .read()), then URLError, then TimeoutError; raise one ApiError with URL, status and reason.\n5. Decode with resp.headers.get_content_charset() or utf-8, then json.loads inside try.\n6. Retry GET on URLError, 429 and 5xx up to 3 times (1, 2, 4 s), honoring Retry-After; stream downloads with shutil.copyfileobj to a .part file, then rename.\nQuality bar:\n- No call can hang forever.\n- Errors name the URL, status and a short reason.\n- Tokens come from environment variables.\nPitfalls:\n- Catching URLError before HTTPError (HTTPError is its subclass).\n- Disabling certificate checks to silence an error.\n- Reading a large download fully into memory.\nVerify:\n- [ ] Every urlopen has a timeout.\n- [ ] HTTPError and URLError handled.\n- [ ] No bare except.\n- [ ] Main guard present.\nOutput: client.py with request helpers and a main() showing one call.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard"
+  ],
+  "examples": [
+    {
+      "input": "python script that fetches exchange rates from an API daily",
+      "output": "client.py get_json(url) with timeout 10, HTTPError/URLError handling, 3 retries"
+    }
+  ],
+  "size": 383,
+  "version": 1
+}

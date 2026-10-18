@@ -1,0 +1,39 @@
+{
+  "id": "semver-bump-decision",
+  "title": "Choose the version bump from public surface changes",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "breaking change",
+    "public api",
+    "version bump",
+    "deprecation",
+    "backward compatibility",
+    "pre release",
+    "api surface",
+    "release planning"
+  ],
+  "when": "Before a release the user is unsure whether a change is breaking, or wants a written rule for what counts as public API in a library, CLI or service.",
+  "inputs": [
+    "diff since the last release",
+    "kind of project",
+    "current version"
+  ],
+  "prompt": "Goal: A written list of the public surface and a bump chosen by checking every change against it.\nSteps:\n1. VERSIONING.md names the public surface: exports and their parameters, CLI flags and subcommands, exit codes, stdout formats scripts parse, config keys, env vars, HTTP routes, JSON fields, supported runtimes.\n2. Collect changes from the diff (git diff v1.3.0..HEAD --stat), reading each changed export and option table.\n3. Major: removed or renamed items, a newly required parameter, a noticeable default change, a new output format, a raised minimum runtime.\n4. Minor: optional parameters, flags, routes or fields clients can ignore, and new deprecation warnings.\n5. Patch: fixes restoring documented behavior, docs, refactors and speedups with identical results.\n6. Deprecate first: warn once on stderr in a minor, name the replacement, remove in the next major.\n7. Risky majors ship pre releases (2.0.0-rc.1); build metadata after + never affects ordering.\n8. Under 0.y.z write your own rule, such as breaking changes bump the minor.\nQuality bar:\n- Each changelog line maps to a reason for the bump.\n- A fix that users relied on is discussed, not slipped into a patch.\nPitfalls:\n- Calling a change internal when users parse its output.\n- Major bumps for marketing instead of compatibility.\n- Dropping a runtime in a patch.\nVerify:\n- [ ] VERSIONING.md lists the surface.\n- [ ] Every change classified.\n- [ ] Deprecations name a replacement.\n- [ ] package.json has the chosen version.\nOutput: VERSIONING.md, the chosen version and a CHANGELOG entry grouped by impact.",
+  "checks": [
+    "md.changelog",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "renomeei uma flag da CLI, isso e major ou minor?",
+      "output": "VERSIONING.md listing flags and exit codes as public, the rename classified as major, deprecation alias suggested for a minor instead"
+    }
+  ],
+  "size": 450,
+  "version": 1
+}

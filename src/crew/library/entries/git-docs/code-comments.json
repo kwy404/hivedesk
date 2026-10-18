@@ -1,0 +1,37 @@
+{
+  "id": "code-comments",
+  "title": "When and how to write code comments",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "reviewer",
+    "writer"
+  ],
+  "tags": [
+    "comments",
+    "code comments",
+    "explain code",
+    "document code",
+    "inline comments",
+    "why comments",
+    "readability"
+  ],
+  "when": "The user asks to comment code, explain tricky parts in the source, or clean up noisy or outdated comments.",
+  "inputs": [
+    "the source files",
+    "who will maintain them"
+  ],
+  "prompt": "Goal: Comments that explain intent, constraints and non obvious decisions, with code made clear enough that the rest need none.\nSteps:\n1. First improve names and extract small functions so obvious comments become unnecessary.\n2. Write comments for the why: business rules, workarounds and their reason, performance choices, security assumptions, units and invariants.\n3. Put a short header comment at the top of each module saying what it owns and what it must not do.\n4. Link to the source of rules or bugs (spec section, issue number) instead of copying long text.\n5. Mark known gaps with a clear tag and owner context (\"NOTE: retries are capped at 3 because the upstream rate limits\").\n6. Delete comments that restate the code, are wrong, or hold commented out code.\nQuality bar:\n- Each comment would still be true after a refactor of the lines below.\n- Short, full sentences.\n- Same language as the rest of the codebase.\nPitfalls:\n- Comments that describe what the next line does.\n- Outdated comments contradicting the code.\n- Comment banners and decoration.\nVerify:\n- [ ] No comment merely restates a line.\n- [ ] Tricky logic has a why comment.\n- [ ] No commented out code remains.\n- [ ] Files still parse.\nOutput: The source files with improved comments.",
+  "checks": [
+    "js.syntax",
+    "py.balanced"
+  ],
+  "examples": [
+    {
+      "input": "comente o código para outro dev entender",
+      "output": "module headers added, why comments on the tax rule and the retry cap, 20 noise comments removed"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "color-contrast-fix",
+  "title": "Fix color contrast",
+  "category": "practices",
+  "roles": [
+    "designer",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "contrast",
+    "color contrast",
+    "wcag",
+    "readability",
+    "low contrast",
+    "accessibility",
+    "text color",
+    "gray text"
+  ],
+  "when": "Text or controls are hard to read, a check reports low contrast, or the user wants colors to meet WCAG AA.",
+  "inputs": [
+    "the stylesheet",
+    "brand colors to keep"
+  ],
+  "prompt": "Goal: Every text and background pair reaches 4.5 to 1 (3 to 1 for large text and UI parts) while keeping the brand feel.\nSteps:\n1. List each foreground and background pair in use: body text, muted text, links, buttons, placeholders, disabled states, text on images.\n2. Compute each ratio with the WCAG formula from relative luminance; mark pairs under 4.5 to 1.\n3. Fix by darkening the text or lightening the background in the same hue; adjust lightness, keep hue and saturation close.\n4. For brand colors too light for text, keep them for fills and borders and add a darker text variant (--brand-ink).\n5. Text on photos gets a solid or gradient scrim behind it.\n6. Store the fixed colors as custom properties on :root and replace hard coded values.\nQuality bar:\n- Muted text still reaches 4.5 to 1.\n- Focus rings and input borders reach 3 to 1.\n- Links are distinguishable without color alone (underline).\nPitfalls:\n- Light gray placeholder text as the only hint.\n- Checking only the default state, not hover and disabled.\n- Using opacity on text, which lowers contrast unpredictably.\nVerify:\n- [ ] Each text pair in the CSS reaches 4.5 to 1.\n- [ ] Colors come from custom properties.\n- [ ] Links are underlined or otherwise marked.\n- [ ] Dark mode pairs are checked too if present.\nOutput: The updated stylesheet with a table of old and new pairs and their ratios.",
+  "checks": [
+    "css.contrast",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "o texto cinza está difícil de ler",
+      "output": "#9aa0a6 on white (2.6:1) changed to #5f6368 (6.3:1); brand yellow kept for fills only"
+    }
+  ],
+  "size": 391,
+  "version": 1
+}

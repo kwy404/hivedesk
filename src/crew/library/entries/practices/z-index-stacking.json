@@ -1,0 +1,36 @@
+{
+  "id": "z-index-stacking",
+  "title": "Fix z-index and stacking context problems",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "z-index",
+    "stacking context",
+    "overlay",
+    "dropdown behind",
+    "modal behind",
+    "layers",
+    "css",
+    "position"
+  ],
+  "when": "A dropdown, tooltip, sticky header or modal shows behind other content even with a huge z-index.",
+  "inputs": [
+    "the HTML and CSS of the overlapping parts"
+  ],
+  "prompt": "Goal: Predictable layering from a small named scale, with every overlay in the right stacking context.\nSteps:\n1. Remember z-index only works on positioned elements (relative, absolute, fixed, sticky) and flex or grid children.\n2. Find the stacking contexts: ancestors with transform, filter, opacity below 1, isolation, or position plus z-index trap their children.\n3. Compare siblings at the level where the two elements diverge; a child can never rise above its context parent.\n4. Move overlays (modal, toast) to be direct children of body, or use the dialog element, which renders in the top layer.\n5. Define a scale as custom properties: --z-dropdown: 10, --z-sticky: 20, --z-overlay: 30, --z-modal: 40, --z-toast: 50.\n6. Remove the 9999 values and use the scale everywhere.\nQuality bar:\n- Every z-index uses the scale.\n- No more than five layers.\n- The order is documented in one place.\nPitfalls:\n- Escalating numbers (999, 99999) that never fix a context problem.\n- Adding transform for an animation and breaking a child dropdown.\n- overflow: hidden on a parent clipping the dropdown.\nVerify:\n- [ ] The dropdown appears above the content below it.\n- [ ] The modal covers the sticky header.\n- [ ] No z-index over 100 remains.\n- [ ] CSS braces balance.\nOutput: Updated CSS with the z-index scale on :root and the changed selectors.",
+  "checks": [
+    "css.braces",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "meu dropdown fica atrás do card mesmo com z-index 9999",
+      "output": "the card had transform; moved the hover lift to the inner element and used --z-dropdown"
+    }
+  ],
+  "size": 382,
+  "version": 1
+}

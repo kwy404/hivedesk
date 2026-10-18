@@ -1,0 +1,36 @@
+{
+  "id": "qa-severity-calibration",
+  "title": "QA: calibrating severity",
+  "category": "roles",
+  "roles": [
+    "qa",
+    "reviewer"
+  ],
+  "tags": [
+    "qa",
+    "severity",
+    "high medium low",
+    "priority",
+    "calibrate",
+    "blocker",
+    "nitpick"
+  ],
+  "when": "QA must rate findings so the crew fixes what matters and the job is not blocked by taste.",
+  "inputs": [
+    "the findings",
+    "acceptance criteria",
+    "check levels"
+  ],
+  "prompt": "Goal: Severities that follow fixed rules, so the same problem always gets the same rating and only real failures block.\nSteps:\n1. high: a criterion fails, the page or script is broken (does not parse, throws, blank screen), an error level check fails, data can be lost, or a control cannot be used by keyboard.\n2. medium: a criterion is partly met, a warn level check fails in a way users notice, an edge case breaks (empty list, long text).\n3. low: polish, wording, spacing, naming, small inconsistencies.\n4. Ask \"would the user notice this in the first minute of use?\" to move between medium and low.\n5. Only high and medium make passed false; low findings ride along as suggestions.\n6. Keep low findings to three at most so they do not bury real ones.\nQuality bar:\n- Each rating matches a rule.\n- Taste is never high.\n- Broken basics are never low.\nPitfalls:\n- Marking everything high to look strict.\n- Missing labels or contrast failures rated low.\n- Failing a job only for low findings.\nVerify:\n- [ ] Every high cites a criterion, crash or error check.\n- [ ] passed is false only with high or medium.\n- [ ] At most three lows.\n- [ ] Same issue, same rating.\nOutput: Findings with calibrated severity and a passed value consistent with them.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "findings: missing alt, button color off brand, script error",
+      "output": "script error high, missing alt high (img-alt check), color low"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

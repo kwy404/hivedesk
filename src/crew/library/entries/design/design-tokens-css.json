@@ -1,0 +1,37 @@
+{
+  "id": "design-tokens-css",
+  "title": "Design tokens as CSS custom properties",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "design tokens",
+    "tokens.css",
+    "token tiers",
+    "semantic tokens",
+    "primitive tokens",
+    "design system",
+    "css variables"
+  ],
+  "when": "The user wants a token file or a small design system: named values for color, type, space, radius, shadow and motion.",
+  "inputs": [
+    "existing palette and scales, if any"
+  ],
+  "prompt": "Goal: A tokens.css with a primitive tier and a semantic tier that every other rule reads, so a retheme edits one file.\nSteps:\n1. Tier 1, primitives with neutral names: --blue-600: #1d4ed8; --gray-900: #111827; --size-4: 1rem; --radius-2: 6px.\n2. Tier 2, semantic aliases naming the role: --color-text: var(--gray-900); --color-action: var(--blue-600); --space-card: var(--size-5).\n3. Components read only semantic tokens; a component knob gets a local property with fallback: .btn { background: var(--btn-bg, var(--color-action)) }.\n4. Name as category, role, variant, state: --color-action-hover, --color-border-subtle; no look based names (--light-blue) in tier 2.\n5. Group the file by category with a comment header each and keep it under about 80 tokens.\n6. Link tokens.css before style.css with a relative path.\nQuality bar:\n- No raw hex, px spacing or shadow outside tokens.css.\n- Every semantic token resolves to a primitive.\n- Names read clearly in the inspector.\nPitfalls:\n- One flat tier, so a theme change means renaming everything.\n- Hundreds of unused tokens.\n- Tokens used as media query breakpoints, which does not work.\nVerify:\n- [ ] tokens.css defines both tiers on :root.\n- [ ] style.css uses var() for colors and sizes.\n- [ ] Component fallbacks exist.\n- [ ] tokens.css loads first.\nOutput: tokens.css with both tiers and the stylesheet updated to read from it.",
+  "checks": [
+    "css.custom-properties",
+    "css.braces",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "crie um arquivo de design tokens para o projeto",
+      "output": "tokens.css: primitives blue-50..900, gray, size-1..9; semantic color-text, color-action, space-card"
+    }
+  ],
+  "size": 395,
+  "version": 1
+}

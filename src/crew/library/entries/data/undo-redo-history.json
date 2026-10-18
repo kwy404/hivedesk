@@ -1,0 +1,36 @@
+{
+  "id": "undo-redo-history",
+  "title": "Undo and redo history",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "undo",
+    "redo",
+    "history",
+    "ctrl+z",
+    "revert change",
+    "command pattern",
+    "editor",
+    "step back"
+  ],
+  "when": "An editor, drawing tool, form builder or list app needs Undo and Redo with buttons and keyboard shortcuts.",
+  "inputs": [
+    "what counts as one change",
+    "size of the state"
+  ],
+  "prompt": "Goal: Reliable undo and redo over app state with a bounded history, grouped edits, and shortcuts that leave text fields alone.\nSteps:\n1. Pick a model: snapshots of immutable state for small state, or commands with do and undo for large or costly changes.\n2. Keep past and future stacks; a new change pushes to past and clears future; cap past at 100.\n3. Merge same kind changes within 500 ms (typing in one field, one drag) into one entry.\n4. Undo pops past, pushes the current state to future and renders; Redo reverses; update disabled state and labels (\"Undo delete item\").\n5. Shortcuts Ctrl or Cmd+Z, Ctrl+Shift+Z and Ctrl+Y, skipped when focus is in an input or textarea.\n6. Never record selection, scroll or view changes.\nQuality bar:\n- Undo always restores exactly the previous state.\n- Buttons say what they will undo.\n- Memory stays bounded.\nPitfalls:\n- Snapshots holding references to mutable state.\n- One history step per keystroke.\n- Overriding native undo inside text fields.\nVerify:\n- [ ] Future cleared on new change.\n- [ ] History capped.\n- [ ] Shortcuts ignore form fields.\n- [ ] Tests for undo, redo and a new branch after undo.\nOutput: js/history.js exporting createHistory(initial, { limit }) with push, undo, redo, canUndo, canRedo.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "botão de desfazer no editor de cardápio",
+      "output": "createHistory with snapshot stacks, 100 cap, typing merged per 500 ms, Ctrl+Z outside inputs"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

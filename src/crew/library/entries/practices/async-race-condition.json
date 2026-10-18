@@ -1,0 +1,37 @@
+{
+  "id": "async-race-condition",
+  "title": "Fix async race conditions",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "race condition",
+    "async",
+    "await",
+    "promise",
+    "stale response",
+    "concurrency",
+    "out of order",
+    "bug"
+  ],
+  "when": "Results flicker or show old data, a double click submits twice, or async calls finish in a different order than they started.",
+  "inputs": [
+    "the async code path",
+    "how to trigger the problem"
+  ],
+  "prompt": "Goal: Only the latest relevant result is applied, duplicate actions are blocked, and the order of effects is deterministic.\nSteps:\n1. Map the timeline: what starts the request, what state it reads, and what it writes when it resolves.\n2. For search or filter, cancel the previous call with an AbortController, or tag each request with an id and ignore responses that are not the latest.\n3. For submit buttons, set a pending flag and disable the button until the promise settles, re-enabling in finally.\n4. Never read shared state after an await assuming it did not change; capture what you need before awaiting.\n5. Run independent work with Promise.all and dependent steps in sequence with await.\n6. Simulate slow and out of order responses with a delay to confirm the fix.\nQuality bar:\n- The UI never shows a result for an older query.\n- Each user action causes at most one write.\n- Errors from aborted requests are ignored, other errors are shown.\nPitfalls:\n- Adding setTimeout delays to hide the race.\n- Forgetting to re-enable the button after an error.\n- Treating AbortError as a real failure.\nVerify:\n- [ ] Typing fast shows results for the last query only.\n- [ ] Double click submits once.\n- [ ] Errors leave the UI usable.\n- [ ] Files parse.\nOutput: The fixed module and a note on how the race was reproduced.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "search results show old results sometimes",
+      "output": "AbortController per query, ignore AbortError, render only when the query still matches the input"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

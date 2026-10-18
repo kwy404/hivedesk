@@ -1,0 +1,33 @@
+{
+  "id": "vague-request-assumptions",
+  "title": "Detecting a vague request and stating assumptions",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "vague",
+    "assumptions",
+    "defaults",
+    "underspecified",
+    "short request",
+    "guess",
+    "interpret"
+  ],
+  "when": "The request is one line or very open (\"make an app\", \"a site for my business\") and the crew must decide how to read it.",
+  "inputs": [
+    "the user request",
+    "workspace files and earlier notes"
+  ],
+  "prompt": "Goal: A clear reading of the request with each guessed detail written as an assumption, so the plan is concrete and easy to correct.\nSteps:\n1. Check five signals: is the subject named, the audience, the main action, the content, the format. Count the missing ones.\n2. With zero or one missing, plan directly; with two or more, look in workspace files and notes for the answers first.\n3. Fill each gap with the most common, smallest choice: one page, static files, a single main action, modest real looking content.\n4. Write each fill as \"Assumption: ...\" so the user sees it, never hide a guess in the files.\n5. Keep invented content believable and marked as sample where it could mislead (prices, addresses, names).\n6. If a gap is high risk (legal text, real data), switch to asking instead of assuming.\nQuality bar:\n- Every guessed detail is listed as an assumption.\n- The chosen reading is the smallest useful one.\n- Sample data is labeled.\nPitfalls:\n- Reading a vague request as permission to build a big app.\n- Mixing two readings in one plan.\n- Fake contact details presented as real.\nVerify:\n- [ ] The five signals were checked.\n- [ ] Assumptions are listed in the summary.\n- [ ] The plan builds one reading only.\n- [ ] High risk gaps became questions.\nOutput: A plan summary that begins with the reading and an Assumptions list, then the tasks.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "make me an app",
+      "output": "Reading: a one page task list in the browser. Assumptions: single user, saves in localStorage, English UI"
+    }
+  ],
+  "size": 387,
+  "version": 1
+}

@@ -1,5 +1,8 @@
 // Fair turn scheduler: one queue of model turns, a pool of brains, one turn per brain at a time.
 // Workers are served round robin (the worker served longest ago goes first), oldest turn first inside a worker.
+// Two lanes (docs/1.0/PLAN.md section 6): turns with `lane: 'peer'` (jobs a peer sent to this machine) wait
+// while any owner turn could take the brain, and never preempt a running owner turn; the owner's next turn
+// waits at most for the peer turn that is already running.
 
 let turnSeq = 0;
 
@@ -54,7 +57,10 @@ export class Scheduler {
 
   /**
    * Queues one model turn and resolves with the brain's ChatResult.
-   * @param {{ workerId: string, taskId?: string, jobId?: string, messages: any[], options?: any, signal?: AbortSignal, budget?: any }} req
+   * lane: 'peer' puts the turn behind every owner turn. eligible(brainId, brain) limits the brains it may use.
+   * onStart() runs when a brain takes the turn. noRetry: a failure is reported, never retried here.
+   * @param {{ workerId: string, taskId?: string, jobId?: string, messages: any[], options?: any, signal?: AbortSignal, budget?: any,
+   *           lane?: 'owner' | 'peer', eligible?: (brainId: string, brain: any) => boolean, onStart?: (brainId: string, brain: any) => void, noRetry?: boolean }} req
    */
   turn(req) {
     return new Promise((resolve, reject) => {
@@ -101,6 +107,10 @@ export class Scheduler {
       if (this.paused.has(item.workerId)) continue;
       if (brainId && !this._eligible(item, brainId, brain)) continue;
       if (!best) { best = item; continue; }
+      // The owner lane first: a peer turn only gets a brain no owner turn can use.
+      const peerA = item.lane === 'peer';
+      const peerB = best.lane === 'peer';
+      if (peerA !== peerB) { if (peerB) best = item; continue; }
       const a = this.lastServed.get(item.workerId) ?? -1;
       const b = this.lastServed.get(best.workerId) ?? -1;
       if (a < b || (a === b && item.enq < best.enq)) best = item;
@@ -131,6 +141,7 @@ export class Scheduler {
 
   /** Can this brain take this turn? A brain with `only` serves just those workers; a preference wins. */
   _eligible(item, brainId, brain) {
+    if (item.eligible && !item.eligible(brainId, brain)) return false;
     if (brain?.only && !brain.only.has(item.workerId)) return false;
     // A turn may limit the brains it runs on (a lent turn: this machine's own local models only).
     if (typeof item.accept === 'function' && !item.accept(brain, brainId)) return false;
@@ -149,6 +160,7 @@ export class Scheduler {
     this.lastServed.set(item.workerId, ++this.tick);
     item.attempts++;
     this._status(item.workerId, 'thinking', item);
+    try { item.onStart?.(brainId, slot.brain); } catch { /* a hook must not break the queue */ }
     this.bus.emit('turn.started', { turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, brainId, n: item.n ?? item.attempts, ...(item.budget ? { budget: item.budget } : {}) }, { jobId: item.jobId });
     this._remember(item, brainId);
     this._emitQueue();
@@ -158,6 +170,8 @@ export class Scheduler {
     try {
       const result = await slot.brain.chat(item.messages, {
         ...item.options,
+        // Who asks, for brains that route per turn (src/brain/rotation.js picks the model by role and task).
+        turn: { turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, jobId: item.jobId },
         signal: ctrl.signal,
         onToken: (text) => {
           this.bus.live('turn.token', { turnId: item.turnId, workerId: item.workerId, text });
@@ -174,7 +188,10 @@ export class Scheduler {
       const rec = this.prompts.get(item.turnId);
       if (rec) rec.response = String(result.text || '').slice(0, 20000);
       // A turn a friend's machine answered is marked, so its tool calls wait for the host.
-      if (slot.brain.kind === 'remote' && result && typeof result === 'object') result.remote = { brainId, label: String(slot.brain.label || 'friend').slice(0, 80) };
+      // The compute brain (turnMeta) runs some turns here and some on a peer: only remoteOrigin, the verified
+      // peer that answered, marks those. A relay brain (0.2 lend) is always a friend's machine.
+      const fromPeer = result && typeof result === 'object' && (typeof result.remoteOrigin === 'string' || (slot.brain.kind === 'remote' && !slot.brain.turnMeta));
+      if (fromPeer) result.remote = { brainId, label: String(slot.brain.label || 'friend').slice(0, 80), ...(typeof result.remoteOrigin === 'string' ? { peerId: result.remoteOrigin } : {}) };
       item.resolve(result);
     } catch (err) {
       const cancelled = item.signal?.aborted;
@@ -182,7 +199,7 @@ export class Scheduler {
         turnId: item.turnId, workerId: item.workerId, taskId: item.taskId, brainId,
         promptTokens: 0, completionTokens: 0, ms: Date.now() - started, tps: 0, error: String(err?.message || err)
       }, { jobId: item.jobId });
-      const retry = current.requeue || (item.attempts <= this.maxRetries && this.brains.size > 0 && err?.code !== 'invalid_json');
+      const retry = current.requeue || (!item.noRetry && item.attempts <= this.maxRetries && this.brains.size > 0 && err?.code !== 'invalid_json');
       if (!cancelled && retry) {
         // Retry once (or move to another brain when this one went away), at the front of the line.
         item.enq = 0;
@@ -208,13 +225,13 @@ export class Scheduler {
   queueState() {
     const running = [];
     for (const [brainId, slot] of this.brains) {
-      if (slot.current) running.push({ workerId: slot.current.item.workerId, taskId: slot.current.item.taskId, brainId });
+      if (slot.current) running.push({ workerId: slot.current.item.workerId, taskId: slot.current.item.taskId, brainId, ...(slot.current.item.lane === 'peer' ? { lane: 'peer' } : {}) });
     }
     const waiting = [...this.waiting].sort((a, b) => {
       const x = this.lastServed.get(a.workerId) ?? -1;
       const y = this.lastServed.get(b.workerId) ?? -1;
       return x - y || a.enq - b.enq;
-    }).map((i) => ({ workerId: i.workerId, taskId: i.taskId }));
+    }).map((i) => ({ workerId: i.workerId, taskId: i.taskId, ...(i.lane === 'peer' ? { lane: 'peer' } : {}) }));
     return { running, waiting };
   }
 

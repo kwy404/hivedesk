@@ -1,0 +1,40 @@
+{
+  "id": "offline-sync-queue",
+  "title": "Offline queue that syncs when back online",
+  "category": "data",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "offline",
+    "sync",
+    "queue",
+    "outbox",
+    "retry",
+    "back online",
+    "pending changes",
+    "connectivity",
+    "background sync"
+  ],
+  "when": "Users make changes offline or on a bad connection and those changes must reach a server later, without loss or duplicates.",
+  "inputs": [
+    "change types",
+    "server endpoints",
+    "conflict rule"
+  ],
+  "prompt": "Goal: A durable outbox that records each change, retries with backoff, applies once on the server and shows pending state.\nSteps:\n1. Record each change as { id: crypto.randomUUID(), type, payload, createdAt, attempts } in IndexedDB (or guarded localStorage when small) before the optimistic UI update.\n2. Flush on start, on the online event and on a timer; send in createdAt order, one at a time, behind a flushing flag.\n3. Send the change id as an idempotency key header; delete the entry only after a 2xx.\n4. Network errors and 5xx: keep and retry at 2, 4, 8 s up to 5 minutes with jitter; 4xx: move to a failed list shown to the user.\n5. Write down the conflict rule (last write wins by updatedAt, or server wins and the user is told).\n6. Status text \"3 changes waiting\", \"Syncing\", \"All saved\" in an aria-live region; navigator.onLine is only a hint.\nQuality bar:\n- Closing the tab never loses a queued change.\n- Retries never duplicate records.\n- Failed changes can be retried or discarded.\nPitfalls:\n- Treating navigator.onLine as proof of connectivity.\n- Removing an item before the server confirms.\n- Two flushes sending the same item.\nVerify:\n- [ ] Stable ids on queue items.\n- [ ] Capped backoff.\n- [ ] One flush at a time.\n- [ ] Visible sync status.\nOutput: js/outbox.js exporting enqueue, flush and status, wired to app actions and the online event.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "o app de vendas precisa funcionar sem sinal e enviar depois",
+      "output": "outbox in IndexedDB with UUID idempotency keys, backoff retries, \"3 sales waiting\" status"
+    }
+  ],
+  "size": 389,
+  "version": 1
+}

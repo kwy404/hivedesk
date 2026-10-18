@@ -1,0 +1,37 @@
+{
+  "id": "progressive-enhancement",
+  "title": "Progressive enhancement",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "progressive enhancement",
+    "no javascript",
+    "works without js",
+    "resilience",
+    "html first",
+    "noscript",
+    "graceful degradation"
+  ],
+  "when": "The user wants pages that work when scripts fail or load slowly, with script adding extras on top of working HTML.",
+  "inputs": [
+    "the page and its interactive features"
+  ],
+  "prompt": "Goal: Core content and actions work with plain HTML links and forms; scripts enhance them without being required.\nSteps:\n1. Build the base: real links with href, forms with action, method and a submit button, content in the HTML not loaded by script.\n2. Use native elements that work without script: details and summary, dialog with a form method=\"dialog\", input types, required.\n3. Enhance with feature detection (if (\"IntersectionObserver\" in window)) and add a js class on html at start for script only styles.\n4. Intercept forms and links in script only to improve them (fetch submit, inline update), and fall back to the normal request on error.\n5. Hide script only controls until the script has set them up, so no dead buttons show.\n6. Load scripts with defer or type=\"module\" so HTML renders first.\nQuality bar:\n- Main task completes with scripts disabled.\n- No empty containers waiting for script.\n- Enhanced and base paths give the same result.\nPitfalls:\n- Links with href=\"#\" that need script.\n- Buttons outside forms for core actions.\n- Rendering the whole page from JSON.\nVerify:\n- [ ] Every form has a submit button.\n- [ ] No inline event handlers.\n- [ ] Scripts are deferred.\n- [ ] Files parse.\nOutput: HTML that works alone plus an enhance.js layer.",
+  "checks": [
+    "html.form-submit",
+    "html.no-inline-handlers",
+    "js.syntax",
+    "html.script-defer"
+  ],
+  "examples": [
+    {
+      "input": "quero que o formulário funcione mesmo se o JavaScript falhar",
+      "output": "form posts normally; enhance.js submits with fetch and shows inline success, falling back on error"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

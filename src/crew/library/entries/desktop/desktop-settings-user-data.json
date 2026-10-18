@@ -1,0 +1,38 @@
+{
+  "id": "desktop-settings-user-data",
+  "title": "App settings stored in the user data folder",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "settings",
+    "preferences",
+    "user data folder",
+    "config file",
+    "app data",
+    "desktop app",
+    "settings migration",
+    "defaults"
+  ],
+  "when": "The desktop app needs persistent preferences in the proper per user folder, with defaults, validation and upgrades between versions.",
+  "inputs": [
+    "list of settings with defaults",
+    "app id"
+  ],
+  "prompt": "Goal: settings.js loads, validates, migrates and saves settings.json inside the per user data folder, never next to the binary.\nSteps:\n1. Folder: const base = await Neutralino.os.getPath(\"data\"); dir = base + \"/NotesDesk\"; create it with Neutralino.filesystem.createDirectory when getStats fails.\n2. DEFAULTS = { schema: 2, theme: \"system\", fontSize: 14, language: \"en\", closeToTray: false, recent: [] }.\n3. load(): read settings.json in try/catch; on missing or invalid JSON use DEFAULTS and keep the bad file as settings.broken.json.\n4. Validate each key: right type and range (fontSize 10 to 32, theme in [\"system\", \"light\", \"dark\"]); unknown keys are dropped, bad values reset to the default.\n5. Migrate by schema number: if schema is 1 rename fontsize to fontSize, then set schema 2.\n6. save(): merge, write with the atomic .tmp then move pattern, debounced 300 ms.\n7. Settings screen with labeled controls and a \"Reset to defaults\" button; changes apply live.\n8. Put caches in getPath(\"cache\"), not in the settings file.\nQuality bar:\n- A corrupt file never stops the app from starting.\n- Old settings files upgrade without losing values.\nPitfalls:\n- Writing settings into the install folder, which needs admin rights.\n- Storing secrets in plain settings.json.\nVerify:\n- [ ] Path comes from os.getPath(\"data\").\n- [ ] JSON parse is guarded and values validated.\n- [ ] A migration step exists per schema bump.\nOutput: settings.js, settings.html section and a test for validate().",
+  "checks": [
+    "js.json-parse-guarded",
+    "js.async-errors",
+    "html.labels"
+  ],
+  "examples": [
+    {
+      "input": "onde salvar as configurações do usuário no app desktop?",
+      "output": "settings.json in getPath(\"data\")/NotesDesk with defaults, validation, schema migration, atomic save"
+    }
+  ],
+  "size": 424,
+  "version": 1
+}

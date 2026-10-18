@@ -1,0 +1,40 @@
+{
+  "id": "incident-runbook",
+  "title": "Incident runbook for a small service",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "incident",
+    "runbook",
+    "outage",
+    "on call",
+    "postmortem",
+    "service down",
+    "incident response",
+    "sev1"
+  ],
+  "when": "The user wants a written plan for when the site or API goes down: who does what, which commands to run first, and how to learn from it afterwards.",
+  "inputs": [
+    "service name and host",
+    "owners",
+    "dashboards and log locations"
+  ],
+  "prompt": "Goal: RUNBOOK.md that someone woken at night can follow: severities, first steps, commands per symptom, mitigations and a postmortem template.\nSteps:\n1. Header: service, owners, host access, links to logs, dashboards and ROLLBACK.md.\n2. Severity table: SEV1 all users down, SEV2 key feature broken, SEV3 degraded or one customer; a response time for each.\n3. First 10 minutes: acknowledge, start a timeline file noting the time of each action, check what changed (deploy, config, certificate dates).\n4. Symptom sections with commands in code fences: not running (systemctl status app, journalctl -u app --since \"30 min ago\"), disk full (df -h, du -sh /var/log/*), port closed (ss -ltnp), high load (uptime, top -b -n 1 | head -20).\n5. Mitigate before hunting the root cause: roll back, restart, pause a noisy job, turn off a feature flag.\n6. Communication: who posts updates, how often (every 30 minutes for SEV1), a message template.\n7. Close: confirm recovery with the health check; within 3 days write a blameless postmortem: impact, timeline, cause, actions with owners and dates.\nQuality bar:\n- Commands are complete and safe to paste.\n- Every action item has an owner and due date.\nPitfalls:\n- An hour of debugging before trying the rollback.\n- Destructive fixes run without a timeline line.\n- Blaming a person instead of fixing the process.\nVerify:\n- [ ] Severity table present.\n- [ ] Each symptom has commands in fences.\n- [ ] Rollback document linked.\n- [ ] Postmortem template included.\nOutput: RUNBOOK.md and docs/postmortem-template.md.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "quero um runbook para quando a API cair de madrugada",
+      "output": "RUNBOOK.md with severity table, first 10 minutes, symptom sections with commands, mitigation list, comms template, postmortem template"
+    }
+  ],
+  "size": 443,
+  "version": 1
+}

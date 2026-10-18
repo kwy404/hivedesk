@@ -1,0 +1,37 @@
+{
+  "id": "writer-edit-for-clarity",
+  "title": "Writer: editing text for clarity",
+  "category": "roles",
+  "roles": [
+    "writer",
+    "reviewer"
+  ],
+  "tags": [
+    "writer",
+    "edit",
+    "clarity",
+    "rewrite",
+    "simplify",
+    "proofread",
+    "shorten",
+    "plain language"
+  ],
+  "when": "Existing text (page copy, README, help) is long, vague or confusing, and the writer must make it clear without changing its facts.",
+  "inputs": [
+    "the text to edit",
+    "the reader"
+  ],
+  "prompt": "Goal: Shorter, clearer text that keeps every fact, with each paragraph making one point and the most important point first.\nSteps:\n1. Read the whole text and write its main point in one sentence; move that point to the top.\n2. Cut each paragraph to one idea; split or delete the rest.\n3. Replace vague words with specifics: \"soon\" with the date, \"many options\" with the list.\n4. Shorten sentences over 20 words; turn lists hidden in sentences into bullet lists.\n5. Use active voice and common words; define a term once if it must stay.\n6. Compare with the original: every fact, number and link still present and correct.\nQuality bar:\n- Meaning and facts unchanged.\n- Length cut by about a third or more when the text was padded.\n- The first paragraph answers what and why.\nPitfalls:\n- Removing a warning or limit while cutting.\n- Changing the meaning of a technical step.\n- Rewriting the voice so it no longer fits the rest.\nVerify:\n- [ ] Main point first.\n- [ ] Facts preserved.\n- [ ] No sentence over about 25 words.\n- [ ] Links still work.\nOutput: The edited file patched in place, plus a note of any fact that was unclear in the original.",
+  "checks": [
+    "text.no-placeholder",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "esse texto de ajuda esta confuso, melhora",
+      "output": "main point first: \"Export saves a CSV in your Downloads folder\", steps as a list, 40 percent shorter"
+    }
+  ],
+  "size": 327,
+  "version": 1
+}

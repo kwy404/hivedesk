@@ -1,0 +1,37 @@
+{
+  "id": "review-error-handling",
+  "title": "Error handling review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "error handling",
+    "exceptions",
+    "try catch",
+    "failures",
+    "resilience",
+    "promise rejection",
+    "swallowed errors"
+  ],
+  "when": "The user wants code reviewed for how it fails: exceptions, rejected promises, bad files, network or storage errors, and what users see.",
+  "inputs": [
+    "the code",
+    "the operations that touch the outside world"
+  ],
+  "prompt": "Goal: A failure map listing each operation that can fail, how the code handles it now, and the missing or wrong handling with fixes.\nSteps:\n1. List fallible operations: fetch, JSON.parse, localStorage, file reads and writes, input parsing, timers, external data.\n2. Mark how each is handled: none, swallowed, logged only, or handled (try and catch, .catch, error events, checked return values).\n3. An empty catch is a finding unless a comment explains it; logged only errors need a user message or a retry.\n4. User side: the message says what failed and what to do, in an alert region; input is kept; the app returns to a usable state.\n5. Process level: window error and unhandledrejection listeners in the browser; in Node log and exit non zero on fatal errors.\n6. Cleanup in finally: spinners hidden, buttons re-enabled, files closed.\nQuality bar:\n- Every fallible call is on the map.\n- Fixes say what to show the user.\n- No advice to catch and ignore.\nPitfalls:\n- One giant catch at the top that hides bugs.\n- Stack traces shown to users.\n- Forgotten finally cleanup leaving buttons disabled.\nVerify:\n- [ ] Failure map exists.\n- [ ] Swallowed catches listed.\n- [ ] User messages reviewed.\n- [ ] Global handlers checked.\nOutput: error-review.md with the failure map and fixes.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "o que acontece no meu app quando algo da errado?",
+      "output": "9 fallible calls: 3 unhandled (fetch prices, JSON.parse save, setItem), 2 swallowed; fixes with messages"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

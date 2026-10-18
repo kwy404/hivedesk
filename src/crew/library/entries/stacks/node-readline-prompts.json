@@ -1,0 +1,39 @@
+{
+  "id": "node-readline-prompts",
+  "title": "Interactive terminal prompts with readline",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "interactive",
+    "prompt",
+    "readline",
+    "questions",
+    "terminal",
+    "wizard",
+    "menu",
+    "console app",
+    "user input"
+  ],
+  "when": "The user wants a Node program that asks questions, shows a menu, or runs a small text game or setup wizard in the terminal.",
+  "inputs": [
+    "questions with defaults",
+    "valid answers"
+  ],
+  "prompt": "Goal: A friendly terminal dialogue that validates answers, offers defaults and exits cleanly on Ctrl+C or end of input.\nSteps:\n1. Import createInterface from node:readline/promises and stdin, stdout from node:process; create one interface for the session.\n2. ask(question, { fallback, validate }) loops: await rl.question(), trim, apply the default on empty input, re-ask with the validation message.\n3. Menus: numbered options accepting the number or the name; yes or no accepts y, yes, n, no in any case.\n4. rl.on(\"SIGINT\") prints a short goodbye, closes and sets process.exitCode = 130; rl.on(\"close\") stops loops when piped input ends.\n5. Close the interface in finally so the process exits.\nQuality bar:\n- Each prompt shows its default and accepted values.\n- Bad input explains and asks again, never crashes.\n- Output fits 80 columns.\nPitfalls:\n- A new interface per question, which loses buffered lines.\n- Forgetting rl.close(), leaving the process hanging.\n- Endless re-ask loops after input has ended.\nVerify:\n- [ ] Uses node:readline/promises.\n- [ ] Validation re-asks with a message.\n- [ ] SIGINT and close are handled.\n- [ ] Every file parses.\nOutput: app.mjs with the ask helper and the flow; usage in README.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "jogo de adivinhar número no terminal",
+      "output": "app.mjs asking for guesses with validation 1 to 100, hints higher or lower, play again prompt"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

@@ -1,0 +1,53 @@
+{
+  "id": "kanban-board-app",
+  "title": "Kanban board with drag and keyboard moves",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "kanban",
+    "kanban board",
+    "task board",
+    "cards",
+    "columns",
+    "drag and drop",
+    "project board",
+    "workflow"
+  ],
+  "when": "The user wants a kanban or task board with columns and cards that move by drag and drop and by keyboard, saved locally.",
+  "inputs": [
+    "column names",
+    "card fields",
+    "whether columns are editable"
+  ],
+  "prompt": "Goal: A board where cards move between and within columns by pointer or keyboard, and the exact order survives a reload.\nSteps:\n1. State { columns: [{ id, title }], cards: [{ id, columnId, title, order }] }; column ids like backlog, doing, done.\n2. logic.mjs: addCard, moveCard(state, cardId, toColumn, toIndex) renumbering order in both columns, renameCard, deleteCard, cardsIn(state, columnId).\n3. Each column is a section with an h2 and a ul; each card an li with draggable=\"true\", tabindex=\"0\" and a menu button.\n4. Drag: dragstart puts the card id in dataTransfer, dragover calls preventDefault and finds the drop index from pointer y against card midpoints, drop calls moveCard.\n5. Keyboard: Alt+ArrowLeft/Right changes column, Alt+ArrowUp/Down reorders; keep focus on the card and announce \"Moved to Doing, position 2\" in aria-live.\n6. Per column add form with a labeled input; save state to localStorage board.v1 in try and catch.\n7. test.mjs: cross column move, reorder, order stays 0 to n-1, delete.\nQuality bar:\n- Moves are possible without a mouse.\n- Columns stack vertically under 640 px.\n- Dragged card shows a clear drop marker.\nPitfalls:\n- Moving the DOM node without updating state.\n- Drops that only work on empty space, not between cards.\n- Drag as the only way to move.\nVerify:\n- [ ] Drag works across and within columns.\n- [ ] Keyboard moves keep focus on the card.\n- [ ] Moves are announced.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (render, drag, keys), logic.mjs (board state), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a kanban board for my freelance projects",
+      "output": "columns Backlog/Doing/Done, draggable cards, Alt+arrows to move, board.v1 saved"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

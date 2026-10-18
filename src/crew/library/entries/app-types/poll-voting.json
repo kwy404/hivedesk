@@ -1,0 +1,50 @@
+{
+  "id": "poll-voting",
+  "title": "Poll and voting app with live results",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "poll",
+    "voting",
+    "vote",
+    "survey",
+    "election",
+    "results",
+    "opinion poll"
+  ],
+  "when": "The user wants to create a poll with options, let people vote and show results as percentages and bars.",
+  "inputs": [
+    "question and options",
+    "single or multiple choice"
+  ],
+  "prompt": "Goal: Clear voting and results whose percentages always add to 100, honest about local only votes.\nSteps:\n1. Poll { id, question, options[], multiple, votes: { optionId: count } }; creator form with 2 to 10 option inputs and add or remove buttons.\n2. Vote form: fieldset with legend, radios (checkboxes when multiple); submit disabled until a choice.\n3. logic.mjs: castVote validates ids, results(poll) with largest remainder rounding so percents total 100, leaders for ties.\n4. Results bars show percent and count in text; leader marked with a word; region with aria-live.\n5. Record voted polls in localStorage guarded and say plainly this is not secure voting.\n6. Export and import a poll as JSON.\n7. test.mjs: percents sum to 100, ties, invalid option, multiple choice.\nQuality bar:\n- Results readable without color.\n- Options keep their order.\n- Zero votes shows 0 percent, not NaN.\nPitfalls:\n- Percents that add to 99 or 101.\n- Claiming one vote per person.\n- Empty options saved.\nVerify:\n- [ ] Fieldset and legend used.\n- [ ] Results live.\n- [ ] Storage guarded.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (votes and results), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "make a poll for where the team should have lunch",
+      "output": "4 options, radio vote, bars 45 / 30 / 15 / 10 percent"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

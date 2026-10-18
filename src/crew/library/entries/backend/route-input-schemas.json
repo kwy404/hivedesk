@@ -1,0 +1,40 @@
+{
+  "id": "route-input-schemas",
+  "title": "Per route schemas for params, query and body",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "request validation",
+    "route schema",
+    "query params",
+    "coercion",
+    "unknown fields",
+    "422",
+    "validation layer",
+    "backend",
+    "api input"
+  ],
+  "when": "An API checks inputs ad hoc inside each handler and the user wants one validation layer where every route declares the shape of its path params, query string and JSON body.",
+  "inputs": [
+    "routes and their fields",
+    "limits per field"
+  ],
+  "prompt": "Goal: Each route declares a schema; one step coerces and checks params, query and body, and the handler only sees clean values.\nSteps:\n1. Declare schemas as plain objects: { params: { id: uuid() }, query: { limit: int({ min: 1, max: 100, def: 20 }) }, body: { title: str({ max: 200 }), done: bool({ optional: true }) } }.\n2. Write field builders in validate.mjs (str, int, bool, enumOf, uuid, isoDate) that return { ok: true, value } or { ok: false, reason }.\n3. Query values arrive as text: turn \"20\" into 20 and \"true\" into true only through a builder; accept repeated keys (?tag=a&tag=b) only where the schema says list.\n4. Unknown body keys give 422 by default, so a typo like \"titel\" is not silently dropped.\n5. Collect all failures into { error: \"invalid_input\", fields: { \"body.title\": \"too long\" } } and answer 422 once.\n6. Attach the schema when registering: router.add(\"POST\", \"/tasks\", { schema }, handler); the handler reads ctx.input.\nQuality bar:\n- No handler reads req.url or the raw body itself.\n- Every string and number has a limit.\n- Schemas also feed the API docs.\nPitfalls:\n- Number(\"\") is 0 and Number(\"1e3\") is 1000; match integers with /^-?\\d+$/ first.\n- Validating after the write.\n- Different error shapes for params and body.\nVerify:\n- [ ] Every route has a schema, even an empty one.\n- [ ] Unknown body keys give 422.\n- [ ] Tests feed \"\", \"abc\" and \"007\" to int.\n- [ ] One response lists every field error.\nOutput: validate.mjs, a schema beside each route, test/validate.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "quero validar params, query e body de todas as rotas num lugar so",
+      "output": "int/str/bool builders, schema per route, 422 with a fields map, unknown keys refused"
+    }
+  ],
+  "size": 431,
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "id": "wireframe-lofi",
+  "title": "Low fidelity wireframe before styling",
+  "category": "design",
+  "roles": [
+    "designer",
+    "architect"
+  ],
+  "tags": [
+    "wireframe",
+    "low fidelity",
+    "mockup",
+    "layout sketch",
+    "page structure",
+    "prototype",
+    "lofi"
+  ],
+  "when": "Before building a page or app the user wants the structure agreed first: a grayscale wireframe of sections and content blocks.",
+  "inputs": [
+    "the pages and their purpose",
+    "the content the user has"
+  ],
+  "prompt": "Goal: A grayscale HTML wireframe that fixes structure, content order and priorities on phone and desktop, with no styling decisions.\nSteps:\n1. Write the content inventory first: each section, its purpose and the one action it supports.\n2. Build wireframe.html with landmarks and real headings; media are boxes labeled with what they will show (Team photo, 4:3).\n3. Use grays only: #fff and #eee surfaces, #999 for borders, #333 for text, one system font, outlined buttons; no brand color or images.\n4. Lay out phone first in one column, then a wide layout in a media query, so both priorities are visible.\n5. Write real draft copy for headings and buttons, and short realistic sentences for body text.\n6. Add numbered notes (aside class=\"note\") for open questions and behavior, such as what happens on submit.\nQuality bar:\n- A stakeholder can follow the flow without help.\n- Every section has a purpose line.\n- Changes take minutes.\nPitfalls:\n- Choosing colors and fonts at this stage.\n- Filler text that hides content problems.\n- Desktop only wireframes.\nVerify:\n- [ ] wireframe.html has one h1 and landmarks.\n- [ ] Only grayscale colors, text in #333.\n- [ ] Media boxes say what goes there.\n- [ ] A width media query exists.\nOutput: wireframe.html with its grayscale styles, and the content inventory as a list at the top.",
+  "checks": [
+    "html.doctype",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.contrast",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "antes de fazer o site, me mostra a estrutura das paginas",
+      "output": "grayscale wireframe: hero box, 3 service blocks, testimonial, contact form, notes on booking behavior"
+    }
+  ],
+  "size": 379,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "svg-line-chart",
+  "title": "Line chart for trends over time",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "line chart",
+    "trend",
+    "time series",
+    "over time",
+    "graph",
+    "chart",
+    "history",
+    "progress over time"
+  ],
+  "when": "Values change over time (daily visits, weight, temperature, balance) and the user wants to see the trend.",
+  "inputs": [
+    "dated values per series",
+    "unit"
+  ],
+  "prompt": "Goal: A time based SVG line chart with true date spacing, honest gaps, readable axes and a point readout.\nSteps:\n1. Parse dates to timestamps and sort; x = (t - t0) / (t1 - t0) * plot width, so uneven dates keep real spacing.\n2. y domain from min to max padded 5 percent; include zero only when zero matters for the measure.\n3. One <path d> per series with M then L commands; start a new M after a missing period instead of bridging it.\n4. Ticks: 4 to 7 dates via Intl.DateTimeFormat (day and month, or month and year for long spans) and nice y steps.\n5. Label series directly at the line ends and mark the last value with a dot.\n6. Readout: on pointermove find the nearest point by binary search, show date and value with a guide line; arrow keys do the same when the svg is focused.\nQuality bar:\n- stroke-width 2 with vector-effect: non-scaling-stroke.\n- At most 4 series.\n- Readable at 320 px.\nPitfalls:\n- Spacing points by index when dates are uneven.\n- Smoothed curves that invent peaks.\n- Lines drawn across missing data.\nVerify:\n- [ ] Points sorted by date.\n- [ ] Gaps start new subpaths.\n- [ ] svg has role=\"img\" and a title with the trend.\n- [ ] Readout works from the keyboard.\nOutput: js/line-chart.js exporting lineChart(container, series, options) and chart.css.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.svg-a11y",
+    "css.focus-visible"
+  ],
+  "examples": [
+    {
+      "input": "show my weight over the last 6 months as a line",
+      "output": "lineChart with dated points, monthly ticks, gap for missing weeks, last value labeled"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

@@ -1,0 +1,35 @@
+{
+  "updated": "2026-10-17",
+  "note": "A small offline list of well known advisories for common packages. It is not complete: when you are online, also run the audit command of your package manager.",
+  "npm": [
+    { "name": "lodash", "fixed": "4.17.21", "severity": "high", "title": "command injection in template and prototype pollution", "ref": "CVE-2021-23337" },
+    { "name": "minimist", "fixed": "1.2.6", "severity": "high", "title": "prototype pollution", "ref": "CVE-2021-44906" },
+    { "name": "node-fetch", "fixed": "2.6.7", "severity": "high", "title": "cookie header sent to a third party site on redirect", "ref": "CVE-2022-0235" },
+    { "name": "axios", "fixed": "0.21.2", "severity": "high", "title": "regular expression denial of service", "ref": "CVE-2021-3749" },
+    { "name": "jsonwebtoken", "fixed": "9.0.0", "severity": "high", "title": "insecure key handling in verify", "ref": "CVE-2022-23529" },
+    { "name": "express", "fixed": "4.17.3", "severity": "high", "title": "prototype pollution through qs", "ref": "CVE-2022-24999" },
+    { "name": "qs", "fixed": "6.10.3", "severity": "high", "title": "prototype pollution", "ref": "CVE-2022-24999" },
+    { "name": "ws", "fixed": "7.4.6", "severity": "medium", "title": "regular expression denial of service", "ref": "CVE-2021-32640" },
+    { "name": "tar", "fixed": "6.1.9", "severity": "high", "title": "arbitrary file write through crafted archives", "ref": "CVE-2021-37713" },
+    { "name": "glob-parent", "fixed": "5.1.2", "severity": "medium", "title": "regular expression denial of service", "ref": "CVE-2020-28469" },
+    { "name": "shell-quote", "fixed": "1.7.3", "severity": "critical", "title": "command injection", "ref": "CVE-2021-42740" },
+    { "name": "semver", "fixed": "7.5.2", "severity": "medium", "title": "regular expression denial of service", "ref": "CVE-2022-25883" },
+    { "name": "moment", "fixed": "2.29.4", "severity": "high", "title": "regular expression denial of service in date parsing", "ref": "CVE-2022-31129" },
+    { "name": "handlebars", "fixed": "4.7.7", "severity": "critical", "title": "remote code execution in templates", "ref": "CVE-2021-23369" },
+    { "name": "marked", "fixed": "4.0.10", "severity": "high", "title": "regular expression denial of service", "ref": "CVE-2022-21681" },
+    { "name": "serialize-javascript", "fixed": "3.1.0", "severity": "high", "title": "code injection", "ref": "CVE-2020-7660" },
+    { "name": "underscore", "fixed": "1.12.1", "severity": "critical", "title": "arbitrary code execution in template", "ref": "CVE-2021-23358" },
+    { "name": "ejs", "fixed": "3.1.7", "severity": "critical", "title": "template injection", "ref": "CVE-2022-29078" },
+    { "name": "jquery", "fixed": "3.5.0", "severity": "medium", "title": "cross site scripting in htmlPrefilter", "ref": "CVE-2020-11022" },
+    { "name": "json5", "fixed": "2.2.2", "severity": "high", "title": "prototype pollution in parse", "ref": "CVE-2022-46175" },
+    { "name": "xml2js", "fixed": "0.5.0", "severity": "medium", "title": "prototype pollution", "ref": "CVE-2023-0842" }
+  ],
+  "pypi": [
+    { "name": "requests", "fixed": "2.31.0", "severity": "medium", "title": "Proxy-Authorization header leaked on redirect", "ref": "CVE-2023-32681" },
+    { "name": "pyyaml", "fixed": "5.4", "severity": "critical", "title": "arbitrary code execution in full_load", "ref": "CVE-2020-14343" },
+    { "name": "flask", "fixed": "2.2.5", "severity": "high", "title": "session cookie cached by proxies", "ref": "CVE-2023-30861" },
+    { "name": "jinja2", "fixed": "3.1.3", "severity": "medium", "title": "cross site scripting in xmlattr", "ref": "CVE-2024-22195" },
+    { "name": "urllib3", "fixed": "1.26.18", "severity": "medium", "title": "request body not removed on redirect", "ref": "CVE-2023-45803" },
+    { "name": "pillow", "fixed": "10.0.1", "severity": "high", "title": "heap overflow in the bundled WebP decoder", "ref": "CVE-2023-4863" }
+  ]
+}

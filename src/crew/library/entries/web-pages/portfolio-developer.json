@@ -1,0 +1,50 @@
+{
+  "id": "portfolio-developer",
+  "title": "Developer portfolio",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "portfolio",
+    "developer",
+    "programmer",
+    "projects",
+    "resume",
+    "personal site",
+    "engineer"
+  ],
+  "when": "The user wants a personal site that shows software projects, skills and a way to hire them.",
+  "inputs": [
+    "name and focus",
+    "projects with links and stack",
+    "skills",
+    "contact"
+  ],
+  "prompt": "Goal: A credible developer page: what you build, proof in projects, and how to reach you.\nSteps:\n1. Headline with name and a concrete focus (for example front end for small businesses).\n2. Projects section: each with the problem, what you built, the tech in plain words, and links to the code and the live version.\n3. Skills grouped by what you use daily versus what you know, no rating bars.\n4. Short experience or education timeline, newest first.\n5. Contact with email and profile links; mark external links with rel=\"noopener\".\nQuality bar:\n- Each project says what you did, not only what it is.\n- Links have clear text, not \"click here\".\n- The page works without JavaScript.\nPitfalls:\n- Skill percentage bars that mean nothing.\n- Listing tools without results.\n- A dark theme with low contrast gray text.\nVerify:\n- [ ] Every project has a heading and at least one working link.\n- [ ] External links that open a new tab have rel=\"noopener\".\n- [ ] Contrast passes.\n- [ ] One h1.\nOutput: index.html and style.css; optional projects.json only if the request asks for data driven cards.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.external-rel",
+    "html.link-text",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "my dev portfolio, I do Node and vanilla JS",
+      "output": "h1 \"Ana Souza builds fast web tools\", three project cards with code and demo links, skills list"
+    }
+  ],
+  "size": 311,
+  "version": 1
+}

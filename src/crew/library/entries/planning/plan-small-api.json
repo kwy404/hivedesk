@@ -1,0 +1,34 @@
+{
+  "id": "plan-small-api",
+  "title": "Planning a small local API",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "api plan",
+    "endpoints",
+    "routes",
+    "http api",
+    "backend",
+    "server plan",
+    "rest"
+  ],
+  "when": "The user wants a small HTTP API or local server (node:http) and the crew must agree on routes and data before coding.",
+  "inputs": [
+    "the resources (notes, orders, users)",
+    "operations needed",
+    "where data is stored"
+  ],
+  "prompt": "Goal: A route table, data shapes and error rules written in the plan, so the server, the client and the tests all match.\nSteps:\n1. List resources and operations as a route table: method, path, request body, success status and body, error statuses.\n2. Write one JSON example per resource with field names and types; use the same names everywhere.\n3. Fix the error shape for every route: status code plus {\"error\": \"message\"}.\n4. Choose storage that needs no install: a JSON file written atomically, or memory for a demo.\n5. Split tasks: server.mjs (routes), store.mjs (read and write), test.mjs (each route with node:test and fetch to a local port), README with curl examples.\n6. Cap the scope: no auth, no uploads, no extra resources unless the request asks.\nQuality bar:\n- Every route has its statuses written.\n- Field names are identical in table, examples and tests.\n- Storage survives a restart if the user needs it.\nPitfalls:\n- Routes invented by the dev that the client does not know.\n- Only happy paths planned.\n- Storage that needs a database server.\nVerify:\n- [ ] Route table in the summary.\n- [ ] JSON examples per resource.\n- [ ] Error shape defined.\n- [ ] A test task covers every route.\nOutput: Plan with route table and examples in the summary; tasks for server, store, tests and README.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "uma API simples para salvar tarefas",
+      "output": "GET /tasks 200, POST /tasks 201 or 400, DELETE /tasks/:id 204 or 404; tasks.json storage"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

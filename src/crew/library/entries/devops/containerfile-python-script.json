@@ -1,0 +1,41 @@
+{
+  "id": "containerfile-python-script",
+  "title": "Containerfile for a Python script or job",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "containerfile",
+    "python",
+    "container image",
+    "python script",
+    "requirements.txt",
+    "venv",
+    "batch job",
+    "scheduled job"
+  ],
+  "when": "The user wants to run a Python script, nightly job or small worker inside a container with pinned dependencies, unbuffered logs and no root user.",
+  "inputs": [
+    "script or module name",
+    "Python version",
+    "requirements",
+    "where outputs go"
+  ],
+  "prompt": "Goal: A Containerfile that builds a virtual environment from pinned requirements and runs one Python module as an unprivileged user.\nSteps:\n1. Stage deps: FROM python:3.12.7-slim AS deps; RUN python -m venv /opt/venv; ENV PATH=\"/opt/venv/bin:$PATH\".\n2. COPY requirements.txt alone, then RUN pip install --no-cache-dir -r requirements.txt; every line pins with ==, plus --require-hashes when hashes exist.\n3. Compile wheels only in this stage.\n4. Stage run: FROM python:3.12.7-slim; COPY --from=deps /opt/venv /opt/venv; ENV PATH=\"/opt/venv/bin:$PATH\" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1.\n5. RUN useradd --system --uid 10001 --no-create-home app; COPY --chown=app:app src/ /app/; WORKDIR /app; USER app.\n6. ENTRYPOINT [\"python\", \"-m\", \"job\"] so run time arguments reach argparse; defaults go in CMD.\n7. Outputs go under /data (VOLUME /data), never /app; failures return a non zero exit code.\nQuality bar:\n- Log lines reach the container log at once.\n- Two builds from the same files install the same versions.\n- One container runs one job and exits.\nPitfalls:\n- Unpinned pip installs, so a rebuild pulls a breaking release.\n- Compilers left in the final image.\n- Root user leaving files on the mount the host user cannot delete.\n- Shell form ENTRYPOINT that drops the arguments.\nVerify:\n- [ ] FROM tags name exact Python versions.\n- [ ] USER app comes before ENTRYPOINT.\n- [ ] requirements.txt pins every package.\n- [ ] Outputs go to the volume.\nOutput: Containerfile, requirements.txt and a run example in README.md.",
+  "checks": [
+    "container.nonroot",
+    "container.pinned",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "run my python report script in a container every night",
+      "output": "Containerfile on python:3.12.7-slim with a venv stage, useradd app, ENTRYPOINT [\"python\", \"-m\", \"report\"], /data volume"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

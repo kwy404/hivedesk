@@ -1,0 +1,36 @@
+{
+  "id": "intersection-observer-uses",
+  "title": "IntersectionObserver for reveal, lazy load and scroll spy",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "intersectionobserver",
+    "scroll",
+    "infinite scroll",
+    "lazy load",
+    "reveal on scroll",
+    "scroll spy",
+    "in view",
+    "viewport"
+  ],
+  "when": "Something must happen when an element enters the viewport: reveal on scroll, load more items, highlight the current section, pause media.",
+  "inputs": [
+    "elements to observe",
+    "what happens when they appear"
+  ],
+  "prompt": "Goal: Viewport reactions without scroll listeners: cheap, accessible and correct when observed elements change.\nSteps:\n1. One observer per purpose: { rootMargin: \"200px 0px\", threshold: 0 } for preloading, threshold 0.5 for mostly visible.\n2. In the callback check entry.isIntersecting and unobserve elements whose job is done.\n3. Infinite list: observe a sentinel after the last item; when visible and not loading, fetch the next page; at the end stop and show \"No more items\".\n4. Scroll spy: observe sections with rootMargin \"-40% 0px -55% 0px\" and set aria-current=\"true\" on the matching nav link.\n5. Reveal: add a class that transitions opacity; under prefers-reduced-motion skip movement; content stays visible if the script fails.\n6. disconnect() when the view is removed.\nQuality bar:\n- No scroll event listeners for these effects.\n- Content is readable with scripts off.\n- Infinite lists also offer a Load more button.\nPitfalls:\n- Hiding content in CSS until the observer runs.\n- Thousands of separate observers.\n- Triggering a load again while one is pending.\nVerify:\n- [ ] unobserve or disconnect used.\n- [ ] Reduced motion rule for reveal styles.\n- [ ] Loading flag guards the sentinel.\n- [ ] aria-current on the active link.\nOutput: js/observe.js with the helpers, plus the CSS classes they toggle.",
+  "checks": [
+    "js.syntax",
+    "css.reduced-motion"
+  ],
+  "examples": [
+    {
+      "input": "carregar mais produtos quando chegar no fim da página",
+      "output": "sentinel observed with 200px rootMargin, loading flag, Load more button fallback, end message"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

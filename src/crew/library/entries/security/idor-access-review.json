@@ -1,0 +1,41 @@
+{
+  "id": "idor-access-review",
+  "title": "Access control review for IDOR",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "backend"
+  ],
+  "tags": [
+    "idor",
+    "insecure direct object reference",
+    "access control",
+    "broken access control",
+    "object ownership",
+    "tenant isolation",
+    "horizontal privilege",
+    "authorization review",
+    "security review"
+  ],
+  "when": "An API or app loads records by id from the URL or body, and users must not read or change records of other users or other tenants by editing ids.",
+  "inputs": [
+    "routes taking ids",
+    "the data access layer",
+    "two test users"
+  ],
+  "prompt": "Goal: Every route taking an object id is shown to scope by owner or tenant on the server, backed by two user tests.\nSteps:\n1. List routes with ids in path, query or body (/invoices/:id, ?userId=, { projectId }), including downloads, exports and socket messages.\n2. For each, find where the record loads and whether the query scopes it: SELECT ... WHERE id = ? AND tenant_id = ? is the target.\n3. Look for loads followed by a late or missing check, checks done only in the UI, and admin routes hidden but not guarded.\n4. Writes: owner, tenant, role or isAdmin fields in a body are ignored or refused (mass assignment).\n5. Reply 404, not 403, for records outside the caller's scope so ids cannot be probed.\n6. Tests with users A and B: B tries GET, PATCH and DELETE on ids owned by A and expects 404; lists for B never include rows of A.\nQuality bar:\n- Scoping lives in data functions such as findInvoice(user, id), so new routes inherit it.\n- UUIDs help but are not the control.\n- Each finding: route, file, line, exploit request, fix.\nPitfalls:\n- Ownership checked on read but not on update or delete.\n- Nested routes that check the parent only (/projects/1/tasks/99 where task 99 is in project 2).\n- Bulk endpoints taking id arrays with one check.\nVerify:\n- [ ] Every id route is in the table.\n- [ ] Queries scope by owner or tenant.\n- [ ] Two user tests cover read, update and delete.\n- [ ] Mass assignment fields are blocked.\nOutput: An access table in SECURITY-AUDIT.md, scoped data functions, test/access.test.mjs.",
+  "checks": [
+    "md.h1",
+    "node.test-runner",
+    "sec.sql-params"
+  ],
+  "examples": [
+    {
+      "input": "trocando o id na URL consigo ver a fatura de outro cliente",
+      "output": "id route table, tenant scoped queries, 404 for foreign ids, user A versus user B tests"
+    }
+  ],
+  "size": 434,
+  "version": 1
+}

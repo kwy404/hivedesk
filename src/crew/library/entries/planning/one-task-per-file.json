@@ -1,0 +1,33 @@
+{
+  "id": "one-task-per-file",
+  "title": "One task per file: file ownership",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "file ownership",
+    "one file",
+    "conflicts",
+    "overwrite",
+    "assign files",
+    "same file",
+    "merge"
+  ],
+  "when": "Two workers could touch the same file, or a plan has tasks that edit one file from several sides.",
+  "inputs": [
+    "the draft task list",
+    "the file list for the result"
+  ],
+  "prompt": "Goal: Every file has exactly one owner task, so no worker overwrites another and every file is finished in one place.\nSteps:\n1. Write a table: file name, owner task, tasks that only read it.\n2. If two tasks write one file, merge them into one task or move the second part into a new file (nav.js, form.js).\n3. Keep markup and its script with one owner when the script depends on many ids; give styles to a separate owner.\n4. For a shared file that many tasks need (data.json, tokens.css), create it in the first task and mark it read only for the rest.\n5. In each detail, say \"read X, do not edit it\" for files the task depends on.\n6. Allow a later edit of an owned file only as a fix task after QA, with the exact change.\nQuality bar:\n- The owner table has no file with two writers.\n- Shared names (ids, classes, exports) are written down in the owner task.\n- Read only files are named in the tasks that use them.\nPitfalls:\n- Designer and dev both editing index.html: the second write erases the first.\n- Splitting one long file into halves across tasks.\n- Forgetting that README.md also needs an owner.\nVerify:\n- [ ] Each file in the plan has one writer.\n- [ ] Tasks that read a shared file depend on its owner.\n- [ ] No task detail says \"update all files\".\n- [ ] Fix tasks name one file and one change.\nOutput: The plan with an ownership note per task: writes, reads.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "dev and designer both need the header",
+      "output": "dev owns index.html with class names; designer owns style.css and only reads index.html"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

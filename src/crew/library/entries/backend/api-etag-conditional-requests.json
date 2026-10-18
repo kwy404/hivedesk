@@ -1,0 +1,41 @@
+{
+  "id": "api-etag-conditional-requests",
+  "title": "ETags and conditional requests for JSON APIs",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "etag",
+    "if-match",
+    "if-none-match",
+    "412 precondition failed",
+    "optimistic concurrency",
+    "conditional request",
+    "api caching",
+    "lost update",
+    "backend"
+  ],
+  "when": "A JSON API should let clients skip unchanged downloads with 304 and stop two editors from overwriting each other, using ETags tied to item versions.",
+  "inputs": [
+    "editable resources",
+    "clients that cache"
+  ],
+  "prompt": "Goal: Item replies carry an ETag built from the row version; reads honor If-None-Match and writes require If-Match.\nSteps:\n1. Add a version INTEGER column raised by every update; ETag is the quoted string id-version, a strong tag because the JSON per version is stable.\n2. GET item: If-None-Match equal to the current tag (or *) gives 304 with the ETag and no body; else 200 with ETag and Cache-Control: private, no-cache.\n3. PUT, PATCH and DELETE need If-Match: missing gives 428 code precondition_required, mismatch gives 412 with the current ETag so the client reloads.\n4. Check and write in one statement: UPDATE ... SET version = version + 1 WHERE id = ? AND version = ?; zero changed rows means 412.\n5. Lists: a weak W/ tag hashed from the query, row count and max(updated_at), with the same 304 rule.\n6. Cross origin clients need ETag in Access-Control-Expose-Headers.\nQuality bar:\n- no-cache means revalidate each time, so clients see writes at once.\n- User specific replies are never public.\n- Tests cover 304, 412 and 428.\nPitfalls:\n- Hashing JSON whose key order changes, so tags flap.\n- Checking If-Match in code, then writing in a second query (race).\n- A 304 that carries a body.\nVerify:\n- [ ] Matching If-None-Match gives 304 with no body.\n- [ ] A stale If-Match gives 412.\n- [ ] A write without If-Match gives 428.\n- [ ] version rises once per write.\nOutput: Handler updates in routes/items.mjs, the version migration, test/etag.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "sec.sql-params",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "dois usuarios editam o mesmo registro e um apaga a mudanca do outro",
+      "output": "version column ETag, If-Match required, 412 on stale, 428 when missing, 304 on reads"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "backup-restore-drill",
+  "title": "Scheduled backups with restore drills",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops",
+    "data"
+  ],
+  "tags": [
+    "backups",
+    "restore drill",
+    "database backup",
+    "disaster recovery",
+    "rpo",
+    "rto",
+    "offsite backup",
+    "backup retention"
+  ],
+  "when": "The user runs a server with a database or uploaded files and wants automatic backups that are proven to restore, not just written.",
+  "inputs": [
+    "database engine",
+    "upload folders",
+    "acceptable data loss",
+    "offsite storage"
+  ],
+  "prompt": "Goal: Encrypted offsite backups with retention, plus a monthly restore drill that measures recovery time and possible data loss.\nSteps:\n1. Set RPO, the data you can afford to lose (for example 24 h), and RTO, how fast service must return (for example 2 h).\n2. backup.sh dumps the SQL database with its own consistent dump tool (never copy live data files), tars uploads, names archives app-YYYYMMDD-HHMM.\n3. Write sha256sum output beside each archive; encrypt with age or gpg to a public key whose private half lives offline.\n4. 3-2-1: three copies, two kinds of storage, one offsite; the upload tool verifies transfers.\n5. Retention 7 daily, 4 weekly, 12 monthly; pruning never removes the newest verified backup.\n6. Run from a timer; failures exit non zero and alert.\n7. Monthly drill: fetch the latest archive to a scratch machine, decrypt, check sums, restore into an empty database, start the app on it, run known queries, log date and duration in RESTORE.md.\nQuality bar:\n- A restore succeeded in the last 30 days.\n- Another person can restore from RESTORE.md alone.\n- Backups survive losing the whole server.\nPitfalls:\n- Backups on the same disk as the data.\n- The first restore attempt happening during the real outage.\n- The decryption key kept only on the machine being backed up.\nVerify:\n- [ ] Dump uses the database tool.\n- [ ] Checksums and encryption in place.\n- [ ] Retention rule written.\n- [ ] Drill log has date and duration.\nOutput: scripts/backup.sh, scripts/prune-backups.sh and RESTORE.md with the drill log.",
+  "checks": [
+    "file.nonempty",
+    "md.sections",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "backup automatico do banco e prova de que da para restaurar",
+      "output": "backup.sh with dump, tar, sha256sum and encryption, 7/4/12 retention, monthly drill logged in RESTORE.md with timings"
+    }
+  ],
+  "size": 438,
+  "version": 1
+}

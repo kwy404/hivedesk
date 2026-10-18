@@ -1,0 +1,38 @@
+{
+  "id": "schema-validation-handwritten",
+  "title": "Hand written schema validation for JSON data",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "schema validation",
+    "validate json",
+    "payload validation",
+    "data shape",
+    "type check",
+    "runtime types",
+    "request body",
+    "nested objects"
+  ],
+  "when": "Data from storage, imports or API requests must be checked against an expected shape at runtime, without a validation library.",
+  "inputs": [
+    "the expected shape",
+    "strict or lenient about extra keys"
+  ],
+  "prompt": "Goal: A compact schema description and one validator that walks nested objects and arrays and reports every error with its path.\nSteps:\n1. Describe shapes as plain objects: { type: \"object\", props: { name: { type: \"string\", min: 1 }, tags: { type: \"array\", items: { type: \"string\" } } }, required: [\"name\"] }.\n2. Support string, number (with integer), boolean, enum, array, object, nullable, and a custom check for rare rules.\n3. Walk recursively with a path (\"items[3].price\") and collect { path, expected, got } instead of throwing.\n4. Strict mode rejects unknown keys; clean mode strips them.\n5. Return { ok, value, errors }, where value is a cleaned copy with defaults filled.\n6. Reuse one schema for imports, storage loading and request bodies.\nQuality bar:\n- Paths point at the exact field.\n- Input is never mutated.\n- Schemas read like documentation.\nPitfalls:\n- typeof null === \"object\" and arrays mistaken for objects.\n- NaN and Infinity accepted; require Number.isFinite.\n- Stopping at the first error.\nVerify:\n- [ ] Nested errors carry paths.\n- [ ] Unknown keys handled by mode.\n- [ ] A test per type and error.\n- [ ] No eval or Function.\nOutput: js/schema.js exporting validate(schema, data), plus a test file.",
+  "checks": [
+    "js.syntax",
+    "js.no-eval",
+    "js.strict-equality",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "checar se o json que chega na API tem os campos certos",
+      "output": "validate(orderSchema, body) -> errors like { path: \"items[2].qty\", expected: \"integer >= 1\" }"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

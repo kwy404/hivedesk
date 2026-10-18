@@ -1,0 +1,40 @@
+{
+  "id": "cli-package-bin-shebang",
+  "title": "Package a Node CLI with a bin field and shebang",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "devops"
+  ],
+  "tags": [
+    "package cli",
+    "bin field",
+    "shebang",
+    "install command",
+    "global install",
+    "publish cli",
+    "executable script",
+    "packed tarball",
+    "cli"
+  ],
+  "when": "A Node command line tool works locally and the user wants it installable as a command, with only the needed files in the package and a shebang that works everywhere.",
+  "inputs": [
+    "command name",
+    "entry file",
+    "runtime files"
+  ],
+  "prompt": "Goal: A package that installs a working command on linux, mac and win32, holds only runtime files and was tested from the packed tarball.\nSteps:\n1. bin/tool.mjs: line 1 #!/usr/bin/env node with LF endings; mode 755 via chmod +x, or git update-index --chmod=+x when committing from win32.\n2. package.json: name, version, \"type\": \"module\", \"bin\": { \"tool\": \"bin/tool.mjs\" }, \"files\": [\"bin\", \"src\", \"README.md\", \"LICENSE\"], \"engines\": { \"node\": \">=20\" }, license, \"scripts\": { \"test\": \"node --test\" }.\n3. --version reads package.json through createRequire(import.meta.url)(\"../package.json\").version.\n4. bin/tool.mjs stays tiny: import main from ../src/main.mjs, run it, set process.exitCode.\n5. Run the package manager's pack command in dry run mode and read the file list: no tests, fixtures, .env or editor folders.\n6. Real install test: pack to a .tgz, install it globally into a temp prefix, run tool --help and one real command, uninstall.\n7. Publishing needs a registry account with two factor auth.\nQuality bar:\n- The tarball holds only runtime files.\n- The command works from any folder after install.\nPitfalls:\n- A CRLF shebang from a win32 editor: \"No such file or directory\".\n- No \"files\" list, shipping test data and secrets.\n- bin pointing at a file missing from \"files\".\nVerify:\n- [ ] Shebang on line 1.\n- [ ] package.json valid with bin, files and engines.\n- [ ] Packed contents reviewed.\n- [ ] Installed command answers --help.\nOutput: package.json, bin/tool.mjs, src/main.mjs and an Install section in README.md.",
+  "checks": [
+    "json.valid",
+    "pkg.scripts",
+    "node.shebang"
+  ],
+  "examples": [
+    {
+      "input": "quero instalar minha CLI como comando global",
+      "output": "package.json with bin, files and engines, LF shebang in bin/tool.mjs, packed tarball inspected and installed into a temp prefix"
+    }
+  ],
+  "size": 437,
+  "version": 1
+}

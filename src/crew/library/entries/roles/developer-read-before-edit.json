@@ -1,0 +1,36 @@
+{
+  "id": "developer-read-before-edit",
+  "title": "Developer: read before edit, patch small",
+  "category": "roles",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "edit file",
+    "patch",
+    "small change",
+    "read first",
+    "search and replace",
+    "modify code",
+    "existing file",
+    "edit_file"
+  ],
+  "when": "The developer must change a file that already exists, from a fix request, a QA finding or a new feature on old code.",
+  "inputs": [
+    "the file to change",
+    "the requested change"
+  ],
+  "prompt": "Goal: The change made with the smallest correct edit_file patches, after reading the exact current text, with nothing else in the file disturbed.\nSteps:\n1. Call read_file on the target before any edit; never patch from memory or from the plan text.\n2. Find the exact lines to change and copy the search text from the file, including spaces and quotes.\n3. Make the search text unique: include a neighboring line if the snippet appears twice.\n4. Use one edit_file per logical change, a few lines each; use write_file only for new files or a full rewrite the task asks for.\n5. If the change touches names used elsewhere, search other files with read_file and patch each use.\n6. Read the changed region again and run check or node --check on scripts.\nQuality bar:\n- Unrelated lines are byte for byte the same.\n- Every search text was copied from the current file.\n- Renamed names are updated everywhere.\nPitfalls:\n- Rewriting a 300 line file to change one line.\n- Search text that no longer matches because of an earlier patch.\n- Fixing formatting of the whole file in the same change.\nVerify:\n- [ ] read_file came before each edit.\n- [ ] Patches are small and focused.\n- [ ] Scripts parse.\n- [ ] No leftover TODO.\nOutput: The existing files changed by edit_file patches; done summary lists each patch in one line.",
+  "checks": [
+    "js.syntax",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "troca o texto do botao para Enviar pedido",
+      "output": "read_file index.html, edit_file one line: >Send< to >Enviar pedido<, done"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

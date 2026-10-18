@@ -1,0 +1,37 @@
+{
+  "id": "number-currency-intl",
+  "title": "Formatting numbers, currency and units with Intl",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "number format",
+    "format currency",
+    "currency",
+    "percent",
+    "thousands separator",
+    "intl",
+    "locale",
+    "units",
+    "compact numbers"
+  ],
+  "when": "The app shows prices, totals, percentages, large counts or measurements and they must look right for the user locale.",
+  "inputs": [
+    "locale",
+    "currency code",
+    "kinds of numbers shown"
+  ],
+  "prompt": "Goal: Every number on screen goes through cached Intl.NumberFormat formatters with the right style, digits and notation.\nSteps:\n1. Create formatters once: new Intl.NumberFormat(locale, { style: \"currency\", currency: \"BRL\" }); never toFixed plus a symbol.\n2. Percent: style \"percent\", maximumFractionDigits 1, value as a fraction (0.125 shows 12.5%).\n3. Large counts: notation \"compact\" on dashboards, full numbers in tables and exports.\n4. Units: style \"unit\" with unit \"kilometer\", \"kilogram\" or \"celsius\" and unitDisplay \"short\".\n5. Changes: signDisplay \"exceptZero\" (+12, -3) plus color, never color alone.\n6. Parse typed numbers by reading the group and decimal symbols from formatToParts(1234.5), stripping groups and swapping the decimal for a dot before Number().\nQuality bar:\n- Currency code comes from the data, not the locale.\n- Number columns align right with tabular-nums.\n- Displayed rounding matches the totals.\nPitfalls:\n- Assuming dot decimals everywhere.\n- A currency shown without its code where symbols are ambiguous.\n- parseFloat(\"1.234,56\"), which returns 1.234.\nVerify:\n- [ ] Formatters cached at module level.\n- [ ] No toFixed plus symbol strings.\n- [ ] Parser tested with two locales.\n- [ ] font-variant-numeric: tabular-nums on number cells.\nOutput: js/format.js exporting formatMoney, formatPercent, formatCompact, formatUnit and parseLocaleNumber.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "os preços aparecem como 1234.5 em vez de R$ 1.234,50",
+      "output": "Intl.NumberFormat(\"pt-BR\", { style: \"currency\", currency: \"BRL\" }) cached, percent and compact helpers"
+    }
+  ],
+  "size": 393,
+  "version": 1
+}

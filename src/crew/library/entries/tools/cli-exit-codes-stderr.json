@@ -1,0 +1,39 @@
+{
+  "id": "cli-exit-codes-stderr",
+  "title": "Exit codes and stderr conventions for CLIs",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "exit codes",
+    "exit status",
+    "stderr",
+    "stdout",
+    "error messages",
+    "scripting",
+    "ctrl c",
+    "quiet mode",
+    "cli"
+  ],
+  "when": "A CLI is used from scripts or CI and the user wants reliable exit statuses, clean stdout for data and readable error messages on stderr.",
+  "inputs": [
+    "kinds of failures",
+    "batch or single item tool",
+    "verbosity flags"
+  ],
+  "prompt": "Goal: A documented exit code table, one error path that maps error types to codes, data on stdout and every message on stderr.\nSteps:\n1. Table in README and code: 0 success, 1 runtime failure, 2 usage error, 3 partial success when a batch had failures, 130 interrupted by Ctrl+C. Alternatively use sysexits (64 usage, 65 bad data, 66 no input); pick one scheme.\n2. class UsageError extends Error and class InputError extends Error; main() catches, maps the class to a code and prints \"tool: message\" to stderr.\n3. Unexpected errors print one line plus \"run with --debug for details\"; --debug adds the stack.\n4. Set process.exitCode and let the process end on its own so pending stdout flushes; call process.exit only after awaiting the last write.\n5. process.on(\"SIGINT\") stops the work, writes nothing more to stdout and sets 130.\n6. --quiet hides info lines but never errors; --verbose adds detail on stderr only.\n7. Warnings start with \"warning:\" on stderr and keep the exit code unless --strict.\nQuality bar:\n- tool > out.txt leaves only data in out.txt.\n- Scripts can tell usage errors from runtime failures.\nPitfalls:\n- console.log for errors, mixing them into piped data.\n- process.exit(1) right after a large write, truncating output.\n- Exit 0 when some items failed.\nVerify:\n- [ ] Exit code table documented.\n- [ ] Errors use console.error or process.stderr.\n- [ ] No process.exit before output is flushed.\n- [ ] SIGINT gives 130.\nOutput: src/errors.mjs, the main wrapper in bin/tool.mjs and an Exit codes section in README.md.",
+  "checks": [
+    "node.exit-code",
+    "node.shebang",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "my script cannot tell if the tool failed, it always returns 0",
+      "output": "exit code table 0/1/2/3/130 in README, UsageError and InputError mapped in main, errors on stderr, --debug for stacks"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

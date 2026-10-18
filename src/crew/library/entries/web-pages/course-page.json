@@ -1,0 +1,50 @@
+{
+  "id": "course-page",
+  "title": "Course or class signup page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "course",
+    "class",
+    "workshop",
+    "syllabus",
+    "education",
+    "enroll",
+    "teacher"
+  ],
+  "when": "The user wants a page to sell or enroll people in a course, class, workshop or bootcamp.",
+  "inputs": [
+    "course name and outcome",
+    "modules",
+    "format, length, price",
+    "teacher",
+    "start date"
+  ],
+  "prompt": "Goal: Explain what students will be able to do after the course and make enrolling obvious.\nSteps:\n1. Hero with the outcome, format (online or in person), length, start date and an Enroll action.\n2. Who it is for and prerequisites, as two short lists.\n3. Syllabus as an ordered list of modules, each with a one line result.\n4. Teacher block with relevant experience.\n5. Price, what is included, refund policy and FAQ.\nQuality bar:\n- Outcomes are concrete skills.\n- Dates and time zone are clear.\n- Price and refund terms are honest.\nPitfalls:\n- Promises of jobs or income.\n- Syllabus without results per module.\n- No date for the next class.\nVerify:\n- [ ] Syllabus is an ordered list.\n- [ ] Enroll action appears twice.\n- [ ] Date has time zone.\n- [ ] One h1.\nOutput: index.html and style.css with hero, audience, syllabus, teacher, price and FAQ.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.json-ld",
+    "html.heading-order"
+  ],
+  "examples": [
+    {
+      "input": "página do meu curso de fotografia com celular",
+      "output": "outcome hero, 6 modules, teacher, price with refund policy, FAQ"
+    }
+  ],
+  "size": 242,
+  "version": 1
+}

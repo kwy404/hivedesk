@@ -1,0 +1,42 @@
+{
+  "id": "seo-basics",
+  "title": "SEO basics for a site",
+  "category": "practices",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "seo",
+    "search engine",
+    "meta description",
+    "title tag",
+    "open graph",
+    "ranking",
+    "search results",
+    "canonical"
+  ],
+  "when": "The user wants a site to show up and look good in search results and link previews.",
+  "inputs": [
+    "the pages",
+    "the main topic and audience",
+    "the words people would search for"
+  ],
+  "prompt": "Goal: Each page has a unique, descriptive title and description, clean headings, crawlable links and preview tags.\nSteps:\n1. Pick one main search phrase per page from the words of the audience (bakery in Porto, not artisanal experiences).\n2. Write a unique <title> of 50 to 60 characters: page topic first, site name last.\n3. Write a meta description of 120 to 160 characters that says what the page offers and invites a click.\n4. Use one h1 that matches the topic, h2 for sections, descriptive link text, and alt text on meaningful images.\n5. Add og:title, og:description, og:image and a canonical link with the final URL when it is known.\n6. Keep URLs and file names short and readable (pricing.html, not page2.html).\nQuality bar:\n- No two pages share a title or description.\n- Copy is written for people, with the phrase used naturally.\n- Every page is reachable through a normal link.\nPitfalls:\n- Keyword stuffing.\n- Content only inside images or loaded by script after interaction.\n- Same title on all pages.\nVerify:\n- [ ] Each page has title, description, lang and one h1.\n- [ ] Description length is 50 to 160 characters.\n- [ ] Open graph tags exist.\n- [ ] Links use real text.\nOutput: Updated head sections and headings for every page, plus a short list of the target phrase per page.",
+  "checks": [
+    "html.title",
+    "html.meta-description",
+    "html.lang",
+    "html.h1",
+    "html.og-tags",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "melhore o SEO do site da minha clínica",
+      "output": "titles like \"Physiotherapy in Campinas | Clinica Movimento\", unique descriptions, og tags on 5 pages"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

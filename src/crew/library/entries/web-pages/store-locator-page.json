@@ -1,0 +1,47 @@
+{
+  "id": "store-locator-page",
+  "title": "Store locator and branches page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "store locator",
+    "locations",
+    "branches",
+    "addresses",
+    "find a store",
+    "hours"
+  ],
+  "when": "The user wants a page listing several locations or branches with search and hours.",
+  "inputs": [
+    "locations with address, phone, hours",
+    "regions"
+  ],
+  "prompt": "Goal: Let visitors find the nearest location and its hours without a heavy map.\nSteps:\n1. Locations as data rendered into a list grouped by city or region.\n2. Search field with label that filters by city, neighborhood or postal code.\n3. Each location: name, address, tel link, today hours highlighted, map link in text.\n4. Show open now based on local time with a clear note about time zone.\n5. Empty search shows all; no match shows a helpful message.\nQuality bar:\n- Works without a map library.\n- Filter is instant and accessible.\n- Hours are correct per day.\nPitfalls:\n- Open now logic that ignores closing after midnight.\n- innerHTML from location data.\n- Hidden phone numbers.\nVerify:\n- [ ] Search labeled.\n- [ ] Results count announced.\n- [ ] textContent used.\n- [ ] Scripts parse.\nOutput: locations.html, style.css and locations.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.aria-live",
+    "js.safe-dom",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "página com as 6 lojas da rede",
+      "output": "search by city, cards with address, tel, today hours and open now label"
+    }
+  ],
+  "size": 240,
+  "version": 1
+}

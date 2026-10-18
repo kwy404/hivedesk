@@ -1,0 +1,35 @@
+{
+  "id": "test-plan-form",
+  "title": "Test plan for a form",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "form testing",
+    "form test plan",
+    "validation testing",
+    "boundary values",
+    "signup form",
+    "checkout form",
+    "field rules"
+  ],
+  "when": "The user wants test cases for a form (contact, sign up, checkout, booking, settings), including validation and submission.",
+  "inputs": [
+    "the form markup or field list",
+    "the rules for each field"
+  ],
+  "prompt": "Goal: A form test matrix covering each field with valid, invalid, boundary and empty values, plus submit, error and success flows.\nSteps:\n1. Table the fields and rules (required, type, min and max length, pattern, range) from the markup and the request.\n2. Per field: typical valid, empty, one under and one over each length limit, wrong format, surrounding spaces, pasted text.\n3. Flows: all valid; several errors at once (focus on the first, summary lists all); fix one and resubmit; double click on submit.\n4. State: values kept after a failed submit, success announced, reset after success if intended, back button behavior.\n5. Access: labels read right, errors tied with aria-describedby, everything works by keyboard and at 200 percent zoom.\n6. One row per case: ID, field, input, expected message or result.\nQuality bar:\n- Every rule has a pass and a fail case.\n- Expected error text is exact.\n- About 30 cases at most.\nPitfalls:\n- Happy path only.\n- Forgetting autofill and paste.\n- Ignoring storage or server failure.\nVerify:\n- [ ] Field rules table exists.\n- [ ] Boundary cases for each length rule.\n- [ ] Flow and access cases present.\n- [ ] Expected results exact.\nOutput: form-test-plan.md with the rules table and the case matrix.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "test cases for my sign up form",
+      "output": "name 1 and 81 chars, email without @, password 7 chars, two errors at once, double submit, success announced"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

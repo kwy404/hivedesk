@@ -1,0 +1,39 @@
+{
+  "id": "make-targets-ci-parity",
+  "title": "One set of make targets for local runs and CI",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev"
+  ],
+  "tags": [
+    "ci parity",
+    "make check",
+    "same commands in ci",
+    "image build target",
+    "version from git",
+    "release target",
+    "local pipeline",
+    "devops"
+  ],
+  "when": "Local commands and CI steps have drifted apart and the user wants CI to call the same make targets developers run, including image builds and releases.",
+  "inputs": [
+    "current CI file",
+    "test and lint commands",
+    "artifact names"
+  ],
+  "prompt": "Goal: CI jobs that only call make targets, so make check on a laptop reproduces the CI result exactly.\nSteps:\n1. Contract targets, all .PHONY: deps (install from the lockfile), check (format check, lint, tests), build, image, release.\n2. VERSION ?= $(shell git describe --tags --always --dirty) and IMAGE ?= app; every artifact name includes $(VERSION).\n3. ENGINE ?= the container engine command, overridable per machine; image runs $(ENGINE) build --tag $(IMAGE):$(VERSION) --build-arg VERSION=$(VERSION) .\n4. check fails fast with a non zero status and needs no network once deps has run.\n5. CI steps shrink to checkout, setup runtime, make deps, make check; the release job runs make release VERSION=<the tag>.\n6. Tool versions are pinned in one file read by make and CI.\n7. ci-local runs the same sequence as the CI file so contributors can preview a run.\nQuality bar:\n- Any CI failure reproduces with one make command.\n- No build logic lives only in CI YAML.\n- Every target works on a clean clone.\nPitfalls:\n- CI passing extra flags the Makefile lacks, so results differ.\n- git describe failing in shallow checkouts; use fetch-depth: 0 in the release job.\n- Targets needing a tool only one developer installed.\nVerify:\n- [ ] CI run steps call make targets only.\n- [ ] VERSION comes from git and can be overridden.\n- [ ] Contract targets are .PHONY.\n- [ ] Actions in the CI file are pinned.\nOutput: Makefile, the CI workflow check.yml calling it, and a Commands table in README.md.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder",
+    "ci.workflow"
+  ],
+  "examples": [
+    {
+      "input": "o CI passa e local falha, quero os mesmos comandos nos dois",
+      "output": "Makefile with deps, check, build, image, release using VERSION from git describe; CI steps only call make deps and make check"
+    }
+  ],
+  "size": 425,
+  "version": 1
+}

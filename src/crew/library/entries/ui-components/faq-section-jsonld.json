@@ -1,0 +1,37 @@
+{
+  "id": "faq-section-jsonld",
+  "title": "FAQ section with FAQPage structured data",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "faq",
+    "frequently asked questions",
+    "questions and answers",
+    "faq schema",
+    "faqpage",
+    "common questions",
+    "q and a"
+  ],
+  "when": "The user wants a FAQ block on a page, with collapsible answers and structured data for search results.",
+  "inputs": [
+    "the questions and answers",
+    "links to detail pages"
+  ],
+  "prompt": "Goal: A scannable FAQ with native disclosure answers and FAQPage JSON-LD that matches the visible text exactly.\nSteps:\n1. <section aria-labelledby=\"faq-title\"> with an h2; each item is <details> with <summary> holding the question.\n2. Pick 6 to 10 questions people really ask about price, delivery, cancellation and support; write the question as they would say it.\n3. Answers are one to three sentences, with a link when there is more detail.\n4. Add <script type=\"application/ld+json\"> with @type FAQPage and mainEntity of Question items, each with name and acceptedAnswer of type Answer with text.\n5. Copy the visible text into the JSON-LD and escape double quotes.\nQuality bar:\n- Questions are grouped or ordered by importance.\n- Answers start with the direct answer.\n- Summary rows have a visible focus style.\nPitfalls:\n- JSON-LD with questions not shown on the page.\n- Marketing copy disguised as questions.\n- Trailing commas that break the JSON.\nVerify:\n- [ ] Each question is a summary.\n- [ ] The JSON-LD parses.\n- [ ] JSON-LD text matches the page.\n- [ ] No filler answers.\nOutput: The FAQ section and its JSON-LD in the page, styles in style.css.",
+  "checks": [
+    "html.json-ld",
+    "css.focus-visible",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "perguntas frequentes sobre entrega e trocas",
+      "output": "details list with 8 questions, short answers with links, FAQPage JSON-LD mirroring the text"
+    }
+  ],
+  "size": 330,
+  "version": 1
+}

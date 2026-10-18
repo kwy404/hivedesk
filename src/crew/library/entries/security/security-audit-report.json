@@ -1,0 +1,43 @@
+{
+  "id": "security-audit-report",
+  "title": "Writing a security audit report",
+  "category": "security",
+  "roles": [
+    "security",
+    "writer",
+    "reviewer"
+  ],
+  "tags": [
+    "security audit report",
+    "findings report",
+    "severity",
+    "vulnerability report",
+    "file and line",
+    "remediation",
+    "cvss",
+    "audit",
+    "security"
+  ],
+  "when": "After a security review, the findings must be written into one report developers can act on: each issue with severity, location, evidence and a concrete fix.",
+  "inputs": [
+    "raw findings",
+    "scope reviewed",
+    "commit or date"
+  ],
+  "prompt": "Goal: SECURITY-AUDIT.md with summary, scope, method and one structured block per finding, ordered by severity.\nSteps:\n1. Header: project, commit or date reviewed, scope (folders, routes), out of scope, and method (manual review, local tests, scans run).\n2. Summary: counts for critical, high, medium, low and info, and the top 3 risks in plain words.\n3. One block per finding with an id (SEC-001): title, severity, file:line, the vulnerable snippet (5 lines at most, secrets masked), impact, steps to reproduce on a local copy, the fix with a code example, references.\n4. State the rubric: critical means remote takeover or bulk data theft without login; high means account takeover or other users' data; medium needs user action or a logged in attacker with limited effect; low is hardening; info is a note.\n5. List controls checked and found sound, so nobody reworks them.\n6. End with the fix order and a status column (open, fixed, accepted) for tracking.\nQuality bar:\n- Every finding is reproducible and points at an exact line.\n- No real secrets, tokens or personal data in the report.\n- Plain words a junior developer can apply.\nPitfalls:\n- Pages of scanner output with no triage.\n- Severity raised by fear instead of impact and likelihood.\n- Fixes that say \"sanitize input\" without the exact call.\nVerify:\n- [ ] Scope and method are stated.\n- [ ] Each finding has id, severity, file:line and fix.\n- [ ] The rubric is included.\n- [ ] The status column exists.\nOutput: SECURITY-AUDIT.md.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.fences",
+    "text.no-placeholder",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "write up the security findings so the team can fix them",
+      "output": "SECURITY-AUDIT.md with scope, rubric, SEC-001 to SEC-009 blocks with file:line and fixes, status column"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

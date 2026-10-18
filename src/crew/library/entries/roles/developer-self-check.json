@@ -1,0 +1,37 @@
+{
+  "id": "developer-self-check",
+  "title": "Developer: self check before calling done",
+  "category": "roles",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "self check",
+    "before done",
+    "double check",
+    "self review",
+    "finish",
+    "done",
+    "checklist"
+  ],
+  "when": "The developer believes the task is complete and is about to call done.",
+  "inputs": [
+    "the task detail",
+    "acceptance criteria",
+    "the files written"
+  ],
+  "prompt": "Goal: A short, honest pass that catches the usual misses before QA does, so the task passes on the first review.\nSteps:\n1. Reread the task detail line by line and point to where each requirement lives in the files.\n2. Run check on the written files and fix every error level result.\n3. Grep your memory of the files for leftovers: TODO, lorem ipsum, console.log in browser code, commented out blocks.\n4. Check the wiring: every id the script queries exists in the HTML, every import path exists, every link points to a real file.\n5. Check the edges: empty list, empty input, missing stored data, very long text.\n6. Write the done summary: files changed and how each criterion is met, in one line each.\nQuality bar:\n- Every requirement has a location.\n- No error level check fails.\n- The summary is specific.\nPitfalls:\n- Calling done after writing without reading anything back.\n- Saying \"all criteria met\" with no evidence.\n- Ignoring a failing check because it looks minor.\nVerify:\n- [ ] Checks pass.\n- [ ] Ids and imports resolve.\n- [ ] No placeholder text.\n- [ ] Summary lists files and criteria.\nOutput: Fixes for anything found, then done with a per criterion summary.",
+  "checks": [
+    "js.syntax",
+    "html.balanced",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "task: contact form with validation",
+      "output": "check passes; #email exists; empty submit shows error; done: index.html, form.js, criteria 1 to 3 met"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

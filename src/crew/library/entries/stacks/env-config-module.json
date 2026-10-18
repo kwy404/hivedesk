@@ -1,0 +1,38 @@
+{
+  "id": "env-config-module",
+  "title": "Configuration from environment variables",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "config",
+    "configuration",
+    "environment variables",
+    "env",
+    "env file",
+    "settings",
+    "secrets",
+    "process.env",
+    "port"
+  ],
+  "when": "An app or script needs ports, paths, keys or feature switches that change per machine, or reads settings scattered through the code.",
+  "inputs": [
+    "settings and their types",
+    "which are secret"
+  ],
+  "prompt": "Goal: One config module that reads, validates and freezes all settings at startup and fails fast with a clear message.\nSteps:\n1. config.mjs reads every setting from process.env in one place and exports a frozen object; no other file touches process.env.\n2. Parse types explicitly: Number() with NaN and range checks, booleans from \"1\", \"true\", \"yes\", lists by comma with trim.\n3. Safe development defaults (PORT 3000, HOST 127.0.0.1); no defaults for secrets.\n4. Collect every problem, print them together and exit with code 1 before the app starts.\n5. Local files: node --env-file=.env (Node 20.6 and later) or a short parser for KEY=value lines, # comments and quotes, where real environment values win.\n6. Commit .env.example with every key, a comment and a fake value; list .env in .gitignore.\nQuality bar:\n- Names are prefixed SCREAMING_CASE (APP_PORT).\n- Logged config masks secret values.\n- Changing a value needs no code change.\nPitfalls:\n- Treating the string \"false\" as true.\n- Reading process.env deep inside request handlers.\n- Committing a real .env with keys.\nVerify:\n- [ ] A single module exports a frozen object.\n- [ ] Invalid values stop startup with code 1.\n- [ ] .env.example lists every key.\n- [ ] .env is ignored by Git.\nOutput: config.mjs, .env.example and a configuration table in README.md.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "tirar a porta e a chave da API do código",
+      "output": "config.mjs with APP_PORT number check, APP_API_KEY required, frozen export, .env.example"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

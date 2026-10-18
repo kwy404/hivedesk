@@ -1,0 +1,39 @@
+{
+  "id": "ops-release-checklist",
+  "title": "Ops: release checklist for a small project",
+  "category": "roles",
+  "roles": [
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "ops",
+    "release",
+    "release checklist",
+    "version",
+    "ship",
+    "publish",
+    "changelog",
+    "tag"
+  ],
+  "when": "A project is ready for a version (first release or an update) and ops must make sure nothing is missing before it is handed over.",
+  "inputs": [
+    "the project files",
+    "the new version number",
+    "what changed"
+  ],
+  "prompt": "Goal: A release that passes tests and checks, has a matching version and changelog entry, and documents how to use it.\nSteps:\n1. Run the tests (node test.mjs or python -m unittest) and the checks; stop on any failure.\n2. Bump the version in one place (package.json or a VERSION constant) following semver: fix, feature or breaking.\n3. Add a CHANGELOG.md entry: \"## 1.2.0 - 2026-10-17\" with Added, Changed, Fixed lists in user words.\n4. Check README: install or open steps, usage, and any new option or file from this release.\n5. Remove leftovers: debug logs, test data files, notes not meant for users.\n6. Write the release note: version, three line summary, how to upgrade.\nQuality bar:\n- Version matches in code, changelog and note.\n- Tests passed on the final files.\n- README describes the released behavior.\nPitfalls:\n- Bumping the version but not the changelog.\n- Releasing with a failing test marked as known.\n- Changelog lines copied from commit messages nobody understands.\nVerify:\n- [ ] Tests and checks pass.\n- [ ] Changelog heading has version and date.\n- [ ] README updated.\n- [ ] No debug leftovers.\nOutput: Updated version file, CHANGELOG.md entry, README fixes and a release note in a note or RELEASE.md.",
+  "checks": [
+    "md.changelog",
+    "json.valid",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "prepara a versao 1.1 do script de backup",
+      "output": "tests pass, VERSION 1.1.0, CHANGELOG ## 1.1.0 - 2026-10-17 Added --dry-run, README option table updated"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

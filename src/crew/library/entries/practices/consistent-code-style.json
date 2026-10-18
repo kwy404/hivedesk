@@ -1,0 +1,38 @@
+{
+  "id": "consistent-code-style",
+  "title": "Make code style consistent",
+  "category": "practices",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "code style",
+    "formatting",
+    "conventions",
+    "consistency",
+    "style guide",
+    "lint",
+    "editorconfig",
+    "cleanup"
+  ],
+  "when": "Files mix quote styles, indentation, naming and module patterns, and the user wants one consistent style without new tools.",
+  "inputs": [
+    "the project files",
+    "any style the user prefers"
+  ],
+  "prompt": "Goal: A short written style guide and files that follow it, changed in formatting only, with no behavior change.\nSteps:\n1. Detect the majority style already in use: indentation, quotes, semicolons, naming case, module type.\n2. Write the rules in a short section: 2 spaces, single quotes, semicolons, camelCase values, PascalCase classes, kebab-case files.\n3. Add .editorconfig with indent_style, indent_size, end_of_line = lf, insert_final_newline and charset = utf-8.\n4. Apply: const and let instead of var, === instead of ==, one export style, imports at the top grouped by platform then local.\n5. Keep formatting edits separate from logic edits so the diff is easy to review.\n6. Run the code after reformatting.\nQuality bar:\n- Rules are few and enforced everywhere.\n- No mixed tabs and spaces.\n- Behavior is identical.\nPitfalls:\n- Changing == to === where loose equality was intended (null checks), without adjusting the logic.\n- Reformatting and refactoring in one step.\n- Inventing a style that matches no existing file.\nVerify:\n- [ ] No var remains.\n- [ ] Strict equality is used.\n- [ ] .editorconfig exists.\n- [ ] Files parse.\nOutput: Reformatted files, .editorconfig and a style section in the README or CONTRIBUTING.",
+  "checks": [
+    "js.syntax",
+    "js.no-var",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "padronize o estilo do código do projeto",
+      "output": ".editorconfig, var to const and let, == to ===, single quotes; a 10 line style section in CONTRIBUTING.md"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

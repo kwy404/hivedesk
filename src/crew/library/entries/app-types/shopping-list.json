@@ -1,0 +1,50 @@
+{
+  "id": "shopping-list",
+  "title": "Shopping list grouped by aisle",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "shopping list",
+    "grocery list",
+    "groceries",
+    "market list",
+    "supermarket",
+    "buy list"
+  ],
+  "when": "The user wants a grocery or shopping list to use in the store: quick add, grouped by aisle, tick items as bought.",
+  "inputs": [
+    "store sections",
+    "frequent items"
+  ],
+  "prompt": "Goal: A list that is fast to fill at home and fast to use one handed in the store.\nSteps:\n1. Item { id, name, qty, aisle, bought }; one input understands \"2 milk\" through parseItem in logic.mjs.\n2. Assign an aisle from a keyword map (milk to Dairy, apple to Produce) the user can override; remember overrides per name.\n3. Group by aisle in store order with headings; bought items move to a collapsed Bought section and can be unticked.\n4. Checkbox with label per item, rows at least 48 px tall; Clear bought button.\n5. Frequent items from history as quick add buttons; adding an existing item merges quantities.\n6. Persist in localStorage shopping.v1 guarded; share as text with navigator.share when present, else copy to clipboard.\n7. test.mjs: parseItem, aisle lookup with override, grouping order, merge 2 milk plus 1 milk.\nQuality bar:\n- Adding takes one field and Enter.\n- Bought items stay visible but out of the way.\n- Large text and contrast for store lighting.\nPitfalls:\n- Duplicate rows for the same item.\n- Swipe only interactions.\n- Losing the list when the phone sleeps.\nVerify:\n- [ ] Checkboxes labeled.\n- [ ] Form has a submit button.\n- [ ] Data reloads.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (parse, group, merge), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "lista de compras do mercado separada por corredor",
+      "output": "\"2 leite\" goes to Dairy, Produce/Bakery groups, Bought section"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

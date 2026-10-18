@@ -1,0 +1,38 @@
+{
+  "id": "cli-progress-output",
+  "title": "Progress output for long running CLI tasks",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "progress bar",
+    "progress",
+    "spinner",
+    "long running task",
+    "eta",
+    "status line",
+    "terminal output",
+    "cli"
+  ],
+  "when": "A command runs for seconds or minutes over many items and the user wants visible progress that does not pollute piped output or CI logs.",
+  "inputs": [
+    "total items known or not",
+    "item names",
+    "quiet flag"
+  ],
+  "prompt": "Goal: A live line on stderr for terminals, sparse plain lines for logs, and silence with --quiet.\nSteps:\n1. Mode: live when process.stderr.isTTY and process.env.CI is unset; log mode otherwise; off with --quiet or --json.\n2. Live: rewrite one line with \"\\r\" + text + \"\\x1b[K\"; redraw at most every 100 ms using a timestamp check, not once per item.\n3. Text: \"[ 42/180 ] 23% 1.2 MB/s eta 0:41 name.txt\", cut to process.stderr.columns.\n4. ETA from a moving average of the last 20 item times; \"eta ?\" for the first items.\n5. Unknown total: spinner frames | / - \\ plus a running count.\n6. Log mode: one line per 10 percent or per 5 seconds, whichever comes later.\n7. On finish, error or SIGINT: clear the line, show the cursor again (\\x1b[?25h) if hidden, print a summary (\"180 files, 3 failed, 41 s\").\n8. Results still go to stdout, untouched.\nQuality bar:\n- Progress never appears in a stdout redirect.\n- Redraw cost is tiny next to the work.\n- The summary always prints.\nPitfalls:\n- Redrawing for each of 100000 items, slowing the job.\n- A hidden cursor left behind after Ctrl+C.\n- Animated frames in CI logs, producing thousands of lines.\nVerify:\n- [ ] Writes go to stderr.\n- [ ] TTY and CI detection present.\n- [ ] Redraws throttled.\n- [ ] Cleanup on finish and SIGINT.\nOutput: src/progress.mjs with start, tick and done, used by the main loop.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "mostrar progresso enquanto converte 5000 imagens",
+      "output": "src/progress.mjs: live line on stderr throttled to 100 ms with count, percent and eta, log lines every 10 percent in CI, summary at the end"
+    }
+  ],
+  "size": 385,
+  "version": 1
+}

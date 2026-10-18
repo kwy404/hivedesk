@@ -1,0 +1,39 @@
+{
+  "id": "readme-cli",
+  "title": "README for a command line tool",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "cli readme",
+    "command line",
+    "cli",
+    "usage",
+    "flags",
+    "options",
+    "readme",
+    "install"
+  ],
+  "when": "The project is a command line tool or script and the user wants its README with install, usage and options.",
+  "inputs": [
+    "the CLI name and purpose",
+    "its commands, flags and exit codes"
+  ],
+  "prompt": "Goal: A README where a user finds the exact command for their task and understands every option and exit code.\nSteps:\n1. Open with the tool name, a one line purpose, and the shortest useful command in a fenced bash block.\n2. Install: how to run it with node path/to/cli.js or python script.py, and how to make it executable or link it.\n3. Usage: the synopsis line (tool [options] <input>), then 3 to 5 examples for real tasks, each with a short sentence and the output.\n4. Options table: flag, short form, default, description; include --help and --version.\n5. Exit codes table (0 success, 1 failure, 2 bad usage) and where output and errors go (stdout and stderr).\n6. Environment variables and config files, if any, with defaults.\nQuality bar:\n- Examples match the real flags in the code.\n- Defaults are stated.\n- Output samples are trimmed but real.\nPitfalls:\n- Documenting flags that the parser does not accept.\n- Missing quoting for paths with spaces.\n- No mention of stdin support when the tool reads it.\nVerify:\n- [ ] Every flag in the code appears in the options table.\n- [ ] Code fences are closed.\n- [ ] Starts with a # heading.\n- [ ] Local links exist.\nOutput: README.md for the tool.",
+  "checks": [
+    "file.readme",
+    "md.h1",
+    "md.fences",
+    "md.local-links"
+  ],
+  "examples": [
+    {
+      "input": "README for my csv2json script",
+      "output": "# csv2json, synopsis, examples with --delimiter and --pretty, options table, exit codes 0, 1, 2"
+    }
+  ],
+  "size": 342,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "tabs-widget",
+  "title": "Accessible tabs with keyboard support",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tabs",
+    "tab panel",
+    "tabbed content",
+    "tablist",
+    "switch views",
+    "tab bar",
+    "tabbed interface"
+  ],
+  "when": "The user wants content split into tabs that switch panels in place, such as specs, reviews and shipping.",
+  "inputs": [
+    "tab names",
+    "content of each panel",
+    "which tab opens first"
+  ],
+  "prompt": "Goal: Tabs that follow the WAI-ARIA tabs pattern, with arrow key navigation and one visible panel at a time.\nSteps:\n1. <div role=\"tablist\" aria-label=\"...\"> with <button type=\"button\" role=\"tab\" id=\"tab-x\" aria-selected aria-controls=\"panel-x\">; panels are <div role=\"tabpanel\" id=\"panel-x\" aria-labelledby=\"tab-x\" tabindex=\"0\">.\n2. Roving tabindex: the selected tab has tabindex=\"0\", the others \"-1\"; inactive panels carry hidden.\n3. ArrowRight and ArrowLeft move with wrap, Home and End jump to the ends; select on focus when panels are instant.\n4. Show the selected tab with a 3 px underline and bolder text, not color alone.\n5. On narrow screens the tablist scrolls sideways (overflow-x: auto) and the active tab is scrolled into view.\nQuality bar:\n- Exactly one tab has aria-selected=\"true\".\n- Tab goes from the active tab straight into its panel.\n- Without JS every panel shows in sequence.\nPitfalls:\n- Links styled as tabs that reload the page.\n- Every tab left in the Tab order.\n- Panels hidden with opacity that still take focus.\nVerify:\n- [ ] Roles and aria-controls ids match.\n- [ ] Arrows, Home and End move between tabs.\n- [ ] Inactive panels have hidden.\n- [ ] Ids are unique.\nOutput: Tabs markup in the page, tabs.css and tabs.js wiring every [role=tablist].",
+  "checks": [
+    "html.tabs-a11y",
+    "html.button-type",
+    "html.unique-ids",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "abas de descricao, medidas e avaliacoes no produto",
+      "output": "tablist with three tabs, roving tabindex, ArrowLeft and ArrowRight, panels with aria-labelledby"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

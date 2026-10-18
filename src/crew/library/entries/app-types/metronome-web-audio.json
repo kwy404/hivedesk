@@ -1,0 +1,51 @@
+{
+  "id": "metronome-web-audio",
+  "title": "Metronome with Web Audio scheduling",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "metronome",
+    "bpm",
+    "tempo",
+    "beat",
+    "click track",
+    "music practice",
+    "time signature"
+  ],
+  "when": "The user wants a metronome with adjustable tempo, time signature, accented first beat and tap tempo.",
+  "inputs": [
+    "tempo range",
+    "meters",
+    "sound style"
+  ],
+  "prompt": "Goal: Rock steady clicks scheduled on the audio clock, with visuals that follow the sound.\nSteps:\n1. Create the AudioContext on the first Start click; each click is an OscillatorNode (1000 Hz accent, 800 Hz others) through a GainNode with a 30 ms envelope.\n2. Lookahead: every 25 ms schedule beats falling within the next 100 ms using audioContext.currentTime; timers never play sound directly.\n3. logic.mjs: secondsPerBeat(bpm, subdivision), nextBeat(state), tapTempo(taps) averaging the last 4 intervals and resetting after 2 s, clampBpm 30 to 300.\n4. Controls: linked number and range inputs for BPM, minus and plus, meter select (2/4, 3/4, 4/4, 6/8), Tap, Start and Stop with aria-pressed.\n5. Beat dots driven by requestAnimationFrame from the scheduled times; under prefers-reduced-motion only change color.\n6. Space toggles; last tempo and meter in localStorage guarded.\n7. test.mjs: 120 bpm is 0.5 s apart, accent on beat 0, tap average.\nQuality bar:\n- No drift over 10 minutes.\n- Tempo changes apply on the next beat.\n- Large controls for use at an instrument.\nPitfalls:\n- setInterval clicks that drift and stutter.\n- Creating a new AudioContext per click.\n- Visual and audio out of sync.\nVerify:\n- [ ] Scheduler uses currentTime.\n- [ ] Inputs labeled.\n- [ ] Reduced motion rule present.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (audio and scheduler), logic.mjs (timing), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "metronomo para estudar violao",
+      "output": "60 to 200 bpm, 3/4 and 4/4, accent beat 1, Tap tempo"
+    }
+  ],
+  "size": 404,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "capacitor-camera-geolocation-plugins",
+  "title": "Capacitor camera and location plugins with permissions",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev"
+  ],
+  "tags": [
+    "capacitor",
+    "native plugins",
+    "camera",
+    "geolocation",
+    "permissions",
+    "mobile app",
+    "native bridge",
+    "take photo",
+    "gps"
+  ],
+  "when": "The user wants to call the phone camera or location from a Capacitor app, with permission prompts done right and a web fallback.",
+  "inputs": [
+    "which native features",
+    "why the app needs them (for usage strings)"
+  ],
+  "prompt": "Goal: native.js wraps the camera and location plugins behind small async functions that explain, ask, handle denial and fall back on the web.\nSteps:\n1. Add @capacitor/camera and @capacitor/geolocation, then npx cap sync.\n2. native.js exports takePhoto() and whereAmI(); off native (Capacitor.isNativePlatform() false) use a file input and navigator.geolocation.\n3. const s = await Camera.checkPermissions(); if s.camera is \"prompt\", show a short reason, then Camera.requestPermissions({ permissions: [\"camera\"] }).\n4. On \"denied\", explain the system settings path and stop; never ask in a loop.\n5. Photo: Camera.getPhoto({ quality: 80, width: 1600, resultType: CameraResultType.Uri, source: CameraSource.Prompt }); show photo.webPath in an <img>.\n6. Geolocation.getCurrentPosition({ timeout: 10000, maximumAge: 60000 }); on timeout offer manual entry.\n7. Native usage strings: NSCameraUsageDescription and NSLocationWhenInUseUsageDescription in Info.plist, camera and location permissions in the other platform manifest.\nQuality bar:\n- Permission is asked at the moment of use, after a tap.\nPitfalls:\n- Closing the camera rejects the promise; treat it as cancel, not an error.\n- Missing usage strings crash on first use and fail the store review.\nVerify:\n- [ ] Every plugin call sits in try/catch.\n- [ ] checkPermissions runs before requestPermissions.\n- [ ] Usage strings are listed in the README for both native projects.\nOutput: native.js, the permission UI snippet and README notes on native permission files.",
+  "checks": [
+    "js.async-errors",
+    "js.syntax",
+    "capacitor.config"
+  ],
+  "examples": [
+    {
+      "input": "add take photo and my location buttons to my Capacitor app",
+      "output": "native.js with takePhoto and whereAmI, check then request permissions, cancel handled, web fallback"
+    }
+  ],
+  "size": 433,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "node-scheduled-jobs",
+  "title": "Scheduled jobs with timers in Node",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "schedule",
+    "cron",
+    "scheduler",
+    "timer",
+    "interval",
+    "recurring task",
+    "daily job",
+    "background job",
+    "every hour"
+  ],
+  "when": "A Node process must run a task every few minutes, daily at a set time, or retry later, without an external scheduler.",
+  "inputs": [
+    "tasks and their schedule",
+    "what happens after a restart"
+  ],
+  "prompt": "Goal: Jobs that fire at the right wall clock time, never overlap, survive errors and log every run.\nSteps:\n1. Fixed intervals: chain setTimeout after each run completes instead of setInterval, so slow runs cannot overlap.\n2. Daily at 03:00: compute the delay to the next local occurrence, schedule it, and recompute after each run (absorbs daylight saving shifts).\n3. setTimeout caps near 24.8 days; for longer waits re-check hourly.\n4. Wrap each run in try and catch; log start, end, duration and errors; save lastRun to a small state file so a restart can catch up a missed daily run.\n5. Add a few seconds of jitter when jobs share a minute, and keep a running flag per job.\n6. unref() helper timers; clear all timers on SIGINT and SIGTERM.\nQuality bar:\n- A failing job logs and runs again at its next slot.\n- Times are logged in ISO format with offset.\n- Schedules are configured by name and time.\nPitfalls:\n- setInterval drift and overlap on slow jobs.\n- Adding 86400000 ms for tomorrow, wrong on daylight saving days.\n- Silently losing scheduled work on restart.\nVerify:\n- [ ] No setInterval for long jobs.\n- [ ] Next run recomputed after each run.\n- [ ] Each run inside try and catch.\n- [ ] Signals clear timers.\nOutput: scheduler.mjs with schedule(name, rule, fn) and jobs/*.mjs for each task.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "rodar um backup todo dia às 3 da manhã",
+      "output": "scheduler.mjs computing the next 03:00, try/catch per run, lastRun catch-up after restart"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

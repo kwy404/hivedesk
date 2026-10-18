@@ -1,0 +1,49 @@
+{
+  "id": "multi-page-site",
+  "title": "Multi page site structure",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "architect",
+    "designer"
+  ],
+  "tags": [
+    "multi page",
+    "site structure",
+    "navigation",
+    "header",
+    "footer",
+    "pages",
+    "sitemap"
+  ],
+  "when": "The request needs several pages (home, about, services, contact) that share a header, nav and footer.",
+  "inputs": [
+    "list of pages",
+    "shared navigation items",
+    "brand basics"
+  ],
+  "prompt": "Goal: Several static pages that feel like one site: same header, nav, footer and styles, with correct links.\nSteps:\n1. Write the page list and file names first: index.html, about.html, services.html, contact.html.\n2. Build one page fully, then copy its header, nav and footer exactly into the others.\n3. Mark the current page link with aria-current=\"page\" in each file.\n4. One shared style.css and, if needed, one shared main.js; no per page duplicates.\n5. Use relative links that exist; each page has its own title and meta description.\nQuality bar:\n- Nav order and labels are identical on every page.\n- Each page has a unique, descriptive title.\n- No broken local links.\nPitfalls:\n- Pages drifting apart in markup.\n- Linking to pages that were not written.\n- Same title on every page.\nVerify:\n- [ ] Every local link resolves.\n- [ ] aria-current on the active link.\n- [ ] One h1 per page.\n- [ ] Shared CSS linked everywhere.\nOutput: One HTML file per page, style.css, optional main.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.nav",
+    "html.meta-description",
+    "html.balanced"
+  ],
+  "examples": [
+    {
+      "input": "site com home, sobre, serviços e contato",
+      "output": "4 HTML files sharing header and footer, aria-current per page, one style.css"
+    }
+  ],
+  "size": 282,
+  "version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "name": "my-data-script",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A data script: reads a CSV, groups and sums a column, prints a table or JSON.",
+  "scripts": {
+    "test": "node --test",
+    "sample": "node bin/run.js data/sample.csv --by category --value amount"
+  }
+}

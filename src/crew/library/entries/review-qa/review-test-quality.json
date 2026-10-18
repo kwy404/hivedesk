@@ -1,0 +1,36 @@
+{
+  "id": "review-test-quality",
+  "title": "Test suite quality review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "qa"
+  ],
+  "tags": [
+    "test review",
+    "test quality",
+    "unit tests",
+    "test coverage",
+    "flaky tests",
+    "assertions",
+    "weak tests"
+  ],
+  "when": "The user wants existing tests reviewed: do they test behavior, would they catch bugs, are they reliable and readable.",
+  "inputs": [
+    "the test files",
+    "the code under test"
+  ],
+  "prompt": "Goal: An assessment showing which behaviors are covered, which are missing, and which tests are weak or flaky.\nSteps:\n1. Map behaviors to tests: list public functions and features and mark which tests exercise them, error paths included.\n2. Assertion strength: flag tests without assert, truthy only checks, or whole object snapshots; prefer assert.deepStrictEqual with exact values.\n3. Mutation thinking: flip a condition or add an off by one in each key function; if no test would fail, that is a gap.\n4. Isolation: shared state, order dependence, real time, randomness or network; suggest fixed seeds, injected clocks, fs.mkdtempSync temp dirs.\n5. Readability: names state behavior (returns 0 for an empty cart), one reason to fail, arrange act assert.\n6. List the five most valuable missing tests with inputs and expected outputs.\nQuality bar:\n- Gaps tied to concrete inputs.\n- Flaky sources named with the line.\n- Suggestions use node:test or unittest.\nPitfalls:\n- Equating line coverage with quality.\n- Asking for tests of private details.\n- Missing tests that still pass when the code is deleted.\nVerify:\n- [ ] Behavior to test map exists.\n- [ ] Weak assertions listed.\n- [ ] Isolation issues listed.\n- [ ] Five missing tests proposed.\nOutput: test-review.md with the coverage map, weak tests and proposed cases.",
+  "checks": [
+    "file.test",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "are my tests any good?",
+      "output": "discount() untested for negative totals, 4 tests only assert.ok, one depends on Date.now; 5 proposed cases"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

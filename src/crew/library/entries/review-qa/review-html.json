@@ -1,0 +1,40 @@
+{
+  "id": "review-html",
+  "title": "HTML markup review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "qa"
+  ],
+  "tags": [
+    "html review",
+    "markup review",
+    "semantic html",
+    "validate html",
+    "landmarks",
+    "html check",
+    "page structure review"
+  ],
+  "when": "The user wants HTML pages checked for valid structure, semantics, metadata and accessible markup before shipping.",
+  "inputs": [
+    "the HTML files",
+    "which pages matter most"
+  ],
+  "prompt": "Goal: A markup review confirming document basics, semantic structure and accessible names, each defect with its element and fix.\nSteps:\n1. Basics per page: <!doctype html>, html lang, meta charset first, viewport meta, a unique title and meta description.\n2. Structure: one h1, no skipped heading levels, header, nav, main and footer landmarks, lists for groups of links.\n3. Semantics: button for actions, a for navigation, no clickable div or span, tables only for tabular data with th and scope.\n4. Names: alt on every img (empty for decoration), a label per input, aria-label on icon buttons, link text that makes sense alone.\n5. Hygiene: unique ids, no onclick= or style= attributes, scripts deferred or modules, rel=\"noopener\" on target=\"_blank\".\n6. Nesting: every tag closed, no block inside inline elements, no interactive element inside another (a link inside a button).\nQuality bar:\n- Findings name the tag and where it is (file and nearby text).\n- ARIA proposed only where native HTML cannot do it.\n- Severity per finding.\nPitfalls:\n- Adding roles that repeat native semantics (role=\"button\" on button).\n- Skipping metadata on secondary pages.\n- Treating warnings as blockers.\nVerify:\n- [ ] Each page checked for doctype, lang, title and viewport.\n- [ ] Heading outline written per page.\n- [ ] All images and controls named.\n- [ ] Nesting errors listed.\nOutput: review.md with a per page checklist result and the findings with fixes.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.balanced",
+    "html.unique-ids",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "check the HTML of my 4 page site",
+      "output": "about.html: two h1, missing meta description; contact.html: input without label; index.html ok"
+    }
+  ],
+  "size": 413,
+  "version": 1
+}

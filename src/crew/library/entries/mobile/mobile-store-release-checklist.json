@@ -1,0 +1,41 @@
+{
+  "id": "mobile-store-release-checklist",
+  "title": "App store listing and release checklist",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "ops",
+    "writer"
+  ],
+  "tags": [
+    "app store",
+    "release",
+    "store listing",
+    "signing",
+    "version code",
+    "privacy label",
+    "mobile app",
+    "publish app",
+    "screenshots"
+  ],
+  "when": "A Capacitor or web wrapped app is ready and the user needs every step to ship it to the two phone app stores without a rejection.",
+  "inputs": [
+    "app name and id",
+    "data the app collects",
+    "current version"
+  ],
+  "prompt": "Goal: RELEASE.md, a checklist that covers signing, versions, store assets, privacy answers and review notes for both phone stores.\nSteps:\n1. Accounts: each store needs a paid developer account; note the owner and recovery email, not shared passwords.\n2. Signing: create the upload key once, store it and its passwords in a password manager plus an offline backup; losing it blocks updates.\n3. Versions: a human version (1.4.0) and a build number that is an integer and only grows (versionCode 10400, build 10400); bump both every upload.\n4. Privacy: list every data type collected, why, whether it links to identity, and the SDKs that collect; answer the privacy label and data safety forms from that list; host a privacy policy URL.\n5. Assets: icon 1024 px without transparency, screenshots per required size, short and full description, support URL, age rating answers.\n6. Permissions: each permission has a usage string that explains the user benefit.\n7. Review notes: a demo account created for the reviewer, steps to reach every feature.\n8. Staged rollout at 10 percent, watch crash reports, then 100 percent.\nQuality bar:\n- Each item has an owner and a done box.\n- The privacy answers match what the code really sends.\nPitfalls:\n- A web wrapper with no native value, which reviewers reject as a plain website.\n- Reusing a build number.\nVerify:\n- [ ] RELEASE.md has sections for signing, versions, privacy, assets and review.\n- [ ] Build number rule is written down.\n- [ ] Key backup location is recorded.\nOutput: RELEASE.md and a CHANGELOG entry for the version.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "vou publicar meu app nas lojas pela primeira vez, o que preciso?",
+      "output": "RELEASE.md: upload key backup, integer build numbers, privacy data list, assets, reviewer demo account"
+    }
+  ],
+  "size": 448,
+  "version": 1
+}

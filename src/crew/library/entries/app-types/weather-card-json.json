@@ -1,0 +1,50 @@
+{
+  "id": "weather-card-json",
+  "title": "Weather card from a local JSON file",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "weather",
+    "weather app",
+    "forecast",
+    "weather widget",
+    "temperature",
+    "weather card"
+  ],
+  "when": "The user wants a weather widget or page showing current conditions and a short forecast, read from a local JSON file instead of a live service.",
+  "inputs": [
+    "location",
+    "data fields",
+    "units"
+  ],
+  "prompt": "Goal: A clear weather card and forecast that validates its data file and fails gracefully.\nSteps:\n1. weather.json { location, updatedAt, current: { temp, feelsLike, humidity, windKph, code }, daily: [{ date, min, max, code, rainChance }] }; fetch and parse in try and catch.\n2. logic.mjs: describe(code) to a label and icon name with a fallback, toFahrenheit, formatDay(date, locale) from local date parts, validateWeather listing missing fields.\n3. Card: location h2, big temperature with unit, condition label, feels like, humidity, wind, \"Updated 10:30\".\n4. Forecast list of 5 to 7 days: weekday, inline SVG icon with a title, min and max, rain chance as text.\n5. C and F toggle with aria-pressed, remembered in localStorage guarded; theme per condition with contrast kept.\n6. Error card when the file is missing or invalid; footer says the data is from a local file.\n7. test.mjs: conversion, unknown code fallback, validation.\nQuality bar:\n- Units always shown.\n- Icons have text equivalents.\n- Readable at 320 px.\nPitfalls:\n- UTC parsing that shows the wrong weekday.\n- Blank page on bad JSON.\n- Light text on a sunny yellow theme.\nVerify:\n- [ ] JSON.parse guarded.\n- [ ] SVGs titled.\n- [ ] Toggle pressed state.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs, weather.json, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.svg-a11y",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "card de previsao do tempo lendo um json",
+      "output": "Sao Paulo 24 C, partly cloudy, 6 day list with icons, C/F toggle"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

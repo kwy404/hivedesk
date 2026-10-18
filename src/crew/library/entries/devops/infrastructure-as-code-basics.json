@@ -1,0 +1,39 @@
+{
+  "id": "infrastructure-as-code-basics",
+  "title": "Infrastructure as code basics with honest scope",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "architect"
+  ],
+  "tags": [
+    "infrastructure as code",
+    "iac",
+    "provisioning",
+    "server setup",
+    "declarative infrastructure",
+    "state file",
+    "drift",
+    "reproducible servers"
+  ],
+  "when": "The user wants servers, DNS or cloud resources described as files in the repository instead of set up by hand, and needs to know what is worth automating.",
+  "inputs": [
+    "current resources",
+    "number of environments",
+    "team size"
+  ],
+  "prompt": "Goal: The infrastructure the project really has, as reviewable files changed only after reading a plan, sized to the team.\nSteps:\n1. List servers, DNS records, buckets, firewall rules and certificates, and who created each.\n2. Pick the smallest approach: for one or two servers an idempotent provisioning script plus versioned config files is honest and enough; a declarative IaC tool pays off with many resources or environments.\n3. infra/staging and infra/production share small modules; names and sizes are variables.\n4. Read the plan diff before every apply; apply only from CI or one documented machine.\n5. State lives remote, locked and encrypted; never commit state files, which often hold secrets.\n6. Secrets are injected at apply time from the secret store, never written in files.\n7. Import existing resources instead of recreating them; a weekly scheduled plan reveals drift from manual edits.\n8. infra/README.md says what is managed, what is manual and how to recover state.\nQuality bar:\n- A new environment can be built from the files alone.\n- Every change appears in review as a diff.\n- Manual changes are rare and written down.\nPitfalls:\n- Codifying everything at once and stalling; start with DNS and firewall.\n- Concurrent applies without state locking.\n- Approving a destroy plan without reading it.\nVerify:\n- [ ] State files ignored by version control.\n- [ ] No secret values in infra files.\n- [ ] Plan before apply documented.\n- [ ] Managed and manual lists exist.\nOutput: the infra/ folder with one folder per environment and infra/README.md.",
+  "checks": [
+    "file.readme",
+    "sec.no-secrets",
+    "file.nonempty"
+  ],
+  "examples": [
+    {
+      "input": "quero descrever meu servidor e DNS em codigo",
+      "output": "infra/ with staging and production folders, shared module, remote locked state, plan before apply, README listing managed and manual parts"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

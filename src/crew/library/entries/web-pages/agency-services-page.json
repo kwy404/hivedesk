@@ -1,0 +1,49 @@
+{
+  "id": "agency-services-page",
+  "title": "Agency or studio services site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "agency",
+    "studio",
+    "services",
+    "case studies",
+    "consulting",
+    "b2b"
+  ],
+  "when": "The user wants a site for an agency, studio or consultant that sells services.",
+  "inputs": [
+    "agency name",
+    "services",
+    "clients or case studies",
+    "process",
+    "contact"
+  ],
+  "prompt": "Goal: Show what you do, proof it works, and how a project with you goes.\nSteps:\n1. Hero naming the service and the client type, with one contact action.\n2. Services as cards, each with the outcome and what is included.\n3. Case studies: client type, challenge, what was done, measurable result.\n4. Process in four or five numbered steps with timing.\n5. Contact form or booking link plus email.\nQuality bar:\n- Results are specific and come from the user.\n- Services avoid jargon.\n- The process sets expectations.\nPitfalls:\n- Logo walls of clients the user did not mention.\n- Vague service names.\n- Too many fonts and effects.\nVerify:\n- [ ] One h1.\n- [ ] Process uses an ordered list.\n- [ ] Contact path exists twice.\n- [ ] Works at 375 px.\nOutput: index.html and style.css with services, cases, process and contact.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "css.contrast"
+  ],
+  "examples": [
+    {
+      "input": "site for my small marketing studio",
+      "output": "hero, 3 services with outcomes, 2 case studies with results, 5 step process, contact"
+    }
+  ],
+  "size": 233,
+  "version": 1
+}

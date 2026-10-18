@@ -1,0 +1,33 @@
+{
+  "id": "order-by-dependencies",
+  "title": "Ordering tasks by dependencies",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "dependencies",
+    "order",
+    "sequence",
+    "dependson",
+    "blocking",
+    "parallel",
+    "prerequisite"
+  ],
+  "when": "A plan has several tasks and the foreman must set what runs first and what can run side by side.",
+  "inputs": [
+    "the task list with files",
+    "shared names between files"
+  ],
+  "prompt": "Goal: A dependency list with no cycles, where each task waits only for the files it actually reads.\nSteps:\n1. For each task, list the files it reads that another task writes; those writers are its dependencies.\n2. Put producers of shared contracts first: data files, tokens.css, the markup that defines ids.\n3. Let tasks that only share a contract on paper (names agreed in the plan) run in parallel.\n4. Make docs depend on the code they describe, and QA depend on every build task.\n5. Check for cycles: if A needs B and B needs A, move the shared part into its own earlier task.\n6. Number tasks in run order so dependsOn only points backward.\nQuality bar:\n- Each dependency has a file reason.\n- The longest chain is as short as the files allow.\n- No dependency points forward.\nPitfalls:\n- Making every task depend on the previous one out of habit.\n- Docs written before the code exists.\n- Styles waiting for scripts they never read.\nVerify:\n- [ ] dependsOn values are earlier task numbers.\n- [ ] Each one is explained by a file read.\n- [ ] QA depends on all build tasks.\n- [ ] No cycle.\nOutput: The task list in run order with dependsOn arrays and a reason per dependency.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "data.json, app.js, style.css, README",
+      "output": "1 data.json; 2 app.js after 1; 3 style.css (free); 4 README after 2; 5 qa after 1 to 4"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "mobile-media-for-phones",
+  "title": "Images and video sized for phones and data saver",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "images",
+    "video",
+    "mobile data",
+    "data saver",
+    "lazy loading",
+    "art direction",
+    "mobile app",
+    "portrait",
+    "playsinline",
+    "poster"
+  ],
+  "when": "Phone users download huge photos or autoplay videos on mobile data, or portrait screens crop the important part of wide images.",
+  "inputs": [
+    "image and video list",
+    "layout widths on phone"
+  ],
+  "prompt": "Goal: Media that loads only what a phone screen shows, crops well in portrait and respects data saver.\nSteps:\n1. Cap pixel density at 2x: a 360 px wide slot needs at most a 720 px image; skip 3x files.\n2. Art direction with <picture>: <source media=\"(max-width: 600px)\" srcset=\"hero-tall-720.webp\"> for a portrait crop, then the wide <img> as default.\n3. Every <img> gets width, height, alt, decoding=\"async\" and loading=\"lazy\", except the first visible image, which gets fetchpriority=\"high\" and no lazy.\n4. Video: <video playsinline muted preload=\"none\" poster=\"clip-poster.jpg\"> with a play button; never autoplay with sound.\n5. Data saver: if navigator.connection?.saveData is true, swap autoplay previews for posters and load the low quality sources.\n6. Serve AVIF or WebP with a JPEG fallback; aim for under 150 KB per image above the fold.\n7. Use aspect-ratio on media boxes so slow images do not shift text.\nQuality bar:\n- The first screen downloads under 500 KB of media on a phone.\n- Faces and products stay inside the portrait crop.\nPitfalls:\n- Lazy loading the hero image, which delays paint.\n- Background images in CSS that skip srcset entirely.\n- Video without playsinline jumping to full screen.\nVerify:\n- [ ] Images have width, height and alt.\n- [ ] Only below the fold images are lazy.\n- [ ] Videos use playsinline and a poster.\nOutput: updated markup in the HTML files and a media.js data saver helper.",
+  "checks": [
+    "html.img-dimensions",
+    "html.lazy-images",
+    "html.img-alt"
+  ],
+  "examples": [
+    {
+      "input": "as fotos do meu site pesam muito no 4G",
+      "output": "picture with portrait crop, 2x cap, lazy below fold, playsinline posters, saveData swap"
+    }
+  ],
+  "size": 406,
+  "version": 1
+}

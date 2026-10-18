@@ -1,0 +1,41 @@
+{
+  "id": "mobile-auth-secure-token-storage",
+  "title": "Phone sign in flow and secure token storage",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "security",
+    "dev"
+  ],
+  "tags": [
+    "authentication",
+    "login",
+    "token storage",
+    "secure storage",
+    "pkce",
+    "oauth",
+    "mobile app",
+    "refresh token",
+    "biometric",
+    "session"
+  ],
+  "when": "The phone app signs users in and must keep tokens on the device without leaving them in plain storage or in the WebView history.",
+  "inputs": [
+    "identity provider or own API",
+    "web app or Capacitor shell"
+  ],
+  "prompt": "Goal: auth.js signs in with authorization code plus PKCE, keeps the access token in memory and the refresh token in the safest store the platform offers.\nSteps:\n1. code_verifier: 32 random bytes from crypto.getRandomValues, base64url; code_challenge: its SHA-256 via crypto.subtle.digest.\n2. Open the sign in page in the system browser (@capacitor/browser Browser.open), not inside the app WebView, and return through a verified app link.\n3. On the redirect, check state, exchange the code at the token endpoint and close the browser.\n4. Keep the access token only in a module variable; refresh it shortly before expiry.\n5. Native shell: store the refresh token through a secure storage plugin backed by the OS keychain or keystore; the Preferences plugin is not encrypted and is not enough.\n6. Web only: let the server keep the refresh token in an HttpOnly, Secure, SameSite=Strict cookie; nothing secret in localStorage or IndexedDB.\n7. Sign out deletes the stored token, calls the revoke endpoint and clears memory.\nQuality bar:\n- No token appears in a URL, log line or crash report.\n- A stolen backup file holds no usable token.\nPitfalls:\n- Embedding a client secret in the app bundle; public clients use PKCE without a secret.\n- Implicit flow with tokens in the URL fragment.\nVerify:\n- [ ] PKCE verifier and state are checked.\n- [ ] No token written to localStorage.\n- [ ] No secrets in client files.\nOutput: auth.js, the redirect handler and a SECURITY note in the README.",
+  "checks": [
+    "sec.no-secrets",
+    "js.async-errors",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "onde guardo o token de login no app do celular?",
+      "output": "PKCE sign in in the system browser, access token in memory, refresh token in keychain backed storage"
+    }
+  ],
+  "size": 423,
+  "version": 1
+}

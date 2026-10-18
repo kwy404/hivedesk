@@ -1,0 +1,43 @@
+{
+  "id": "css-grid-flex-layout",
+  "title": "Page layout with CSS grid and flexbox",
+  "category": "stacks",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "css",
+    "layout",
+    "grid",
+    "flexbox",
+    "flex",
+    "columns",
+    "sidebar",
+    "centering",
+    "sticky footer",
+    "card grid"
+  ],
+  "when": "The user needs columns, a sidebar layout, a card grid, centering or a footer that stays at the bottom, or a layout that breaks on small screens.",
+  "inputs": [
+    "regions of the page",
+    "how many columns on wide screens",
+    "maximum content width"
+  ],
+  "prompt": "Goal: A layout that adapts from 320 px to wide screens, grid for two dimensions and flex for one, with no horizontal scroll.\nSteps:\n1. Reset: *, *::before, *::after { box-sizing: border-box }, body { margin: 0 }, img { max-width: 100%; height: auto }.\n2. Page frame: body { display: grid; grid-template-rows: auto 1fr auto; min-height: 100dvh } keeps the footer at the bottom.\n3. Content width: .container { width: min(100% - 2rem, 70rem); margin-inline: auto }.\n4. Card grids: grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr)) with gap, no media query needed.\n5. Sidebar: one column by default, grid-template-columns: 16rem 1fr inside @media (min-width: 48rem).\n6. Rows (toolbar, tags, nav): flex with flex-wrap: wrap and gap; push one item right with margin-inline-start: auto; center with display: grid; place-items: center.\nQuality bar:\n- Spacing comes from gap, not margins on children.\n- Visual order matches source order for keyboard users.\n- Long URLs wrap (overflow-wrap: anywhere).\nPitfalls:\n- Fixed pixel widths that overflow at 375 px.\n- Floats or absolute positioning for columns.\n- height: 100vh on phones, which hides content under the toolbars.\nVerify:\n- [ ] border-box reset present.\n- [ ] An auto-fit grid or a min-width media query exists.\n- [ ] No px width above 400 outside media queries.\n- [ ] No sideways scroll at 320 px.\nOutput: style.css with commented layout blocks; the HTML uses the class names it defines.",
+  "checks": [
+    "css.braces",
+    "css.media-query",
+    "css.box-sizing",
+    "css.no-fixed-width",
+    "css.no-important"
+  ],
+  "examples": [
+    {
+      "input": "quero um layout com barra lateral e cards que se ajustem no celular",
+      "output": "body grid with header, main, footer; sidebar from 48rem; auto-fit card grid with minmax(16rem, 1fr)"
+    }
+  ],
+  "size": 416,
+  "version": 1
+}

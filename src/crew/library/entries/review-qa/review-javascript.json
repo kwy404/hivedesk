@@ -1,0 +1,39 @@
+{
+  "id": "review-javascript",
+  "title": "JavaScript code review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "javascript review",
+    "js review",
+    "code review",
+    "review code",
+    "pull request",
+    "async bugs",
+    "dom code"
+  ],
+  "when": "The user asks to review JavaScript (browser scripts or shared modules) for bugs, risky patterns and readability before merging.",
+  "inputs": [
+    "the files or the diff",
+    "what the change should do"
+  ],
+  "prompt": "Goal: A review that finds real JavaScript defects first (logic, async, DOM safety, state), each tied to a line and a fix.\nSteps:\n1. Read the intent, then parse each file (node --check or a careful read); a parse error is a blocker.\n2. Logic: off by one in loops and slices, loose == against null or 0, switch without default, mutation of arrays and objects passed in.\n3. Async: every await inside try or followed by .catch; no floating promises in event handlers; races when two responses arrive out of order (request id or AbortController).\n4. DOM: user text through textContent, never innerHTML with variables; listeners attached once, not inside render loops.\n5. State: JSON.parse and localStorage wrapped in try; storage keys versioned; no globals leaking out of modules.\n6. Readability last: functions over 40 lines, vague names, dead code, leftover console.log, marked minor.\nQuality bar:\n- Each finding has file:line, severity (blocker, major, minor, nit) and a suggested change.\n- Blockers listed first.\n- No nits a formatter would fix.\nPitfalls:\n- Approving code you never parsed.\n- Twenty nits burying one real bug.\n- Rewriting the design instead of reviewing it.\nVerify:\n- [ ] Every JS file was parsed.\n- [ ] Each async path checked for errors.\n- [ ] Every innerHTML use inspected.\n- [ ] Verdict: approve, approve with changes, or request changes.\nOutput: review.md: a # title, the verdict line, then findings grouped by severity with file:line and fix.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "js.strict-equality",
+    "js.no-console-log",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "revise o codigo JavaScript do carrinho antes de eu publicar",
+      "output": "request changes: blocker innerHTML with product name at cart.js:42, major unhandled fetch rejection, 3 nits"
+    }
+  ],
+  "size": 419,
+  "version": 1
+}

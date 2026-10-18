@@ -1,0 +1,38 @@
+{
+  "id": "architect-interface-contracts",
+  "title": "Architect: interface contracts between files",
+  "category": "roles",
+  "roles": [
+    "architect",
+    "dev"
+  ],
+  "tags": [
+    "architect",
+    "interface",
+    "contract",
+    "exports",
+    "function signature",
+    "data shape",
+    "module boundary",
+    "api between files"
+  ],
+  "when": "Several workers write files that call each other (markup and script, modules, data and renderer) and must agree on names first.",
+  "inputs": [
+    "the file list and owners",
+    "what each file provides"
+  ],
+  "prompt": "Goal: A written contract per boundary (exported functions, DOM ids, data shapes, events) that both sides can code against without reading each other.\nSteps:\n1. List each boundary as provider to consumer: index.html to app.js, store.js to ui.js, data.json to render.js.\n2. For modules write exact signatures: export function addItem(list, item) returns a new array; say what it throws.\n3. For markup write the ids and classes the script needs, and the data attributes it reads (data-id).\n4. For data write one JSON example with every field and its type; mark optional fields.\n5. For custom events write the name and the detail shape: cart:changed with { count }.\n6. Freeze the contract for the job; a change needs a note to every owner on both sides.\nQuality bar:\n- Each boundary has both sides named.\n- Signatures include return values and errors.\n- Examples use real looking values.\nPitfalls:\n- Contracts that say \"a list of items\" with no fields.\n- Ids picked by the dev and unknown to the designer.\n- Changing a name in one file and not the contract.\nVerify:\n- [ ] Every cross file call appears in the contract.\n- [ ] JSON examples parse.\n- [ ] Ids match the markup task.\n- [ ] Owners are named per side.\nOutput: CONTRACTS.md with one section per boundary and fenced code for signatures and examples.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "app de receitas com busca e favoritos",
+      "output": "store.js: export getFavorites(): string[]; index.html ids #search, #results; recipes.json example"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

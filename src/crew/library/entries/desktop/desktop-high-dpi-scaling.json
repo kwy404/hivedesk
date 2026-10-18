@@ -1,0 +1,41 @@
+{
+  "id": "desktop-high-dpi-scaling",
+  "title": "High DPI screens and display scaling",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "high dpi",
+    "retina",
+    "scaling",
+    "devicepixelratio",
+    "blurry",
+    "desktop app",
+    "canvas",
+    "icons",
+    "4k",
+    "zoom"
+  ],
+  "when": "The desktop app looks blurry or tiny on 4K or scaled displays, canvas drawings are fuzzy, or moving the window to another monitor breaks sizes.",
+  "inputs": [
+    "icons and images used",
+    "canvas or chart drawing in the app"
+  ],
+  "prompt": "Goal: Crisp text, icons and canvas at 100 to 300 percent scaling, and layouts sized in CSS pixels that move cleanly between monitors.\nSteps:\n1. Size everything in CSS px and rem; the WebView applies the OS scale, so never multiply sizes by devicePixelRatio in CSS.\n2. Icons as inline SVG or an SVG sprite with currentColor; raster images exported at 2x with width and height set to the 1x size.\n3. Canvas: const r = window.devicePixelRatio || 1; canvas.width = cssW * r; canvas.height = cssH * r; ctx.setTransform(r, 0, 0, r, 0, 0); style width and height stay cssW and cssH.\n4. Redraw when the ratio changes: matchMedia(\"(resolution: \" + r + \"dppx)\").addEventListener(\"change\", redraw), which fires when the window moves to another monitor.\n5. App icons for the OS: .ico with 16, 24, 32, 48 and 256 px layers; .icns with up to 1024 px; PNG 512 px for linux.\n6. Window sizes in config are logical pixels; test minWidth at 150 percent scale.\n7. Draw 1 px lines on canvas at half pixel offsets (x + 0.5) only when r is 1.\nQuality bar:\n- No blurry icons at 200 percent.\n- Canvas text is as sharp as HTML text.\nPitfalls:\n- A canvas sized only with CSS, which stretches its bitmap.\n- Hard coded 1x PNG icons.\nVerify:\n- [ ] Canvas backing size uses devicePixelRatio.\n- [ ] Icons are SVG or 2x raster.\n- [ ] Checked at 100, 150 and 200 percent.\nOutput: canvas helper hidpi.js, icon set and CSS updates.",
+  "checks": [
+    "js.syntax",
+    "html.img-dimensions",
+    "css.custom-properties"
+  ],
+  "examples": [
+    {
+      "input": "meu app desktop fica borrado no monitor 4K",
+      "output": "Canvas backing store times devicePixelRatio, SVG icons, resolution change listener, multi size .ico"
+    }
+  ],
+  "size": 399,
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "id": "mobile-web-bundle-versioning",
+  "title": "Updating and versioning the web bundle in a phone app",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "app update",
+    "versioning",
+    "web bundle",
+    "update prompt",
+    "mobile app",
+    "new version",
+    "cache busting",
+    "native version",
+    "compatibility"
+  ],
+  "when": "The phone app ships web code as a PWA or inside a native shell and needs version numbers, an update prompt and rules for when a store release is required.",
+  "inputs": [
+    "how the bundle is delivered",
+    "current native and web versions"
+  ],
+  "prompt": "Goal: Every build carries a web version and a minimum native version, users get a calm \"update ready\" prompt, and incompatible bundles are never loaded.\nSteps:\n1. Build writes version.json: { \"web\": \"2.3.0\", \"build\": 230, \"minNative\": \"1.4.0\" } and injects the same web version into app.js.\n2. PWA path: on registration \"updatefound\", watch the installing worker; when reg.waiting exists show \"New version ready, reload\".\n3. On tap, post { type: \"SKIP_WAITING\" } to reg.waiting; sw.js calls self.skipWaiting(); the page reloads once on \"controllerchange\" behind a reloaded flag.\n4. Never call skipWaiting automatically while a user has unsaved input.\n5. Native shell: compare minNative with the shell version from App.getInfo(); if the shell is older, show \"Update from the store\" and keep the bundled web code.\n6. Store rules allow updating web code without review only for fixes and content, not new features that change the app purpose; new native plugins always need a store release.\n7. Show the web and native versions on the About screen and send them with bug reports.\nQuality bar:\n- An update never interrupts typing.\n- A bundle that needs a newer plugin is refused.\nPitfalls:\n- Reload loops from listening to controllerchange without a flag.\n- Caching version.json itself, so no update is ever seen.\nVerify:\n- [ ] version.json parses with web, build and minNative.\n- [ ] The waiting worker only activates after a tap.\n- [ ] About screen shows both versions.\nOutput: version.json, update.js, the message handler in sw.js and CHANGELOG.md.",
+  "checks": [
+    "json.valid",
+    "pwa.service-worker",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "como aviso o usuario que tem versão nova do app?",
+      "output": "version.json with minNative, waiting worker prompt, SKIP_WAITING on tap, store update notice"
+    }
+  ],
+  "size": 442,
+  "version": 1
+}

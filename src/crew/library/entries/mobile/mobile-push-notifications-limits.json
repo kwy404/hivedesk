@@ -1,0 +1,40 @@
+{
+  "id": "mobile-push-notifications-limits",
+  "title": "Push notifications on phones and their real limits",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "backend"
+  ],
+  "tags": [
+    "push notifications",
+    "web push",
+    "notifications",
+    "mobile app",
+    "vapid",
+    "permission",
+    "device token",
+    "reminders"
+  ],
+  "when": "The user wants the phone app to receive push messages and needs the client code, the permission flow and a frank list of what push cannot promise.",
+  "inputs": [
+    "what events trigger a push",
+    "web app or store app",
+    "server language"
+  ],
+  "prompt": "Goal: A working push path (subscribe, store, send, show, open) with a permission ask at the right moment and the platform limits written down.\nSteps:\n1. Channel: web push via the service worker, or @capacitor/push-notifications in the store app; both need your server to send.\n2. Ask only after a tap on \"Notify me about replies\"; Notification.requestPermission() resolves \"granted\", \"denied\" or \"default\".\n3. Web: reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey }) with the VAPID public key; POST the subscription JSON to the server.\n4. The server signs with the VAPID private key from an env variable and drops subscriptions answering 404 or 410.\n5. sw.js: on \"push\" event.waitUntil(self.registration.showNotification(title, { body, tag, data: { url } })); on \"notificationclick\" call clients.openWindow(data.url).\n6. Native: PushNotifications.requestPermissions(), register(), then the \"registration\" event gives the device token.\n7. Limits: on one phone OS web push needs the app on the home screen; delivery can be late or dropped; users revoke anytime; native push needs vendor credentials and a developer account.\nQuality bar:\n- Every push carries a url that opens the right screen.\nPitfalls:\n- Asking for permission on first load, which gets a permanent \"denied\".\nVerify:\n- [ ] Permission is requested inside a click handler.\n- [ ] sw.js handles push and notificationclick.\n- [ ] No private key in any client file.\nOutput: push.js, the push handlers in sw.js and a LIMITS section in the README.",
+  "checks": [
+    "pwa.service-worker",
+    "js.async-errors",
+    "sec.no-secrets"
+  ],
+  "examples": [
+    {
+      "input": "quero mandar notificação push pro celular quando chegar mensagem",
+      "output": "Subscribe after tap, VAPID key from env, sw.js push and click handlers, README limits section"
+    }
+  ],
+  "size": 436,
+  "version": 1
+}

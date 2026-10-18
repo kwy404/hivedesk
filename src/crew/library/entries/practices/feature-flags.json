@@ -1,0 +1,37 @@
+{
+  "id": "feature-flags",
+  "title": "Feature flags for gradual changes",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "feature flags",
+    "feature toggle",
+    "flags",
+    "rollout",
+    "experiment",
+    "kill switch",
+    "beta feature"
+  ],
+  "when": "The user wants to ship a feature hidden, turn it on for some users, or keep a quick off switch for risky code.",
+  "inputs": [
+    "the features to flag",
+    "who controls them (config file, query param, user setting)"
+  ],
+  "prompt": "Goal: Simple, typed flags read in one place, with the old path kept working until the flag is removed.\nSteps:\n1. Create flags.json with each flag, its default and a short description: { \"newCheckout\": false }.\n2. Write isEnabled(name) that reads defaults, then overrides from config or a ?flags=newCheckout query param for testing.\n3. For per visitor flags, store the choice in localStorage inside try and catch; for percentages, hash a stable id and compare to the rollout percent.\n4. Branch at one entry point (choose which component or handler to use), not in many scattered ifs.\n5. Log or show which flags are active in a debug panel.\n6. Add a removal note per flag and delete the flag and dead branch once the feature is final.\nQuality bar:\n- Unknown flag names throw in development.\n- Both paths are tested while the flag exists.\n- Defaults are safe (off for new risk).\nPitfalls:\n- Flags that live forever.\n- Nested flags depending on each other.\n- Random rollout per page load instead of a stable bucket.\nVerify:\n- [ ] flags.json is valid.\n- [ ] Each flag is read through isEnabled.\n- [ ] Storage access is guarded.\n- [ ] Files parse.\nOutput: flags.json, flags.js and the branched entry points.",
+  "checks": [
+    "json.valid",
+    "js.syntax",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "quero lançar o novo carrinho só para alguns usuários",
+      "output": "flags.json newCart false, 10 percent rollout by hashed visitor id, ?flags=newCart override"
+    }
+  ],
+  "size": 344,
+  "version": 1
+}

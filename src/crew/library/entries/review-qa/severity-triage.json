@@ -1,0 +1,36 @@
+{
+  "id": "severity-triage",
+  "title": "Bug severity and priority triage",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "mel"
+  ],
+  "tags": [
+    "triage",
+    "severity",
+    "priority",
+    "bug triage",
+    "blocker",
+    "critical bug",
+    "bug list",
+    "what to fix first"
+  ],
+  "when": "There is a list of bugs or QA findings and the user wants them ranked so the most important get fixed first.",
+  "inputs": [
+    "the findings",
+    "the release date or goal"
+  ],
+  "prompt": "Goal: Every finding labeled with severity (impact) and priority (order), duplicates merged, and a fix order the team can follow.\nSteps:\n1. Normalize each item: one problem, a clear title, steps or location.\n2. Merge duplicates and group findings with the same root cause under one item.\n3. Severity by impact: S1 data loss, security hole or main task impossible; S2 main task hard or wrong with a workaround; S3 minor defect; S4 cosmetic.\n4. Priority from impact, reach and effort: P1 before release, P2 next, P3 later; an S3 on the home page can outrank an S2 in a hidden setting.\n5. Mark release blockers and note what to retest after each fix.\n6. Sort by priority, then severity.\nQuality bar:\n- Severity and priority both set and not confused.\n- Each S1 and P1 has a one line reason.\n- No item left unlabeled.\nPitfalls:\n- Everything marked critical.\n- Ranking by who reported it.\n- One root cause split into many tickets.\nVerify:\n- [ ] Duplicates merged.\n- [ ] Every row has S and P.\n- [ ] Blockers at the top.\n- [ ] Retest notes present.\nOutput: triage.md with the sorted table and the blockers list.",
+  "checks": [
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "tenho 18 bugs, quais corrijo antes de lancar?",
+      "output": "18 to 13 after merging; 2 blockers (S1 P1 order lost on reload, S2 P1 checkout on phones), rest P2 and P3"
+    }
+  ],
+  "size": 316,
+  "version": 1
+}

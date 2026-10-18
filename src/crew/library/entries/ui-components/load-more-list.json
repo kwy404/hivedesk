@@ -1,0 +1,40 @@
+{
+  "id": "load-more-list",
+  "title": "Load more list with optional infinite scroll",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "load more",
+    "infinite scroll",
+    "show more",
+    "more results",
+    "feed",
+    "lazy list",
+    "endless scroll"
+  ],
+  "when": "The user wants a list that shows a first batch and loads more items on a button press or near the end of the scroll.",
+  "inputs": [
+    "the items or a local JSON file",
+    "batch size",
+    "button only or infinite scroll"
+  ],
+  "prompt": "Goal: A list that appends batches through one function, keeps keyboard focus sensible and always leaves the footer reachable.\nSteps:\n1. Render the first batch of N items in a <ul>, then <button type=\"button\">Load more</button> below it.\n2. loadMore() takes the next N items from the array, or from fetch of a relative JSON file with JSON.parse errors caught, and builds each li with createElement.\n3. While loading set aria-busy=\"true\" on the list and disable the button; afterwards move focus to the first new item (tabindex=\"-1\").\n4. Announce Showing 20 of 48 in a role=\"status\" region; at the end hide the button and say All 48 shown.\n5. Infinite scroll: an IntersectionObserver on a sentinel calls the same loadMore(), stops after 3 automatic loads and leaves the button.\nQuality bar:\n- The count of shown and total is always visible.\n- Failures show a Retry button, not a silent stop.\n- Scroll position does not jump on append.\nPitfalls:\n- Endless loading that makes the footer unreachable.\n- Items built with innerHTML from data.\n- Several loads firing at once.\nVerify:\n- [ ] The button has a type and a clear label.\n- [ ] The status region updates after each batch.\n- [ ] Focus moves to the new items.\n- [ ] Loading stops at the end.\nOutput: List markup, list.css and load-more.js, plus items.json when the data is separate.",
+  "checks": [
+    "html.aria-live",
+    "html.button-type",
+    "js.safe-dom",
+    "js.json-parse-guarded",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "lista de posts com botao carregar mais",
+      "output": "ul with 10 posts, Load more adds 10 from posts.json, status Showing 20 of 46, focus on the first new post"
+    }
+  ],
+  "size": 381,
+  "version": 1
+}

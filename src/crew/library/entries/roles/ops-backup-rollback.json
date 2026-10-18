@@ -1,0 +1,36 @@
+{
+  "id": "ops-backup-rollback",
+  "title": "Ops: backup and rollback plan",
+  "category": "roles",
+  "roles": [
+    "ops"
+  ],
+  "tags": [
+    "ops",
+    "backup",
+    "rollback",
+    "undo",
+    "restore",
+    "recovery",
+    "risky change"
+  ],
+  "when": "A change could damage files or data (bulk edits, migrations, deletes, a new version replacing an old one) and must be undoable.",
+  "inputs": [
+    "the files or data at risk",
+    "the change planned"
+  ],
+  "prompt": "Goal: A backup made and verified before the change, and written rollback steps that restore the previous state in minutes.\nSteps:\n1. List exactly what the change touches: files, folders, stored data.\n2. Copy them into a dated backup folder inside the workspace (backup-2026-10-17/) keeping relative paths.\n3. Verify the backup: same file count and sizes, and one file opened to confirm it is readable.\n4. Write ROLLBACK.md: when to roll back (signals), the exact copy commands or steps to restore, and how to confirm it worked.\n5. Run the change; check the result against its criteria.\n6. Keep the backup until the user confirms; never delete it in the same job.\nQuality bar:\n- Backup exists before the first change.\n- Rollback steps are copyable.\n- Restored state can be confirmed.\nPitfalls:\n- Backups outside the workspace or overwritten by the next run.\n- Rollback steps that were never thought through until needed.\n- Backing up only part of what changes.\nVerify:\n- [ ] Backup folder is dated.\n- [ ] Counts match.\n- [ ] ROLLBACK.md has signals, steps, confirmation.\n- [ ] Backup kept.\nOutput: A dated backup folder and ROLLBACK.md.",
+  "checks": [
+    "md.h1",
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "vou renomear todas as fotos, faz backup antes",
+      "output": "backup-2026-10-17/photos (412 files), ROLLBACK.md: copy folder back, compare count 412"
+    }
+  ],
+  "size": 325,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "app-data-model-design",
+  "title": "Data model design for an app",
+  "category": "data",
+  "roles": [
+    "architect",
+    "dev"
+  ],
+  "tags": [
+    "data model",
+    "entities",
+    "database design",
+    "schema design",
+    "relations",
+    "fields",
+    "erd",
+    "model the data"
+  ],
+  "when": "Before building an app that stores records (tasks, orders, members, bookings), or when the data shape is messy and needs a redesign.",
+  "inputs": [
+    "features of the app",
+    "records it keeps"
+  ],
+  "prompt": "Goal: A written model of entities, fields, relations and rules that code, storage and API all follow.\nSteps:\n1. Take the nouns of the request; those with their own life cycle become entities (Customer, Order, OrderLine), the rest become fields.\n2. Per entity: fields with type, required, default, limits and an example; always id (UUID string), createdAt, updatedAt as ISO strings.\n3. One to many by a foreign id on the many side (order.customerId); many to many through a join entity with its own fields.\n4. Store facts and derive the rest (quantity and unitPriceCents, not totals); status as an enum with allowed transitions.\n5. Normalize stored data; denormalize only for rebuildable view caches. Decide soft or hard delete and cascades.\n6. Write sample JSON per entity and a format version.\nQuality bar:\n- Every field serves a feature.\n- Consistent naming (camelCase fields, singular entities).\n- Money in integer minor units, dates in ISO 8601.\nPitfalls:\n- Stored totals that drift from their lines.\n- Names or emails used as ids.\n- Deep nesting edited from several places.\nVerify:\n- [ ] Each entity lists fields, types and an example.\n- [ ] Relations and delete rules stated.\n- [ ] Status transitions documented.\n- [ ] Sample JSON parses.\nOutput: docs/data-model.md with a section per entity and data/sample.json with example records.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "planeja os dados de um app de agendamento de salão",
+      "output": "Client, Professional, Service, Appointment with status transitions, priceCents, sample.json"
+    }
+  ],
+  "size": 383,
+  "version": 1
+}

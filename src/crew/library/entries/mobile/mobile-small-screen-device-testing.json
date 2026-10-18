@@ -1,0 +1,39 @@
+{
+  "id": "mobile-small-screen-device-testing",
+  "title": "Testing on small screens, emulators and real phones",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "qa"
+  ],
+  "tags": [
+    "mobile testing",
+    "small screens",
+    "emulator",
+    "simulator",
+    "device testing",
+    "responsive test",
+    "remote debugging",
+    "mobile app",
+    "qa"
+  ],
+  "when": "Before release the phone app must be checked on narrow screens, both phone OSes, slow networks and real hardware, with results written down.",
+  "inputs": [
+    "main flows to test",
+    "available devices"
+  ],
+  "prompt": "Goal: TESTING-MOBILE.md, a repeatable device matrix and checklist, plus a tiny script that flags horizontal overflow.\nSteps:\n1. Viewport matrix: 320x568 (smallest), 360x800, 390x844, 412x915 and one tablet, each in portrait and landscape.\n2. Start in the browser devtools device mode for layout, then confirm on real phones; touch, keyboards and performance differ on hardware.\n3. Emulators and simulators come with the platform SDKs and their IDEs; the simulator for one phone OS needs a mac, so plan a real device or a cloud device lab.\n4. Debug a real phone over USB with remote debugging and use a LAN URL for the dev server.\n5. Run each flow with slow 4G throttling, airplane mode, system text at largest, dark mode and the screen reader on.\n6. overflow-check.js: when document.documentElement.scrollWidth > window.innerWidth, list elements whose getBoundingClientRect().right exceeds innerWidth.\n7. Check the keyboard: focused inputs stay visible and the submit button is reachable.\n8. Record result per cell as pass, fail with a screenshot path, or not run.\nQuality bar:\n- The smallest viewport has no horizontal scroll.\n- At least one real device per phone OS before release.\nPitfalls:\n- Testing only the developer phone.\n- Trusting the emulator for battery and speed.\nVerify:\n- [ ] The matrix lists sizes and orientations.\n- [ ] overflow-check.js parses and reports elements.\n- [ ] Every flow has a result per device.\nOutput: TESTING-MOBILE.md and overflow-check.js.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "como testo meu app em celular pequeno sem ter todos os aparelhos?",
+      "output": "TESTING-MOBILE.md matrix 320 to 412 px both orientations, emulator notes, overflow-check.js"
+    }
+  ],
+  "size": 422,
+  "version": 1
+}

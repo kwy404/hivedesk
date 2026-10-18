@@ -1,0 +1,35 @@
+{
+  "id": "review-pr-scope",
+  "title": "Pull request size and scope review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer"
+  ],
+  "tags": [
+    "pull request",
+    "pr review",
+    "diff size",
+    "scope creep",
+    "small pr",
+    "merge request",
+    "split pr"
+  ],
+  "when": "A change set looks large or mixes unrelated work, and the user wants it checked for scope, size and reviewability.",
+  "inputs": [
+    "the diff or list of changed files",
+    "the task the change belongs to"
+  ],
+  "prompt": "Goal: A judgment of whether the change does one thing, with a split plan if not and a list of out of scope edits.\nSteps:\n1. State the purpose in one sentence from the title or task; anything not serving it is out of scope.\n2. Measure: files touched and lines added and removed; past about 400 changed lines or 10 files, look for a split.\n3. Classify each file: core, supporting (tests, docs) or unrelated (formatting churn, renames, drive by fixes, version bumps).\n4. Look for hidden risk: generated or lock files, config edits, deleted tests, moved blocks that hide edits.\n5. Propose ordered pieces that each build and pass alone: refactor first, behavior next, cleanup last.\n6. Check the description says what, why and how it was tested, with screenshots for UI.\nQuality bar:\n- Out of scope edits listed by file.\n- Every piece of the split stays working.\n- Tone about the change, not the author.\nPitfalls:\n- Approving whitespace churn that hides real edits.\n- Asking to split a small cohesive change.\n- Ignoring missing tests for new behavior.\nVerify:\n- [ ] Purpose sentence written.\n- [ ] Size numbers reported.\n- [ ] Each file classified.\n- [ ] Verdict: fine as is, trim, or split.\nOutput: scope-review.md with numbers, file classes and the split plan.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "esse PR ficou grande demais?",
+      "output": "1,240 lines in 23 files: feature 9 files, reformat 11, unrelated rename 3; split into 3 PRs"
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

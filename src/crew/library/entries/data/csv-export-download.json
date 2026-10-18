@@ -1,0 +1,38 @@
+{
+  "id": "csv-export-download",
+  "title": "Export data as a CSV download",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "export csv",
+    "csv",
+    "download",
+    "export",
+    "save as csv",
+    "spreadsheet",
+    "report",
+    "blob",
+    "download file"
+  ],
+  "when": "The user wants a button that downloads table or list data as a CSV file that opens correctly in spreadsheet programs.",
+  "inputs": [
+    "columns to export",
+    "file name"
+  ],
+  "prompt": "Goal: A correct, safe CSV built in the browser and downloaded with a clear name, keeping accents intact.\nSteps:\n1. Define columns explicitly as { label, get: (row) => value } so order and headers are fixed.\n2. Escape each field: to string; if it contains a comma, quote, \\r or \\n, wrap in quotes and double inner quotes.\n3. Guard formula injection: prefix a single quote to user values starting with =, +, - or @.\n4. Join fields with commas and rows with \\r\\n; prepend \\uFEFF so spreadsheets read UTF-8 accents.\n5. Download via new Blob([text], { type: \"text/csv;charset=utf-8\" }), URL.createObjectURL, a temporary <a download=\"orders-2026-10-17.csv\">, click, then revoke the URL a moment later.\n6. Export what the user sees (filters and sort applied) and say it on the button (Export 42 rows).\nQuality bar:\n- Dates ISO (YYYY-MM-DD) and dot decimals unless local formats were asked.\n- File name has subject and date.\n- 100 thousand rows build without freezing.\nPitfalls:\n- Joining values with commas and no quoting.\n- Leaking hidden or private columns.\n- Revoking the object URL before the download starts.\nVerify:\n- [ ] Escaping handles quotes, commas and line breaks.\n- [ ] BOM present.\n- [ ] Name ends in .csv with a date.\n- [ ] Button has a label and type=\"button\".\nOutput: js/export-csv.js exporting toCSV(rows, columns) and downloadCSV(name, text), wired to a button.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "botão para baixar a lista de vendas em csv",
+      "output": "Export 120 rows button building vendas-2026-10-17.csv with quoted fields and a BOM"
+    }
+  ],
+  "size": 393,
+  "version": 1
+}

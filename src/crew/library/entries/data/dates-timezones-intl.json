@@ -1,0 +1,37 @@
+{
+  "id": "dates-timezones-intl",
+  "title": "Dates and time zones with Intl",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "date",
+    "time zone",
+    "timezone",
+    "format date",
+    "datetime",
+    "utc",
+    "daylight saving",
+    "intl",
+    "date off by one"
+  ],
+  "when": "The app shows, stores or compares dates and times, schedules across time zones, or dates appear one day off.",
+  "inputs": [
+    "which values are instants and which are calendar dates",
+    "user locale and zone"
+  ],
+  "prompt": "Goal: Instants stored as UTC ISO strings, calendar dates kept as YYYY-MM-DD, and every display formatted by Intl in the right zone.\nSteps:\n1. Classify each value: an instant (created at, meeting start) stored with toISOString(), or a calendar date (birthday, due date) stored as \"2026-10-17\".\n2. Display instants with cached Intl.DateTimeFormat(locale, { dateStyle: \"medium\", timeStyle: \"short\", timeZone }).\n3. Read the user zone with Intl.DateTimeFormat().resolvedOptions().timeZone and store it with events tied to local time.\n4. Build local dates from parts with new Date(y, m - 1, d); new Date(\"2026-10-17\") is UTC midnight and can show the previous day.\n5. Add days with setDate(getDate() + n), not 86400000 ms steps that break on daylight saving changes.\n6. Relative labels with Intl.RelativeTimeFormat; in HTML use <time datetime>.\nQuality bar:\n- Dates read naturally in the user locale.\n- A due date never shifts when the user travels.\n- Tests run under a fixed TZ and cross a daylight saving day.\nPitfalls:\n- Local time strings stored without offset.\n- Comparing date strings in different formats.\n- Hand written month name arrays.\nVerify:\n- [ ] Instants stored in UTC ISO.\n- [ ] Calendar dates as YYYY-MM-DD.\n- [ ] Formatting through Intl.DateTimeFormat.\n- [ ] A daylight saving test.\nOutput: js/dates.js with parse, format and date math helpers, and its tests.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a data de vencimento aparece um dia antes",
+      "output": "store due as \"2026-10-17\", build with new Date(y, m-1, d), format via Intl.DateTimeFormat pt-BR"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

@@ -81,7 +81,9 @@ export function createGit(opts) {
   function run(args, o = {}) {
     // Safety first: the crew can write files in the workspace, so never run its hooks or
     // a file system monitor it configured, never ask for a password and never open a window.
-    const safe = ['-c', `core.hooksPath=${NO_HOOKS}`, '-c', 'core.fsmonitor=false', '-c', 'credential.helper=', '-c', 'protocol.ext.allow=never', '-c', 'core.quotePath=false'];
+    // No signing program and no ssh command from any config either (signing is off, so an empty program never runs).
+    const safe = ['-c', `core.hooksPath=${NO_HOOKS}`, '-c', 'core.fsmonitor=false', '-c', 'credential.helper=', '-c', 'protocol.ext.allow=never', '-c', 'core.quotePath=false',
+      '-c', 'gpg.program=', '-c', 'core.sshCommand=', '-c', 'commit.gpgSign=false', '-c', 'tag.gpgSign=false'];
     const env = {
       ...process.env,
       GIT_TERMINAL_PROMPT: '0',
@@ -203,6 +205,117 @@ export function createGit(opts) {
       if (r.code) return [];
       return r.stdout.split('\n').filter(Boolean).map((l) => { const [sha, subject, author, date] = l.split('\0'); return { sha, subject, author, date }; });
     }
+  };
+
+  /* ---------- source control panel (the workbench, src/workbench/scm.js) ---------- */
+
+  /**
+   * Status with the index and work tree columns kept apart, for stage and unstage.
+   * @returns {Promise<Array<{ path: string, from?: string, x: string, y: string, staged: boolean, unstaged: boolean, untracked: boolean, conflict: boolean, status: string }>>}
+   */
+  git.statusFull = async () => {
+    const r = await run(['status', '--porcelain=v1', '-z', '--untracked-files=all']);
+    const out = [];
+    const parts = r.stdout.split('\0');
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      if (!p) continue;
+      const x = p[0];
+      const y = p[1];
+      const file = p.slice(3);
+      const entry = { path: file, x, y, staged: false, unstaged: false, untracked: false, conflict: false, status: describeStatus(p.slice(0, 2)) };
+      if (x === 'R' || x === 'C') entry.from = parts[++i];
+      if (x === '?' && y === '?') entry.untracked = true;
+      else if (x === 'U' || y === 'U' || (x === 'A' && y === 'A') || (x === 'D' && y === 'D')) entry.conflict = true;
+      else {
+        entry.staged = x !== ' ' && x !== '?';
+        entry.unstaged = y !== ' ' && y !== '?';
+      }
+      if (entry.conflict) entry.status = 'conflict';
+      out.push(entry);
+    }
+    return out;
+  };
+
+  /** The text of a file at a revision (`HEAD`) or in the index (`:`), or null when it is not there. */
+  git.showFile = async (rev, file) => {
+    const spec = rev === ':' ? `:${file}` : `${rev}:${file}`;
+    const r = await run(['show', '--no-textconv', spec], { allowFail: true });
+    return r.code ? null : r.stdout;
+  };
+
+  /** A unified diff of one file: the work tree against the index, or the index against HEAD. */
+  git.diff = async (file, { staged = false } = {}) => {
+    const args = ['diff', '--no-color', '--no-ext-diff', '--no-textconv'];
+    if (staged) args.push('--cached');
+    args.push('--', file);
+    const r = await run(args, { allowFail: true });
+    return r.stdout;
+  };
+
+  /** Stages these paths (new, changed and deleted files). */
+  git.add = async (files) => {
+    if (!files.length) return;
+    await run(['add', '-A', '--', ...files]);
+  };
+
+  /** Unstages these paths, keeping the work tree as it is. */
+  git.unstage = async (files) => {
+    if (!files.length) return;
+    if (await git.hasCommits()) await run(['reset', '-q', 'HEAD', '--', ...files]);
+    else await run(['rm', '-q', '--cached', '-r', '--', ...files]);
+  };
+
+  /** Drops the work tree changes of tracked files (back to the index). */
+  git.discard = async (files) => {
+    if (!files.length) return;
+    await run(['checkout', '-q', '--', ...files]);
+  };
+
+  /** Local branches, the current one marked. */
+  git.branches = async () => {
+    const r = await run(['for-each-ref', '--format=%(refname:short)%00%(objectname:short)%00%(upstream:short)%00%(HEAD)%00%(committerdate:iso-strict)', 'refs/heads'], { allowFail: true });
+    if (r.code) return [];
+    return r.stdout.split('\n').filter(Boolean).map((l) => {
+      const [name, sha, upstream, head, date] = l.split('\0');
+      return { name, sha, upstream: upstream || null, current: head === '*', date: date || null };
+    });
+  };
+
+  /** Switches to a local branch. git refuses when local changes would be lost, and says why. */
+  git.checkout = async (name) => {
+    if (!validBranch(name)) throw new GitError('bad_branch', `"${name}" is not a valid branch name.`);
+    if (!(await git.branchExists(name))) throw new GitError('no_branch', `There is no branch called ${name}.`);
+    await run(['checkout', '-q', name]);
+  };
+
+  git.stashes = async () => {
+    const r = await run(['stash', 'list', '--format=%gd%x00%s%x00%cI'], { allowFail: true });
+    if (r.code) return [];
+    return r.stdout.split('\n').filter(Boolean).map((l) => {
+      const [ref, subject, date] = l.split('\0');
+      return { ref, subject, date };
+    });
+  };
+
+  /** Commits what is staged (nothing else). Returns { sha, files }. */
+  git.commitStaged = async (message, identity, { amend = false } = {}) => {
+    const staged = await run(['diff', '--cached', '--name-only', '-z']);
+    const files = staged.stdout.split('\0').filter(Boolean);
+    if (!files.length && !amend) throw new GitError('nothing_staged', 'Nothing is staged. Stage the files to commit first.');
+    const text = String(message ?? '').replace(/\r\n/g, '\n').trim();
+    if (!text) throw new GitError('bad_message', 'The commit message is empty.');
+    const id = [];
+    if (identity?.name) id.push('-c', `user.name=${identity.name}`);
+    if (identity?.email) id.push('-c', `user.email=${identity.email}`);
+    const msgFile = path.join(os.tmpdir(), `hivedesk-commit-${process.pid}-${Date.now().toString(36)}.txt`);
+    fs.writeFileSync(msgFile, text + '\n');
+    try {
+      await run([...id, 'commit', '-q', ...(amend ? ['--amend'] : []), '-F', msgFile]);
+    } finally {
+      try { fs.unlinkSync(msgFile); } catch { /* ignore */ }
+    }
+    return { sha: await git.head(), files };
   };
 
   /** Stages everything and commits with the message from a temp file. Returns { sha, files }. */

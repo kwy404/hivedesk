@@ -1,0 +1,41 @@
+{
+  "id": "sql-params-transactions",
+  "title": "SQL parameters and transactions in app code",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "sql parameters",
+    "prepared statements",
+    "transactions",
+    "rollback",
+    "placeholders",
+    "atomic update",
+    "lost update",
+    "backend",
+    "data integrity"
+  ],
+  "when": "Backend code runs SQL and must bind values safely, keep multi step writes atomic, and handle constraint conflicts and busy errors.",
+  "inputs": [
+    "the write flows",
+    "invariants such as stock never negative"
+  ],
+  "prompt": "Goal: Every query is a prepared statement with bound values, and related writes share one transaction that commits fully or not at all.\nSteps:\n1. Prepare statements once at startup: const insertOrder = db.prepare(\"INSERT INTO orders (id, user_id, total_cents) VALUES (?, ?, ?)\").\n2. Bind every value with ? or :name; user values never become SQL text.\n3. tx(fn): BEGIN IMMEDIATE, run fn, COMMIT; on any throw ROLLBACK and rethrow; use it for writes touching more than one row or table.\n4. Inside a transaction no network calls and no waiting; gather data before, send emails after commit.\n5. Put invariants in the schema: NOT NULL, CHECK (total_cents >= 0), UNIQUE, FOREIGN KEY; map a unique violation to 409.\n6. Stop lost updates: UPDATE items SET qty = qty - ? WHERE id = ? AND qty >= ? then require changes === 1, or keep a version column.\nQuality bar:\n- Money is integer cents.\n- Busy or locked errors retry a few times with short backoff.\n- Reads inside a transaction see its own writes.\nPitfalls:\n- Read then write with no transaction.\n- A missing ROLLBACK that leaves the connection mid transaction.\n- Long transactions holding locks during I/O.\nVerify:\n- [ ] No SQL string mixes in values.\n- [ ] Multi row writes go through tx().\n- [ ] A forced error mid transaction leaves no partial rows.\n- [ ] Unique violations give 409.\nOutput: db.mjs with prepare and tx helpers, repository modules, test/tx.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "sec.sql-params",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "when two people buy the last item both orders go through",
+      "output": "tx() with BEGIN IMMEDIATE, conditional stock update checking changes, CHECK constraint, 409"
+    }
+  ],
+  "size": 404,
+  "version": 1
+}

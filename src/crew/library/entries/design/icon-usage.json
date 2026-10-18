@@ -1,0 +1,37 @@
+{
+  "id": "icon-usage",
+  "title": "Icons with an inline SVG sprite",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "icons",
+    "icon",
+    "svg icons",
+    "svg sprite",
+    "symbol",
+    "icon set",
+    "icon button"
+  ],
+  "when": "The user wants icons in buttons, menus, lists or beside labels, without an icon font or any download.",
+  "inputs": [
+    "which icons and where",
+    "outline or solid style"
+  ],
+  "prompt": "Goal: An inline SVG sprite of symbols reused with use, sized with the text, colored with currentColor and labeled right.\nSteps:\n1. Draw each icon on a 24 by 24 viewBox, stroke-width 2, round caps and joins; one style for the whole set.\n2. Collect them in one svg at the start of the body with aria-hidden=\"true\" and class=\"sprite\" (hidden with width and height 0), each as <symbol id=\"icon-search\" viewBox=\"0 0 24 24\">.\n3. Place one with <svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"#icon-search\"></use></svg>.\n4. Size in em: .icon { width: 1.25em; height: 1.25em; stroke: currentColor; fill: none }.\n5. Icon beside visible text stays aria-hidden; an icon only button gets aria-label on the button.\n6. Keep meanings conventional (magnifier for search, x for close) and keep text labels in navigation.\nQuality bar:\n- Icons share grid, stroke and corner style.\n- Every icon only control has a name.\n- Hit area at least 44 px even with a 20 px glyph.\nPitfalls:\n- Icon fonts that read as letters and show boxes when blocked.\n- Hard coded fills that ignore dark themes.\n- Symbol ids clashing with other ids.\nVerify:\n- [ ] One sprite holds the symbols.\n- [ ] Each svg is aria-hidden or has a title.\n- [ ] Icon only buttons have aria-label.\n- [ ] Icons use currentColor.\nOutput: The sprite at the start of each page body and the .icon rules in style.css.",
+  "checks": [
+    "html.svg-a11y",
+    "html.unique-ids",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "adicione icones nos botoes do menu",
+      "output": "sprite with icon-home, icon-search, icon-cart symbols, use href in buttons, icon only cart button with aria-label"
+    }
+  ],
+  "size": 391,
+  "version": 1
+}

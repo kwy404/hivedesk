@@ -1,0 +1,36 @@
+{
+  "id": "visual-qa-spacing",
+  "title": "Visual QA of spacing and alignment",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "designer"
+  ],
+  "tags": [
+    "visual qa",
+    "alignment",
+    "misaligned",
+    "pixel perfect",
+    "ui polish",
+    "uneven spacing",
+    "looks off"
+  ],
+  "when": "A built page or screen looks slightly off and the user wants a visual pass on alignment, spacing, sizes and consistency.",
+  "inputs": [
+    "the page",
+    "the spacing and type scales, if any"
+  ],
+  "prompt": "Goal: A list of visual defects (misalignment, uneven gaps, mismatched sizes, orphan words) with the element, measured value and fix.\nSteps:\n1. Reveal boxes with a temporary rule, * { outline: 1px solid rgb(255 0 0 / 0.2) }, and remove it when done.\n2. Alignment: left edges of headings, text, images and buttons share a few vertical lines; icons sit centered on their labels.\n3. Gaps: siblings at one level have equal gaps; measure in the element inspector and compare with the spacing scale.\n4. Sizes: same kind buttons, inputs and cards share height, radius and padding; images in a row share a ratio.\n5. Text: no one word last lines in headings (text-wrap: balance), no clipped descenders.\n6. States: hover, focus and active cause no shift; check at 375 and 1280 px.\nQuality bar:\n- Each defect has selector, measured value and target value.\n- Fixes use existing tokens.\n- No new magic numbers.\nPitfalls:\n- Fixing one instance and leaving its siblings.\n- Nudging with negative margins.\n- Leaving the debug outline in.\nVerify:\n- [ ] Alignment lines checked.\n- [ ] Gaps compared to the scale.\n- [ ] Component sizes compared.\n- [ ] Debug rule removed.\nOutput: visual-qa.md with the defects and proposed CSS changes.",
+  "checks": [
+    "css.custom-properties",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "alguma coisa esta torta na pagina de precos",
+      "output": "card padding 24 vs 20 px, buttons 44 vs 40 px tall, heading 3 px off the text edge; use --space-5"
+    }
+  ],
+  "size": 347,
+  "version": 1
+}

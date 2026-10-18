@@ -1,0 +1,37 @@
+{
+  "id": "elevation-shadows",
+  "title": "Elevation scale with layered shadows",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "shadow",
+    "shadows",
+    "box-shadow",
+    "elevation",
+    "depth",
+    "layers",
+    "z-index",
+    "floating"
+  ],
+  "when": "The user wants cards, menus, dialogs and sticky bars to look layered, or current shadows look muddy and inconsistent.",
+  "inputs": [
+    "which elements float above others",
+    "light or dark theme"
+  ],
+  "prompt": "Goal: Four or five elevation levels, each a shadow and z-index pair used by role, so depth means the same thing everywhere.\nSteps:\n1. Levels by role: 0 flat page, 1 raised cards, 2 dropdowns and popovers, 3 dialogs and drawers, 4 toasts.\n2. Build each shadow from two layers, a tight contact one and a soft ambient one: --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.1); higher levels grow blur and offset, not opacity.\n3. Tint shadows toward the background hue (a dark navy at low alpha) instead of pure black.\n4. Pair each level with a z-index token (--z-dropdown 100, --z-sticky 200, --z-dialog 300, --z-toast 400); no raw numbers.\n5. On dark themes show elevation with lighter surfaces and a subtle border.\n6. Keep one light source: every shadow falls downward.\nQuality bar:\n- At most five shadow values in the stylesheet.\n- Cards rise one level on hover, not three.\n- No element with both a heavy border and a heavy shadow.\nPitfalls:\n- z-index: 9999 wars.\n- Single heavy shadows at 0.5 opacity.\n- Shadows on everything, text included.\nVerify:\n- [ ] --shadow-0 to --shadow-4 on :root.\n- [ ] z-index values use tokens.\n- [ ] Components use shadow tokens only.\n- [ ] Dark theme uses surface lightness.\nOutput: Elevation tokens on :root and component rules in style.css.",
+  "checks": [
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "as sombras do site estao pesadas e cada uma de um jeito",
+      "output": "shadow-1 cards, shadow-2 menus, shadow-3 dialog, two layer navy tinted, z tokens 100 to 400"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

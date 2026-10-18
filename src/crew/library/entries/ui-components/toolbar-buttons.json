@@ -1,0 +1,41 @@
+{
+  "id": "toolbar-buttons",
+  "title": "Toolbar with toggle buttons and roving focus",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "toolbar",
+    "button bar",
+    "formatting toolbar",
+    "editor toolbar",
+    "icon buttons",
+    "toggle buttons",
+    "action bar",
+    "button group"
+  ],
+  "when": "The user wants a row of tool buttons, such as bold, italic and align for an editor, or view and sort actions above a list.",
+  "inputs": [
+    "the actions and which ones are on and off toggles",
+    "groups of related buttons",
+    "icons if any"
+  ],
+  "prompt": "Goal: A WAI-ARIA toolbar that is a single Tab stop, moves with arrow keys and shows toggle state with aria-pressed.\nSteps:\n1. <div role=\"toolbar\" aria-label=\"Text formatting\" aria-controls=\"editor\"> of <button type=\"button\"> items, related ones wrapped in <div role=\"group\" aria-label=\"Alignment\">.\n2. Roving tabindex: the last used button has tabindex=\"0\", every other one \"-1\", so the toolbar costs one Tab press.\n3. ArrowRight and ArrowLeft move focus with wrap; Home and End jump to the first and last button.\n4. Toggles such as Bold carry aria-pressed=\"true\" or \"false\"; in an exclusive set (left, center, right) pressing one releases the others.\n5. Icon buttons get an aria-label and an SVG with aria-hidden=\"true\"; disabled ones use aria-disabled and stay reachable.\n6. On narrow screens move rare actions into a More menu button instead of wrapping into rows.\nQuality bar:\n- Pressed state shows as a filled background, not only a color shift.\n- Buttons are at least 44 px square.\n- Focus stays on the button after it acts.\nPitfalls:\n- Every button left in the Tab order.\n- Flipping the label (Bold to Not bold) instead of using aria-pressed.\n- Buttons that vanish when disabled, shifting the others.\nVerify:\n- [ ] role=\"toolbar\" with an aria-label.\n- [ ] Exactly one button has tabindex 0.\n- [ ] Arrows, Home and End move focus.\n- [ ] aria-pressed matches each toggle.\nOutput: Toolbar markup, toolbar.css and toolbar.js.",
+  "checks": [
+    "html.button-type",
+    "html.svg-a11y",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "barra de ferramentas do editor com negrito, italico e alinhamento",
+      "output": "role toolbar Text formatting, Bold and Italic with aria-pressed, exclusive align group, one Tab stop, arrows move"
+    }
+  ],
+  "size": 408,
+  "version": 1
+}

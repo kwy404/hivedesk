@@ -1,0 +1,41 @@
+{
+  "id": "keyset-pagination-filters",
+  "title": "Keyset pagination, filters and sorting for list endpoints",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "keyset pagination",
+    "cursor",
+    "filters",
+    "sorting",
+    "list endpoint",
+    "offset",
+    "query string",
+    "backend",
+    "api"
+  ],
+  "when": "A list endpoint returns too many rows, or uses OFFSET that slows down and skips rows when data changes, and clients need server side filters and sort options.",
+  "inputs": [
+    "sortable fields",
+    "filterable fields",
+    "default page size"
+  ],
+  "prompt": "Goal: GET /items?limit=&cursor=&status=&sort= returns a stable page with an opaque next cursor and only allowlisted filters.\nSteps:\n1. Map sort values through a table: created gives \"created_at ASC, id ASC\", -created gives \"created_at DESC, id DESC\"; anything else is 422.\n2. Always end the order with id so it is total.\n3. Cursor = base64url of JSON { c: last.created_at, i: last.id, s: sort, f: filterHash }; decode inside try, and a broken or mismatched cursor is 422.\n4. Next page: WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC LIMIT ? asking for limit + 1 rows to learn if more exist.\n5. Filters from an allowlist: status adds \"status = ?\", q adds \"title LIKE ? ESCAPE '\\'\" with % and _ escaped in the value.\n6. Reply { items, nextCursor } with null at the end; clamp limit to 1 to 100, default 20.\nQuality bar:\n- Indexes exist on (created_at, id) and on each filter column.\n- Totals are computed only on request (?count=1).\n- All values are bound as parameters.\nPitfalls:\n- OFFSET 100000, which scans every skipped row.\n- Sorting by a non unique column, which repeats or drops rows between pages.\n- Building ORDER BY from the raw query string.\nVerify:\n- [ ] Walking every page returns each row once.\n- [ ] Unknown sort or filter gives 422.\n- [ ] limit=0 and limit=1000 are clamped.\n- [ ] Cursors from another sort are refused.\nOutput: The list handler in routes/items.mjs and test/pagination.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "sec.sql-params",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "my /orders endpoint gets slow on page 500",
+      "output": "cursor on (created_at, id), limit + 1 lookahead, allowlisted status and sort, 422 on bad cursor"
+    }
+  ],
+  "size": 408,
+  "version": 1
+}

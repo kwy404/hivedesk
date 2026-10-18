@@ -1,0 +1,36 @@
+{
+  "id": "markdown-to-html-safe",
+  "title": "Safe small Markdown to HTML converter",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "markdown",
+    "markdown to html",
+    "render markdown",
+    "convert markdown",
+    "md",
+    "markdown preview",
+    "notes formatting"
+  ],
+  "when": "An app must render user written Markdown (notes, comments, a preview pane) as HTML without external libraries.",
+  "inputs": [
+    "Markdown features needed",
+    "where the HTML is shown"
+  ],
+  "prompt": "Goal: A small converter for a documented Markdown subset that escapes all input first, so user text cannot inject HTML or scripts.\nSteps:\n1. Escape &, <, >, double and single quotes in the whole input before any transform; only the converter produces markup.\n2. Blocks line by line: fenced code (kept escaped until the closing fence), # to ###### headings, - and 1. lists, > quotes, rules, blank line paragraphs.\n3. Inline rules on non code text in order: code spans first (protected), then **bold**, *italic*, [text](url).\n4. Links: allow http:, https:, mailto: and relative URLs only; drop javascript: and data:; add rel=\"noopener\" to external links.\n5. Document the subset; unsupported syntax stays plain text.\n6. Insert through DOMParser keeping only allowed tags and attributes, and test hostile input (<script>, onerror, javascript: links, unclosed fences).\nQuality bar:\n- Output is balanced HTML.\n- A 50 KB note converts in milliseconds.\n- Lists and line breaks behave as users expect.\nPitfalls:\n- Escaping after converting, which lets raw HTML through.\n- Nested emphasis regexes that hang on long lines.\n- Raw HTML passthrough \"for flexibility\".\nVerify:\n- [ ] Escaping happens first.\n- [ ] Link scheme allow list.\n- [ ] Hostile input tests pass.\n- [ ] No eval.\nOutput: js/markdown.js exporting toHTML(markdown), and tests with hostile cases.",
+  "checks": [
+    "js.syntax",
+    "js.no-eval",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "preview de markdown nas anotações sem biblioteca",
+      "output": "toHTML escaping first, headings, lists, code fences, bold, italic, safe links, tests with <script>"
+    }
+  ],
+  "size": 386,
+  "version": 1
+}

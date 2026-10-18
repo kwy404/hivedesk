@@ -1,0 +1,49 @@
+{
+  "id": "landing-page",
+  "title": "Landing page that converts",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "landing",
+    "homepage",
+    "website",
+    "site",
+    "hero",
+    "call to action",
+    "one page"
+  ],
+  "when": "The user wants a site or home page for a product, service or small business and gave no special type.",
+  "inputs": [
+    "name of the business or product",
+    "what it offers",
+    "the one action a visitor should take"
+  ],
+  "prompt": "Goal: One focused page that says what this is, why it matters and what to do next, in under ten seconds of reading.\nSteps:\n1. Write the value line first: who it is for and the result they get, in one sentence for the h1.\n2. Order the sections: hero with one primary button, three benefits, social proof or facts, details, a final call to action, footer with contact.\n3. Use one accent color for every primary action and keep secondary links quiet.\n4. Write real copy from the request; if a detail is missing, choose a plausible, modest one and keep it consistent.\n5. Build mobile first: one column at 375 px, two or three columns from about 720 px.\n6. Link the button to a real target: an anchor on the page, a mailto, or a tel link.\nQuality bar:\n- The h1 names the offer, not a slogan.\n- Each section has a heading and fits a phone screen without sideways scroll.\n- The primary button reads as a verb plus an object (Order a cake).\nPitfalls:\n- Three buttons that compete in the hero.\n- Generic claims such as best quality with no detail.\n- Huge hero images that push the message below the fold.\nVerify:\n- [ ] One h1 and a logical h2 per section.\n- [ ] The call to action appears at least twice.\n- [ ] Text contrast reaches 4.5 to 1.\n- [ ] No horizontal scroll at 375 px.\nOutput: index.html with semantic sections and style.css; short copy, no placeholder text.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.meta-description",
+    "css.contrast",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "a page for a dog walking service",
+      "output": "h1 \"Daily walks for busy dog owners\", benefits, prices, a Book a walk button linking to #contact"
+    }
+  ],
+  "size": 389,
+  "version": 1
+}

@@ -1,0 +1,37 @@
+{
+  "id": "test-dom-logic-split",
+  "title": "Make DOM code testable by splitting pure logic",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa",
+    "architect"
+  ],
+  "tags": [
+    "testable",
+    "dom testing",
+    "pure functions",
+    "separate logic",
+    "browser code tests",
+    "node:test",
+    "refactor"
+  ],
+  "when": "Browser code mixes calculations with DOM updates and the user wants tests that run in Node without a browser.",
+  "inputs": [
+    "the script with DOM code",
+    "the behaviors to test"
+  ],
+  "prompt": "Goal: Pure logic in a module with no DOM access, tested by node --test, and a thin view layer that only reads and writes the page.\nSteps:\n1. Mark each line as logic (computing, filtering, validating, formatting) or DOM (querySelector, textContent, events).\n2. Move the logic into logic.js as functions that take plain values and return plain values or new state.\n3. Model updates as reducers: nextState = apply(state, action), so every change is testable.\n4. Keep view.js tiny: read inputs, call logic, render the returned state, wire events.\n5. Write test/logic.test.mjs that imports logic.js and checks state transitions and formatting.\n6. Load both in the page with <script type=\"module\" src=\"main.js\"></script>.\nQuality bar:\n- logic.js never references window, document or localStorage.\n- The view has no calculations.\n- Tests cover each action type.\nPitfalls:\n- Passing DOM elements into logic functions.\n- Hiding state in module level variables that tests cannot reset.\n- Testing rendered HTML strings instead of state.\nVerify:\n- [ ] node --test runs without a browser.\n- [ ] Searching logic.js for document finds nothing.\n- [ ] The page behaves as before.\n- [ ] Files parse.\nOutput: logic.js, view.js or main.js, the test file and updated script tags.",
+  "checks": [
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "quero testar meu app de tarefas sem abrir o navegador",
+      "output": "todo-logic.js with addTodo, toggle, filter; 8 node:test tests; main.js renders"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

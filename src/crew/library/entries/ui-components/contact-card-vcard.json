@@ -1,0 +1,41 @@
+{
+  "id": "contact-card-vcard",
+  "title": "Contact card with vCard download",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "contact card",
+    "business card",
+    "vcard",
+    "profile card",
+    "save contact",
+    "team member card",
+    "digital business card"
+  ],
+  "when": "The user wants a card for a person with photo, role and contact links, and a button to save the contact.",
+  "inputs": [
+    "name, role and company",
+    "phone, email and address",
+    "photo file"
+  ],
+  "prompt": "Goal: A compact contact card with working tel and mailto links and a Save contact button that downloads a valid .vcf file.\nSteps:\n1. <article aria-labelledby=\"card-name\"> with an img (alt with the name, width, height), an h2 name, the role, and <address> holding tel, mailto and the street text.\n2. Save contact is <button type=\"button\"> that builds vCard lines: BEGIN:VCARD, VERSION:3.0, N, FN, ORG, TITLE, TEL, EMAIL, END:VCARD, joined with \\r\\n.\n3. Escape commas, semicolons and backslashes in values with a backslash.\n4. Download via new Blob([text], { type: \"text/vcard\" }), an anchor with download=\"name.vcf\", then URL.revokeObjectURL.\n5. Card: max-width 22rem, a 96 px round photo with object-fit: cover.\nQuality bar:\n- Phone in international format in the tel link.\n- Links have visible text, not only icons.\n- The card prints cleanly.\nPitfalls:\n- Unescaped commas that break the vCard fields.\n- A photo without dimensions shifting the layout.\n- Contact info only inside an image.\nVerify:\n- [ ] The photo has alt, width and height.\n- [ ] tel and mailto links work.\n- [ ] The .vcf opens with all fields.\n- [ ] The button has type=\"button\".\nOutput: Card markup, card.css and vcard.js.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.link-text",
+    "html.button-type",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "cartao de visita digital com botao salvar contato",
+      "output": "article with photo, name, role, tel and mailto, Save contact downloads ana-lima.vcf with escaped fields"
+    }
+  ],
+  "size": 340,
+  "version": 1
+}

@@ -117,12 +117,13 @@ export class ToolBox {
         }, ctx.signal);
         if (!decision.approved) throw new Error(`the user rejected this action${decision.note ? ': ' + decision.note : ''}`);
       }
-      const result = await this.run(tool, args, ctx, callId);
-      out = { ok: true, result };
+      const meta = {};
+      const result = await this.run(tool, args, ctx, callId, meta);
+      out = { ok: true, result, ...(typeof meta.passed === 'boolean' ? { passed: meta.passed } : {}) };
     } catch (err) {
       out = { ok: false, error: String(err && err.message ? err.message : err) };
     }
-    this.bus.emit('tool.result', { callId, ok: out.ok, result: out.ok ? truncate(out.result) : undefined, error: out.error }, ev);
+    this.bus.emit('tool.result', { callId, ok: out.ok, result: out.ok ? truncate(out.result) : undefined, error: out.error, ...(typeof out.passed === 'boolean' ? { passed: out.passed } : {}) }, ev);
     return out;
   }
 
@@ -163,7 +164,7 @@ export class ToolBox {
     this.bus.emit('file.changed', data, { jobId: ctx.jobId });
   }
 
-  async run(tool, args, ctx, callId) {
+  async run(tool, args, ctx, callId, meta = {}) {
     switch (tool) {
       case 'list_files': {
         const files = this.ws.list();
@@ -200,6 +201,7 @@ export class ToolBox {
       }
       case 'check': {
         const r = checkWorkspace(this.ws);
+        meta.passed = !!r.passed; // tool.result.passed: the structured verdict the Office QA mark reads
         return r.passed ? `all checks passed (${r.checked.length} files)` : `issues found:\n- ${r.issues.join('\n- ')}`;
       }
       case 'preview': {
@@ -217,6 +219,8 @@ function cleanOrigin(o) {
   const out = { kind: o.kind, label: String(o.label || (o.kind === 'guest' ? 'a guest' : "a friend's model")).slice(0, 80) };
   if (o.id) out.id = String(o.id).slice(0, 40);
   if (o.brainId) out.brainId = String(o.brainId).slice(0, 40);
+  // remoteOrigin of PLAN section 5: the verified peer whose machine answered the turn (src/compute/).
+  if (o.peerId) out.peerId = String(o.peerId).slice(0, 80);
   return out;
 }
 

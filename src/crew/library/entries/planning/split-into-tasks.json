@@ -1,0 +1,35 @@
+{
+  "id": "split-into-tasks",
+  "title": "Split a request into small tasks",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "plan",
+    "tasks",
+    "split",
+    "break down",
+    "decompose",
+    "task list",
+    "breakdown",
+    "work items"
+  ],
+  "when": "A new request arrives and the foreman must turn it into a list of tasks for the crew before anyone writes a file.",
+  "inputs": [
+    "the user request",
+    "files already in the workspace",
+    "the workers available"
+  ],
+  "prompt": "Goal: A plan of 2 to 6 tasks where each task names its files, its worker and its contents, and together they cover the whole request.\nSteps:\n1. Restate the request in one sentence: the thing to build and who uses it.\n2. List the files the finished result needs (index.html, style.css, app.js, README.md...) before thinking about tasks.\n3. Group files into tasks by worker: structure and logic to dev, styles to designer, copy and docs to writer.\n4. Write each detail as: files to create or change, what goes in them, and the names other files rely on (ids, exports, classes).\n5. Set dependsOn only where a task reads what another writes; independent tasks stay free to run.\n6. Finish with one QA task that checks every acceptance criterion against the files.\nQuality bar:\n- A worker could start each task from its detail alone, without reading the request again.\n- No file appears in two build tasks.\n- Every part of the request maps to a task.\nPitfalls:\n- One giant \"build everything\" task that a small model cannot finish.\n- Tasks named by activity (research, polish) with no file.\n- Ten tiny tasks for a one page job.\nVerify:\n- [ ] Between 2 and 6 tasks.\n- [ ] Each task lists file names.\n- [ ] The last task is QA and depends on the build tasks.\n- [ ] No task adds a feature the user did not ask for.\nOutput: A plan JSON: summary plus tasks with title, detail, assignee and dependsOn.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "quero um site com cardapio e formulario de reserva",
+      "output": "1 dev: index.html with menu and form; 2 designer: style.css; 3 qa: check criteria"
+    }
+  ],
+  "size": 397,
+  "version": 1
+}

@@ -57,6 +57,8 @@ export function modelById(id) {
 }
 
 const GB = 1e9;
+/** The largest single file a model download may have (the biggest catalog part is about 50 GB). */
+export const MAX_PART_BYTES = 128 * 1024 ** 3;
 
 function gb(n) {
   return `${(n / GB).toFixed(1)} GB`;
@@ -107,8 +109,15 @@ export function modelsDir(home) {
   return path.join(home, 'models');
 }
 
+/** The files of a model: one, or the parts of a split GGUF (catalog picks). */
+export function modelParts(model) {
+  if (Array.isArray(model.files) && model.files.length) return model.files.map((f) => ({ file: f.file || f.path.split('/').pop(), bytes: f.bytes, sha256: f.sha256, url: f.url }));
+  return [{ file: model.file, bytes: model.bytes, sha256: model.sha256, url: model.url }];
+}
+
+/** The path to load: the file, or the first part of a split file (llama.cpp finds the others next to it). */
 export function modelPath(home, model) {
-  return path.join(modelsDir(home), model.file);
+  return path.join(modelsDir(home), modelParts(model)[0].file);
 }
 
 /** GGUF files present in the cache folder (and any extra folders). */
@@ -126,9 +135,9 @@ export function listModelFiles(dirs) {
   return out;
 }
 
-/** True when the cached file has the expected size (the checksum was verified when it was downloaded). */
+/** True when every file is cached with the expected size (the checksum was verified when it was downloaded). */
 export function isCached(home, model) {
-  try { return fs.statSync(modelPath(home, model)).size === model.bytes; } catch { return false; }
+  try { return modelParts(model).every((p) => fs.statSync(path.join(modelsDir(home), p.file)).size === p.bytes); } catch { return false; }
 }
 
 export class DownloadError extends Error {
@@ -152,35 +161,66 @@ async function hashFile(file, hash) {
 }
 
 /**
- * Downloads a model into the cache with resume (`.part`) and SHA-256 verification.
- * @param {typeof MODELS[number]} model
- * @param {{ home: string, onProgress?: (p: { received: number, total: number, bps: number }) => void, signal?: AbortSignal, fetchImpl?: typeof fetch, freeBytes?: number | null }} opts
- * @returns {Promise<string>} final path
+ * Downloads a model into the cache with resume (`.part`) and SHA-256 verification of every file.
+ * A split model (catalog picks of the biggest files) downloads its parts one after the other.
+ * @param {{ name: string, bytes: number, file?: string, url?: string, sha256?: string | null, files?: { file?: string, path?: string, bytes: number, sha256: string, url: string }[] }} model
+ * @param {{ home: string, dir?: string, onProgress?: (p: { received: number, total: number, bps: number, part?: number, parts?: number }) => void, signal?: AbortSignal, fetchImpl?: typeof fetch, freeBytes?: number | null }} opts
+ * @returns {Promise<string>} the path to load (the first part)
  */
 export async function downloadModel(model, opts) {
-  const f = opts.fetchImpl || fetch;
-  const dir = modelsDir(opts.home);
+  const dir = opts.dir || modelsDir(opts.home);
+  const parts = modelParts(model);
+  // Every part needs its SHA-256 and a real size under the cap: nothing unverified or unbounded is downloaded.
+  for (const p of parts) {
+    if (typeof p.sha256 !== 'string' || !/^[0-9a-f]{64}$/i.test(p.sha256)) throw new DownloadError('checksum', `${model.name} has a part without a SHA-256, so it is not downloaded.`, 'Pick a model from the catalog, or point --model at a GGUF file you already have.');
+    if (!Number.isSafeInteger(p.bytes) || p.bytes <= 0 || p.bytes > MAX_PART_BYTES) throw new DownloadError('too_big', `${model.name} has a part with no size or one over ${formatBytes(MAX_PART_BYTES)}.`, 'Pick a model from the catalog, or point --model at a GGUF file you already have.');
+    if (typeof p.file !== 'string' || !p.file || p.file !== path.basename(p.file) || p.file.startsWith('.')) throw new DownloadError('io', `${model.name} has a part with a bad file name.`, 'Pick a model from the catalog.');
+  }
   fs.mkdirSync(dir, { recursive: true });
-  const final = modelPath(opts.home, model);
-  const part = final + '.part';
-  let have = 0;
-  try { have = fs.statSync(part).size; } catch { /* fresh */ }
-  if (have > model.bytes) { fs.rmSync(part, { force: true }); have = 0; }
+  const total = parts.reduce((n, p) => n + p.bytes, 0);
+  const sizeOf = (f) => { try { return fs.statSync(f).size; } catch { return 0; } };
+  // Disk: what is still missing, plus room.
+  let missing = 0;
+  for (const p of parts) {
+    const final = path.join(dir, p.file);
+    if (sizeOf(final) === p.bytes) continue;
+    const have = Math.min(sizeOf(final + '.part'), p.bytes);
+    missing += p.bytes - have;
+  }
   const free = opts.freeBytes !== undefined ? opts.freeBytes : diskFree(dir);
-  const need = model.bytes - have + 100e6;
-  if (free != null && free < need) {
+  const need = missing + 100e6;
+  if (missing > 0 && free != null && free < need) {
     throw new DownloadError('no_disk', `Not enough disk space for ${model.name}: needs ${formatBytes(need)}, ${formatBytes(free)} free in ${dir}.`,
       'Free some space, use a smaller model, point --model at a GGUF file you already have, or run Ollama or LM Studio.');
   }
+  let done = 0;
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    const final = path.join(dir, p.file);
+    if (sizeOf(final) !== p.bytes) {
+      await downloadFile(p, final, { ...opts, name: model.name, offset: done, total, index: i, count: parts.length });
+    }
+    done += p.bytes;
+  }
+  return path.join(dir, parts[0].file);
+}
+
+async function downloadFile(p, final, opts) {
+  const f = opts.fetchImpl || fetch;
+  const part = final + '.part';
+  let have = 0;
+  try { have = fs.statSync(part).size; } catch { /* fresh */ }
+  if (have > p.bytes) { fs.rmSync(part, { force: true }); have = 0; }
   const hash = crypto.createHash('sha256');
   if (have > 0) await hashFile(part, hash);
+  const report = (received, bps) => opts.onProgress?.({ received: opts.offset + received, total: opts.total, bps, ...(opts.count > 1 ? { part: opts.index + 1, parts: opts.count } : {}) });
   let res;
   try {
-    res = await f(model.url, { headers: have ? { range: `bytes=${have}-` } : {}, redirect: 'follow', signal: opts.signal });
+    res = await f(p.url, { headers: have ? { range: `bytes=${have}-` } : {}, redirect: 'follow', signal: opts.signal });
   } catch (err) {
     if (opts.signal?.aborted) throw new DownloadError('aborted', 'The download was stopped.', 'Press Retry to continue where it stopped.');
     if (networkCode(err)) {
-      throw new DownloadError('no_network', `Could not reach huggingface.co to download ${model.name}.`,
+      throw new DownloadError('no_network', `Could not reach huggingface.co to download ${opts.name}.`,
         'Check the connection and press Retry, or use --model <file.gguf>, or --demo to look around.');
     }
     throw new DownloadError('io', String(err.message || err), 'Press Retry.');
@@ -188,9 +228,8 @@ export async function downloadModel(model, opts) {
   if (have && res.status === 200) {
     // The server ignored the range: start over.
     fs.rmSync(part, { force: true });
-    have = 0;
     hash.destroy?.();
-    return downloadModel(model, opts);
+    return downloadFile(p, final, opts);
   }
   if (!res.ok && res.status !== 206) throw new DownloadError('http', `The download failed with HTTP ${res.status}.`, 'Press Retry later, or use --model <file.gguf>.');
   const out = fs.createWriteStream(part, { flags: have ? 'a' : 'w' });
@@ -203,27 +242,34 @@ export async function downloadModel(model, opts) {
     for await (const chunk of res.body) {
       hash.update(chunk);
       received += chunk.length;
+      // Never more than the size the catalog names: a server sending more is cut off and the part is dropped.
+      if (received > p.bytes) { out.destroy(); fs.rmSync(part, { force: true }); throw Object.assign(new Error('too big'), { tooBig: true }); }
       if (!out.write(chunk)) await new Promise((r) => out.once('drain', r));
       const now = Date.now();
       if (now - lastTick > 250) {
         const dt = (now - lastTime) / 1000;
         if (dt > 0.5) { bps = (received - lastBytes) / dt; lastBytes = received; lastTime = now; }
         lastTick = now;
-        opts.onProgress?.({ received, total: model.bytes, bps });
+        report(received, bps);
       }
     }
   } catch (err) {
     out.end();
+    if (err?.tooBig) { fs.rmSync(part, { force: true }); throw new DownloadError('checksum', `The server sent more than the ${formatBytes(p.bytes)} of ${opts.name}.`, 'It was deleted; press Retry to download it again.'); }
     if (opts.signal?.aborted) throw new DownloadError('aborted', 'The download was stopped.', 'Press Retry to continue where it stopped.');
     if (err?.code === 'ENOSPC') throw new DownloadError('no_disk', 'The disk is full.', 'Free some space and press Retry; the download continues where it stopped.');
-    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(received)} of ${formatBytes(model.bytes)}.`, 'Press Retry; the download continues where it stopped.');
+    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Press Retry; the download continues where it stopped.');
   }
   await new Promise((resolve, reject) => out.end((err) => (err ? reject(err) : resolve())));
-  opts.onProgress?.({ received, total: model.bytes, bps });
+  report(received, bps);
+  if (p.bytes && received < p.bytes) {
+    // The body ended early without an error: keep the part, the next try resumes.
+    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Press Retry; the download continues where it stopped.');
+  }
   const digest = hash.digest('hex');
-  if (model.sha256 && digest !== model.sha256) {
+  if (digest !== String(p.sha256).toLowerCase()) {
     fs.rmSync(part, { force: true });
-    throw new DownloadError('checksum', `The downloaded file for ${model.name} is corrupt (checksum mismatch).`, 'It was deleted; press Retry to download it again.');
+    throw new DownloadError('checksum', `The downloaded file for ${opts.name} is corrupt (checksum mismatch).`, 'It was deleted; press Retry to download it again.');
   }
   fs.renameSync(part, final);
   return final;

@@ -1,0 +1,39 @@
+{
+  "id": "date-time-inputs",
+  "title": "Native date and time inputs with limits",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "date picker",
+    "date input",
+    "time input",
+    "calendar",
+    "datetime",
+    "booking date",
+    "date range",
+    "appointment time"
+  ],
+  "when": "The user wants fields to pick a date, a time or a date range, such as a booking, delivery date or appointment.",
+  "inputs": [
+    "date or time or both",
+    "earliest and latest allowed",
+    "slot length for times"
+  ],
+  "prompt": "Goal: Native date and time controls with correct limits, a working range rule and no time zone off by one bugs.\nSteps:\n1. Use <input type=\"date\">, type=\"time\" or type=\"datetime-local\", each with a <label> and an example of the expected value in the hint.\n2. Set min and max as YYYY-MM-DD built from local parts (getFullYear, getMonth + 1, getDate), not from toISOString, which is UTC.\n3. Time slots: step=\"900\" for 15 minutes, with min and max for opening hours.\n4. Range: two date fields in a <fieldset> (Check in, Check out); on change of the start, set end.min to it and clear an earlier end.\n5. Parse values with new Date(y, m - 1, d) and show the choice back with Intl.DateTimeFormat in the hint.\nQuality bar:\n- Past dates are blocked when the task needs it.\n- Errors name the allowed range.\n- Values are submitted in ISO form.\nPitfalls:\n- new Date(\"2026-10-17\"), which parses as UTC and can show the previous day.\n- Building a custom calendar grid nobody asked for.\n- Text fields with a date mask.\nVerify:\n- [ ] Every date and time field has a label.\n- [ ] min and max are set from local time.\n- [ ] The end date cannot be before the start.\n- [ ] The formatted echo matches the choice.\nOutput: Field markup in the form and dates.js for limits and the range rule.",
+  "checks": [
+    "html.labels",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "campos de data de entrada e saida para reserva",
+      "output": "fieldset with Check in and Check out date inputs, min today in local time, end.min follows start"
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

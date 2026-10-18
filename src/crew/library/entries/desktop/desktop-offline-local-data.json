@@ -1,0 +1,40 @@
+{
+  "id": "desktop-offline-local-data",
+  "title": "Offline first desktop data in a JSON or embedded SQL file",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "local database",
+    "offline first",
+    "json file",
+    "embedded sql",
+    "desktop app",
+    "data file",
+    "backup",
+    "records",
+    "local data"
+  ],
+  "when": "The desktop app keeps all its records on the local disk and must choose between a JSON file and an embedded SQL file database, then store data safely.",
+  "inputs": [
+    "record types and counts",
+    "need for queries or reports"
+  ],
+  "prompt": "Goal: store.js keeps app data in the user data folder, loads fast, saves safely and makes daily backups, with the storage choice justified.\nSteps:\n1. Choose: under about 20,000 records and simple filters, one data.json loaded into memory is enough; heavy queries or large data need an embedded SQL file database.\n2. JSON shape: { \"schema\": 1, \"savedAt\": \"...\", \"items\": [{ \"id\", \"createdAt\", \"updatedAt\", ... }] }; ids from crypto.randomUUID().\n3. Load once at start, keep a Map by id in memory, save on change with a 500 ms debounce through the .tmp then move pattern.\n4. Embedded SQL: Neutralinojs has no built in database; run it in a Neutralinojs extension process or load a WebAssembly SQL build from local resources, and always use bound parameters, never string built SQL.\n5. Backups: once a day copy data.json to backups/data-YYYY-MM-DD.json and keep the last 7.\n6. Export and Import menu items for a user readable JSON file.\n7. Migrations run by the schema number before the UI renders.\nQuality bar:\n- The app opens and works with no network at all.\n- A crash loses at most the last half second of edits.\nPitfalls:\n- Saving the whole file on every key press without debounce.\n- Concatenating user text into SQL.\nVerify:\n- [ ] Data lives under os.getPath(\"data\").\n- [ ] Saves are atomic and debounced.\n- [ ] SQL, if used, has parameters only.\nOutput: store.js, migrations.js and a README data section.",
+  "checks": [
+    "js.json-parse-guarded",
+    "sec.sql-params",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "meu app desktop de estoque precisa funcionar sem internet",
+      "output": "data.json in the user data folder, in memory Map, debounced atomic saves, 7 daily backups"
+    }
+  ],
+  "size": 403,
+  "version": 1
+}

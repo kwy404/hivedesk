@@ -1,0 +1,38 @@
+{
+  "id": "mobile-nav-patterns",
+  "title": "Choosing a mobile navigation pattern",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "mobile navigation",
+    "mobile menu",
+    "bottom navigation",
+    "tab bar",
+    "hamburger",
+    "navigation pattern",
+    "phone menu"
+  ],
+  "when": "The user asks how navigation should work on phones: hamburger, bottom tab bar, priority plus, or a simple link row.",
+  "inputs": [
+    "the destinations and how often each is used",
+    "site or app"
+  ],
+  "prompt": "Goal: A pattern chosen by the number and frequency of destinations, sized for thumbs and usable by keyboard and screen readers.\nSteps:\n1. Count top level destinations and rank them by use.\n2. 2 to 4 links: show them all in the header as a wrapping row; no menu.\n3. 3 to 5 frequent app sections: a bottom tab bar 56 to 64 px tall with icon plus text, aria-current=\"page\" on the current tab, and padding for env(safe-area-inset-bottom).\n4. 6 or more, or content sites: a Menu button with aria-expanded and aria-controls opening a full width panel; show the word Menu, not only an icon.\n5. Mid size sets: priority plus, showing what fits and moving the rest under a More button.\n6. Keep search outside the menu when it matters, and the current section visible.\nQuality bar:\n- Main destinations one tap away.\n- Targets at least 44 px.\n- Link order identical on every page.\nPitfalls:\n- A hamburger for three links.\n- Icon only tabs without labels.\n- A fixed bottom bar covering content with no body padding.\nVerify:\n- [ ] Links sit inside a labeled nav.\n- [ ] The menu button exposes aria-expanded.\n- [ ] The current page uses aria-current.\n- [ ] Content has padding for any fixed bar.\nOutput: Nav markup, its styles in style.css, and a small toggle script if a menu is used.",
+  "checks": [
+    "html.nav",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "menu do app no celular: hamburguer ou barra embaixo?",
+      "output": "4 sections, so a bottom tab bar with icon and label, aria-current, safe area padding"
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

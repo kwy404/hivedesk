@@ -1,0 +1,35 @@
+{
+  "id": "review-plan-before-work",
+  "title": "Reviewing a plan before work starts",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "reviewer"
+  ],
+  "tags": [
+    "review plan",
+    "plan check",
+    "sanity check",
+    "before starting",
+    "validate plan",
+    "preflight",
+    "plan review"
+  ],
+  "when": "A plan is drafted and should be checked once before the crew spends turns on it.",
+  "inputs": [
+    "the draft plan",
+    "the request",
+    "the acceptance criteria"
+  ],
+  "prompt": "Goal: A quick pass that catches missing work, file conflicts, bad order and scope creep, and returns a corrected plan.\nSteps:\n1. Coverage: walk each criterion and find the task that delivers it; add a task or detail for any gap.\n2. Ownership: list files and writers; fix any file with two writers.\n3. Order: check every dependsOn points backward and has a file reason.\n4. Size: flag any task with more than two files or a long detail; split it.\n5. Scope: strike features nobody asked for, and anything needing network, installs or a build.\n6. Clarity: each detail names files and shared names; rewrite vague verbs like \"improve\" or \"handle\".\nQuality bar:\n- Six checks done in order.\n- Every fix is applied, not only noted.\n- The plan still fits 2 to 6 tasks.\nPitfalls:\n- Approving a plan because it looks long and detailed.\n- Reviewing tasks but not the criteria mapping.\n- Adding new ideas during review.\nVerify:\n- [ ] Each criterion maps to a task.\n- [ ] No file has two writers.\n- [ ] No forward dependency.\n- [ ] No out of scope task.\nOutput: The corrected plan plus one line per change made.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "check this 5 task plan for a quiz",
+      "output": "gap: no task saves the high score; fix: add to app.js detail; style task had two files, ok"
+    }
+  ],
+  "size": 314,
+  "version": 1
+}

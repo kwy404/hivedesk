@@ -1,0 +1,44 @@
+{
+  "id": "maintenance-page",
+  "title": "Maintenance or coming soon page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "maintenance",
+    "coming soon",
+    "under construction",
+    "downtime",
+    "placeholder site"
+  ],
+  "when": "The user needs a temporary page while a site is down for maintenance or not launched yet.",
+  "inputs": [
+    "site name",
+    "reason and expected return time",
+    "contact for urgent needs"
+  ],
+  "prompt": "Goal: A single self contained page that explains the pause and gives a way to reach someone.\nSteps:\n1. One h1 with the situation, one line with the expected time in a clear format with time zone.\n2. Contact options for urgent needs: email and phone links.\n3. Inline the CSS in a style block so the page works even if other files are offline.\n4. Add a meta robots noindex if the page is temporary.\n5. Optional status updates list with timestamps.\nQuality bar:\n- Loads with zero external requests.\n- Readable on any screen.\n- Honest about the time.\nPitfalls:\n- Countdowns that hit zero and keep going.\n- Linking to pages that are down.\n- Missing contact info.\nVerify:\n- [ ] Self contained: no external CSS or JS needed.\n- [ ] Time includes the zone.\n- [ ] Contact links work.\n- [ ] Viewport and lang present.\nOutput: maintenance.html with inline styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "página de manutenção até as 18h",
+      "output": "h1 \"We are updating the store\", back at 18:00 BRT, email and phone for orders"
+    }
+  ],
+  "size": 244,
+  "version": 1
+}

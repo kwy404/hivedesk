@@ -1,0 +1,35 @@
+{
+  "id": "structured-data-jsonld",
+  "title": "Add structured data with JSON-LD",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "structured data",
+    "json-ld",
+    "schema.org",
+    "rich results",
+    "rich snippets",
+    "microdata",
+    "seo"
+  ],
+  "when": "The user wants rich search results for a business, product, article, event, recipe or FAQ page.",
+  "inputs": [
+    "the page type",
+    "the facts shown on the page"
+  ],
+  "prompt": "Goal: Valid JSON-LD that uses the right schema.org type and repeats only facts visible on the page.\nSteps:\n1. Pick the type from the page purpose: LocalBusiness (or a subtype such as Bakery), Product with Offer, Article, Event, Recipe, FAQPage, BreadcrumbList.\n2. Add one <script type=\"application/ld+json\"> in the head with \"@context\": \"https://schema.org\" and \"@type\".\n3. Fill required and recommended properties with the real values: name, address as PostalAddress, telephone, openingHoursSpecification, price and priceCurrency.\n4. Use ISO formats: dates as 2026-05-01T19:00, durations as PT30M, currency codes such as BRL or EUR.\n5. Give every page at least a WebPage or BreadcrumbList block so each page carries valid data.\n6. Validate by parsing the JSON and checking every value appears in the visible content.\nQuality bar:\n- The JSON parses.\n- Values match the visible text exactly.\n- One block per entity, linked with @id when related.\nPitfalls:\n- Trailing commas or comments, which break JSON.\n- Marking up reviews or ratings that are not on the page.\n- Wrong nesting such as price outside offers.\nVerify:\n- [ ] Each page has a JSON-LD block that parses.\n- [ ] The @type fits the content.\n- [ ] Dates and prices use ISO formats.\n- [ ] No invented facts.\nOutput: JSON-LD blocks added to the head of each page.",
+  "checks": [
+    "html.json-ld"
+  ],
+  "examples": [
+    {
+      "input": "add schema to my event page",
+      "output": "Event with name, startDate 2026-11-20T20:00, location Place with address, offers with price 40 BRL"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

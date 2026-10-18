@@ -1,0 +1,36 @@
+{
+  "id": "atomic-commits",
+  "title": "Split work into atomic commits",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "ops",
+    "reviewer"
+  ],
+  "tags": [
+    "atomic commits",
+    "split commits",
+    "git add -p",
+    "staging",
+    "commit history",
+    "small commits",
+    "git"
+  ],
+  "when": "A working copy has many mixed changes and the user wants them committed as a clean series of focused commits.",
+  "inputs": [
+    "the current changes (git status and diff)",
+    "the logical pieces of work"
+  ],
+  "prompt": "Goal: A sequence of commits where each one does one thing, builds and passes tests, and can be reverted alone.\nSteps:\n1. Read git status and git diff and group the hunks by purpose: formatting, refactor, bug fix, feature, docs, dependencies.\n2. Order the groups so each commit stands on the previous one: preparatory refactors first, then the fix or feature, then docs.\n3. Stage one group at a time with git add -p (or by file), checking git diff --staged before each commit.\n4. Run the tests or the app after each commit when practical, using git stash --keep-index to test only what is staged.\n5. Write a focused message per commit; formatting only changes get their own commit.\n6. Show the planned list first, then the resulting git log --oneline.\nQuality bar:\n- No commit mixes reformatting with logic.\n- Every commit leaves the project working.\n- Messages read like a story of the change.\nPitfalls:\n- A final \"fix previous commit\" commit that breaks atomicity.\n- Committing generated or secret files.\n- Splitting so finely that commits do not build.\nVerify:\n- [ ] Each commit has one purpose.\n- [ ] Tests pass at the last commit and ideally at each.\n- [ ] No unrelated files are included.\n- [ ] No placeholder text in messages.\nOutput: The commit plan (list of commits with files and messages) and the commands used.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "quebre minhas mudanças em commits menores",
+      "output": "3 commits: \"Extract price helpers\", \"Fix tax rounding on discounts\", \"Document pricing rules\""
+    }
+  ],
+  "size": 378,
+  "version": 1
+}

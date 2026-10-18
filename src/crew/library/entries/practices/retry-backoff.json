@@ -1,0 +1,37 @@
+{
+  "id": "retry-backoff",
+  "title": "Retries with exponential backoff",
+  "category": "practices",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "retry",
+    "backoff",
+    "exponential backoff",
+    "jitter",
+    "flaky network",
+    "transient errors",
+    "resilience",
+    "fetch retry"
+  ],
+  "when": "Network or file operations fail now and then and the user wants automatic retries without hammering the other side.",
+  "inputs": [
+    "the operation",
+    "which failures are transient",
+    "the time budget"
+  ],
+  "prompt": "Goal: A retry helper that retries only transient failures, with growing randomized delays and a hard limit on attempts and time.\nSteps:\n1. Decide what is retryable: network errors, timeouts, HTTP 429, 502, 503, 504; never 400, 401, 403, 404 or validation errors.\n2. Write retry(fn, { attempts: 4, baseMs: 300, maxMs: 5000 }) that awaits fn and catches failures.\n3. Delay = random between 0 and min(maxMs, baseMs * 2 ** attempt) (full jitter) so clients do not retry in sync.\n4. Honor a Retry-After header when present.\n5. Only retry idempotent operations (GET, PUT with the same body); for POST use an idempotency key or do not retry.\n6. After the last attempt, throw the final error with the attempt count attached, and let the caller show a message.\nQuality bar:\n- Total time stays within the budget.\n- Retries are visible in logs.\n- Cancel stops pending retries.\nPitfalls:\n- Retrying forever.\n- Fixed delays that synchronize clients.\n- Retrying non idempotent payments or orders.\nVerify:\n- [ ] Non transient errors fail immediately.\n- [ ] Attempts stop at the limit.\n- [ ] Delays grow and include jitter.\n- [ ] Files parse.\nOutput: retry.js with the helper and tests using a fake failing function.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "a API às vezes falha, quero tentar de novo",
+      "output": "retry with 4 attempts, full jitter up to 5 s, only on network errors and 503, honors Retry-After"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

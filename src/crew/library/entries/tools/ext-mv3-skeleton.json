@@ -1,0 +1,38 @@
+{
+  "id": "ext-mv3-skeleton",
+  "title": "Browser extension skeleton with Manifest V3 and a service worker",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "browser extension",
+    "manifest v3",
+    "extension manifest",
+    "background service worker",
+    "load unpacked",
+    "extension skeleton",
+    "chrome extension",
+    "new extension"
+  ],
+  "when": "The user wants to start a browser extension from scratch with a valid Manifest V3 manifest, an event driven background service worker and a way to load it locally.",
+  "inputs": [
+    "extension name",
+    "first feature",
+    "sites it touches"
+  ],
+  "prompt": "Goal: A minimal extension folder that loads with no errors, with a module service worker that registers listeners at the top level and keeps no state in memory.\nSteps:\n1. Files: manifest.json, background.js, icons/ (16, 48, 128 px PNG), README.md.\n2. manifest.json: \"manifest_version\": 3, \"name\", \"version\": \"0.1.0\", \"description\" under 132 characters, \"icons\", \"action\": { \"default_title\": \"...\" }, \"background\": { \"service_worker\": \"background.js\", \"type\": \"module\" }, \"permissions\": [].\n3. background.js adds every listener synchronously at top level: chrome.runtime.onInstalled.addListener(({ reason }) => { if (reason === \"install\") seedDefaults(); }), plus action.onClicked and runtime.onMessage.\n4. The worker is stopped after about 30 seconds idle: keep state in chrome.storage, and use chrome.alarms (permission \"alarms\") instead of setInterval.\n5. Use promise APIs and catch rejections.\n6. Load: chrome://extensions or the browser's extensions page, developer mode on, Load unpacked; reload after manifest edits.\nQuality bar:\n- No errors on the extensions page.\n- A worker restart loses nothing important.\nPitfalls:\n- Listeners added inside an async callback, missing the event that woke the worker.\n- Manifest V2 keys: background.scripts, browser_action, persistent.\n- window, document or localStorage in the worker; they do not exist there.\nVerify:\n- [ ] manifest_version 3 with background.service_worker.\n- [ ] Listeners at top level.\n- [ ] No long timers.\n- [ ] manifest.json is valid JSON.\nOutput: manifest.json, background.js, icons/ and README.md.",
+  "checks": [
+    "ext.manifest-v3",
+    "json.valid",
+    "ext.no-remote-code"
+  ],
+  "examples": [
+    {
+      "input": "quero comecar uma extensao de navegador do zero",
+      "output": "manifest.json v3 with action and module service worker, background.js with top level listeners, icons, README with load unpacked steps"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

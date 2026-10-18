@@ -1,0 +1,37 @@
+{
+  "id": "ext-keyboard-commands",
+  "title": "Keyboard shortcuts for an extension with the commands API",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "keyboard shortcut",
+    "commands api",
+    "hotkey",
+    "suggested_key",
+    "_execute_action",
+    "shortcut conflict",
+    "browser extension",
+    "oncommand"
+  ],
+  "when": "Users want to trigger a browser extension feature from the keyboard, such as opening its popup or running an action on the current page.",
+  "inputs": [
+    "actions to bind",
+    "preferred keys",
+    "pages where they apply"
+  ],
+  "prompt": "Goal: Commands declared in the manifest with sensible default keys, handled in the service worker, and documented with how users change them.\nSteps:\n1. manifest.json \"commands\": { \"_execute_action\": { \"suggested_key\": { \"default\": \"Ctrl+Shift+Y\", \"mac\": \"Command+Shift+Y\" }, \"description\": \"Open the popup\" }, \"toggle-feature\": { \"suggested_key\": { \"default\": \"Alt+Shift+T\" }, \"description\": \"Toggle highlighting\" } }.\n2. At most four commands may suggest keys.\n3. Each combo needs Ctrl or Alt (Command or MacCtrl on mac), Shift optional.\n4. chrome.commands.onCommand.addListener((command, tab) => ...) at top level; a command grants activeTab, so scripting.executeScript works without host permissions.\n5. _execute_action opens the popup and fires no onCommand event.\n6. Show real bindings: const all = await chrome.commands.getAll(); an empty shortcut means unassigned, often due to a conflict.\n7. Only users can change keys, at chrome://extensions/shortcuts or the browser's shortcut page.\nQuality bar:\n- Defaults avoid browser shortcuts such as Ctrl+T and Ctrl+W.\n- The UI shows the actual key, not the suggested one.\nPitfalls:\n- Changing suggested_key in an update and expecting existing users to get it.\n- More than four suggested keys, which breaks loading.\nVerify:\n- [ ] commands block is valid JSON with descriptions.\n- [ ] onCommand at top level.\n- [ ] getAll used to display bindings.\n- [ ] No reserved browser keys.\nOutput: The commands block in manifest.json, the handler in background.js and a Shortcuts note in README.md.",
+  "checks": [
+    "ext.manifest-v3",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "atalho de teclado para ativar minha extensao na pagina atual",
+      "output": "commands block with _execute_action and toggle-feature, onCommand handler using activeTab, popup showing real keys from commands.getAll"
+    }
+  ],
+  "size": 439,
+  "version": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "cli-config-precedence",
+  "title": "CLI settings precedence: flags, env, project and user files",
+  "category": "tools",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "config file",
+    "precedence",
+    "xdg config",
+    "dotfile",
+    "rc file",
+    "env override",
+    "print config",
+    "project settings",
+    "cli"
+  ],
+  "when": "A command line tool reads settings from a user file, a project file, environment variables and flags, and users must see where each value came from.",
+  "inputs": [
+    "settings and defaults",
+    "tool name",
+    "secret settings"
+  ],
+  "prompt": "Goal: A loader that merges defaults, the user file, the nearest project file, TOOL_* variables and flags in that order, and can explain the result.\nSteps:\n1. User file: $XDG_CONFIG_HOME/tool/config.json, else path.join(os.homedir(), \".config\", \"tool\", \"config.json\"); on win32 use path.join(process.env.APPDATA, \"tool\", \"config.json\").\n2. Project file: walk up from process.cwd() to the root looking for .toolrc.json; the first match wins.\n3. --config FILE replaces both lookups; a missing explicit file is an error, a missing default file is not.\n4. TOOL_OUTPUT_DIR maps to outputDir, parsed by the same converters as flags (\"false\" and \"0\" mean false).\n5. Merge per key: defaults < user < project < env < flags, recording each source (\"flag --out\", \"env TOOL_OUTPUT_DIR\", the file path).\n6. Validate the merged object once; unknown keys in a file warn with the file name.\n7. tool config --print lists key, value and source, masking keys like token or password.\nQuality bar:\n- A flag always wins, and --print proves it.\n- Broken JSON reports the path and the parser message.\n- Defaults alone are enough to run.\nPitfalls:\n- A hardcoded \"/home/\" path.\n- Deep merging arrays, so users cannot remove a default entry.\n- Typos in config keys silently ignored.\nVerify:\n- [ ] Order in code matches README.\n- [ ] JSON.parse wrapped, naming the file.\n- [ ] Source tracked per key.\n- [ ] Example config is valid JSON.\nOutput: src/config.mjs, examples/toolrc.json and a Configuration section in README.md.",
+  "checks": [
+    "js.json-parse-guarded",
+    "js.syntax",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "my CLI should read ~/.config and a project file but flags must win",
+      "output": "src/config.mjs merging defaults < user < project < TOOL_* env < flags with a source per key and tool config --print"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

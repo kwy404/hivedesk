@@ -1,0 +1,51 @@
+{
+  "id": "html-semantic-skeleton",
+  "title": "Semantic HTML document skeleton",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "html",
+    "boilerplate",
+    "skeleton",
+    "template",
+    "semantic",
+    "structure",
+    "starter",
+    "landmarks",
+    "head"
+  ],
+  "when": "The user wants a starting HTML file or boilerplate, or asks to fix the structure of a page so it uses semantic elements and landmarks.",
+  "inputs": [
+    "content language",
+    "page and site name",
+    "main sections of the page"
+  ],
+  "prompt": "Goal: A valid, semantic HTML document that later files can build on: complete head, landmarks, one h1 and nothing missing.\nSteps:\n1. Open with <!doctype html> and <html lang>; make <meta charset=\"utf-8\"> the first head child, then the viewport meta (width=device-width, initial-scale=1).\n2. Add a specific <title> (page, then site), a meta description of 50 to 160 characters, style.css, and the script with type=\"module\" or defer.\n3. Body order: skip link to #main, <header> with a <nav> holding a <ul> of links, <main id=\"main\">, optional <aside>, <footer>.\n4. Inside main: one h1, then <section> blocks each opened by an h2; <article> only for content that stands alone (a post, a card).\n5. Choose elements by meaning: <button> for actions, <a href> for navigation, <time datetime>, <address>, <figure> with <figcaption>, lists for groups.\nQuality bar:\n- Each landmark appears once: header, nav, main, footer.\n- Heading levels never skip.\n- No div where a semantic element exists.\nPitfalls:\n- A div with a click handler instead of a button.\n- One h1 per section.\n- Charset meta after the title, which can garble accents.\nVerify:\n- [ ] First line is <!doctype html>.\n- [ ] Head has charset, viewport, title and description.\n- [ ] The skip link targets the main id.\n- [ ] Every tag is closed and ids are unique.\nOutput: index.html with the full skeleton and real content, linking style.css and main.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.charset",
+    "html.balanced",
+    "html.h1",
+    "html.heading-order",
+    "html.main",
+    "html.nav",
+    "html.skip-link",
+    "html.meta-description",
+    "html.unique-ids",
+    "html.script-defer"
+  ],
+  "examples": [
+    {
+      "input": "me dá um html base bem estruturado para começar meu site",
+      "output": "index.html with lang=\"pt-BR\", charset, viewport, skip link, header with nav, main with h1 and sections, footer"
+    }
+  ],
+  "size": 401,
+  "version": 1
+}

@@ -1,0 +1,48 @@
+{
+  "id": "maze-game",
+  "title": "Maze game with generated levels",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "maze",
+    "maze game",
+    "labyrinth",
+    "maze generator",
+    "puzzle game",
+    "escape game"
+  ],
+  "when": "The user wants a maze game: generated mazes that the player walks through with keys or swipes to reach the exit, growing level by level.",
+  "inputs": [
+    "sizes per level",
+    "hints wanted"
+  ],
+  "prompt": "Goal: Perfect mazes from a seed, crisp drawing and responsive movement with an optional path hint.\nSteps:\n1. logic.mjs generate(w, h, rand): iterative depth first backtracker with an explicit stack; walls as bits N=1, E=2, S=4, W=8, removed on both cells.\n2. canMove(maze, cell, dir) and solve(maze, start, end) by breadth first search.\n3. Draw walls on a dpr scaled canvas with half pixel offsets; player and exit as distinct shapes; canvas role=\"img\" with an aria-label.\n4. Arrows and WASD, swipes, on screen buttons; holding repeats every 120 ms.\n5. Levels from 8x8 to 30x30, a seeded random so each level number gives the same maze; Hint shows the next 5 steps.\n6. Timer and moves; best times in localStorage guarded; \"Level 3 complete\" in aria-live.\n7. test.mjs: every cell reachable, w x h minus 1 passages, symmetric walls, solve finds the exit.\nQuality bar:\n- Walls never blur.\n- Moves blocked by walls feel instant, no sliding through.\n- Large mazes still fit the screen.\nPitfalls:\n- Recursive generation overflowing the stack.\n- Wall removed on one side only.\n- Arrow keys scrolling the page.\nVerify:\n- [ ] Generator tested.\n- [ ] Status live.\n- [ ] Buttons typed.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, game.js, logic.mjs (generate, solve), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a maze game that gets bigger each level",
+      "output": "seeded mazes 8x8 to 30x30, arrows/swipe, Hint shows 5 steps"
+    }
+  ],
+  "size": 366,
+  "version": 1
+}

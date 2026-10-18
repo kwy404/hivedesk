@@ -1,0 +1,41 @@
+{
+  "id": "python-pathlib-files",
+  "title": "Python file processing with pathlib",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "python",
+    "pathlib",
+    "files",
+    "folder",
+    "organize files",
+    "rename",
+    "batch",
+    "directory",
+    "automation"
+  ],
+  "when": "The user wants a Python script that finds, sorts, renames, copies or summarizes files in folders.",
+  "inputs": [
+    "folder",
+    "file patterns",
+    "rule for each file"
+  ],
+  "prompt": "Goal: A pathlib based script that processes many files safely, previews changes, and works on any OS.\nSteps:\n1. Use Path everywhere: root = Path(args.folder).expanduser().resolve(); join with root / \"out\" / name.\n2. Find with root.rglob(\"*.jpg\") or iterdir(); skip hidden names and symlinks; sort and collect the list before changing anything.\n3. Read and write text with encoding=\"utf-8\" (errors=\"replace\" for unknown sources).\n4. Plan first: build (source, target) pairs and print them; act only with --apply.\n5. Never clobber: when target.exists() add a suffix (name (1).jpg); move with shutil.move, copy with shutil.copy2.\n6. Catch PermissionError, UnicodeDecodeError and OSError per file, log and continue; return 1 at the end if any failed.\nQuality bar:\n- Safe to run twice.\n- A summary line with counts at the end.\n- Names with spaces and accents work.\nPitfalls:\n- Mixing os.path strings with Path objects.\n- Default platform encoding for text.\n- Changing a folder while iterating it with rglob.\nVerify:\n- [ ] No string path concatenation.\n- [ ] Dry run by default.\n- [ ] Explicit encoding on reads and writes.\n- [ ] Main guard and no bare except.\nOutput: organize.py with main() and a README usage section.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard"
+  ],
+  "examples": [
+    {
+      "input": "organize my downloads folder into subfolders by file type",
+      "output": "organize.py mapping extensions to Images, Docs, Archives, printing the plan, moving with --apply"
+    }
+  ],
+  "size": 347,
+  "version": 1
+}

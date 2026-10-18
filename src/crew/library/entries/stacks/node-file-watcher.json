@@ -1,0 +1,40 @@
+{
+  "id": "node-file-watcher",
+  "title": "File watcher that reruns a task on change",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "watch",
+    "file watcher",
+    "fs.watch",
+    "auto reload",
+    "rebuild",
+    "on change",
+    "debounce",
+    "watch mode"
+  ],
+  "when": "The user wants a script that rebuilds, copies, tests or reloads automatically whenever files in a folder change.",
+  "inputs": [
+    "folder to watch",
+    "task to run",
+    "files to ignore"
+  ],
+  "prompt": "Goal: A watcher that reacts once per burst of changes, ignores noise and never runs two jobs at once.\nSteps:\n1. If the job is only restarting one script, use node --watch file.mjs and stop there.\n2. Otherwise start with #!/usr/bin/env node, take folder and task from process.argv, exit with code 1 when the folder is missing.\n3. fs.watch(dir, { recursive: true }, (type, name) => ...); name can be null, so guard it; ignore dot files, ~ .swp .tmp, the output folder, node_modules.\n4. Debounce 150 ms, collecting changed paths in a Set, then run the task once with the list.\n5. Serialize: while a run is active set pending, and start one more run when it ends; log time, files and duration, catch task errors.\n6. Close watchers on SIGINT.\nQuality bar:\n- One save triggers exactly one run.\n- Task errors never kill the watcher.\n- Generated files never retrigger it.\nPitfalls:\n- Watching the output folder, which loops forever.\n- Trusting the event type; editors often save via rename.\n- Recursive mode missing on some platforms; fall back to one watcher per folder.\nVerify:\n- [ ] Debounce timer and a Set of paths.\n- [ ] A running flag prevents overlap.\n- [ ] Ignore list includes the output folder.\n- [ ] SIGINT closes watchers.\nOutput: scripts/watch.mjs plus a \"watch\" entry in package.json scripts.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.shebang",
+    "node.exit-code"
+  ],
+  "examples": [
+    {
+      "input": "rebuild the css every time I save a file in src",
+      "output": "watch.mjs with fs.watch recursive, 150 ms debounce, no overlapping runs"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

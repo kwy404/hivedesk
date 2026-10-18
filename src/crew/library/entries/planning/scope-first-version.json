@@ -1,0 +1,34 @@
+{
+  "id": "scope-first-version",
+  "title": "Scoping a first version",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "first version",
+    "mvp",
+    "scope",
+    "minimum",
+    "v1",
+    "cut scope",
+    "smallest",
+    "prototype"
+  ],
+  "when": "The request describes a large product and the crew must choose what the first delivery contains.",
+  "inputs": [
+    "the full wish list from the request",
+    "crew limits: static files, no network, small model"
+  ],
+  "prompt": "Goal: A first version that does the core job end to end in a few files, with a written list of what waits for later.\nSteps:\n1. Name the core loop in one line: the one thing a user does from start to finish (add an expense and see the total).\n2. Keep only features on that loop; everything else goes to a Later list.\n3. Replace hard parts with simple stand ins: localStorage for a database, a JSON file for an admin panel, a mailto for a contact backend.\n4. Cap the version: at most 4 files of code and 1 page of docs.\n5. Check the cut version still meets the user words; if a must feature fell out, put it back and cut elsewhere.\n6. Show the user the In and Later lists in the summary.\nQuality bar:\n- The first version is usable on its own, not a demo of parts.\n- Stand ins are named and honest.\n- Later items are concrete enough to plan next.\nPitfalls:\n- A first version that is a broad shell with every screen empty.\n- Cutting the one feature the user mentioned first.\n- Silent cuts the user discovers later.\nVerify:\n- [ ] The core loop works end to end in the plan.\n- [ ] In and Later lists exist.\n- [ ] File count is small.\n- [ ] No stand in needs a network.\nOutput: Plan summary with Core loop, In, Later and Stand ins, then tasks for In only.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "um app completo de controle financeiro com bancos e graficos",
+      "output": "Core: add expense, see monthly total and chart. Later: bank import, budgets, multi user"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

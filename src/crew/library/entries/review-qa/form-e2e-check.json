@@ -1,0 +1,37 @@
+{
+  "id": "form-e2e-check",
+  "title": "End to end form check",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "form check",
+    "form qa",
+    "submit test",
+    "end to end",
+    "e2e",
+    "form bugs",
+    "saved data"
+  ],
+  "when": "A form is built and the user wants it checked from first focus to final confirmation, including errors, success and what is saved or sent.",
+  "inputs": [
+    "the page with the form",
+    "where submitted data goes"
+  ],
+  "prompt": "Goal: A run through the real form confirming labels, validation, submission, feedback and the resulting data, with each defect recorded.\nSteps:\n1. Read the form fresh: each control has a label, a name, the right type and autocomplete tokens (email, tel, name, postal-code).\n2. Submit empty: required errors show by the fields and in a summary, focus goes to the first invalid one, nothing is saved or sent.\n3. Fill invalid then valid values: messages update on blur or submit, not on each keystroke.\n4. Submit valid: the button shows busy, a second submit is blocked, success is announced in a status region; Enter in a field submits too.\n5. Inspect the result: the stored or sent data (localStorage key, JSON file, request body) matches the inputs exactly, trimmed and in UTF-8.\n6. Force a failure (storage blocked, server down): input stays and a retry works.\nQuality bar:\n- Every field and message exercised.\n- Saved data compared field by field.\n- Defects carry the exact input used.\nPitfalls:\n- Testing only with autofill data.\n- Never checking what was actually saved.\n- Missing the Enter key path.\nVerify:\n- [ ] Labels and types checked.\n- [ ] Empty, invalid and valid submits done.\n- [ ] Saved data compared.\n- [ ] Failure recovery tried.\nOutput: form-check.md with the steps run and the defects.",
+  "checks": [
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "testa o formulario de orcamento do inicio ao fim",
+      "output": "empty submit sends anyway (bug), phone saved with spaces, success not announced, retry ok"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

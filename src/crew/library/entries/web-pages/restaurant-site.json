@@ -1,0 +1,50 @@
+{
+  "id": "restaurant-site",
+  "title": "Restaurant website with menu",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "restaurant",
+    "menu",
+    "reservation",
+    "dining",
+    "food",
+    "local business"
+  ],
+  "when": "The user wants a site for a restaurant, bistro, pizzeria or bar with a menu and a way to book.",
+  "inputs": [
+    "restaurant name and cuisine",
+    "dishes with prices",
+    "hours, address, phone",
+    "booking method"
+  ],
+  "prompt": "Goal: A site that makes people hungry and lets them book or call in two taps.\nSteps:\n1. Hero with the name, cuisine in plain words and two actions: Book a table and See the menu.\n2. Menu as sections (starters, mains, desserts, drinks); each dish has name, one line and price aligned for scanning.\n3. Mark dietary options with short text labels (vegetarian, gluten free) and explain the labels once.\n4. Booking: a form with date, time, party size, name and phone, or a clear phone link if the user prefers calls.\n5. Location block with address, hours per day, a tel link and directions link.\n6. Add Restaurant JSON-LD with servesCuisine, address and hours.\nQuality bar:\n- The menu reads well at 375 px without tiny text.\n- Every form field has a visible label.\n- Prices use one format.\nPitfalls:\n- A menu as an image, which no one can search or read aloud.\n- Booking forms that pretend to send data without a backend; say what happens.\n- Dark photos with white text that loses contrast.\nVerify:\n- [ ] Menu uses headings and lists, not tables of images.\n- [ ] Booking form has labels and a submit button.\n- [ ] Hours and phone are in text.\n- [ ] JSON-LD parses.\nOutput: index.html with menu and booking sections, style.css, and a small script only if the form needs validation.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.json-ld",
+    "html.input-types"
+  ],
+  "examples": [
+    {
+      "input": "site for my Italian place Nonna Rita",
+      "output": "menu with antipasti, pasta, dolci and prices, a booking form for date, time and guests"
+    }
+  ],
+  "size": 365,
+  "version": 1
+}

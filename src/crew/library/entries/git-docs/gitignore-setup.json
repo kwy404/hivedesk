@@ -1,0 +1,35 @@
+{
+  "id": "gitignore-setup",
+  "title": "Set up .gitignore",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "gitignore",
+    ".gitignore",
+    "ignore files",
+    "untracked files",
+    "git",
+    "node_modules",
+    "env file"
+  ],
+  "when": "A new repository needs a .gitignore, or generated, local or secret files keep showing up in git status.",
+  "inputs": [
+    "the languages and tools in the project",
+    "files generated at runtime"
+  ],
+  "prompt": "Goal: A short, commented .gitignore that keeps dependencies, build output, secrets, logs and editor files out of the repository.\nSteps:\n1. Group entries with short comment headers: dependencies, build output, environment, logs, runtime data, operating system, editors.\n2. Typical lines: node_modules/, dist/, coverage/, .env and .env.* with !.env.example, *.log, __pycache__/, *.pyc, .venv/, .DS_Store, Thumbs.db.\n3. Anchor folder patterns to the root with a leading slash when only the top level should match (/data/).\n4. Keep example and fixture files tracked using negation (!data/sample.json) after the ignore line.\n5. For files already tracked, explain git rm --cached <file> to stop tracking without deleting the local copy.\n6. Keep personal editor rules in the global ignore file (core.excludesFile) when the team prefers.\nQuality bar:\n- Nothing needed to build or run is ignored.\n- Secrets are always covered.\n- Each group has a comment.\nPitfalls:\n- Ignoring lock files that the project relies on.\n- Patterns like *.json that hide config.\n- Expecting .gitignore to untrack files already committed.\nVerify:\n- [ ] .env is ignored and .env.example is not.\n- [ ] Dependency and build folders are listed.\n- [ ] No pattern hides source files.\n- [ ] Commands for untracking are given when needed.\nOutput: .gitignore at the repository root, plus any git rm --cached commands needed.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "crie um gitignore pro meu projeto node e python",
+      "output": "groups for node_modules, .venv, __pycache__, .env with !.env.example, logs, OS files"
+    }
+  ],
+  "size": 395,
+  "version": 1
+}

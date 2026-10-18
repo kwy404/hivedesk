@@ -1,0 +1,42 @@
+{
+  "id": "off-canvas-drawer",
+  "title": "Off-canvas side drawer and bottom sheet",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "drawer",
+    "off canvas",
+    "side panel",
+    "slide out",
+    "slide in",
+    "cart drawer",
+    "filters panel",
+    "bottom sheet"
+  ],
+  "when": "The user wants a panel that slides in from the side, such as a cart, filters or settings, without leaving the page.",
+  "inputs": [
+    "panel purpose and title",
+    "side (left or right)",
+    "panel content and main action"
+  ],
+  "prompt": "Goal: A sliding panel that behaves as a modal dialog on desktop and rises as a bottom sheet on phones.\nSteps:\n1. <dialog class=\"drawer\" aria-labelledby=\"drawer-title\"> opened with showModal(); margin 0, inset-block: 0, inset-inline-end: 0.\n2. Height 100dvh, width min(24rem, 90vw); header with title and Close button, a scrolling body, a footer with the main action.\n3. Slide from transform: translateX(100%) on open with @starting-style; no transform transition under prefers-reduced-motion.\n4. Below 600 px make it a bottom sheet: full width, max-height 85dvh, inset-block-start: auto, rounded top corners.\n5. Close on Escape, backdrop click and Close; return focus to the trigger on the close event.\nQuality bar:\n- The main action stays visible while the body scrolls.\n- The trigger shows the state the panel holds (Cart, 2 items).\n- The page behind does not scroll while open.\nPitfalls:\n- A div moved off screen that still receives focus.\n- Animations firing on page load.\n- A drawer that covers the full screen on desktop.\nVerify:\n- [ ] The drawer is a dialog with aria-labelledby and Close.\n- [ ] Focus moves in and back to the trigger.\n- [ ] Bottom sheet layout at 375 px.\n- [ ] Reduced motion removes the slide.\nOutput: Drawer markup, drawer.css with slide and sheet rules, drawer.js.",
+  "checks": [
+    "html.dialog-a11y",
+    "html.button-type",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "css.media-query",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "carrinho lateral que desliza da direita",
+      "output": "dialog drawer with Cart title, scrolling item list, sticky Checkout button, bottom sheet under 600 px"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

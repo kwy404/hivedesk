@@ -1,0 +1,40 @@
+{
+  "id": "security-review-xss",
+  "title": "Security review for XSS",
+  "category": "practices",
+  "roles": [
+    "reviewer",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "xss",
+    "cross site scripting",
+    "security",
+    "innerhtml",
+    "sanitize",
+    "escape",
+    "injection",
+    "security review"
+  ],
+  "when": "The user asks for a security review of web code, or the app shows user supplied or fetched text on the page.",
+  "inputs": [
+    "the HTML and scripts",
+    "where user or external data enters"
+  ],
+  "prompt": "Goal: No path lets untrusted text become markup or script, with each sink found and replaced by a safe API.\nSteps:\n1. List data sources: form fields, URL params and hash, localStorage, fetched JSON, file contents, postMessage.\n2. Search the sinks: innerHTML, outerHTML, insertAdjacentHTML, document.write, eval, new Function, setTimeout with a string, href or src set from data.\n3. Render text with textContent or createElement plus append; set attributes with setAttribute on an allowlist.\n4. For URLs from data, parse with new URL() and allow only http, https or mailto protocols to block javascript: links.\n5. Remove inline event handlers and inline scripts so a Content Security Policy can block injected ones.\n6. On servers, escape HTML when building pages from data (& < > \" ' to entities) and set the response Content-Type.\nQuality bar:\n- Every finding has the file, line, source and sink.\n- Fixes keep the feature working.\n- No eval or document.write remains.\nPitfalls:\n- Writing a homemade sanitizer with a regex.\n- Escaping once and then decoding before insertion.\n- Trusting data because it came from your own storage.\nVerify:\n- [ ] No innerHTML built from variables.\n- [ ] No eval, new Function or document.write.\n- [ ] Links from data are protocol checked.\n- [ ] No inline handlers.\nOutput: Fixed scripts and markup plus a findings list (severity, location, fix).",
+  "checks": [
+    "js.safe-dom",
+    "js.no-eval",
+    "js.no-document-write",
+    "html.no-inline-handlers"
+  ],
+  "examples": [
+    {
+      "input": "revise a segurança do meu app de comentários",
+      "output": "comments rendered with innerHTML: switched to textContent, link URLs checked with new URL, onclick attributes removed"
+    }
+  ],
+  "size": 394,
+  "version": 1
+}

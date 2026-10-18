@@ -1,0 +1,53 @@
+{
+  "id": "quiz-app",
+  "title": "Multiple choice quiz with score and review",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "quiz",
+    "quiz app",
+    "trivia",
+    "questions",
+    "multiple choice",
+    "exam",
+    "test yourself",
+    "score"
+  ],
+  "when": "The user wants a quiz or trivia app: questions with choices, feedback after each answer, a score at the end and a review of mistakes.",
+  "inputs": [
+    "topic and questions",
+    "number of questions",
+    "timer or not"
+  ],
+  "prompt": "Goal: An accessible quiz that gives instant feedback, scores correctly and teaches through a review of missed questions.\nSteps:\n1. Questions in questions.json [{ id, prompt, choices[], answer, explain }]; fetch, parse in try and catch, show a message on failure.\n2. logic.mjs: shuffle(arr, rand) Fisher Yates with injectable rand, grade(question, choice), score(answers), progress(i, n).\n3. Each question is a fieldset whose legend is the prompt, with labeled radio inputs and a Check submit button.\n4. After Check, lock choices, mark the right one with text plus color, and put \"Correct\" or \"Not quite\" plus the explanation in aria-live.\n5. Show \"Question 3 of 10\" and a progress element.\n6. End screen: score and percent, missed questions with right answers, Restart that reshuffles; best score in localStorage guarded.\n7. test.mjs: shuffle keeps every item, grade, score.\nQuality bar:\n- Answer order is shuffled, the answer key follows it.\n- Feedback never uses color alone.\n- Big tap targets for choices.\nPitfalls:\n- Storing the answer as text that breaks after shuffling choices.\n- Allowing a second answer after feedback.\n- fetch failing silently when opened from disk.\nVerify:\n- [ ] Choices are radios with labels in a fieldset.\n- [ ] Feedback in aria-live.\n- [ ] Score matches answers.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs, questions.json, test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a 10 question quiz about the solar system",
+      "output": "questions.json, fieldset per question, feedback with explanation, review of misses"
+    }
+  ],
+  "size": 400,
+  "version": 1
+}

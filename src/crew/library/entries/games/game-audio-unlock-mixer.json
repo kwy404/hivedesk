@@ -1,0 +1,39 @@
+{
+  "id": "game-audio-unlock-mixer",
+  "title": "Game sound effects and music buses with Web Audio",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "game audio",
+    "sound effects",
+    "game music",
+    "web audio",
+    "audiocontext",
+    "autoplay",
+    "mute button",
+    "volume",
+    "game"
+  ],
+  "when": "A game needs short low latency sound effects plus looping music, separate volumes, a mute toggle, and audio that starts only after the first user gesture.",
+  "inputs": [
+    "sound files",
+    "music tracks"
+  ],
+  "prompt": "Goal: A small audio module with effect and music buses that unlocks on first input and never blocks the game.\nSteps:\n1. js/audio.js creates one AudioContext lazily: a master GainNode, with sfxGain and musicGain connected into it.\n2. Unlock: on the first pointerdown or keydown (listener with { once: true }) call ctx.resume() and catch the rejected promise.\n3. Preload: fetch each file, then ctx.decodeAudioData(arrayBuffer) into a Map of name to AudioBuffer, all in try/catch; a missing file warns once and plays nothing.\n4. play(name, { volume, rate }) makes a new AudioBufferSourceNode each time with playbackRate between 0.95 and 1.05, at most 4 voices per name.\n5. Music: one looping source into musicGain; crossfade tracks with gain.linearRampToValueAtTime over 1 s.\n6. Save volumes and mute through guarded localStorage; the mute button carries aria-pressed.\n7. When the document becomes hidden call ctx.suspend(), and resume when visible unless muted.\nQuality bar:\n- The first sound plays on the first tap on phones.\n- Rapid fire does not stack into a loud wall of noise.\nPitfalls:\n- A new AudioContext per sound, which hits the browser limit.\n- <audio> elements for rapid effects, which add latency.\n- Setting gain.value while a ramp is scheduled, which gets ignored.\nVerify:\n- [ ] No autoplay warning appears before input.\n- [ ] Mute survives a reload.\n- [ ] Music stops while the tab is hidden.\nOutput: js/audio.js plus the mute and volume controls in index.html.",
+  "checks": [
+    "js.syntax",
+    "js.storage-guarded",
+    "js.async-errors",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "add jump and coin sounds and background music that can be muted",
+      "output": "lazy AudioContext with sfx and music gains, gesture unlock, voice limit, crossfade, saved mute"
+    }
+  ],
+  "size": 422,
+  "version": 1
+}

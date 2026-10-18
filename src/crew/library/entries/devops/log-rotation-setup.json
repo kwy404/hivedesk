@@ -1,0 +1,38 @@
+{
+  "id": "log-rotation-setup",
+  "title": "Log rotation and retention for server logs",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "ops"
+  ],
+  "tags": [
+    "log rotation",
+    "logrotate",
+    "log files",
+    "disk full",
+    "journald",
+    "retention",
+    "compress logs",
+    "server logs"
+  ],
+  "when": "Log files grow without limit on a server, the disk fills up, or the user wants clear retention rules for application and access logs.",
+  "inputs": [
+    "where logs are written",
+    "how the app opens log files",
+    "retention needs"
+  ],
+  "prompt": "Goal: Logs that rotate on a schedule, compress, keep a fixed number of days, and neither fill the disk nor lose lines while rotating.\nSteps:\n1. Prefer stdout and stderr under systemd; cap the journal with a journald.conf.d drop in: SystemMaxUse=500M, MaxRetentionSec=30day.\n2. For apps writing files, /etc/logrotate.d/app: /var/log/app/*.log { daily rotate 14 compress delaycompress missingok notifempty maxsize 100M create 0640 app app }.\n3. Pick how the app reopens its file: a postrotate block with sharedscripts sends a signal the app handles (for example SIGUSR1 reopens the stream).\n4. Use copytruncate only for apps that cannot reopen files, accepting a few lost lines.\n5. Dry run with logrotate -d /etc/logrotate.d/app, force one rotation with -f, and confirm the app writes to the fresh file.\n6. Alert when the log partition passes 80 percent.\n7. Write the retention per log type; some data has legal limits.\nQuality bar:\n- Log disk use has a known ceiling.\n- No lines lost across a rotation.\n- Old files are compressed.\nPitfalls:\n- Renaming a file the process holds open: it keeps writing to the old inode and the disk is not freed.\n- Debug level in production writing gigabytes a day.\n- Secrets in log lines that then sit in archives for weeks.\nVerify:\n- [ ] rotate count and compress set.\n- [ ] Reopen method chosen and tested.\n- [ ] Dry run output is clean.\n- [ ] Journal size capped.\nOutput: deploy/logrotate-app, deploy/journald-app.conf and a Logs section in the ops notes.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "o disco do servidor encheu de logs",
+      "output": "/etc/logrotate.d/app with daily, rotate 14, compress, maxsize 100M, postrotate signal; journald SystemMaxUse=500M"
+    }
+  ],
+  "size": 426,
+  "version": 1
+}

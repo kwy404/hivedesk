@@ -1,0 +1,45 @@
+{
+  "id": "not-found-404",
+  "title": "404 not found page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "404",
+    "not found",
+    "error page",
+    "missing page",
+    "broken link"
+  ],
+  "when": "The user wants a 404 page or a friendly page for missing content.",
+  "inputs": [
+    "site name",
+    "main sections to link to"
+  ],
+  "prompt": "Goal: A helpful dead end: say what happened, offer the way back, and keep the brand voice.\nSteps:\n1. Title and h1 that say the page was not found, in plain words.\n2. One sentence on likely causes (moved, mistyped link) without blaming the visitor.\n3. Links to home and the two or three most useful sections, plus a search field if the site has search.\n4. Reuse the site header and footer so it does not feel like a different site.\n5. Keep it light; no heavy animation, and respect reduced motion if there is any.\nQuality bar:\n- Works without JavaScript.\n- Links use relative paths that exist.\n- Tone is calm and short.\nPitfalls:\n- Jokes that hide the way back.\n- Redirecting automatically after a few seconds.\n- Absolute links to a domain that may change.\nVerify:\n- [ ] h1 states not found.\n- [ ] At least one link to home.\n- [ ] Local links resolve.\n- [ ] Reduced motion respected if animated.\nOutput: 404.html using the shared stylesheet.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "css.reduced-motion",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "make a 404 page for my bakery site",
+      "output": "h1 \"This page is not on the menu\", links to home, menu and contact"
+    }
+  ],
+  "size": 269,
+  "version": 1
+}

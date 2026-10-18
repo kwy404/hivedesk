@@ -1,0 +1,48 @@
+{
+  "id": "about-page",
+  "title": "About us page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "about",
+    "about us",
+    "company",
+    "team",
+    "story",
+    "mission",
+    "values"
+  ],
+  "when": "The user wants an About page that tells the story, mission and people behind a business.",
+  "inputs": [
+    "business story and founding year",
+    "mission",
+    "team members",
+    "values or facts"
+  ],
+  "prompt": "Goal: Build trust with a human story, concrete facts and real faces.\nSteps:\n1. Open with what the business does and for whom, then the short origin story.\n2. Mission in one sentence, followed by three values each with a concrete example.\n3. Team grid: photo with alt, name, role, one personal line.\n4. Facts strip: years, customers served, locations, using numbers the user gave.\n5. Close with a call to action to contact or visit.\nQuality bar:\n- Concrete details over adjectives.\n- Short paragraphs.\n- Photos sized and described.\nPitfalls:\n- Corporate filler such as passionate about excellence.\n- Inventing awards or numbers.\n- Team photos without alt text.\nVerify:\n- [ ] One h1.\n- [ ] Every team image has alt.\n- [ ] Values have examples.\n- [ ] No placeholder text.\nOutput: about.html sharing the site stylesheet.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.img-dimensions"
+  ],
+  "examples": [
+    {
+      "input": "página sobre nós para a padaria familiar",
+      "output": "story since 1987, mission line, 3 values with examples, team of 4 with roles"
+    }
+  ],
+  "size": 234,
+  "version": 1
+}

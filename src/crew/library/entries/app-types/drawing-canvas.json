@@ -1,0 +1,52 @@
+{
+  "id": "drawing-canvas",
+  "title": "Drawing canvas app with brush, eraser and undo",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "drawing app",
+    "paint",
+    "canvas",
+    "sketch",
+    "whiteboard",
+    "draw",
+    "doodle",
+    "brush"
+  ],
+  "when": "The user wants a paint or sketch app to draw with mouse, pen or finger, pick colors and sizes, undo and save the picture.",
+  "inputs": [
+    "tools wanted",
+    "canvas size",
+    "save format"
+  ],
+  "prompt": "Goal: Smooth, sharp strokes on any screen with pointer input, unlimited undo and a PNG export.\nSteps:\n1. Size the canvas to its CSS box times devicePixelRatio and ctx.scale(dpr, dpr); on resize redraw from the stroke list.\n2. Pointer events with setPointerCapture and touch-action: none; record strokes as { tool, color, size, points[] }.\n3. Smooth with quadraticCurveTo through midpoints, round caps and joins; eraser uses globalCompositeOperation \"destination-out\".\n4. Toolbar: labeled color input and size range, brush and eraser buttons with aria-pressed, Undo and Redo (Ctrl+Z, Ctrl+Shift+Z), Clear with confirm.\n5. logic.mjs: history push, undo, redo (cleared by a new stroke), simplify(points, tolerance).\n6. Save PNG with canvas.toBlob and a download link; autosave strokes to localStorage guarded with a size cap.\n7. Canvas has role=\"img\" and an aria-label; test.mjs covers history and simplify.\nQuality bar:\n- No blurry lines on high density screens.\n- Pen pressure used when pointerType is pen.\n- Toolbar reachable by keyboard.\nPitfalls:\n- Mouse only events.\n- Undo by snapshots of full images, which eats memory.\n- Page scrolling while drawing on touch.\nVerify:\n- [ ] Controls labeled.\n- [ ] Undo and redo tested.\n- [ ] Export works.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js (canvas and input), logic.mjs (history, simplify), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a simple paint app for my kids",
+      "output": "color picker, 3 sizes, eraser, undo/redo, Save PNG"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

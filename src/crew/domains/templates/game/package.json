@@ -1,0 +1,10 @@
+{
+  "name": "star-catcher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A small canvas game: catch the falling stars. Keyboard and touch.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

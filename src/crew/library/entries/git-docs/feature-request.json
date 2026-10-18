@@ -1,0 +1,37 @@
+{
+  "id": "feature-request",
+  "title": "Write a feature request",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "mel",
+    "dev"
+  ],
+  "tags": [
+    "feature request",
+    "proposal",
+    "enhancement",
+    "user story",
+    "idea",
+    "issue",
+    "request feature"
+  ],
+  "when": "The user wants to propose a new feature or improvement in a way that maintainers can evaluate and plan.",
+  "inputs": [
+    "the problem or need",
+    "who has it",
+    "ideas for a solution"
+  ],
+  "prompt": "Goal: A request that frames the problem first, proposes a concrete solution and defines when it would be done.\nSteps:\n1. Title: the capability in user words (\"Export reports as CSV\").\n2. Problem: who needs it, what they do today, and what that costs them, with a real example.\n3. Proposal: the smallest useful version, with how it would look or be called.\n4. Alternatives considered and why they fall short, including doing nothing.\n5. Acceptance criteria as a checklist of observable behaviors.\n6. Scope notes: what is out of scope for the first version and any risks (compatibility, performance, privacy).\nQuality bar:\n- Problem before solution.\n- Criteria are testable.\n- Small enough for one release.\nPitfalls:\n- Only a solution with no problem stated.\n- A wish list of many features in one request.\n- Vague criteria like \"easy to use\".\nVerify:\n- [ ] Problem, proposal and criteria sections exist.\n- [ ] Criteria are checkable.\n- [ ] Out of scope is listed.\n- [ ] No placeholder text.\nOutput: The feature request in Markdown, ready for the issue tracker.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "quero sugerir um modo offline para o app",
+      "output": "Problem: field staff lose data without signal; proposal: queue changes locally; 4 acceptance criteria"
+    }
+  ],
+  "size": 303,
+  "version": 1
+}

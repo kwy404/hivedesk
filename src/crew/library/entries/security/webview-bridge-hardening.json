@@ -1,0 +1,42 @@
+{
+  "id": "webview-bridge-hardening",
+  "title": "Hardening desktop and mobile WebView apps",
+  "category": "security",
+  "roles": [
+    "security",
+    "mobile",
+    "desktop",
+    "reviewer"
+  ],
+  "tags": [
+    "webview security",
+    "native bridge",
+    "mobile app security",
+    "desktop app security",
+    "capacitor",
+    "neutralinojs",
+    "deep links",
+    "app hardening",
+    "security"
+  ],
+  "when": "A desktop app (Neutralinojs or a similar WebView shell) or a mobile app (Capacitor) runs web code with native access, and the WebView, the bridge and deep links must be locked down.",
+  "inputs": [
+    "capacitor.config.json or neutralino.config.json",
+    "bridge calls the app uses",
+    "deep link routes"
+  ],
+  "prompt": "Goal: The web layer calls only the native functions it needs, loads only bundled content and treats deep links and remote data as untrusted.\nSteps:\n1. Load bundled files only: no server.url in release config (Capacitor uses it for dev live reload), allowNavigation empty or exact hosts.\n2. Neutralinojs: nativeAllowList names only used calls (app.exit, filesystem.readFile, os.showOpenDialog), never os.* or os.execCommand; tokenSecurity set to one-time.\n3. Bridge handlers validate every argument; paths pass a root check; no generic run command or eval methods.\n4. CSP meta in index.html: default-src 'self'; script-src 'self'; connect-src only the API origins.\n5. Deep links: parse with new URL, accept known paths and params only, never navigate the WebView to a URL from the link, confirm actions with the user.\n6. Tokens go to the platform secure storage plugin (keychain or keystore), not localStorage; release builds disable WebView debugging.\nQuality bar:\n- Every allowed native call maps to a feature.\n- Release config is reviewed apart from debug config.\n- Native builds need the platform SDK tools; the report says what was checked on a device.\nPitfalls:\n- Shipping the live reload URL in a release.\n- innerHTML with bridge or deep link data.\n- Whole disk access for one folder.\nVerify:\n- [ ] No server URL in release config.\n- [ ] nativeAllowList is narrow.\n- [ ] index.html has the CSP meta.\n- [ ] Deep links are validated.\nOutput: Hardened capacitor.config.json or neutralino.config.json, CSP in index.html, findings in SECURITY-AUDIT.md.",
+  "checks": [
+    "sec.csp",
+    "js.safe-dom",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "revisar seguranca do app desktop Neutralinojs antes de distribuir",
+      "output": "nativeAllowList cut to 4 calls, tokenSecurity one-time, CSP meta, deep link validation notes"
+    }
+  ],
+  "size": 444,
+  "version": 1
+}

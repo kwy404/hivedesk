@@ -1,0 +1,49 @@
+{
+  "id": "image-filters-canvas",
+  "title": "Image filters with Canvas",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "image filter",
+    "photo editor",
+    "image editor",
+    "filters",
+    "grayscale",
+    "brightness",
+    "photo effects"
+  ],
+  "when": "The user wants to open a photo in the browser, apply filters such as grayscale, sepia, brightness, contrast or blur, and download the result.",
+  "inputs": [
+    "filters wanted",
+    "output format"
+  ],
+  "prompt": "Goal: Local only photo editing where every slider reapplies from the original pixels and the result downloads cleanly.\nSteps:\n1. Labeled file input accept=\"image/*\" plus drag and drop; load via createImageBitmap or an object URL revoked after load; nothing leaves the device.\n2. Downscale to a max side of 2048 px for editing.\n3. logic.mjs pure over Uint8ClampedArray: grayscale (0.2126, 0.7152, 0.0722), sepia, invert, brightness, contrast, threshold, and a 3x3 convolve with clamped edges for blur and sharpen.\n4. Labeled range inputs with output values; each change filters a copy of the original ImageData so effects never stack.\n5. Throttle with requestAnimationFrame; show \"Applying\" in aria-live on large images.\n6. Before and after toggle, Reset, Download PNG or JPEG via canvas.toBlob.\n7. test.mjs on 2x2 pixel arrays: grayscale, double invert, clamping at 0 and 255.\nQuality bar:\n- Sliders feel live on a 12 megapixel photo.\n- Alpha is preserved.\n- Clear empty state that says what to do.\nPitfalls:\n- Applying filters to already filtered pixels.\n- Leaking object URLs.\n- Reading pixels before the image has loaded.\nVerify:\n- [ ] File input labeled.\n- [ ] Pure filters tested.\n- [ ] Download works.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (pixel filters), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "html.labels",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "editor de fotos com filtros preto e branco e brilho",
+      "output": "open photo, sliders brightness/contrast, presets, before/after, Download"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

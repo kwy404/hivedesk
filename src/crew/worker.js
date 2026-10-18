@@ -214,7 +214,7 @@ export async function runTask(ctx) {
       continue;
     }
     invalid = 0;
-    if (result?.remote && (!origin || origin.kind !== 'remote')) origin = { kind: 'remote', brainId: result.remote.brainId, label: result.remote.label };
+    if (result?.remote && (!origin || origin.kind !== 'remote')) origin = { kind: 'remote', brainId: result.remote.brainId, label: result.remote.label, ...(result.remote.peerId ? { peerId: result.remote.peerId } : {}) };
     const action = result.json;
     const key = JSON.stringify(compactAction(action));
     repeats = key === lastKey ? repeats + 1 : 0;

@@ -1,0 +1,38 @@
+{
+  "id": "shell-script-strict",
+  "title": "Safe shell scripts with strict mode",
+  "category": "stacks",
+  "roles": [
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "bash",
+    "shell",
+    "shell script",
+    "sh",
+    "set -e",
+    "pipefail",
+    "automation",
+    "terminal script",
+    "quoting"
+  ],
+  "when": "The user wants a shell script for setup, backup or batch tasks, or an existing script breaks on spaces or keeps going after errors.",
+  "inputs": [
+    "what the script automates",
+    "arguments it takes"
+  ],
+  "prompt": "Goal: A bash script that stops on errors, quotes every expansion, cleans up after itself and explains its usage.\nSteps:\n1. Start with #!/usr/bin/env bash and set -euo pipefail.\n2. Quote every expansion (\"$var\", \"$@\", \"${arr[@]}\"); use [[ ]] for tests and $(...) for substitution.\n3. Resolve the script folder: dir=\"$(cd \"$(dirname \"${BASH_SOURCE[0]}\")\" && pwd)\".\n4. Parse options with getopts or a while case loop; usage() with examples; exit 2 on bad usage.\n5. Temp files from mktemp, removed by trap cleanup EXIT.\n6. Check tools first: command -v tool >/dev/null || { echo \"tool is required\" >&2; exit 1; }; log to stderr; destructive steps need --yes.\nQuality bar:\n- Names with spaces or leading dashes work (pass -- before file arguments).\n- Safe to run twice.\n- Exit codes reflect failures.\nPitfalls:\n- for f in $(ls), which splits names; loop over globs.\n- rm -rf \"$dir/\" with an empty variable; guard with ${dir:?}.\n- cd without a check, then running in the wrong folder.\nVerify:\n- [ ] Strict mode line present.\n- [ ] All expansions quoted.\n- [ ] trap cleanup when temp files exist.\n- [ ] usage() and exit codes defined.\nOutput: scripts/<task>.sh, executable, with a usage comment at the top.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "script bash para fazer backup da pasta de fotos",
+      "output": "backup.sh with set -euo pipefail, quoted paths, mktemp plus trap, --dry-run and usage()"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

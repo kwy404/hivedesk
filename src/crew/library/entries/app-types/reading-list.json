@@ -1,0 +1,52 @@
+{
+  "id": "reading-list",
+  "title": "Reading list with status, progress and ratings",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "reading list",
+    "books",
+    "book tracker",
+    "reading tracker",
+    "to read",
+    "book log",
+    "reading goal"
+  ],
+  "when": "The user wants to keep a list of books to read, reading and finished, with page progress, ratings and a yearly goal.",
+  "inputs": [
+    "book fields",
+    "yearly goal",
+    "import or export format"
+  ],
+  "prompt": "Goal: A personal book log where status, progress and the yearly goal stay consistent with each other.\nSteps:\n1. Book { id, title, author, status: want | reading | finished, pages, pagesRead, rating, finishedAt, notes }.\n2. logic.mjs: addBook (title required, rejects same normalized title and author), setProgress clamping to 0..pages and finishing at 100 percent, statsByYear, sortBooks(key).\n3. Segmented buttons Want to read, Reading, Finished with counts; search by title or author.\n4. Book card: title, author, progress element with \"120 of 300 pages\", status select, rating as 5 labeled radios (\"3 stars\").\n5. Goal bar \"14 of 20 books in 2026\".\n6. Persist in localStorage books.v1 guarded; export and import JSON.\n7. test.mjs: duplicates, clamp and auto finish, year stats.\nQuality bar:\n- Finished books always have a date.\n- Ratings work by keyboard.\n- Cards reflow to one column on phones.\nPitfalls:\n- Progress above total pages.\n- Rating stars as unlabeled icons.\n- Duplicates from extra spaces or case.\nVerify:\n- [ ] Form fields labeled.\n- [ ] Status and progress agree.\n- [ ] Reload keeps everything.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (book rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "a reading list app to track my books this year",
+      "output": "tabs Want/Reading/Finished, progress bars, star ratings, goal 14 of 20"
+    }
+  ],
+  "size": 347,
+  "version": 1
+}

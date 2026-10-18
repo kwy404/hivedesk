@@ -39,6 +39,7 @@ export class MemoryError extends Error {
  *   modelPath: string,
  *   gpu?: boolean,                 false forces the CPU
  *   contextSize?: number,          default 4096
+ *   gpuLayers?: 'max',             every layer on the GPU instead of the fitted count
  *   id?: string, name?: string,
  *   minGpuShare?: number,          fail (so the caller can fall back) when fewer layers than this share fit on the GPU; default 0.5
  *   freeMem?: () => number,
@@ -68,7 +69,8 @@ export async function createLocalBrain(opts) {
   }
   const model = await llama.loadModel({
     modelPath: opts.modelPath,
-    gpuLayers: gpuWanted ? { fitContext: { contextSize: ctxSize } } : 0,
+    // 'max' puts every layer on the GPU (a small model on a 6 GB card); the default fits them next to the context.
+    gpuLayers: gpuWanted ? (opts.gpuLayers === 'max' ? 'max' : { fitContext: { contextSize: ctxSize } }) : 0,
     // On the GPU the weights are read once and uploaded, so nothing stays in RAM (measured: 0.45 GB resident
     // for the 3B, against 2.4 GB with a memory map that keeps the file pages). On the CPU they are memory
     // mapped, not copied.
@@ -111,7 +113,8 @@ export async function createLocalBrain(opts) {
     label: `Local: ${name}`,
     kind: 'local',
     info: () => ({
-      backend: 'local', model: name, gpu: backend, gpuLayers: model.gpuLayers, totalLayers, contextSize: context.contextSize
+      backend: 'local', model: name, gpu: backend, gpuLayers: model.gpuLayers, totalLayers, contextSize: context.contextSize,
+      fileBytes, ...(Number.isFinite(context.memoryUsage?.vram) ? { contextVram: context.memoryUsage.vram } : {})
     }),
     async chat(messages, options = {}) {
       if (busy) throw new Error('the local brain is busy');
@@ -154,6 +157,25 @@ export async function createLocalBrain(opts) {
         chat.dispose({ disposeSequence: false });
         busy = false;
       }
+    },
+    /** The runtime's own VRAM numbers (src/compute/probe.js uses them when nothing else measured free VRAM). */
+    async vramState() {
+      try { return await llama.getVramState(); } catch { return null; }
+    },
+    /** Threads the evaluation uses now, when the runtime reports it. */
+    threads() {
+      const t = context.currentThreads ?? context.idealThreads;
+      return Number.isFinite(t) && t > 0 ? t : null;
+    },
+    /**
+     * Caps the threads of every evaluation (a CPU job of a peer, src/compute/worker.js) and returns the
+     * function that restores the previous cap. Null when this runtime has no thread cap.
+     */
+    limitThreads(n) {
+      if (!('maxThreads' in llama)) return null;
+      const before = llama.maxThreads;
+      try { llama.maxThreads = Math.max(1, Math.floor(n)); } catch { return null; }
+      return () => { try { llama.maxThreads = before; } catch { /* disposed */ } };
     },
     async close() {
       try { await context.dispose(); } catch { /* ignore */ }

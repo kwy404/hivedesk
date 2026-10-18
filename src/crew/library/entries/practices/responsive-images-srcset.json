@@ -1,0 +1,38 @@
+{
+  "id": "responsive-images-srcset",
+  "title": "Responsive images with srcset and sizes",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "responsive images",
+    "srcset",
+    "sizes",
+    "picture",
+    "image optimization",
+    "webp",
+    "retina",
+    "images"
+  ],
+  "when": "Images are heavy on phones, blurry on high density screens, or the user wants modern formats with fallbacks.",
+  "inputs": [
+    "the images and where they appear",
+    "the widths they are displayed at"
+  ],
+  "prompt": "Goal: Each image downloads at the size it is shown, stays sharp on dense screens, and never shifts the layout.\nSteps:\n1. Export each image at a few widths (for example 480, 800, 1200, 1600) named photo-480.jpg and so on.\n2. Use srcset with width descriptors: srcset=\"photo-480.jpg 480w, photo-800.jpg 800w, photo-1200.jpg 1200w\".\n3. Write sizes to match the layout: sizes=\"(min-width: 64em) 33vw, 100vw\" for a three column grid.\n4. For modern formats use <picture> with <source type=\"image/avif\"> and <source type=\"image/webp\"> before the jpg img fallback.\n5. Always set width, height (the intrinsic ratio), alt, and loading=\"lazy\" plus decoding=\"async\" for images below the first screen.\n6. Use <picture> with media only for art direction (a different crop on phones).\nQuality bar:\n- Phones download the small file.\n- No layout shift while images load.\n- The hero image is not lazy loaded.\nPitfalls:\n- sizes left out, so the browser assumes 100vw everywhere.\n- Only one huge file listed in srcset.\n- Forgetting the fallback img inside picture.\nVerify:\n- [ ] Every img has alt, width and height.\n- [ ] srcset lists real files that exist.\n- [ ] Images below the first screen are lazy.\n- [ ] sizes matches the CSS layout.\nOutput: Updated HTML image markup and the list of image files needed per width.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.lazy-images"
+  ],
+  "examples": [
+    {
+      "input": "as fotos da galeria estão pesadas no celular",
+      "output": "picture with webp source and jpg fallback, srcset 480w to 1600w, sizes for a 3 column grid"
+    }
+  ],
+  "size": 372,
+  "version": 1
+}

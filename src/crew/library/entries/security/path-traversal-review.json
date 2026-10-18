@@ -1,0 +1,41 @@
+{
+  "id": "path-traversal-review",
+  "title": "Path traversal review for file access",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "backend"
+  ],
+  "tags": [
+    "path traversal",
+    "directory traversal",
+    "dot dot slash",
+    "zip slip",
+    "symlinks",
+    "realpath",
+    "file download",
+    "file serving",
+    "security review"
+  ],
+  "when": "An app reads, writes, serves, downloads or extracts files using names from URLs, form fields, archives or uploads, and path traversal must be ruled out.",
+  "inputs": [
+    "file handling code",
+    "the intended root folders"
+  ],
+  "prompt": "Goal: Every file access built from outside input provably stays inside its root, after decoding, normalizing and following links.\nSteps:\n1. Find sinks: fs.readFile, createReadStream, writeFile, unlink, rename, file send helpers, open() in Python, archive extraction loops.\n2. Decode once first (decodeURIComponent inside try), refuse names containing \\0, then const full = path.resolve(root, name).\n3. Accept only full === root or full.startsWith(root + path.sep), with root itself resolved; on case insensitive disks lowercase both first.\n4. Follow links: const real = await fs.realpath(full) and repeat the prefix check, so a symlink inside root cannot point outside.\n5. Zip slip: run every archive entry name through the same check before writing; refuse absolute paths, drive letters such as C: and backslashes on win32.\n6. Best fix when possible: never use names as paths; look files up by id and store them under generated names.\nQuality bar:\n- One shared safeJoin(root, name) serves every sink.\n- Tests: ../../etc/passwd, ..%2f..%2f, ....//, /etc/passwd, C:\\temp\\x and a symlink leading out.\n- Errors reply 404 without echoing the resolved path.\nPitfalls:\n- Checking for \"..\" before decoding.\n- startsWith(root) without the separator, so /data2 passes for /data.\n- path.join, which walks out of the root happily.\nVerify:\n- [ ] Every sink uses safeJoin.\n- [ ] The realpath check exists.\n- [ ] Archive entries are checked.\n- [ ] Payload tests get 404.\nOutput: Findings in SECURITY-AUDIT.md, safe-path.mjs and test/safe-path.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.test-runner",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "a rota de download recebe ?file= e le do disco",
+      "output": "safeJoin with resolve plus separator check, realpath recheck, zip entry check, payload tests"
+    }
+  ],
+  "size": 440,
+  "version": 1
+}

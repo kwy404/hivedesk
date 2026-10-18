@@ -1,0 +1,50 @@
+{
+  "id": "store-catalog",
+  "title": "Online store catalog with cart",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "store",
+    "shop",
+    "ecommerce",
+    "products",
+    "catalog",
+    "cart",
+    "checkout"
+  ],
+  "when": "The user wants a small shop page that lists products and lets visitors add them to a cart.",
+  "inputs": [
+    "products with name, price, image, category",
+    "currency",
+    "how orders are placed"
+  ],
+  "prompt": "Goal: A product grid with filters and a working cart kept in localStorage, with an honest checkout step.\nSteps:\n1. Keep products as data (an array in app.js or products.json) and render the grid from it.\n2. Each card: image with alt, name, price formatted with Intl.NumberFormat, and an Add to cart button.\n3. Category filter and sort by price as buttons or a select with a label.\n4. Cart panel: line items, quantity steppers, remove, subtotal; save it in localStorage inside try and catch.\n5. Checkout: without a backend, send the order by email link or show a summary to copy; say so plainly.\n6. Announce cart changes in an aria-live region.\nQuality bar:\n- Money math in integer cents.\n- Cart survives reload and bad stored data.\n- Buttons are buttons, with type=\"button\".\nPitfalls:\n- Floating point totals like 19.989999.\n- Fake payment forms that collect card numbers.\n- Building cards with innerHTML from product data.\nVerify:\n- [ ] Adding, changing and removing items updates the subtotal.\n- [ ] Reload keeps the cart.\n- [ ] The grid works at 375 px.\n- [ ] Scripts parse.\nOutput: index.html, style.css, app.js (and products.json if chosen); no payment collection.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "js.syntax",
+    "js.storage-guarded",
+    "js.safe-dom",
+    "html.aria-live",
+    "html.button-type"
+  ],
+  "examples": [
+    {
+      "input": "loja de camisetas com carrinho",
+      "output": "grid of 8 shirts, filter by size, cart with quantities and total in BRL, order via email link"
+    }
+  ],
+  "size": 334,
+  "version": 1
+}

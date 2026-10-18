@@ -1,0 +1,39 @@
+{
+  "id": "desktop-open-save-dialogs",
+  "title": "File open and save dialogs in a desktop app",
+  "category": "desktop",
+  "roles": [
+    "desktop",
+    "dev"
+  ],
+  "tags": [
+    "open file",
+    "save file",
+    "file dialog",
+    "save as",
+    "desktop app",
+    "file picker",
+    "neutralinojs",
+    "recent files",
+    "unsaved changes"
+  ],
+  "when": "The desktop app edits documents and needs Open, Save and Save As with native dialogs, file filters, a dirty flag and a recent files list.",
+  "inputs": [
+    "document file extension",
+    "file format (text or JSON)"
+  ],
+  "prompt": "Goal: doc.js implements Open, Save and Save As with native dialogs, tracks the current path and unsaved changes, and never loses work silently.\nSteps:\n1. Open: const [path] = await Neutralino.os.showOpenDialog(\"Open note\", { filters: [{ name: \"Notes\", extensions: [\"note\", \"txt\"] }] }); return early when the array is empty (user canceled).\n2. Read with Neutralino.filesystem.readFile(path); keep currentPath and set dirty = false.\n3. Save: if currentPath is null run Save As; otherwise write to currentPath.\n4. Save As: const path = await Neutralino.os.showSaveDialog(\"Save note\", { defaultPath: \"untitled.note\", filters }); add the extension when the user typed none.\n5. Mark dirty on each edit and show it with Neutralino.window.setTitle(\"* name\").\n6. Before Open, New or close with dirty true, ask with Neutralino.os.showMessageBox(\"Unsaved changes\", \"Save before closing?\", \"YES_NO_CANCEL\", \"QUESTION\") and act on \"YES\", \"NO\" or \"CANCEL\".\n7. Keep the last 8 paths as recent files; drop missing ones.\n8. Allow only the functions used: os.showOpenDialog, os.showSaveDialog, os.showMessageBox, filesystem.readFile, filesystem.writeFile.\nQuality bar:\n- Cancel in any dialog changes nothing.\n- Errors name the file and the reason.\nPitfalls:\n- Treating cancel (empty result) as an error.\n- Overwriting without the dirty check.\nVerify:\n- [ ] Every dialog call handles cancel.\n- [ ] Close with unsaved work asks first.\n- [ ] Allow list matches the calls.\nOutput: doc.js, the File menu wiring and the allow list lines.",
+  "checks": [
+    "js.async-errors",
+    "neu.config",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "meu editor desktop precisa de Abrir, Salvar e Salvar como",
+      "output": "showOpenDialog and showSaveDialog with filters, dirty title marker, YES_NO_CANCEL prompt on close"
+    }
+  ],
+  "size": 433,
+  "version": 1
+}

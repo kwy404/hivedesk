@@ -1,0 +1,51 @@
+{
+  "id": "tap-to-fly-game",
+  "title": "Tap to fly side scroller",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "side scroller",
+    "tap game",
+    "flying game",
+    "one button game",
+    "endless runner",
+    "obstacle game",
+    "casual game"
+  ],
+  "when": "The user wants a one button game where each tap lifts a flying character through gaps in moving obstacles, scoring per gap.",
+  "inputs": [
+    "character and theme",
+    "difficulty"
+  ],
+  "prompt": "Goal: Snappy, frame rate independent physics with fair gaps and instant restarts.\nSteps:\n1. logic.mjs with dt: vy += gravity x dt, a tap sets vy to the flap velocity; gate pairs move left at constant speed with a random gap center inside safe bounds.\n2. Collision of a circle against gate rectangles, floor and ceiling; plus 1 when the player passes a gate center, once.\n3. Input: pointerdown on the canvas, Space or ArrowUp; first input starts; ignore key repeat.\n4. Spawn gates every 1.5 s from an object pool.\n5. Parallax layers and screen shake only when matchMedia(\"(prefers-reduced-motion: reduce)\") is false.\n6. Score and best in localStorage guarded; game over panel with the score in aria-live and a Restart button that takes focus.\n7. test.mjs: gravity, flap, gap bounds, single score per gate, collision edges.\nQuality bar:\n- Hitbox slightly smaller than the sprite.\n- Restart is one tap.\n- Same feel at 60 and 120 Hz.\nPitfalls:\n- Gaps that are impossible to reach.\n- Score counted every frame inside the gate.\n- Tap also scrolling or zooming the page.\nVerify:\n- [ ] Physics tested.\n- [ ] Score live.\n- [ ] Reduced motion respected.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, game.js, logic.mjs (physics and scoring), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "css.reduced-motion",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "um jogo de tocar para voar entre canos",
+      "output": "tap or Space to flap, gates every 1.5 s, best score saved"
+    }
+  ],
+  "size": 359,
+  "version": 1
+}

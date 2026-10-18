@@ -1,0 +1,38 @@
+{
+  "id": "branching-workflow",
+  "title": "Git branching workflow",
+  "category": "git-docs",
+  "roles": [
+    "ops",
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "branching",
+    "branch strategy",
+    "git workflow",
+    "trunk based",
+    "feature branch",
+    "main branch",
+    "git"
+  ],
+  "when": "The user or team wants a simple, written branching model for daily work, releases and hotfixes.",
+  "inputs": [
+    "team size",
+    "release frequency",
+    "whether reviews are required"
+  ],
+  "prompt": "Goal: A short workflow the team can follow from memory: how to branch, update, review, merge, release and hotfix.\nSteps:\n1. Default to trunk based: main is always releasable; short lived branches of one to three days.\n2. Branch names: type/short-topic (feat/csv-export, fix/login-timeout, docs/api), lowercase with hyphens.\n3. Keep branches current with git fetch and git rebase origin/main (or merge for shared branches), never rewriting shared history.\n4. Merge through review with passing tests; choose squash merge for one commit per change or merge commits to keep history.\n5. Releases: tag main (v1.4.0); create release/1.4 branches only if old versions get fixes.\n6. Hotfix: branch from the release tag, fix, tag a patch, then bring the fix back to main.\nQuality bar:\n- Rules fit on one screen.\n- Commands are shown for each step.\n- Protected main with no direct pushes when the team has more than one person.\nPitfalls:\n- Long lived feature branches that drift.\n- Force pushing a shared branch.\n- A complex multi branch model for a solo project.\nVerify:\n- [ ] Naming rules are stated.\n- [ ] Update, merge and hotfix steps have commands.\n- [ ] Release tagging is covered.\n- [ ] No placeholder text.\nOutput: A Branching section for CONTRIBUTING.md or docs/branching.md.",
+  "checks": [
+    "text.no-placeholder",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "qual fluxo de branches devo usar no meu time de 3 pessoas",
+      "output": "trunk based, feat/ and fix/ names, rebase on main, squash merge, tags for releases, hotfix steps"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

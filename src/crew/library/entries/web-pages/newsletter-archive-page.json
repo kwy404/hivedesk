@@ -1,0 +1,49 @@
+{
+  "id": "newsletter-archive-page",
+  "title": "Newsletter landing and archive",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "newsletter",
+    "email list",
+    "subscribe",
+    "archive",
+    "issues",
+    "writer"
+  ],
+  "when": "The user wants a page for a newsletter with a subscribe form and past issues.",
+  "inputs": [
+    "newsletter name and topic",
+    "frequency",
+    "past issues",
+    "signup endpoint"
+  ],
+  "prompt": "Goal: Show what subscribers get, with real past issues as proof, and a simple subscribe form.\nSteps:\n1. Headline with topic and frequency (every Friday, five minutes).\n2. Subscribe form with labeled email field, submit button and privacy line.\n3. Three highlights of what readers get.\n4. Archive list: issue number, date, title, one line summary, link.\n5. Short author note.\nQuality bar:\n- Frequency and length are promised plainly.\n- Archive proves the value.\n- Form errors are announced.\nPitfalls:\n- Popups that block the content.\n- No archive, so nobody knows the quality.\n- Pre checked consent boxes.\nVerify:\n- [ ] Email field labeled and typed.\n- [ ] Archive items have dates.\n- [ ] Status region for messages.\n- [ ] One h1.\nOutput: index.html, style.css and subscribe.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.aria-live",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "página da minha newsletter sobre finanças pessoais",
+      "output": "headline weekly on Mondays, subscribe form, 10 past issues with dates"
+    }
+  ],
+  "size": 222,
+  "version": 1
+}

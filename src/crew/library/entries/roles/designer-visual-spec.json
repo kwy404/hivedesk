@@ -1,0 +1,37 @@
+{
+  "id": "designer-visual-spec",
+  "title": "Designer: visual spec for the developer",
+  "category": "roles",
+  "roles": [
+    "designer"
+  ],
+  "tags": [
+    "designer",
+    "visual spec",
+    "design spec",
+    "handoff",
+    "layout spec",
+    "design hop",
+    "mockup in words"
+  ],
+  "when": "A task passes through the Design room first and the designer must write a spec that the developer turns into markup and styles.",
+  "inputs": [
+    "the task and criteria",
+    "the content to show",
+    "any brand hints"
+  ],
+  "prompt": "Goal: A spec in words and numbers precise enough that a small model builds the intended look without guessing.\nSteps:\n1. Describe the layout per breakpoint: at 375 px one column, from 768 px two columns, max content width 1100 px.\n2. List sections top to bottom with their element (header, nav, section, footer), heading level and contents.\n3. Give exact values: colors as hex, font stack, sizes in rem (body 1rem, h1 2.25rem), spacing scale (0.5, 1, 1.5, 2, 3 rem), radius, shadow.\n4. Name the classes the developer should use, one per component: .hero, .card, .btn-primary.\n5. State the states: hover, focus-visible ring (2 px solid accent, 2 px offset), disabled, error.\n6. Write the spec as a short Markdown file with a values table and a section list.\nQuality bar:\n- Every value is a number or hex, never \"a bit bigger\".\n- Contrast of each text pair is 4.5 to 1 or more.\n- Classes cover every component in the list.\nPitfalls:\n- Mood words with no numbers.\n- Specs that only describe the desktop view.\n- Forgetting focus and error states.\nVerify:\n- [ ] Breakpoints stated.\n- [ ] Values table has colors, type, spacing.\n- [ ] States described.\n- [ ] Class names listed.\nOutput: DESIGN.md with Layout, Values, Components and States sections.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "spec da pagina de inscricao do curso",
+      "output": "one column, accent #0b6e4f, body 1rem system font, .form-card, focus ring 2px, error text #b00020"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

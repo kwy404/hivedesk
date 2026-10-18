@@ -1,0 +1,34 @@
+{
+  "id": "prioritize-must-should-could",
+  "title": "Prioritizing with must, should, could",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "priority",
+    "prioritize",
+    "must have",
+    "should have",
+    "nice to have",
+    "could have",
+    "ranking",
+    "moscow"
+  ],
+  "when": "A request lists many features or the crew has more ideas than turns, and work must be ranked before planning.",
+  "inputs": [
+    "feature list from the request",
+    "the core goal"
+  ],
+  "prompt": "Goal: Every feature labeled must, should or could with a reason, and a plan that builds all musts before any should.\nSteps:\n1. Write each feature as a short line, one per behavior, not per screen.\n2. Mark must: without it the result fails the request or the user said it explicitly.\n3. Mark should: clearly valuable and cheap, but the result still works without it.\n4. Mark could: polish, extras and anything the crew thought of on its own.\n5. Plan tasks for musts first; add shoulds only if the plan stays within 6 tasks; record coulds as notes.\n6. If musts alone exceed the budget, ask the user which must waits.\nQuality bar:\n- Musts are few, usually 3 to 5.\n- Every label has a one phrase reason.\n- The plan order follows the labels.\nPitfalls:\n- Everything marked must.\n- Crew ideas sneaking into must.\n- Dropping a should silently instead of noting it.\nVerify:\n- [ ] Each feature has a label and reason.\n- [ ] All musts have tasks.\n- [ ] Coulds are in notes, not tasks.\n- [ ] Plan fits 6 tasks.\nOutput: A ranked feature list in the summary and tasks for musts (and fitting shoulds).",
+  "checks": [],
+  "examples": [
+    {
+      "input": "site do salao com agenda, galeria, blog, loja e chat",
+      "output": "must: services, prices, booking by phone; should: gallery; could: blog, shop, chat"
+    }
+  ],
+  "size": 311,
+  "version": 1
+}

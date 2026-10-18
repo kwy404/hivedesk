@@ -1,0 +1,39 @@
+{
+  "id": "architecture-decision-record",
+  "title": "Architecture decision record (ADR)",
+  "category": "git-docs",
+  "roles": [
+    "architect",
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "adr",
+    "architecture decision",
+    "decision record",
+    "design decision",
+    "tradeoffs",
+    "architecture",
+    "rationale"
+  ],
+  "when": "The team made or must make a significant technical choice and the user wants it documented with context and tradeoffs.",
+  "inputs": [
+    "the decision or question",
+    "the options considered",
+    "constraints"
+  ],
+  "prompt": "Goal: A short, dated record that explains the context, the options, the decision and its consequences so future readers know why.\nSteps:\n1. File name docs/adr/NNNN-short-title.md with the next number; title # NNNN. Decision in a few words.\n2. Status line: Proposed, Accepted, Deprecated or Superseded by NNNN, plus the date.\n3. ## Context: the forces at play, constraints and the problem, without arguing for an option yet.\n4. ## Options: each with two or three pros and cons in the same format.\n5. ## Decision: the chosen option in active voice (\"We will store data as JSON files per user\").\n6. ## Consequences: what becomes easier, what becomes harder, follow up work, and when to revisit.\nQuality bar:\n- Under one page.\n- Options are described fairly.\n- Consequences include the downsides.\nPitfalls:\n- Writing it after the fact as a justification only.\n- Editing an accepted ADR instead of superseding it.\n- Mixing several decisions in one record.\nVerify:\n- [ ] Starts with a # heading with the number.\n- [ ] Has Context, Decision and Consequences sections.\n- [ ] Status and date are present.\n- [ ] Code fences, if any, are closed.\nOutput: docs/adr/NNNN-title.md and an index line in docs/adr/README.md if one exists.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "documente por que escolhemos arquivos JSON em vez de banco de dados",
+      "output": "# 0003. Store data in JSON files, context, 3 options, decision, consequences"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

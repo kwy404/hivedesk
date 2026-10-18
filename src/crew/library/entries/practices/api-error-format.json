@@ -1,0 +1,37 @@
+{
+  "id": "api-error-format",
+  "title": "Consistent API error responses",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "api errors",
+    "error response",
+    "problem details",
+    "error format",
+    "json error",
+    "status codes",
+    "error codes"
+  ],
+  "when": "An HTTP API returns errors in mixed shapes (strings, stack traces, 200 with error) and clients cannot handle them reliably.",
+  "inputs": [
+    "the server routes",
+    "the error cases"
+  ],
+  "prompt": "Goal: Every error response has the right status and the same JSON shape with a stable code, a readable message and field details.\nSteps:\n1. Adopt one shape, close to RFC 9457 problem details: { \"type\", \"title\", \"status\", \"detail\", \"code\", \"errors\": [{ \"field\", \"message\" }] }.\n2. Send it with Content-Type: application/problem+json or application/json, consistently.\n3. Define stable machine codes (VALIDATION_FAILED, NOT_FOUND, RATE_LIMITED) that clients branch on.\n4. Funnel every failure through one sendError(res, status, code, detail, errors) helper and one catch all for unexpected errors (500 with a generic message).\n5. Include a requestId so users can report it; keep stacks and internals in server logs only.\n6. Add Retry-After to 429 and 503 responses.\nQuality bar:\n- Clients can switch on code without parsing messages.\n- Validation errors list every bad field at once.\n- No internal details leak.\nPitfalls:\n- Different shapes per route.\n- Throwing raw errors that print the stack to the client.\n- Using 500 for client mistakes.\nVerify:\n- [ ] Every error path uses the helper.\n- [ ] Status codes match the case.\n- [ ] Responses declare JSON content type.\n- [ ] Unknown routes return 404 in the same shape.\nOutput: errors.js with sendError and codes, and routes updated to use it.",
+  "checks": [
+    "node.http-status",
+    "node.json-content-type",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "cada rota devolve erro de um jeito diferente",
+      "output": "sendError with { status, code, title, detail, errors }, 422 lists fields, 500 generic with requestId"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

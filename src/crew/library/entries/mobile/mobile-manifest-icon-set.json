@@ -1,0 +1,41 @@
+{
+  "id": "mobile-manifest-icon-set",
+  "title": "Web app manifest and launcher icon set",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "manifest",
+    "webmanifest",
+    "icons",
+    "maskable icon",
+    "app icon",
+    "splash screen",
+    "theme color",
+    "mobile app",
+    "launcher",
+    "shortcuts"
+  ],
+  "when": "The user needs the manifest fields and the full icon set so the installed app looks sharp on launchers, splash screens and app switchers.",
+  "inputs": [
+    "logo file",
+    "app name and short name",
+    "header and background colors"
+  ],
+  "prompt": "Goal: manifest.webmanifest plus a complete icon set that stays crisp and uncropped on every launcher shape and splash screen.\nSteps:\n1. Start from one square 1024 px master with the logo centered on an opaque background.\n2. Export icons/icon-192.png and icons/icon-512.png with purpose \"any\", and icons/maskable-512.png with the logo inside the central 80 percent circle and purpose \"maskable\".\n3. Export icons/touch-180.png and link it with rel=\"apple-touch-icon\"; one launcher ignores manifest icons.\n4. Manifest: id \"./\", name, short_name (12 characters max), start_url \"./?source=homescreen\", scope \"./\", display \"standalone\", background_color = splash color, theme_color = header color.\n5. Each icon entry has src, sizes (\"512x512\"), type (\"image/png\") and purpose.\n6. Add up to 3 shortcuts ({ name, url, icons }) for top actions.\nQuality bar:\n- No transparent pixels in the maskable icon.\n- Splash color matches the first screen so launch has no color flash.\nPitfalls:\n- One file marked purpose \"any maskable\", which looks shrunken or cut on some launchers.\n- Setting orientation \"portrait\" for a layout that also works in landscape.\n- Changing id after release, which makes installs look like a new app.\nVerify:\n- [ ] manifest.webmanifest parses and has name, start_url, display and icons.\n- [ ] Every icon file listed exists with the stated size.\n- [ ] The maskable icon survives a circle crop preview.\nOutput: manifest.webmanifest, the icons/ folder and the head links in index.html.",
+  "checks": [
+    "pwa.manifest",
+    "json.valid"
+  ],
+  "examples": [
+    {
+      "input": "make the icons and manifest for my installable app, logo attached",
+      "output": "manifest.webmanifest with any and maskable 192/512 icons, touch icon link and two shortcuts"
+    }
+  ],
+  "size": 427,
+  "version": 1
+}

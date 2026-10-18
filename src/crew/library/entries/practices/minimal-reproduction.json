@@ -1,0 +1,35 @@
+{
+  "id": "minimal-reproduction",
+  "title": "Build a minimal reproduction of a bug",
+  "category": "practices",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "reproduction",
+    "repro",
+    "minimal example",
+    "reproduce bug",
+    "isolate",
+    "bug report",
+    "debug"
+  ],
+  "when": "A bug is intermittent, depends on a big app, or must be reported, and the user wants the smallest case that shows it.",
+  "inputs": [
+    "the bug symptoms",
+    "the app or code where it happens"
+  ],
+  "prompt": "Goal: A tiny standalone file that shows the bug every time, with exact steps and expected versus actual result.\nSteps:\n1. Write the symptom as one sentence: doing X with Y shows Z instead of W.\n2. Copy only the code on the bug path into a new file (repro.html or repro.mjs) with hard coded input data.\n3. Cut in halves: remove half of the remaining code or data, rerun, keep the half that still shows the bug.\n4. Replace network and storage with literal values so the repro has no outside dependency.\n5. Stop when removing any line makes the bug disappear; that line set is the minimal case.\n6. Write the steps, the expected result, the actual result and the environment (Node version, OS).\nQuality bar:\n- The repro runs with one command or one file open.\n- Under about 40 lines.\n- It fails the same way every run.\nPitfalls:\n- Keeping unrelated setup that hides the cause.\n- Changing behavior while trimming, then reproducing a different bug.\n- Real personal data in the sample.\nVerify:\n- [ ] Running the repro shows the bug.\n- [ ] No imports from the main app remain.\n- [ ] Expected versus actual is stated.\n- [ ] The file parses.\nOutput: repro.mjs or repro.html plus a short description of steps and results.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "the total is wrong sometimes, find a minimal case",
+      "output": "repro.mjs with 12 lines: sum([0.1, 0.2]) shows 0.30000000000000004"
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

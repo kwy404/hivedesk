@@ -1,0 +1,39 @@
+{
+  "id": "minimal-dependencies",
+  "title": "Keep dependencies minimal",
+  "category": "practices",
+  "roles": [
+    "architect",
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "dependencies",
+    "packages",
+    "remove dependency",
+    "standard library",
+    "bloat",
+    "supply chain",
+    "package.json",
+    "vendor"
+  ],
+  "when": "A project pulls in packages for small tasks, the user wants fewer dependencies, or must run with no installs.",
+  "inputs": [
+    "package.json and import list",
+    "what each package is used for"
+  ],
+  "prompt": "Goal: Each dependency is replaced by the platform or a short local helper unless it does substantial, hard work.\nSteps:\n1. List each package, where it is imported and which functions are used.\n2. Map common uses to the platform: fetch, URL and URLSearchParams, crypto.randomUUID, structuredClone, Intl, node:test, node:util parseArgs, fs.promises.\n3. Replace small helpers (padding, debounce, deep clone, date format) with a tested local function in utils.js.\n4. Keep a package only when it solves a hard problem well (parsing a complex format, cryptography) and say why.\n5. Remove the unused entries from package.json and any leftover imports.\n6. Run the tests or the main flow after each removal.\nQuality bar:\n- Each kept package has a written reason.\n- Local helpers have tests.\n- No behavior lost.\nPitfalls:\n- Rewriting cryptography or complex parsers by hand.\n- Removing a package still imported dynamically.\n- Copying a whole library file in without its license.\nVerify:\n- [ ] package.json lists only used packages.\n- [ ] package.json is valid JSON with a test script.\n- [ ] No import refers to a removed package.\n- [ ] Files parse.\nOutput: Updated package.json, utils.js with replacements and a short table of removed and kept packages.",
+  "checks": [
+    "json.valid",
+    "pkg.scripts",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "tire as dependências desnecessárias",
+      "output": "replaced 5 packages with fetch, crypto.randomUUID, Intl and parseArgs; kept none"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

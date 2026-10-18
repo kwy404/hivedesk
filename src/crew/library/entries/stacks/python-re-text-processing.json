@@ -1,0 +1,39 @@
+{
+  "id": "python-re-text-processing",
+  "title": "Text processing in Python with re",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "re",
+    "regex",
+    "text processing",
+    "extract",
+    "find and replace",
+    "parse text",
+    "pattern",
+    "clean text"
+  ],
+  "when": "A Python script must extract, clean, split or replace patterns in text, such as dates in notes, codes in reports or emails in a document.",
+  "inputs": [
+    "sample text",
+    "what to extract or change"
+  ],
+  "prompt": "Goal: Readable compiled patterns with named groups, the right re function per job, and tests for tricky input.\nSteps:\n1. Compile once at module level with raw strings; use re.VERBOSE with comments for anything longer than a few tokens.\n2. Named groups (?P<year>\\d{4}), read with m[\"year\"] or groupdict().\n3. Pick the function: fullmatch to validate, search for the first hit, finditer for all hits with positions, sub with a function for computed replacements, split to tokenize.\n4. Bound matches with \\b and negated classes ([^\"]*) instead of greedy .*.\n5. Unicode: \\w matches accented letters in str patterns; add re.ASCII when only ASCII is meant; normalize with unicodedata.normalize(\"NFC\") first.\n6. Check every match result for None before using it.\nQuality bar:\n- Each pattern is explained by a comment.\n- No nested quantifiers such as (a+)+.\n- Large files are processed line by line.\nPitfalls:\n- re.match when a search was meant (it only anchors at the start).\n- Missing r prefix, so \\b becomes a backspace.\n- Regex for HTML or nested structures.\nVerify:\n- [ ] Patterns compiled with the r prefix.\n- [ ] Named groups used.\n- [ ] None results handled.\n- [ ] Tests with near miss samples.\nOutput: textutils.py with patterns and functions, and tests/test_textutils.py.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "extrair todos os valores em reais de um texto",
+      "output": "re.compile(r\"R\\$\\s?(?P<value>\\d{1,3}(?:\\.\\d{3})*,\\d{2})\"), finditer, Decimal conversion, tests"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

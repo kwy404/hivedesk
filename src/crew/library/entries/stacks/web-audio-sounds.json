@@ -1,0 +1,37 @@
+{
+  "id": "web-audio-sounds",
+  "title": "Sound with the Web Audio API",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "audio",
+    "sound",
+    "web audio",
+    "sound effects",
+    "beep",
+    "oscillator",
+    "volume",
+    "metronome",
+    "synth"
+  ],
+  "when": "The app needs sound effects, tones, a metronome, simple synth notes or a volume control without audio files.",
+  "inputs": [
+    "sounds needed",
+    "timing precision"
+  ],
+  "prompt": "Goal: Clean sounds from one AudioContext started by a user gesture, with envelopes that avoid clicks and a mute control.\nSteps:\n1. Create one AudioContext lazily on the first click or key press and call resume() there.\n2. Route everything through a master GainNode to destination; mute and volume change only master.gain.\n3. Tone: OscillatorNode into a GainNode; ramp gain from 0.0001 to peak in 10 ms and back with exponentialRampToValueAtTime, stop after the ramp.\n4. Rhythm: schedule on ctx.currentTime, looking ahead 100 ms every 25 ms, never with setTimeout alone.\n5. Samples: decodeAudioData once, cache the AudioBuffer, play a new AudioBufferSourceNode each time.\n6. Persist the mute choice and pair important sounds with a visual cue.\nQuality bar:\n- No clicks at note starts or ends.\n- Moderate default volume (master gain near 0.3).\n- Nothing plays before a user action.\nPitfalls:\n- A new AudioContext per sound.\n- Restarting a stopped oscillator, which throws.\n- Information carried only by sound.\nVerify:\n- [ ] Single context created on a gesture.\n- [ ] Master gain with a mute control.\n- [ ] Gain ramps on start and stop.\n- [ ] Mute button labeled with aria-pressed.\nOutput: js/audio.js exporting init, playTone, playSample and setMuted.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "adiciona um som de acerto e erro no quiz",
+      "output": "audio.js with playTone(880) for right, playTone(220, square) for wrong, master gain mute toggle"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

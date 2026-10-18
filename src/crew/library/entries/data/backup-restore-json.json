@@ -1,0 +1,37 @@
+{
+  "id": "backup-restore-json",
+  "title": "Backup and restore app data to a JSON file",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "backup",
+    "restore",
+    "export data",
+    "backup file",
+    "recover data",
+    "data portability",
+    "move data",
+    "another device"
+  ],
+  "when": "A browser app keeps data locally (localStorage or IndexedDB) and users need to back it up, move it to another device or recover it.",
+  "inputs": [
+    "collections to include",
+    "app name"
+  ],
+  "prompt": "Goal: A versioned backup file users can download and restore, validated before it replaces anything, with an automatic safety copy.\nSteps:\n1. Format { app: \"notes\", format: 1, exportedAt: ISO string, data: { ... } }, pretty printed with 2 spaces.\n2. Download as notes-backup-2026-10-17.json through a Blob of type application/json and a temporary download link.\n3. Restore: file.text(), JSON.parse in try, check app and format, migrate older formats, validate every collection.\n4. Keep the current data as a safety copy before replacing, and offer Undo for the session.\n5. Confirm with specifics (\"Restore 54 notes from 12 Oct 2026, replacing 20 notes\").\n6. Nudge with a dismissible note when the last backup is older than 30 days.\nQuality bar:\n- Backups from older versions restore correctly.\n- A wrong or broken file never deletes current data.\n- File names sort by date.\nPitfalls:\n- Restoring without validation.\n- Secrets or other users data inside the file.\n- Silent failures; report success or the exact problem.\nVerify:\n- [ ] File has app, format and exportedAt.\n- [ ] JSON.parse in try.\n- [ ] Confirmation before replacing.\n- [ ] Safety copy kept.\nOutput: js/backup.js exporting exportBackup() and restoreBackup(file), with buttons in the settings view.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "js.storage-guarded"
+  ],
+  "examples": [
+    {
+      "input": "quero passar minhas anotações do notebook para o celular",
+      "output": "Download backup (notes-backup-2026-10-17.json) and Restore with validation, confirmation and undo"
+    }
+  ],
+  "size": 361,
+  "version": 1
+}

@@ -1,0 +1,35 @@
+{
+  "id": "exploratory-charter",
+  "title": "Exploratory testing charter and session",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "exploratory testing",
+    "test charter",
+    "test session",
+    "bug hunt",
+    "explore",
+    "session notes",
+    "unscripted"
+  ],
+  "when": "The user wants unscripted testing that finds bugs a plan would miss, timeboxed and documented.",
+  "inputs": [
+    "the area to explore",
+    "known risks"
+  ],
+  "prompt": "Goal: One or more 30 to 45 minute charters, each with a mission, running notes, bugs and open questions.\nSteps:\n1. Write the charter: Explore <area> with <technique> to discover <risk> (Explore the cart with odd quantities to discover pricing errors).\n2. Pick heuristics: create, read, update and delete every object; interrupt (reload, back, close midway); boundaries; many and none; personas (hurried, novice, malicious).\n3. Timebox the session and keep notes with timestamps: what you tried and what you saw.\n4. Log bugs at once with steps; log questions (is this intended?) separately.\n5. Close with coverage: areas touched, areas not touched, ideas for the next charter.\n6. Turn repeatable findings into regression items.\nQuality bar:\n- Charter small enough for one session.\n- Notes let someone retrace the session.\n- Bugs and questions kept apart.\nPitfalls:\n- Random clicking with no mission.\n- Writing notes only at the end.\n- Reporting bugs but losing the coverage picture.\nVerify:\n- [ ] Charter sentence present.\n- [ ] Timestamped notes exist.\n- [ ] Bugs have steps.\n- [ ] Coverage and next ideas written.\nOutput: explore-<area>.md with Charter, Notes, Bugs, Questions and Coverage sections.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "explore the booking calendar and try to break it",
+      "output": "charter on overlapping bookings, 40 min, 3 bugs (double booking at midnight), 2 questions, next: cancellations"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

@@ -1,0 +1,47 @@
+{
+  "id": "blog-home",
+  "title": "Blog home with post list",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "blog",
+    "posts",
+    "articles",
+    "news",
+    "writing",
+    "archive"
+  ],
+  "when": "The user wants a blog front page that lists posts with dates, tags and excerpts.",
+  "inputs": [
+    "blog name and topic",
+    "posts with title, date, tags, excerpt"
+  ],
+  "prompt": "Goal: A readable blog index that helps visitors pick a post and come back for more.\nSteps:\n1. Header with blog name, one line about the topic and a nav to Archive and About.\n2. Post list as article elements: title link, time with datetime, reading time, two line excerpt, tags.\n3. Optional featured post at the top, styled larger but with the same structure.\n4. Tag filter links or an archive by month for more than ten posts.\n5. Footer with an RSS or newsletter link if the user mentioned one.\nQuality bar:\n- Body text 16 px or more, line length 60 to 75 characters.\n- Dates are human readable and machine readable.\n- Titles are the links, with focus styles.\nPitfalls:\n- Read more links that all say the same thing.\n- Excerpts cut in the middle of a word.\n- Infinite scroll with no way to reach the footer.\nVerify:\n- [ ] Each post is an article with a heading link and a time element.\n- [ ] Link text is descriptive.\n- [ ] One h1.\n- [ ] Works at 375 px.\nOutput: index.html with the list and style.css; post pages if asked.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text",
+    "html.heading-order",
+    "html.nav"
+  ],
+  "examples": [
+    {
+      "input": "blog about urban gardening",
+      "output": "list of 5 posts with dates and tags, featured post, archive link"
+    }
+  ],
+  "size": 293,
+  "version": 1
+}

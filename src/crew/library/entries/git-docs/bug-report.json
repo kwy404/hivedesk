@@ -1,0 +1,38 @@
+{
+  "id": "bug-report",
+  "title": "Write a clear bug report",
+  "category": "git-docs",
+  "roles": [
+    "qa",
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "bug report",
+    "issue",
+    "report bug",
+    "steps to reproduce",
+    "expected actual",
+    "defect",
+    "ticket"
+  ],
+  "when": "The user found a problem and wants it written up as an issue that someone else can reproduce and fix.",
+  "inputs": [
+    "what happened",
+    "how to trigger it",
+    "environment details"
+  ],
+  "prompt": "Goal: A report that a developer can reproduce on the first try, with the impact clear enough to prioritize.\nSteps:\n1. Title: the symptom and where, specific (\"Total ignores discount when quantity is 0\"), not \"it is broken\".\n2. Steps to reproduce: numbered, starting from a clean state, with exact input values.\n3. Expected result and actual result as two separate short paragraphs.\n4. Environment: app version or commit, OS, runtime version, browser type and version if relevant.\n5. Evidence: the exact error text in a fenced block, a screenshot description or log excerpt, and how often it happens.\n6. Impact and workaround: who is affected, how badly, and any way around it.\nQuality bar:\n- One bug per report.\n- Facts separated from guesses (put guesses under Notes).\n- No personal data in logs or screenshots.\nPitfalls:\n- Steps that skip the starting state.\n- Paraphrasing the error instead of quoting it.\n- Combining several issues.\nVerify:\n- [ ] Steps are numbered and complete.\n- [ ] Expected and actual are both present.\n- [ ] Error text is quoted exactly.\n- [ ] No placeholder text.\nOutput: The bug report in Markdown, ready to paste into the issue tracker.",
+  "checks": [
+    "text.no-placeholder",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "report this: exporting an empty list downloads a broken file",
+      "output": "title, 4 steps, expected empty CSV with header, actual 0 byte file, version 1.3.2"
+    }
+  ],
+  "size": 333,
+  "version": 1
+}

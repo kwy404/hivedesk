@@ -30,6 +30,8 @@ export function briefMessages(request, files = []) {
         '- constraints: plain HTML, CSS and JavaScript unless the user asked for something else; no network access; no build step; keep it small.',
         '- acceptance: 3 to 6 checks that can be verified by reading or running the files.',
         '- questions: at most 3 things the request leaves open, each with 2 to 4 short options and the default you will use (one of the options).',
+        'Only plan files the crew writes itself: no photos, fonts or other pages that are not in the build list. Links on a one page site go to sections of the same page (#about), never to pages that do not exist.',
+        'Write every field in the language of the request, and say in constraints that the visible text is in that language too.',
         ...(vague ? [
           'The request is short and vague. Expand it into a concrete small project: pick a sensible default app type',
           '(for example a to-do list for "an app", a one page site for "a site"), list its features, and ask exactly 3',

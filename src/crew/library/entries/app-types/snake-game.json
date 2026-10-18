@@ -1,0 +1,50 @@
+{
+  "id": "snake-game",
+  "title": "Snake game on a canvas grid",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "snake game",
+    "snake",
+    "arcade game",
+    "canvas game",
+    "retro game",
+    "browser game",
+    "grid game"
+  ],
+  "when": "The user wants the classic snake game: the snake moves on a grid, eats food to grow, and the game ends on hitting a wall or itself.",
+  "inputs": [
+    "grid size",
+    "speed",
+    "walls or wrap around"
+  ],
+  "prompt": "Goal: Tight controls at a steady speed with correct growth and collision rules on every screen.\nSteps:\n1. Grid 20 by 20; state { snake: [{ x, y }], dir, queue, food, score, alive }; logic.mjs step(state, rand) moves, grows on food, dies on wall or self, places food only on free cells.\n2. Fixed tick of 120 ms down to 70 ms with score, run by requestAnimationFrame with a time accumulator.\n3. Arrows and WASD feed a queue of at most 2 turns per tick; ignore a reversal; swipes and on screen arrow buttons on touch.\n4. Draw on a devicePixelRatio scaled canvas with a distinct head; canvas has role=\"img\" and an aria-label.\n5. Score and best (localStorage guarded) in an aria-live region; P or a hidden tab pauses.\n6. Game over panel with score and a Play again button that takes focus.\n7. test.mjs: growth, wall and self hits, reversal ignored, food never on the snake.\nQuality bar:\n- Two quick turns in one tick both register.\n- Same speed at 60 and 144 Hz.\n- Board fits the viewport.\nPitfalls:\n- Speed tied to frame rate.\n- Instant death from a fast double reversal.\n- Arrow keys scrolling the page.\nVerify:\n- [ ] Rules tested.\n- [ ] Score live.\n- [ ] Buttons typed.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, game.js (loop, input, draw), logic.mjs (rules), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo da cobrinha",
+      "output": "20x20 board, arrows/WASD/swipe, speeds up, best score saved"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

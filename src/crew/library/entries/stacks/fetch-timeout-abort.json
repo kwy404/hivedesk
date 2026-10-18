@@ -1,0 +1,38 @@
+{
+  "id": "fetch-timeout-abort",
+  "title": "Fetch with timeout, abort and error handling",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "fetch",
+    "http request",
+    "timeout",
+    "abortcontroller",
+    "cancel request",
+    "error handling",
+    "retry",
+    "api call",
+    "ajax"
+  ],
+  "when": "The code calls an API or loads JSON with fetch and needs timeouts, cancellation, retries or clear error messages.",
+  "inputs": [
+    "endpoints called",
+    "expected response format"
+  ],
+  "prompt": "Goal: One request helper that times out, can be cancelled, checks status, parses safely and returns errors the UI can show.\nSteps:\n1. request(url, { timeout = 8000, signal, ...opts }) creates an AbortController, aborts it from setTimeout, and clears the timer in finally.\n2. Link an outer signal with signal.addEventListener(\"abort\", () => ctrl.abort(), { once: true }).\n3. Check res.ok; on failure throw an Error carrying the status and the first 200 characters of the body text.\n4. Parse JSON only when content-type includes application/json, inside try and catch, else throw an \"invalid response\" error.\n5. Classify errors: timer abort means timeout, user abort means cancelled (show nothing), TypeError means unreachable.\n6. Retry only GET on network errors and 502, 503, 504, at most twice (300 ms, then 900 ms); for search as you type, abort the previous request first.\nQuality bar:\n- Each call shows loading and a readable error with retry.\n- No unhandled promise rejections.\n- Timeout set per call.\nPitfalls:\n- Assuming fetch rejects on 404 or 500; it resolves, so check res.ok.\n- Retrying POST and creating duplicates.\n- Leaving the timer running so it aborts a later request.\nVerify:\n- [ ] The helper uses AbortController and clears its timer.\n- [ ] res.ok is checked before parsing.\n- [ ] Parsing is inside try.\n- [ ] Errors reach an aria-live status region.\nOutput: js/api.js exporting request() and getJSON(); every request in the app goes through it.",
+  "checks": [
+    "js.syntax",
+    "js.json-parse-guarded",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "a busca trava quando a API demora",
+      "output": "request() with an 8 s AbortController timeout, res.ok check, previous search aborted on each keystroke"
+    }
+  ],
+  "size": 419,
+  "version": 1
+}

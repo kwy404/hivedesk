@@ -1,0 +1,34 @@
+{
+  "id": "change-request-midjob",
+  "title": "Handling a change request mid job",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "change request",
+    "scope change",
+    "new requirement",
+    "mid job",
+    "replan",
+    "user changed mind",
+    "add feature"
+  ],
+  "when": "The user asks for a change while the crew is already working: a new feature, a different color, a removed page.",
+  "inputs": [
+    "the current plan and task states",
+    "the change in the user words",
+    "files already written"
+  ],
+  "prompt": "Goal: The change absorbed with the smallest replan: finished work kept where possible, affected tasks updated, and the user told the impact.\nSteps:\n1. Classify the change: small tweak (one file), addition (new task), or reversal (undoes done work).\n2. List the tasks and files it touches; leave unaffected tasks running.\n3. For a tweak, add one fix task with the exact edit; for an addition, append a task with its dependencies.\n4. For a reversal, say what will be thrown away before doing it, and ask if the cost is large.\n5. Update the acceptance criteria so QA checks the new version, not the old one.\n6. Tell the user in one message: what changes, what stays, and the extra tasks.\nQuality bar:\n- Done work is reused unless the change removes it.\n- Criteria match the new request.\n- The user knows the impact.\nPitfalls:\n- Restarting the whole plan for a small tweak.\n- Old criteria failing QA on purpose built new work.\n- Quietly dropping the change because the plan was set.\nVerify:\n- [ ] Change type is named.\n- [ ] Only touched tasks changed.\n- [ ] Criteria updated.\n- [ ] User message sent.\nOutput: An updated plan (new or edited tasks, revised criteria) and one say message with the impact.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "na verdade quero tambem uma pagina de precos",
+      "output": "addition: task pricing.html after style.css, nav updated in a fix task, new criterion for pricing"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

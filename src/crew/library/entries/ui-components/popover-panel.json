@@ -1,0 +1,39 @@
+{
+  "id": "popover-panel",
+  "title": "Popover panel with the popover attribute",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "popover",
+    "popup panel",
+    "flyout",
+    "toggletip",
+    "floating panel",
+    "quick view",
+    "info panel"
+  ],
+  "when": "The user wants a small floating panel attached to a button that can hold links, buttons or a short form, without blocking the page.",
+  "inputs": [
+    "the trigger",
+    "panel content",
+    "placement"
+  ],
+  "prompt": "Goal: A non modal popover with light dismiss, Escape, correct focus and a fallback where the popover API is missing.\nSteps:\n1. <button type=\"button\" popovertarget=\"pop-1\" aria-expanded=\"false\"> and <div id=\"pop-1\" popover aria-labelledby=\"pop-1-title\"> with a heading, content and a Close button.\n2. Feature detect with \"popover\" in HTMLElement.prototype; otherwise toggle hidden and add outside click and Escape listeners.\n3. On the toggle event update aria-expanded and place the panel under the trigger with getBoundingClientRect, clamped 8 px inside the viewport.\n4. When the panel holds controls, focus the first one on open and return focus to the trigger on close.\n5. Keep it non modal; if the user must answer first, use a dialog.\nQuality bar:\n- A clear heading so the panel makes sense alone.\n- At most about 20rem wide, never overflowing a phone.\n- Opening one popover closes the others.\nPitfalls:\n- Fixed pixel offsets that break on scroll.\n- Focus lost to the page top on close.\n- Long forms squeezed into a popover.\nVerify:\n- [ ] The trigger references the panel and reports its state.\n- [ ] Escape and outside click close it.\n- [ ] Focus returns to the trigger.\n- [ ] The fallback works without the API.\nOutput: Trigger and panel markup, popover.css and popover.js with the fallback.",
+  "checks": [
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "a small panel with shipping info when clicking the truck icon",
+      "output": "button popovertarget, panel with Shipping heading, two links and Close, clamped inside the viewport"
+    }
+  ],
+  "size": 371,
+  "version": 1
+}

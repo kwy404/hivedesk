@@ -1,0 +1,38 @@
+{
+  "id": "static-site-deploy",
+  "title": "Deploy a static site to any static host",
+  "category": "devops",
+  "roles": [
+    "devops",
+    "dev"
+  ],
+  "tags": [
+    "static site",
+    "deploy site",
+    "static hosting",
+    "cache headers",
+    "rsync",
+    "404 page",
+    "publish website",
+    "html site"
+  ],
+  "when": "The user has a built HTML, CSS and JS site and wants to publish it to a static host or a plain web server with correct caching and no broken links.",
+  "inputs": [
+    "build command",
+    "host type",
+    "custom domain"
+  ],
+  "prompt": "Goal: A repeatable deploy of dist/ with hashed asset names, correct cache headers, a real 404 page and a check after upload.\nSteps:\n1. Build into an empty dist/; stop if the build fails or dist/index.html is missing.\n2. Fingerprint assets (app.3f9c1a.css) so they can be cached for a year; HTML keeps stable names.\n3. Headers: Cache-Control: public, max-age=31536000, immutable on hashed assets; no-cache on HTML and the service worker; correct types for .webmanifest, .svg and .wasm.\n4. Ship 404.html served with status 404; a single page app falls back to index.html for routes only, never for missing assets.\n5. Upload with the host's CLI or rsync -avz --delete dist/ user@host:/var/www/site/, first with --dry-run, reading the deletions.\n6. Upload assets first and HTML last, so no live page points at a missing file.\n7. Afterwards request three key URLs, expect 200 and the new version string, and run a link check.\n8. Archive the previous dist/ for rollback.\nQuality bar:\n- No visitor sees an unstyled page mid deploy.\n- A deploy with no changes uploads almost nothing.\n- Every internal link resolves.\nPitfalls:\n- --delete aimed at the wrong remote folder.\n- Long caching on HTML, so visitors keep old pages for days.\n- Root relative links that break under a subpath.\nVerify:\n- [ ] Dry run step present.\n- [ ] Cache rules differ for hashed assets and HTML.\n- [ ] 404 page exists.\n- [ ] Post deploy check runs.\nOutput: scripts/deploy.sh, the host header config file and a Deploy section in README.md.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "publicar meu site estatico com cache certo",
+      "output": "deploy.sh: clean build, rsync --dry-run then real, assets before HTML, immutable cache for hashed files, no-cache for HTML, link check"
+    }
+  ],
+  "size": 430,
+  "version": 1
+}

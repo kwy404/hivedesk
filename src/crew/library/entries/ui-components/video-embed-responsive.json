@@ -1,0 +1,40 @@
+{
+  "id": "video-embed-responsive",
+  "title": "Responsive video embed",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "video",
+    "video embed",
+    "embed video",
+    "responsive video",
+    "iframe",
+    "video player",
+    "captions",
+    "subtitles"
+  ],
+  "when": "The user wants a video on a page, either a local file or an embed from a video host, sized for every screen.",
+  "inputs": [
+    "local file or embed URL",
+    "poster image",
+    "captions file if any"
+  ],
+  "prompt": "Goal: A video that keeps its aspect ratio, loads light, has captions and never autoplays with sound.\nSteps:\n1. Wrap it in a box with aspect-ratio: 16 / 9 and make the iframe or video width: 100%; height: 100%.\n2. Local file: <video controls preload=\"metadata\" playsinline poster width height> with <source type=\"video/mp4\"> and <track kind=\"captions\" srclang label default>.\n3. Embed: the iframe has a title naming the video, loading=\"lazy\", allowfullscreen and the host privacy enhanced domain when one exists.\n4. Facade for embeds: a poster img and <button type=\"button\" aria-label=\"Play video: title\">; on click create the iframe with createElement.\n5. Decorative loops: autoplay muted loop with a Pause button, and no autoplay under prefers-reduced-motion.\nQuality bar:\n- A transcript or summary link sits under the video.\n- The poster shows what the video is.\n- No layout shift while loading.\nPitfalls:\n- Fixed width and height that overflow phones.\n- An iframe with no title.\n- Autoplay with sound.\nVerify:\n- [ ] The wrapper keeps the ratio at 375 px.\n- [ ] The iframe or video has a title or captions track.\n- [ ] The poster image has alt.\n- [ ] The facade button has a name.\nOutput: The video block in the page, video.css and video.js for the facade.",
+  "checks": [
+    "html.button-type",
+    "html.img-alt",
+    "css.focus-visible",
+    "js.safe-dom",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "incorporar video de apresentacao responsivo",
+      "output": "aspect-ratio 16/9 box, poster with Play video button that creates the iframe with a title, transcript link"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}

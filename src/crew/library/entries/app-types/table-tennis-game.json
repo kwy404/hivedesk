@@ -1,0 +1,47 @@
+{
+  "id": "table-tennis-game",
+  "title": "Two paddle table tennis game",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "table tennis",
+    "paddle game",
+    "tennis game",
+    "two player",
+    "ball and paddles",
+    "arcade",
+    "retro game"
+  ],
+  "when": "The user wants the retro two paddle ball game, for two players on one keyboard or against a computer paddle.",
+  "inputs": [
+    "winning score",
+    "computer difficulty"
+  ],
+  "prompt": "Goal: Fair serves, aimable returns and a computer paddle that can be beaten.\nSteps:\n1. Court 800 by 500 logical units scaled to fit; fixed 1/120 s physics steps from a requestAnimationFrame accumulator.\n2. logic.mjs step(state, dt, inputs): bounce angle from hit offset, 5 percent speed up per hit with a cap, point when the ball passes an edge, serve toward the player who lost it.\n3. Two players: W and S, ArrowUp and ArrowDown; versus computer: the paddle tracks the ball with a max speed and reaction delay per difficulty.\n4. Touch: each half of the screen drags its own paddle with pointer events.\n5. First to 7 by default; score in a text HUD announced via aria-live; P pauses.\n6. test.mjs: bounce angles, scoring side, computer speed limit, reset after a point.\nQuality bar:\n- Computer misses sometimes at Easy and Normal.\n- Paddles cannot leave the court.\n- Center line and score readable.\nPitfalls:\n- Ball sticking inside a paddle.\n- Both players fighting over one key handler.\n- Speed tied to frame rate.\nVerify:\n- [ ] Physics tested.\n- [ ] Score live.\n- [ ] Pause works.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, game.js, logic.mjs (physics and computer paddle), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "html.aria-live",
+    "html.button-type",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "jogo de tenis de mesa retro para dois jogadores",
+      "output": "W/S vs arrows, computer mode, first to 7"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

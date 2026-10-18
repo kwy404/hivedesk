@@ -1,0 +1,36 @@
+{
+  "id": "dom-batching-reflow",
+  "title": "Batch DOM updates and avoid reflow",
+  "category": "practices",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "dom performance",
+    "reflow",
+    "layout thrashing",
+    "janky",
+    "documentfragment",
+    "requestanimationframe",
+    "rendering",
+    "large list"
+  ],
+  "when": "Rendering a list or updating many elements makes the page stutter, scrolling is janky, or a table with many rows renders slowly.",
+  "inputs": [
+    "the rendering code",
+    "number of items rendered"
+  ],
+  "prompt": "Goal: Smooth updates: DOM writes batched, layout reads grouped before writes, and only changed parts touched.\nSteps:\n1. Build new rows off screen in a DocumentFragment and append it once instead of appending in a loop.\n2. Separate reads from writes: read all offsetHeight or getBoundingClientRect values first, then apply styles.\n3. Schedule visual updates with requestAnimationFrame and coalesce several state changes into one render.\n4. Update in place: change textContent of existing nodes or replaceChildren once, rather than rebuilding everything per keystroke.\n5. Animate transform and opacity only; avoid animating width, height, top or left.\n6. For thousands of rows, render in pages or only what is visible.\nQuality bar:\n- One layout pass per frame.\n- No forced synchronous layout inside loops.\n- Rendering 1000 items takes well under 100 ms.\nPitfalls:\n- Setting innerHTML in a loop with +=.\n- Reading offsetWidth right after each style change.\n- Using setTimeout loops for animation.\nVerify:\n- [ ] Appends happen once per render.\n- [ ] Reads and writes are not interleaved in loops.\n- [ ] Animations use transform or opacity.\n- [ ] Files parse.\nOutput: The updated render functions and a note on measured render time.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom"
+  ],
+  "examples": [
+    {
+      "input": "a tabela com 2000 linhas trava ao filtrar",
+      "output": "build rows in a DocumentFragment, replaceChildren once per filter via requestAnimationFrame"
+    }
+  ],
+  "size": 351,
+  "version": 1
+}

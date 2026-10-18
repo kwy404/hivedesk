@@ -1,0 +1,34 @@
+{
+  "id": "requirements-from-conversation",
+  "title": "Extracting requirements from a conversation",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "writer"
+  ],
+  "tags": [
+    "requirements",
+    "conversation",
+    "chat history",
+    "meeting notes",
+    "extract",
+    "brief",
+    "summary"
+  ],
+  "when": "Requirements are scattered across a long chat, pasted messages or notes, and the crew needs one clean brief before planning.",
+  "inputs": [
+    "the conversation or notes",
+    "the latest user message"
+  ],
+  "prompt": "Goal: A one page brief listing goal, requirements, constraints, open questions and decisions, with the latest statement winning on conflicts.\nSteps:\n1. Read in order and mark every sentence that says what to build, what to avoid, or what was decided.\n2. Group into Goal (one line), Requirements, Constraints (no network, deadline, language), Decisions, Open questions.\n3. Resolve conflicts by recency: when the user changed their mind, keep the later version and note the change.\n4. Rewrite each requirement as one short testable line in plain words.\n5. Drop small talk, examples given only as illustration, and ideas the user rejected.\n6. Show the brief to the user for a quick yes before planning when it changed anything they said.\nQuality bar:\n- Every requirement can be traced to a message.\n- Conflicts are resolved and noted.\n- The brief fits one screen.\nPitfalls:\n- Keeping an early idea the user later dropped.\n- Turning a passing example into a requirement.\n- Losing constraints mentioned once.\nVerify:\n- [ ] All five sections present.\n- [ ] Later statements win.\n- [ ] Each requirement is one line.\n- [ ] Rejected ideas are gone.\nOutput: A brief block (Goal, Requirements, Constraints, Decisions, Open questions) that feeds the plan.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "pasted 40 messages about a club website",
+      "output": "Goal: club site; Req: events list, join form; Constraint: Portuguese only; Decision: no login"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

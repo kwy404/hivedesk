@@ -1,0 +1,38 @@
+{
+  "id": "game-scene-state-machine",
+  "title": "Game screens as a state machine: menu, play, pause, over",
+  "category": "games",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "game state",
+    "state machine",
+    "game menu",
+    "pause menu",
+    "game over screen",
+    "scenes",
+    "game flow",
+    "restart",
+    "game"
+  ],
+  "when": "A game needs clear screens such as title menu, playing, paused and game over, with legal transitions and no leftover timers or input handlers between screens.",
+  "inputs": [
+    "list of screens",
+    "data passed between screens"
+  ],
+  "prompt": "Goal: One owner object decides which screen is active, and every screen enters and exits cleanly.\nSteps:\n1. Create js/scenes.js with const TRANSITIONS = { menu: [\"play\"], play: [\"pause\", \"over\"], pause: [\"play\", \"menu\"], over: [\"play\", \"menu\"] }.\n2. Each scene is an object { enter(data), exit(), update(dt), render(ctx), onAction(name) }.\n3. machine.go(next, data) throws if TRANSITIONS[current] does not include next, then calls current.exit(), switches, and calls next.enter(data).\n4. The main loop calls only machine.update and machine.render; scenes never start their own requestAnimationFrame.\n5. Input reaches scenes through machine.onAction, so a key pressed on the menu cannot move the player.\n6. Pause keeps the play scene in memory and draws it dimmed under the pause overlay; game over receives { score } in enter.\n7. Mirror the scene name in document.body.dataset.scene for CSS overlays and tests.\nQuality bar:\n- Restart from game over resets score, lives and entities through play.enter, never by reloading the page.\n- Every timer or listener created in enter is removed in exit.\nPitfalls:\n- Boolean flags like isPaused and isOver that combine into impossible states.\n- A second loop started on each restart, doubling the speed.\n- Overlay buttons keeping focus after the scene changed.\nVerify:\n- [ ] A node:test file checks that go(\"over\") from menu throws.\n- [ ] Ten restarts in a row keep exactly one loop running.\n- [ ] Escape opens pause and Resume returns to play.\nOutput: js/scenes.js, js/main.js and test/scenes.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.test-runner",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "add a main menu, pause and game over screen to my shooter",
+      "output": "scene machine with transition table, enter/exit hooks, one loop, tests for illegal jumps"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

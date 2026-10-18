@@ -1,0 +1,37 @@
+{
+  "id": "whitespace-grouping",
+  "title": "Whitespace and grouping by proximity",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "whitespace",
+    "white space",
+    "grouping",
+    "proximity",
+    "cluttered",
+    "crowded",
+    "breathing room"
+  ],
+  "when": "The layout looks cluttered or cramped, or boxes and divider lines are used everywhere to separate content.",
+  "inputs": [
+    "the crowded screen",
+    "the spacing scale if one exists"
+  ],
+  "prompt": "Goal: Content grouped by space wherever possible: related items close, groups clearly apart, borders rare.\nSteps:\n1. Map the groups: which items belong together (label with value, title with its text, a card with its actions).\n2. Apply proximity: space inside a group at most half the space between groups, for example 0.5rem, 1.5rem, then 4rem between sections.\n3. Remove borders and boxes that only separate; keep them where they signal interaction.\n4. Add outer padding before shrinking text: sections clamp(3rem, 8vw, 6rem) vertically.\n5. Align to few vertical edges; fewer alignment lines read calmer than extra space.\n6. On phones halve section spacing but keep the ratio between levels.\nQuality bar:\n- Groups stay clear with borders hidden.\n- Spacing values come from the scale.\n- Nothing touches the edge at 375 px.\nPitfalls:\n- Equal gaps everywhere.\n- A label closer to the previous field than its own.\n- Empty bands that push content off the first phone screen.\nVerify:\n- [ ] Inner gaps smaller than outer gaps.\n- [ ] Separator borders reduced.\n- [ ] Spacing uses tokens.\n- [ ] Phone gutter at least 16 px.\nOutput: Revised spacing in style.css, with removed borders listed in the reply.",
+  "checks": [
+    "css.custom-properties",
+    "css.no-fixed-width",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "the dashboard is full of boxes and lines, it looks crowded",
+      "output": "removed 9 dividers, 0.5rem inside stat groups, 1.5rem between, 3rem between sections"
+    }
+  ],
+  "size": 342,
+  "version": 1
+}

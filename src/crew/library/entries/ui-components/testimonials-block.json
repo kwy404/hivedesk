@@ -1,0 +1,40 @@
+{
+  "id": "testimonials-block",
+  "title": "Testimonials block with quotes",
+  "category": "ui-components",
+  "roles": [
+    "designer",
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "testimonials",
+    "reviews",
+    "customer quotes",
+    "customer feedback",
+    "social proof",
+    "client quotes",
+    "recommendations"
+  ],
+  "when": "The user wants a section of customer quotes or reviews to build trust.",
+  "inputs": [
+    "the quotes with name, role and company",
+    "photos if any",
+    "ratings if any"
+  ],
+  "prompt": "Goal: Three to six short, specific quotes marked up as quotations with clear attribution, shown without a rotating carousel.\nSteps:\n1. Each testimonial is <figure> with <blockquote><p>the quote</p></blockquote> and <figcaption> holding the name, role and company.\n2. Photos: img with width, height and alt=\"\" because the name sits right next to it.\n3. Use the quotes the user gave; if none, write plausible ones, keep them clearly generic, and tell the user to replace them with real ones.\n4. Good quotes are 20 to 40 words and name a concrete result (Cut our invoicing time in half).\n5. Grid of up to three columns with auto-fit; a rating appears as text, 5 out of 5, with aria-hidden stars.\nQuality bar:\n- Names and roles are real or obviously samples.\n- Quotes are trimmed to the key result.\n- Typography makes the quote the focus.\nPitfalls:\n- Auto rotating sliders that hide most quotes.\n- Invented famous names or brands.\n- Long paragraphs nobody reads.\nVerify:\n- [ ] Quotes use blockquote and figcaption.\n- [ ] Images have alt, width and height.\n- [ ] The grid stacks at 375 px.\n- [ ] No filler text.\nOutput: The testimonials section in the page and its rules in style.css.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "css.media-query",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "secao de depoimentos de clientes",
+      "output": "three figures with blockquote and figcaption, short quotes with results, small round photos with empty alt"
+    }
+  ],
+  "size": 337,
+  "version": 1
+}

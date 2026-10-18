@@ -1,0 +1,36 @@
+{
+  "id": "screen-reader-smoke",
+  "title": "Screen reader smoke test",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "screen reader",
+    "screen reader test",
+    "assistive technology",
+    "accessible names",
+    "announcements",
+    "blind users",
+    "accessibility tree"
+  ],
+  "when": "The user wants a quick check of how a page sounds with a screen reader: names, headings, landmarks, forms and live updates.",
+  "inputs": [
+    "the page",
+    "its dynamic features (filters, cart, save)"
+  ],
+  "prompt": "Goal: A 15 minute smoke test with a screen reader or the accessibility tree confirming structure, names and announcements make sense.\nSteps:\n1. Read the accessibility tree first (role, name, state per element) and flag unnamed buttons, links and inputs.\n2. Move by headings: the list reads as an outline. Move by landmarks: banner, navigation, main and contentinfo each present once.\n3. Read each form: every field announces label, type, required state and hint; a failed submit announces the errors.\n4. Trigger dynamic changes (add to cart, filter, save): the update is spoken through a live region and focus does not jump.\n5. Images and icons: informative ones have useful alt, decorative ones stay silent, SVG icons are hidden or named.\n6. Check that the reading order of cards and grids matches what is seen.\nQuality bar:\n- Findings quote what was announced next to what was expected.\n- Each cites the element.\n- Notes say which screen reader and browse mode were used.\nPitfalls:\n- Relying only on static checks.\n- aria-label that hides visible text.\n- Live regions inserted at the moment of the update; they must exist before it.\nVerify:\n- [ ] Heading and landmark lists recorded.\n- [ ] Forms read correctly.\n- [ ] Live updates announced.\n- [ ] Images and icons checked.\nOutput: sr-smoke.md with announced versus expected for each finding.",
+  "checks": [
+    "html.svg-a11y",
+    "html.img-alt",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "how does my shop sound to a blind user?",
+      "output": "cart button announced as \"button\" only, filter result count not spoken, 2 h1 landmarks; fixes listed"
+    }
+  ],
+  "size": 384,
+  "version": 1
+}

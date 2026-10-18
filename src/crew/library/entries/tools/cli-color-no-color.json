@@ -1,0 +1,38 @@
+{
+  "id": "cli-color-no-color",
+  "title": "Colored terminal output that respects NO_COLOR",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "colors",
+    "ansi colors",
+    "no_color",
+    "terminal colors",
+    "tty",
+    "force_color",
+    "styletext",
+    "cli output"
+  ],
+  "when": "A CLI prints colored or bold text and must turn it off for pipes, files, CI logs and users who set NO_COLOR.",
+  "inputs": [
+    "message types to color",
+    "output streams",
+    "color flag"
+  ],
+  "prompt": "Goal: Color decided once per stream from flags, environment and terminal, with plain text wherever color is not wanted.\nSteps:\n1. useColor(stream): --color=always forces on; --color=never or --no-color forces off; else off when NO_COLOR is non empty; else on when FORCE_COLOR is set and not \"0\"; else on only if stream.isTTY and TERM is not \"dumb\".\n2. Decide stdout and stderr separately, since one may be piped while the other is a terminal.\n3. Style with util.styleText([\"bold\", \"red\"], text) (Node 20.12 or 21.7 and later); recent versions check process.stdout themselves, so pass { stream: process.stderr } for stderr text; older Node writes SGR codes like \\x1b[31m ... \\x1b[0m.\n4. One module: const c = palette(useColor(process.stderr)); c.red(\"error\"), c.dim(path); when off the helpers return text unchanged.\n5. Pad columns using util.stripVTControlCharacters(s).length.\n6. Never let color carry meaning alone: keep words like \"error:\", \"ok\", \"FAIL\".\n7. Test both modes by spawning with NO_COLOR=1 and with FORCE_COLOR=1.\nQuality bar:\n- tool | cat shows no escape codes.\n- A few semantic roles only: error, warning, success, dim.\n- Readable on light and dark terminals.\nPitfalls:\n- Checking process.stdout.isTTY while writing errors to stderr.\n- Escape codes inside files written with --out.\n- Bright yellow or blue that vanishes on one background.\nVerify:\n- [ ] NO_COLOR disables color.\n- [ ] Non TTY output is plain.\n- [ ] Color helpers live in one module.\n- [ ] Files parse as ESM.\nOutput: src/color.mjs and its use in bin/tool.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm"
+  ],
+  "examples": [
+    {
+      "input": "add colors to my CLI but not when output goes to a file",
+      "output": "src/color.mjs deciding per stream from --color, NO_COLOR, FORCE_COLOR, isTTY and TERM, util.styleText helpers"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

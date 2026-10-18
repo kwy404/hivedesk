@@ -1,0 +1,38 @@
+{
+  "id": "header-logo-placement",
+  "title": "Site header and logo placement",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "header",
+    "logo",
+    "site header",
+    "logo size",
+    "top bar",
+    "masthead",
+    "sticky header"
+  ],
+  "when": "The user wants a site header designed: where the logo goes, how big, how nav and actions line up, sticky or not.",
+  "inputs": [
+    "logo file or name",
+    "nav links and the one header action"
+  ],
+  "prompt": "Goal: A compact header with the logo linking home on the left and nav plus one action aligned on one line, adapting to phones.\nSteps:\n1. Logo top left inside a link to the home page, with the site name as its accessible text (img alt, or visually hidden text beside an svg).\n2. Size the logo by height: 28 to 40 px on desktop, 24 to 32 px on phones, with width and height attributes.\n3. Layout: flex, align-items: center, justify-content: space-between, gap var(--space-5), height 56 to 72 px.\n4. Order: logo, primary nav, one header action (Book now); on narrow screens collapse the nav first and keep the action.\n5. If sticky: position: sticky; top: 0, a solid background, and scroll-padding-top on html equal to the header height.\n6. Make a skip link the first focusable element, pointing at main.\nQuality bar:\n- Logo legible and never stretched.\n- Header under 12 percent of a phone screen.\n- Nav items centered on the logo line.\nPitfalls:\n- Giant logos that push content down.\n- A logo that does not link home.\n- Transparent sticky headers over busy content.\nVerify:\n- [ ] The logo link goes home with a text name.\n- [ ] Logo img has alt, width and height.\n- [ ] Navigation sits in a nav.\n- [ ] A skip link targets main.\nOutput: The header markup on every page and header rules in style.css.",
+  "checks": [
+    "html.img-alt",
+    "html.nav",
+    "html.skip-link",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "onde coloco a logo e o menu no topo do site",
+      "output": "logo 32px tall linking home on the left, nav in the middle, Book now on the right, sticky with solid background"
+    }
+  ],
+  "size": 371,
+  "version": 1
+}

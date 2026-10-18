@@ -1,0 +1,39 @@
+{
+  "id": "accessible-chart-fallback",
+  "title": "Accessible charts with a data table fallback",
+  "category": "data",
+  "roles": [
+    "dev",
+    "reviewer",
+    "designer"
+  ],
+  "tags": [
+    "accessible chart",
+    "chart accessibility",
+    "data table",
+    "screen reader",
+    "a11y",
+    "chart alt text",
+    "wcag chart"
+  ],
+  "when": "Any page that shows a chart, or a review of an existing chart for accessibility.",
+  "inputs": [
+    "the chart and its data",
+    "the main takeaway"
+  ],
+  "prompt": "Goal: Every chart has a message title, a text summary, a real data table and keyboard access, and never relies on color alone.\nSteps:\n1. Headline the takeaway (\"Returns fell after the new size guide\"), not just the metric.\n2. svg gets role=\"img\" and aria-labelledby pointing at the heading and a summary paragraph; internals are aria-hidden.\n3. Provide a <table> with <caption>, th scope=\"col\" headers and th scope=\"row\" labels, in <details><summary>Show data</summary>.\n4. Encode series beyond color: direct labels, dash patterns or marker shapes; marks reach 3 to 1 contrast.\n5. Interactive points are reachable by Tab or arrows and show the same readout on focus as on hover.\n6. Respect prefers-reduced-motion for drawing animations; text stays at least 12 px when scaled down.\nQuality bar:\n- Screen reader users get the message and the numbers.\n- Grayscale printing keeps series apart.\n- Table and chart come from the same data.\nPitfalls:\n- A title that just says \"Chart\".\n- Values only in hover tooltips.\n- A separately typed table that drifts from the chart.\nVerify:\n- [ ] svg has role img and a name.\n- [ ] Table has caption and th headers.\n- [ ] Series distinguishable without color.\n- [ ] Visible focus on interactive points.\nOutput: Chart markup with heading, summary and table, plus chart.css for focus and patterns.",
+  "checks": [
+    "html.svg-a11y",
+    "html.table-headers",
+    "css.focus-visible",
+    "css.reduced-motion"
+  ],
+  "examples": [
+    {
+      "input": "make my dashboard charts usable with a screen reader",
+      "output": "takeaway headings, aria-labelledby summaries, Show data tables with captions, dashed second series"
+    }
+  ],
+  "size": 380,
+  "version": 1
+}

@@ -1,0 +1,33 @@
+{
+  "id": "tradeoff-table",
+  "title": "Comparing options with a tradeoff table",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect"
+  ],
+  "tags": [
+    "options",
+    "compare",
+    "tradeoff",
+    "pros and cons",
+    "choose",
+    "decision matrix",
+    "which is best"
+  ],
+  "when": "There are two to four real ways to build something (storage, layout, file split, approach) and the crew must pick one with reasons.",
+  "inputs": [
+    "the options",
+    "the constraints and goals"
+  ],
+  "prompt": "Goal: A small table that scores each option on the criteria that matter for this job and ends with one clear pick.\nSteps:\n1. Write the options as concrete plans, not labels: \"one index.html with sections\" versus \"four HTML files\".\n2. Choose 3 to 5 criteria from the job: fits the constraints, effort in tasks, ease for the user, risk, ease of change later.\n3. Fill the table with short facts, not scores alone: \"2 tasks\", \"needs a server\", \"breaks old links\".\n4. Drop any option that breaks a hard constraint (network, build step) before comparing.\n5. Pick the option that wins on the most important criterion and is acceptable on the rest; say the deciding row.\n6. Record the loser and the condition that would flip the choice.\nQuality bar:\n- Cells hold facts.\n- Hard constraints filter first.\n- The pick names its deciding reason.\nPitfalls:\n- A table built to justify a choice already made.\n- Ten criteria with equal weight.\n- Options that are not really different.\nVerify:\n- [ ] Two to four options.\n- [ ] Three to five criteria.\n- [ ] Constraint breakers removed.\n- [ ] A pick with a reason and a flip condition.\nOutput: A Markdown table in the plan summary followed by \"Pick: ... because ...\".",
+  "checks": [],
+  "examples": [
+    {
+      "input": "salvar dados em JSON ou localStorage?",
+      "output": "table: survives reload, shareable file, effort; pick localStorage because single user and no server"
+    }
+  ],
+  "size": 343,
+  "version": 1
+}

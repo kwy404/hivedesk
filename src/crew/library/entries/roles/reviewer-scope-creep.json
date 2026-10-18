@@ -1,0 +1,35 @@
+{
+  "id": "reviewer-scope-creep",
+  "title": "Reviewer: catching scope creep",
+  "category": "roles",
+  "roles": [
+    "reviewer",
+    "qa"
+  ],
+  "tags": [
+    "reviewer",
+    "scope creep",
+    "out of scope",
+    "extra features",
+    "unrequested",
+    "gold plating",
+    "unrelated changes"
+  ],
+  "when": "A diff contains more than the task asked: new features, refactors of untouched code, renamed files, extra dependencies.",
+  "inputs": [
+    "the task detail",
+    "the diff"
+  ],
+  "prompt": "Goal: Every change in the diff traced to the task, with unrequested changes flagged and reverted when they add risk.\nSteps:\n1. Write the task scope in one line and keep it in view.\n2. For each hunk, name the task line it serves; hunks with no task line are out of scope.\n3. Classify out of scope hunks: harmless (a typo fix nearby), risky (refactor, rename, new behavior), or forbidden (network, installs, deleted files).\n4. Request removal of risky and forbidden hunks with the exact revert; keep harmless ones and mention them.\n5. Check for new files the plan did not list and ask why each exists.\n6. Suggest moving good ideas into a note or a later task instead of this diff.\nQuality bar:\n- Each hunk has a task reason or a label.\n- Risky extras are reverted.\n- Good ideas are kept as notes.\nPitfalls:\n- Letting a big refactor ride along with a small fix.\n- Rejecting a needed helper as scope creep.\n- Missing an unlisted new file.\nVerify:\n- [ ] All hunks traced.\n- [ ] New files justified.\n- [ ] Risky extras have revert instructions.\n- [ ] Ideas moved to notes.\nOutput: Issues for risky or forbidden extras, and a note listing harmless ones.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "task: fix the date format; diff also rewrites the nav",
+      "output": "nav rewrite is out of scope and risky: revert nav.js changes; keep date fix"
+    }
+  ],
+  "size": 328,
+  "version": 1
+}

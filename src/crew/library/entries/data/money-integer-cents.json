@@ -1,0 +1,38 @@
+{
+  "id": "money-integer-cents",
+  "title": "Money in integer cents",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "money",
+    "cents",
+    "price",
+    "total",
+    "rounding",
+    "invoice",
+    "tax",
+    "split bill",
+    "float error"
+  ],
+  "when": "The app adds prices, applies discounts or taxes, splits bills or totals invoices, and results like 0.1 + 0.2 must never appear.",
+  "inputs": [
+    "currency",
+    "tax and discount rules",
+    "rounding rule"
+  ],
+  "prompt": "Goal: All money stored and computed as integer minor units, with explicit rounding and allocation that always adds up.\nSteps:\n1. Store { amountCents: 1999, currency: \"BRL\" }; get the minor digits per currency from Intl.NumberFormat(...).resolvedOptions().maximumFractionDigits.\n2. Parse typed amounts as text: split on the decimal symbol, build cents from the whole and fraction parts, reject extra decimals.\n3. Rates and quantities: Math.round(cents * rate) with one rounding rule (half up or half even), once per line.\n4. Taxes and discounts per line, rounded per line, then summed; note the rule in a comment.\n5. Split among n: everyone gets Math.floor(total / n) and the remainder goes one cent at a time to the first parts.\n6. Format only for display from cents / 100; switch to BigInt beyond Number.MAX_SAFE_INTEGER.\nQuality bar:\n- Totals equal the sum of displayed lines.\n- Splits never lose or invent a cent.\n- Tests cover 0.1 plus 0.2, half rounding and remainders.\nPitfalls:\n- Floats for money anywhere in the pipeline.\n- Number(input) * 100, which turns 19.99 into 1998.9999.\n- Rounding at several steps of one calculation.\nVerify:\n- [ ] No float money in storage.\n- [ ] Allocation sums to the total in tests.\n- [ ] One rounding helper.\n- [ ] Formatting only at display.\nOutput: js/money.js exporting parseMoney, applyRate, allocate and formatMoney, plus tests.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "dividir a conta de R$ 100,00 entre 3 pessoas",
+      "output": "allocate(10000, 3) -> [3334, 3333, 3333], totals in cents, formatted only for display"
+    }
+  ],
+  "size": 392,
+  "version": 1
+}

@@ -1,0 +1,35 @@
+{
+  "id": "null-undefined-access",
+  "title": "Fix null or undefined property access",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "cannot read properties of undefined",
+    "cannot read properties of null",
+    "null",
+    "undefined",
+    "typeerror",
+    "optional chaining",
+    "bug"
+  ],
+  "when": "Code crashes reading a property of null or undefined, such as a missing element, an empty API field or an unset variable.",
+  "inputs": [
+    "the error and line",
+    "the data or DOM it reads"
+  ],
+  "prompt": "Goal: Make the value exist when it must, and handle its absence on purpose when it is legitimately optional.\nSteps:\n1. Find which part of the chain is null: in a.b.c the error names the property being read, so the value before it is missing.\n2. For DOM lookups, confirm the selector matches and that the script runs after the element exists (defer or type=\"module\").\n3. For data, compare the real shape (log it once) with what the code expects; fix the mapping where data enters the app.\n4. Decide per field: required values get validated at the boundary with a clear error; optional values get a default (?? or ?.).\n5. Initialize state with empty values ([] or {}) so the first render works before data loads.\n6. Re-run the failing step and the empty state.\nQuality bar:\n- Required data fails loudly at the boundary, not deep in rendering.\n- Optional chaining is used only on truly optional data.\n- Defaults use ?? so 0 and empty strings survive.\nPitfalls:\n- Spreading ?. everywhere, which hides real bugs.\n- Using || for defaults and losing a valid 0.\n- Querying elements in a script placed in the head without defer.\nVerify:\n- [ ] The empty or missing case renders without throwing.\n- [ ] The full data case still works.\n- [ ] Selectors match elements in the HTML.\n- [ ] Files parse.\nOutput: Fixed files with the boundary check or default in one place.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "Cannot read properties of null (reading addEventListener)",
+      "output": "script was in head without defer; added defer and the button id now matches"
+    }
+  ],
+  "size": 388,
+  "version": 1
+}

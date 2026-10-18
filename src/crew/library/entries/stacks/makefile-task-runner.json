@@ -1,0 +1,37 @@
+{
+  "id": "makefile-task-runner",
+  "title": "Makefile as a task runner",
+  "category": "stacks",
+  "roles": [
+    "ops",
+    "dev"
+  ],
+  "tags": [
+    "makefile",
+    "make",
+    "tasks",
+    "task runner",
+    "build",
+    "targets",
+    "commands",
+    "make test"
+  ],
+  "when": "The user wants short commands such as make test or make run for a project, or a Makefile that rebuilds outputs only when sources change.",
+  "inputs": [
+    "tasks of the project",
+    "generated files"
+  ],
+  "prompt": "Goal: A readable Makefile with phony tasks, real file targets where useful, and a self documenting help target.\nSteps:\n1. Set .DEFAULT_GOAL := help, SHELL := bash and .SHELLFLAGS := -eu -o pipefail -c so recipe errors stop make.\n2. Declare .PHONY for every task that is not a file (help, run, test, clean).\n3. Indent recipes with a real tab; join dependent commands with && or enable .ONESHELL.\n4. Document targets with ## comments and a help target that greps them from $(MAKEFILE_LIST).\n5. Overridable variables: PY ?= python3, NODE ?= node, OUT := dist.\n6. Generated files get real rules with prerequisites (dist/app.css: src/*.css) and @mkdir -p $(@D); clean deletes only listed generated paths.\nQuality bar:\n- make alone prints help.\n- Every recipe works from a fresh clone.\n- Targets are plain verbs.\nPitfalls:\n- Spaces instead of a tab (\"missing separator\").\n- Expecting cd on one recipe line to affect the next.\n- Wildcard clean rules that can delete sources.\nVerify:\n- [ ] .PHONY lists the tasks.\n- [ ] help exists and is the default.\n- [ ] Recipes start with tabs.\n- [ ] Tools use ?= variables.\nOutput: Makefile at the project root and a Commands section in README.",
+  "checks": [
+    "file.nonempty",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "quero comandos curtos tipo make test e make run",
+      "output": "Makefile with help default, run, test, clean as .PHONY, PY ?= python3, ## comments"
+    }
+  ],
+  "size": 336,
+  "version": 1
+}

@@ -1,0 +1,42 @@
+{
+  "id": "in-process-job-queue",
+  "title": "In process job queue with retries and concurrency",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "job queue",
+    "background jobs",
+    "worker",
+    "retries",
+    "concurrency",
+    "task queue",
+    "async jobs",
+    "dead letter",
+    "backend"
+  ],
+  "when": "A Node API must do slow work (emails, image resizing, imports) after replying, a separate queue server is too much, and jobs must survive restarts and retry on failure.",
+  "inputs": [
+    "job types",
+    "acceptable delay",
+    "retry limits"
+  ],
+  "prompt": "Goal: A jobs table and a worker loop in the same process that runs jobs with bounded concurrency, retries with backoff and records failures.\nSteps:\n1. Table jobs(id, type, payload, status queued|running|done|failed, attempts, run_at, last_error, dedupe_key UNIQUE); index (status, run_at).\n2. enqueue(type, payload, { runAt, dedupeKey }) inserts a row; the HTTP route replies 202 with the job id.\n3. Worker tick each second: claim one due row with UPDATE jobs SET status = 'running' WHERE id = (SELECT id FROM jobs WHERE status = 'queued' AND run_at <= ? ORDER BY run_at LIMIT 1), until CONCURRENCY handlers are busy.\n4. Handlers are a map from type to async function receiving payload and an AbortSignal with a timeout.\n5. On failure: attempts + 1 and run_at = now + 2^attempts * 5 s plus jitter; past MAX_ATTEMPTS mark failed with last_error.\n6. At startup put running rows older than the timeout back to queued; a job may run twice, so handlers are idempotent.\nQuality bar:\n- GET /jobs/:id shows status.\n- Shutdown stops claiming and awaits running jobs.\n- Payloads hold ids, not whole records or secrets.\nPitfalls:\n- Fire and forget promises without catch.\n- A setInterval that starts a tick while the last one runs.\n- Promise.all over every queued job.\nVerify:\n- [ ] Jobs survive a restart.\n- [ ] A failing job retries, then lands in failed.\n- [ ] A test proves the concurrency cap.\n- [ ] dedupe_key blocks duplicates.\nOutput: jobs.mjs (enqueue and worker), handlers/ folder, test/jobs.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "js.async-errors",
+    "sec.sql-params",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "enviar emails depois do cadastro sem travar a resposta",
+      "output": "jobs table, enqueue returns 202, worker with concurrency 2, exponential retries, failed state"
+    }
+  ],
+  "size": 429,
+  "version": 1
+}

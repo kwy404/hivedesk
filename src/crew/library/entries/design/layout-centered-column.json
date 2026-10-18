@@ -1,0 +1,37 @@
+{
+  "id": "layout-centered-column",
+  "title": "Centered content column with full bleed breakouts",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "centered layout",
+    "content width",
+    "container",
+    "max-width",
+    "full bleed",
+    "breakout",
+    "wrapper"
+  ],
+  "when": "The user wants page content centered in a readable column while some bands, maps or images run the full width.",
+  "inputs": [
+    "readable width for text",
+    "which elements should break out"
+  ],
+  "prompt": "Goal: One grid that centers content at a max width and lets chosen elements break out to the full viewport.\nSteps:\n1. Page grid: grid-template-columns: [full-start] minmax(var(--space-4), 1fr) [content-start] min(65ch, 100% - 2 * var(--space-4)) [content-end] minmax(var(--space-4), 1fr) [full-end].\n2. Put every child in the content track by default: .page > * { grid-column: content }.\n3. Add .full-bleed { grid-column: full } for hero bands, maps and wide photos; add a named wide track if tables need more room.\n4. Let the outer minmax tracks give the phone gutter so text never touches the edge.\n5. For simple pages a .container with max-width: 70rem, margin-inline: auto and padding-inline is enough; never mix both methods.\nQuality bar:\n- Text column stays at 60 to 75 characters.\n- Breakouts cause no horizontal scroll.\n- Same side gutter on every section.\nPitfalls:\n- width: 100vw breakouts that overflow by the scrollbar width.\n- Nested containers each adding padding.\n- Centering with fixed px margins.\nVerify:\n- [ ] One centering method in use.\n- [ ] Breakouts use grid-column.\n- [ ] Gutter at 375 px is at least 16 px.\n- [ ] No horizontal scroll.\nOutput: The page grid and the .full-bleed utility in style.css.",
+  "checks": [
+    "css.media-query",
+    "css.no-fixed-width",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "texto centralizado mas com fotos ocupando a tela toda",
+      "output": "named grid lines full and content, .full-bleed on photo bands, text column min(65ch, 100% - 2rem)"
+    }
+  ],
+  "size": 350,
+  "version": 1
+}

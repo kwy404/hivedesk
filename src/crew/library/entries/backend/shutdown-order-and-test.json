@@ -1,0 +1,42 @@
+{
+  "id": "shutdown-order-and-test",
+  "title": "Ordered shutdown of server, jobs and database, with a test",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "devops",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "shutdown order",
+    "sigterm",
+    "drain",
+    "stop service",
+    "kill timeout",
+    "close database",
+    "signal test",
+    "deploy restarts",
+    "backend"
+  ],
+  "when": "A Node service with an HTTP server, background jobs and a database must stop in the right order during deploys, and a test should prove no work is lost.",
+  "inputs": [
+    "components and their start order",
+    "the platform kill grace period"
+  ],
+  "prompt": "Goal: Components stop in reverse start order with a timeout per step, proven by a test that sends a real signal.\nSteps:\n1. Register components at startup with lifecycle.add(name, stopFn) in start order: db, job worker, http server.\n2. First signal: set stopping = true, flip readiness to 503, wait a short drain delay (about 2 s) so the load balancer stops routing.\n3. Stop in reverse: server.close() waits for in flight requests; the worker stops claiming and awaits running jobs; logs flush; db.close() runs last.\n4. Race each step against its own timeout and log name, duration and outcome.\n5. Keep the total under the kill grace period (often 10 to 30 s); exit 0 when clean, 1 when any step timed out.\n6. On win32 most tools never deliver SIGTERM: also handle SIGINT and a \"shutdown\" message from a parent over IPC.\nQuality bar:\n- Every stop step is safe to call twice.\n- Requests during drain get 503 with Connection: close.\n- Startup logs the stop order in one line.\nPitfalls:\n- Closing the database before jobs that still use it.\n- A drain delay longer than the grace period.\n- Tests that call stop() directly but never send a signal.\nVerify:\n- [ ] A test spawns the server with child_process.spawn, starts a slow request, sends SIGTERM, and asserts the request finished and the exit code is 0.\n- [ ] Each step logs its duration.\n- [ ] A hung step ends in exit code 1 within the limit.\n- [ ] No step runs twice.\nOutput: lifecycle.mjs, wiring in server.mjs, test/shutdown.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.exit-code",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "no deploy alguns jobs ficam pela metade e o banco fecha antes",
+      "output": "lifecycle registry, reverse stop order, per step timeouts, spawn plus SIGTERM test"
+    }
+  ],
+  "size": 425,
+  "version": 1
+}

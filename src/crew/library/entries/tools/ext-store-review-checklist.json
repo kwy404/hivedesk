@@ -1,0 +1,39 @@
+{
+  "id": "ext-store-review-checklist",
+  "title": "Extension packaging and store review checklist",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "devops"
+  ],
+  "tags": [
+    "extension store",
+    "store review",
+    "publish extension",
+    "privacy policy",
+    "extension zip",
+    "single purpose",
+    "store listing",
+    "browser extension"
+  ],
+  "when": "A browser extension works locally and the user wants to package it and submit it to a browser's extension store with fewer rejections and realistic expectations.",
+  "inputs": [
+    "extension folder",
+    "data it handles",
+    "target stores"
+  ],
+  "prompt": "Goal: A clean zip, a complete listing and honest disclosures, with the user told plainly that the store decides and how long it can take.\nSteps:\n1. State requirements first: a developer account per store (some charge a one time fee), identity checks, review times from hours to weeks; approval is never guaranteed.\n2. Bump \"version\" in manifest.json for every upload; a version already seen is rejected.\n3. Zip the contents of the folder so manifest.json sits at the zip root; leave out .git, tests, node_modules, notes and source maps.\n4. Single purpose: state it in the listing's first sentence; drop unrelated features.\n5. Justify every permission and host, matching PERMISSIONS.md; remove unused ones first.\n6. Privacy: declare which user data is collected (settings sync included), why and where it goes; link a privacy policy when personal or browsing data leaves the device.\n7. Assets: 128 px icon, screenshots at the store's sizes, plain descriptions without keyword stuffing.\n8. Before submitting, load the zip unpacked in a fresh browser profile, test each feature and check the console.\nQuality bar:\n- The zip loads unpacked with no errors.\n- Every permission and data use is disclosed.\nPitfalls:\n- Obfuscated code reviewers cannot read; minify at most.\n- Remote code or broad host access without a reason, common rejection causes.\nVerify:\n- [ ] manifest.json at the zip root.\n- [ ] Version bumped.\n- [ ] Permission justifications written.\n- [ ] Privacy disclosure done.\nOutput: dist/extension-<version>.zip, STORE-CHECKLIST.md and store/listing.md.",
+  "checks": [
+    "ext.manifest-v3",
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "como publicar minha extensao na loja sem ser rejeitada",
+      "output": "zip with manifest at root, version bumped, permission justifications, privacy disclosure, listing assets, STORE-CHECKLIST.md"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

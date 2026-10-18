@@ -1,0 +1,41 @@
+{
+  "id": "python-csv-module",
+  "title": "Reading and writing CSV in Python",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "csv",
+    "dictreader",
+    "dictwriter",
+    "spreadsheet",
+    "rows",
+    "columns",
+    "tabular data",
+    "clean csv"
+  ],
+  "when": "A Python script must read, clean, filter or write CSV files, including exports from spreadsheet programs.",
+  "inputs": [
+    "input columns",
+    "output columns",
+    "delimiter and encoding if known"
+  ],
+  "prompt": "Goal: Correct CSV handling with the csv module: quotes, encodings, delimiters and headers right, output that opens cleanly.\nSteps:\n1. Open for reading with newline=\"\" and encoding=\"utf-8-sig\" (drops a BOM); write with newline=\"\" and encoding=\"utf-8\".\n2. Read with csv.DictReader; check required columns against reader.fieldnames and fail listing the missing ones.\n3. Unknown delimiter: csv.Sniffer().sniff(sample, delimiters=\",;\\t\") on the first 4 KB.\n4. Convert types in one function per column (int, decimal comma floats, datetime.strptime) and collect bad rows with reader.line_num.\n5. Write with csv.DictWriter(f, fieldnames=..., extrasaction=\"ignore\") and writeheader(); it quotes commas, quotes and newlines.\n6. Process row by row so large files stream.\nQuality bar:\n- Round trips keep commas and line breaks inside quoted fields.\n- Rejected rows are reported with reasons.\n- Output column order is explicit.\nPitfalls:\n- Splitting lines on commas by hand.\n- Forgetting newline=\"\", which adds blank rows on some systems.\n- Ignoring the BOM so the first header is wrong.\nVerify:\n- [ ] csv module for reading and writing.\n- [ ] newline=\"\" on every open.\n- [ ] Required columns checked.\n- [ ] Every output row has the header column count.\nOutput: clean_csv.py plus a small sample input and output CSV.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard",
+    "csv.consistent"
+  ],
+  "examples": [
+    {
+      "input": "limpar uma planilha csv de clientes e salvar só os ativos",
+      "output": "clean_csv.py reading clientes.csv with DictReader, filtering status=ativo, writing ativos.csv"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

@@ -1,0 +1,48 @@
+{
+  "id": "resume-page",
+  "title": "Online resume page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer",
+    "designer"
+  ],
+  "tags": [
+    "resume",
+    "cv",
+    "curriculum",
+    "job",
+    "career",
+    "print"
+  ],
+  "when": "The user wants their CV or resume as a web page that also prints well.",
+  "inputs": [
+    "name and title",
+    "experience with dates",
+    "education",
+    "skills and languages",
+    "contact"
+  ],
+  "prompt": "Goal: A clean resume page that reads in thirty seconds on screen and prints on one or two pages.\nSteps:\n1. Header with name, title, city and contact links (email, phone as tel).\n2. A three line summary with the strongest facts.\n3. Experience newest first: role, company, dates, and two to four bullets that start with a verb and show results.\n4. Education, skills and languages as compact lists.\n5. Add print styles: hide navigation and buttons, use black text, avoid page breaks inside a job.\nQuality bar:\n- Dates use one format.\n- Bullets show impact with numbers when the user gave them.\n- Prints cleanly from the browser.\nPitfalls:\n- Inventing employers, dates or numbers the user did not give.\n- Two column layouts that break in print.\n- Photos or personal data the user did not ask to include.\nVerify:\n- [ ] Every job has role, company and dates.\n- [ ] A @media print block exists.\n- [ ] Links are real mailto and tel links.\n- [ ] One h1 with the name.\nOutput: index.html and style.css with screen and print styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.link-text"
+  ],
+  "examples": [
+    {
+      "input": "turn my CV into a web page",
+      "output": "h1 with the name, summary, three jobs with result bullets, skills list, print styles"
+    }
+  ],
+  "size": 292,
+  "version": 1
+}

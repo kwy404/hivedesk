@@ -1,0 +1,38 @@
+{
+  "id": "typography-scale",
+  "title": "Typography scale for headings and text",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "typography",
+    "type scale",
+    "font size",
+    "font sizes",
+    "headings",
+    "modular scale",
+    "text sizes",
+    "line height"
+  ],
+  "when": "The user wants consistent font sizes, heading sizes or a type system for a page or app.",
+  "inputs": [
+    "body size (16 px by default)",
+    "density: reading site or compact app"
+  ],
+  "prompt": "Goal: A modular type scale of 6 to 8 steps with matched line heights and weights, used for every text on the page.\nSteps:\n1. Set body at 1rem and never set the html font-size in px, so the user font setting still works.\n2. Choose a ratio: 1.2 for dense apps, 1.25 for general sites, 1.333 for editorial pages.\n3. Multiply out the steps; for 1.25: 0.8, 1, 1.25, 1.563, 1.953, 2.441, 3.052 rem.\n4. Store them as --step--1 to --step-5 on :root; map h1 to --step-5 down to h6, small print to --step--1.\n5. Set line-height by size: 1.5 to 1.6 body, 1.2 to 1.3 headings, 1.1 display.\n6. Limit weights to 400, 600 and 700; add letter-spacing (0.05em) only to all caps labels.\nQuality bar:\n- Smallest text at least 12 px, body at least 16 px.\n- Each heading level is visibly larger or bolder than the next.\n- Sizes in rem so zoom scales them.\nPitfalls:\n- A dozen ad hoc sizes like 13, 15 and 17 px.\n- Headings that wrap to five lines on phones.\n- Body line-height under 1.4.\nVerify:\n- [ ] Every font-size uses a scale variable.\n- [ ] No size below 12 px.\n- [ ] Headings follow the scale in order.\n- [ ] Line heights set per role.\nOutput: The scale on :root and base typography rules (body, h1 to h6, small) in style.css.",
+  "checks": [
+    "css.min-font-size",
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "organize os tamanhos de fonte do meu blog",
+      "output": "ratio 1.25: --step-0 1rem body, --step-5 3.05rem h1, line-height 1.6 body and 1.2 headings"
+    }
+  ],
+  "size": 347,
+  "version": 1
+}

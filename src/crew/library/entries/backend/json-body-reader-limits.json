@@ -1,0 +1,41 @@
+{
+  "id": "json-body-reader-limits",
+  "title": "Reading JSON request bodies with byte limits",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "json body",
+    "body parser",
+    "payload too large",
+    "413",
+    "415",
+    "content-type",
+    "prototype pollution",
+    "backend",
+    "chunked request"
+  ],
+  "when": "A node:http handler must read a JSON request body safely: enforce a byte limit, check the media type, handle empty or broken bodies and drop dangerous keys.",
+  "inputs": [
+    "the maximum body size",
+    "routes that allow an empty body"
+  ],
+  "prompt": "Goal: readJson(req, { limit }) that resolves to a plain value or throws an HttpError carrying 413, 415 or 400.\nSteps:\n1. Require content-type application/json, ignoring case and a \"; charset=utf-8\" suffix; anything else throws 415.\n2. If the content-length header is above the limit, throw 413 before reading a byte.\n3. Read with for await (const chunk of req), summing chunk.length; past the limit stop reading, set Connection: close and throw 413 (chunked requests send no length).\n4. Join with Buffer.concat and decode with new TextDecoder(\"utf-8\", { fatal: true }) so broken UTF-8 becomes 400.\n5. Empty body: 400 unless the route allows it; JSON.parse inside try and catch, answering 400 with code invalid_json and no parser text.\n6. Use a reviver that drops __proto__, constructor and prototype keys, and check the top level type the route expects.\nQuality bar:\n- Default limit 100 KB; a route raises it explicitly.\n- Limits count bytes, not string length.\n- Each failure has a stable code such as body_too_large.\nPitfalls:\n- Trusting content-length alone.\n- Measuring a decoded string, which miscounts multibyte text.\n- Merging bodies into existing objects with Object.assign, which opens prototype pollution.\nVerify:\n- [ ] text/plain gets 415.\n- [ ] A large chunked body gets 413.\n- [ ] Bad JSON and bad UTF-8 get 400.\n- [ ] A __proto__ key never reaches the result.\nOutput: http/body.mjs exporting readJson, plus test/body.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.body-limit",
+    "js.json-parse-guarded",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "meu servidor trava quando mandam um JSON gigante",
+      "output": "readJson with 100 KB cap counted in bytes, 413, 415, fatal UTF-8 decode, reviver dropping __proto__"
+    }
+  ],
+  "size": 412,
+  "version": 1
+}

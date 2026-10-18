@@ -176,7 +176,7 @@ describe('GitHub flow (stub API, no network)', () => {
 
   it('never leaks the token to events, the log file, WebSocket frames or logs', async () => {
     expect(stub.seenAuth).toContain(`Bearer ${TOKEN}`);
-    const all = [JSON.stringify(app.bus.events), fs.readFileSync(app.paths.events, 'utf8'), frames.join('\n'), logs.join('\n'), JSON.stringify(await cmd('github.status'))];
+    const all = [JSON.stringify(app.bus.events), fs.readdirSync(app.paths.segments).map((f) => fs.readFileSync(path.join(app.paths.segments, f), 'utf8')).join(''), frames.join('\n'), logs.join('\n'), JSON.stringify(await cmd('github.status'))];
     for (const text of all) {
       expect(text).not.toContain(TOKEN);
       expect(text).not.toContain(BASIC);

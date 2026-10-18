@@ -1,0 +1,48 @@
+{
+  "id": "travel-guide-page",
+  "title": "Travel guide or itinerary page",
+  "category": "web-pages",
+  "roles": [
+    "writer",
+    "dev"
+  ],
+  "tags": [
+    "travel",
+    "itinerary",
+    "trip",
+    "guide",
+    "tour",
+    "tourism",
+    "destination"
+  ],
+  "when": "The user wants a travel guide, trip itinerary or tour operator page for a destination.",
+  "inputs": [
+    "destination",
+    "days and activities",
+    "practical info",
+    "booking or contact"
+  ],
+  "prompt": "Goal: A practical guide that a traveler can follow day by day, even offline on a phone.\nSteps:\n1. Hero with destination, trip length and best season.\n2. Day by day itinerary as sections: morning, afternoon, evening, with travel times between places.\n3. Practical info: transport, money, safety, what to pack, as short lists.\n4. Map links per place in text, no heavy embedded maps.\n5. Print and offline friendly: one page, light images.\nQuality bar:\n- Times and distances are realistic and marked as estimates.\n- Each day fits a phone screen.\n- Prices note the currency and date.\nPitfalls:\n- Inventing opening hours or prices as facts.\n- Huge photo files.\n- A single long paragraph per day.\nVerify:\n- [ ] Each day has a heading.\n- [ ] Images lazy load.\n- [ ] Print styles exist.\n- [ ] One h1.\nOutput: index.html and style.css with print styles.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.lazy-images",
+    "html.heading-order"
+  ],
+  "examples": [
+    {
+      "input": "roteiro de 3 dias em Ouro Preto",
+      "output": "hero with 3 days, day sections with morning to evening plans, practical tips list"
+    }
+  ],
+  "size": 241,
+  "version": 1
+}

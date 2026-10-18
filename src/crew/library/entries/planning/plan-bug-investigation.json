@@ -1,0 +1,36 @@
+{
+  "id": "plan-bug-investigation",
+  "title": "Planning a bug investigation",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "qa"
+  ],
+  "tags": [
+    "bug",
+    "investigate",
+    "reproduce",
+    "root cause",
+    "debug plan",
+    "broken",
+    "not working",
+    "regression"
+  ],
+  "when": "The user reports that something is broken and the cause is unknown, so the crew must plan how to find it before fixing.",
+  "inputs": [
+    "the symptom in the user words",
+    "the files involved",
+    "steps that trigger it"
+  ],
+  "prompt": "Goal: A plan that reproduces the bug, narrows it to one place, fixes it with a small patch and proves it stays fixed.\nSteps:\n1. Write the symptom as expected versus actual, with the exact input or click that shows it.\n2. Task 1 reproduces: a small script or test that fails the same way, or exact steps in the preview.\n3. Task 2 narrows: read the code path from input to wrong output and name the first line where the value goes wrong.\n4. Task 3 fixes only that cause with an edit_file patch; no cleanup of unrelated code.\n5. Task 4 proves: the reproduction now passes and the nearby cases still work.\n6. If reproduction fails, stop and ask the user for the missing detail instead of guessing a fix.\nQuality bar:\n- A failing reproduction exists before the fix.\n- The cause is named, not just the symptom.\n- The patch is small and local.\nPitfalls:\n- Patching the symptom (hiding an error) instead of the cause.\n- Changing several things at once so nobody knows which fixed it.\n- Skipping the proof step.\nVerify:\n- [ ] Expected and actual are written.\n- [ ] Reproduce, narrow, fix, prove tasks exist.\n- [ ] The fix task names one file.\n- [ ] The test or steps rerun at the end.\nOutput: A four task plan with the symptom statement in the summary.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "the total shows NaN after I delete an item",
+      "output": "reproduce in test.mjs, trace remove() to sum(), patch the missing Number(), rerun test"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

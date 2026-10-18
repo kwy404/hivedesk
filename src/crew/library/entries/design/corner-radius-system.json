@@ -1,0 +1,35 @@
+{
+  "id": "corner-radius-system",
+  "title": "Corner radius scale and consistency",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "border radius",
+    "radius",
+    "rounded corners",
+    "corners",
+    "shape",
+    "pill",
+    "rounded"
+  ],
+  "when": "The user wants rounded corners consistent across buttons, inputs, cards and images, or has picked a soft or sharp look.",
+  "inputs": [
+    "the shape personality: sharp, soft or round"
+  ],
+  "prompt": "Goal: A three or four step radius scale tied to element size, with nested corners that stay concentric.\nSteps:\n1. Choose the brand shape for medium elements: sharp 2 px, soft 6 to 8 px, round 12 to 16 px.\n2. Define --radius-sm (inputs, tags), --radius-md (buttons, cards), --radius-lg (dialogs, sheets) and --radius-pill: 999px for chips.\n3. Scale radius with size: a large card with 4 px looks sharp; a small chip with 16 px becomes a pill.\n4. Nest correctly: inner radius equals outer radius minus the padding between them (16 px card with 8 px padding holds an 8 px image).\n5. Clip images in rounded cards with overflow: hidden on the card, or give the img the inner radius.\n6. Inputs and buttons that share a row use the same radius.\nQuality bar:\n- Every border-radius uses a token.\n- Nested corners look parallel.\n- Focus outlines follow the shape with outline-offset.\nPitfalls:\n- Five different radii on one screen.\n- Square image corners poking out of a rounded card.\n- Pill shapes on large text blocks.\nVerify:\n- [ ] Radius tokens on :root.\n- [ ] No raw radius values except 0.\n- [ ] Inner radii computed from outer minus padding.\n- [ ] Input and button radii match.\nOutput: Radius tokens and rules in style.css.",
+  "checks": [
+    "css.custom-properties",
+    "css.braces"
+  ],
+  "examples": [
+    {
+      "input": "I want a soft rounded look across the app",
+      "output": "--radius-sm 4px, --radius-md 8px, --radius-lg 16px, pill chips, card images at 8px inside 8px padding"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

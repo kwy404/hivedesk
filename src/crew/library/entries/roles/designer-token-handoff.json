@@ -1,0 +1,37 @@
+{
+  "id": "designer-token-handoff",
+  "title": "Designer: handing off design tokens",
+  "category": "roles",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "designer",
+    "design tokens",
+    "tokens",
+    "css variables",
+    "custom properties",
+    "handoff",
+    "theme variables"
+  ],
+  "when": "The designer sets the visual values once so every developer and page uses the same colors, type and spacing.",
+  "inputs": [
+    "the chosen palette and type",
+    "components planned"
+  ],
+  "prompt": "Goal: A tokens.css with named custom properties on :root (and a dark scheme) that all styles reference, plus a short usage note.\nSteps:\n1. Name tokens by purpose, not by value: --color-text, --color-bg, --color-accent, --color-muted, --color-danger.\n2. Add type tokens: --font-body, --font-heading, --size-1 to --size-6 on a ratio of about 1.25.\n3. Add space tokens: --space-1 to --space-6 (0.25rem doubling up to 3rem) and --radius, --shadow.\n4. Add a dark scheme in @media (prefers-color-scheme: dark) that redefines only the color tokens.\n5. Write a usage comment at the top: which token for body text, borders, buttons, errors.\n6. Tell developers in a note to load tokens.css before style.css and never hard code a color.\nQuality bar:\n- Every color pair used for text reaches 4.5 to 1 in both schemes.\n- Token names describe roles.\n- The file is under 60 lines.\nPitfalls:\n- Tokens named --blue-500 that break when the brand changes.\n- Dark mode that only inverts the background.\n- Developers still writing hex values in style.css.\nVerify:\n- [ ] All tokens on :root.\n- [ ] Dark scheme block present.\n- [ ] Usage comment present.\n- [ ] Braces balance.\nOutput: tokens.css with :root and the dark scheme block, plus a note for the developers.",
+  "checks": [
+    "css.braces",
+    "css.custom-properties",
+    "css.dark-scheme"
+  ],
+  "examples": [
+    {
+      "input": "cria as variaveis de cor e espaco do projeto",
+      "output": "--color-accent #7a3cff, --space-1 0.25rem to --space-6 3rem, dark overrides for text and bg"
+    }
+  ],
+  "size": 355,
+  "version": 1
+}

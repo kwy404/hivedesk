@@ -1,0 +1,38 @@
+{
+  "id": "architect-data-flow-sketch",
+  "title": "Architect: sketching data flow",
+  "category": "roles",
+  "roles": [
+    "architect",
+    "dev"
+  ],
+  "tags": [
+    "architect",
+    "data flow",
+    "state",
+    "flow diagram",
+    "events",
+    "sequence",
+    "where data lives",
+    "single source of truth"
+  ],
+  "when": "An app has state that moves between input, storage and screen, and the team needs to agree where each value lives and how it changes.",
+  "inputs": [
+    "the features",
+    "the data the app keeps"
+  ],
+  "prompt": "Goal: A text sketch that shows one source of truth per value and every path from user action to saved data to screen.\nSteps:\n1. List the values the app keeps (items, filter, selected id) and give each one owner: state object, URL hash, localStorage or a file.\n2. Draw each user action as a chain: event, handler, state change, save, render.\n3. Keep one direction: handlers change state through named functions, render reads state and never writes it.\n4. Mark where data is loaded at start and what happens when stored data is missing or broken.\n5. Mark derived values (totals, counts) as computed in render, never stored.\n6. Write the sketch as a fenced text diagram with arrows (->) plus a table of values and owners.\nQuality bar:\n- Each value has exactly one owner.\n- Every action chain ends in a render.\n- Load and failure paths are shown.\nPitfalls:\n- The same list kept in the DOM and in an array.\n- Derived totals saved and then out of date.\n- Render functions that save data.\nVerify:\n- [ ] Values table exists.\n- [ ] Each action has a chain.\n- [ ] Startup load is shown.\n- [ ] Fences are closed.\nOutput: DATAFLOW.md with the values table and fenced flow sketches.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "controle de gastos com filtros por mes",
+      "output": "values: expenses (localStorage), month (URL hash); add -> addExpense -> save -> render total"
+    }
+  ],
+  "size": 334,
+  "version": 1
+}

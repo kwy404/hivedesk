@@ -1,0 +1,51 @@
+{
+  "id": "real-estate-listing",
+  "title": "Property listing page",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "designer",
+    "writer"
+  ],
+  "tags": [
+    "real estate",
+    "property",
+    "listing",
+    "apartment",
+    "house",
+    "rent",
+    "realtor"
+  ],
+  "when": "The user wants a page for a house or apartment for sale or rent, or a realtor listing.",
+  "inputs": [
+    "address area and price",
+    "rooms, size, features",
+    "photos",
+    "agent contact"
+  ],
+  "prompt": "Goal: A listing that shows the key facts at a glance and makes scheduling a visit easy.\nSteps:\n1. Top block: price, area, bedrooms, bathrooms, size in square meters, all as text.\n2. Photo gallery with a main image and thumbnails as buttons; every photo has a room description as alt.\n3. Features as a dl or list: parking, pets, furnished, fees and taxes.\n4. Description in short paragraphs: light, layout, neighborhood, transport.\n5. Contact the agent: phone, email and a visit request form with preferred date.\nQuality bar:\n- Numbers have units and currency.\n- Fees are explicit.\n- Gallery is usable by keyboard.\nPitfalls:\n- Hiding the price.\n- Photos without descriptions.\n- Map embeds that load heavy scripts on start.\nVerify:\n- [ ] Key facts in text near the top.\n- [ ] Gallery buttons have names.\n- [ ] Form labeled.\n- [ ] Images lazy load after the first.\nOutput: listing.html (or index.html), style.css and gallery.js.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.lazy-images",
+    "html.button-type",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "página para alugar meu apartamento",
+      "output": "price and fees, 2 bedrooms, 68 m2, gallery of 8 rooms, visit request form"
+    }
+  ],
+  "size": 265,
+  "version": 1
+}

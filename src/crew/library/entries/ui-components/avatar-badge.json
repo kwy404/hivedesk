@@ -1,0 +1,40 @@
+{
+  "id": "avatar-badge",
+  "title": "Avatar with initials fallback and badges",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "avatar",
+    "badge",
+    "profile picture",
+    "user icon",
+    "initials",
+    "status dot",
+    "notification count",
+    "pill label"
+  ],
+  "when": "The user wants user avatars, initials when there is no photo, status dots or count badges.",
+  "inputs": [
+    "names and photo files",
+    "sizes needed",
+    "status or count to show"
+  ],
+  "prompt": "Goal: Avatars that never break: photo when available, initials otherwise, and badges whose meaning is in text.\nSteps:\n1. Photo: <img> with width, height, border-radius: 50% and object-fit: cover; alt is the name, or alt=\"\" when the name is printed next to it.\n2. Fallback: a span with the first letters of the first and last word, uppercased, aria-hidden, with the name in visually hidden text.\n3. Pick the background from a hash of the name over six token colors that all pass 4.5 to 1 with the text.\n4. An image error listener (addEventListener(\"error\")) swaps a broken photo for the initials.\n5. Sizes as modifier classes (24, 32, 48, 96 px). A status dot carries visually hidden text Online.\n6. Count badges cap at 99+ and the button name says the count: Notifications, 3 unread.\nQuality bar:\n- Every badge meaning is in text.\n- Initials are centered and sized to the circle.\n- Same name, same color every time.\nPitfalls:\n- Inline onerror attributes.\n- Status shown by color only.\n- Badges built with innerHTML from names.\nVerify:\n- [ ] Images have alt, width and height.\n- [ ] Broken photos fall back to initials.\n- [ ] Status and counts are in text.\n- [ ] Names are inserted with textContent.\nOutput: Avatar and badge markup patterns, avatar.css and avatar.js.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.no-inline-handlers",
+    "js.safe-dom"
+  ],
+  "examples": [
+    {
+      "input": "avatar com iniciais quando o usuario nao tem foto",
+      "output": "round 48 px photos, initials AL on a hashed color when missing, green dot with hidden Online text"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

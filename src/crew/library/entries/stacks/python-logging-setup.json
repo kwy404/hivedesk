@@ -1,0 +1,39 @@
+{
+  "id": "python-logging-setup",
+  "title": "Logging setup for Python scripts and services",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "python",
+    "logging",
+    "logs",
+    "logger",
+    "log file",
+    "verbose",
+    "log level",
+    "rotation",
+    "debug output"
+  ],
+  "when": "A Python program uses print for diagnostics, or needs log files, levels, or a --verbose flag.",
+  "inputs": [
+    "where logs go",
+    "how long to keep them"
+  ],
+  "prompt": "Goal: One logging configuration at startup, module loggers elsewhere, readable console output and rotated files.\nSteps:\n1. Each module: log = logging.getLogger(__name__); library modules never configure logging.\n2. In main only, configure a stderr handler with the format \"%(asctime)s %(levelname)s %(name)s: %(message)s\".\n3. Levels: INFO by default, -v for DEBUG, -q for WARNING, LOG_LEVEL from the environment.\n4. Files: logging.handlers.RotatingFileHandler(path, maxBytes=1_000_000, backupCount=5, encoding=\"utf-8\").\n5. Pass values as arguments: log.info(\"saved %d rows to %s\", n, path); use log.exception() inside except to keep tracebacks.\n6. Log ids and counts, never secrets, tokens or full personal records.\nQuality bar:\n- Every line has time, level and source.\n- Normal runs are quiet; DEBUG explains decisions.\n- stdout stays reserved for program results.\nPitfalls:\n- basicConfig called in several modules, where only the first wins.\n- f-strings in log calls that run with the level off.\n- log.error(str(e)), losing the traceback.\nVerify:\n- [ ] Loggers from getLogger(__name__).\n- [ ] Configured once in main.\n- [ ] Rotating handler with encoding.\n- [ ] No bare except.\nOutput: log_setup.py with setup_logging(level, file), called from main.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except"
+  ],
+  "examples": [
+    {
+      "input": "replace all the prints in my script with proper logs",
+      "output": "setup_logging with stderr handler, RotatingFileHandler 1 MB x 5, -v flag for DEBUG"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

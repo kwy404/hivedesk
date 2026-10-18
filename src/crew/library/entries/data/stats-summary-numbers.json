@@ -1,0 +1,38 @@
+{
+  "id": "stats-summary-numbers",
+  "title": "Summary statistics: mean, median, percentiles",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "statistics",
+    "stats",
+    "average",
+    "mean",
+    "median",
+    "percentile",
+    "standard deviation",
+    "p95",
+    "outliers"
+  ],
+  "when": "The user wants averages, medians, percentiles, spread or outliers over a list of numbers (times, prices, scores).",
+  "inputs": [
+    "the numbers",
+    "unit",
+    "which measures matter"
+  ],
+  "prompt": "Goal: Correct, tested statistics functions that handle empty and odd inputs and state which definition they use.\nSteps:\n1. Keep finite numbers only (Number.isFinite) and report how many were dropped.\n2. Mean by running sum (pairwise or Kahan for long float arrays); median from a sorted copy, averaging the middle two for even counts.\n3. Percentiles by linear interpolation: rank = p / 100 * (n - 1), interpolate between floor and ceil; document it.\n4. Spread: sample standard deviation (n - 1) with one pass Welford; min, max and IQR (p75 - p25).\n5. Flag outliers beyond 1.5 IQR from the quartiles; never delete them silently.\n6. Return { count, dropped, mean, median, p90, p95, min, max, sd }; empty input gives count 0 and nulls, never NaN.\nQuality bar:\n- Inputs are never mutated.\n- Results match a hand computed example.\n- Labels carry units (\"median response time, ms\").\nPitfalls:\n- Averaging percentages or averages without weights.\n- Default sort(), which compares numbers as strings.\n- Mean alone for skewed data such as prices or times.\nVerify:\n- [ ] sort((a, b) => a - b) on a copy.\n- [ ] Tests for empty, one, even and odd counts.\n- [ ] Percentile method documented.\n- [ ] No NaN outputs.\nOutput: js/stats.js exporting summary(values) and the single functions, with tests.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "quero ver média, mediana e p95 do tempo de resposta",
+      "output": "summary(times) -> { count, mean, median, p95, sd } with interpolated percentiles and tests"
+    }
+  ],
+  "size": 367,
+  "version": 1
+}

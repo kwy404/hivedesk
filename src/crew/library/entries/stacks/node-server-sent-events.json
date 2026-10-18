@@ -1,0 +1,39 @@
+{
+  "id": "node-server-sent-events",
+  "title": "Live updates with server sent events",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "server sent events",
+    "sse",
+    "eventsource",
+    "live updates",
+    "realtime",
+    "push updates",
+    "event stream",
+    "real time",
+    "progress"
+  ],
+  "when": "A page must update live from the server (progress, logs, notifications, a feed) and data only flows from server to client.",
+  "inputs": [
+    "event names and payloads",
+    "when the server emits them"
+  ],
+  "prompt": "Goal: A node:http event stream plus an EventSource client that reconnect on their own and never leak connections.\nSteps:\n1. Route /events: writeHead(200, { \"content-type\": \"text/event-stream\", \"cache-control\": \"no-cache\", connection: \"keep-alive\" }) and write \": ok\" plus a blank line.\n2. Keep clients in a Set; on req \"close\" delete the client and clear its timers; above 100 clients answer 503. Other paths get 404.\n3. Frame each message as id:, event: and data: lines ending with a blank line; split multi line data into several data: lines.\n4. Heartbeat comment every 25 s; replay events after Last-Event-ID from a ring buffer of 100.\n5. Client: new EventSource(\"/events\"), addEventListener per event name with JSON.parse(e.data) in try; show \"Reconnecting\" on error (reconnect is automatic, tune with retry:).\nQuality bar:\n- Closing the tab frees the server side client.\n- No duplicate events after a reconnect.\n- Connection state is announced in an aria-live region.\nPitfalls:\n- Missing the blank line that ends each event.\n- Compression or buffering that holds events back.\n- Using the stream for client to server messages; use POST for those.\nVerify:\n- [ ] content-type is text/event-stream.\n- [ ] Clients are removed on close.\n- [ ] Heartbeat timer is cleared.\n- [ ] Client parsing is in try.\nOutput: server.mjs with /events and broadcast(event, data); public/live.js with the client.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "js.json-parse-guarded"
+  ],
+  "examples": [
+    {
+      "input": "show build progress live in the page",
+      "output": "/events stream with progress and done events, EventSource client updating a progress bar"
+    }
+  ],
+  "size": 398,
+  "version": 1
+}

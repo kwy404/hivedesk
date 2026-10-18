@@ -1,0 +1,39 @@
+{
+  "id": "mobile-haptics-vibration",
+  "title": "Haptic feedback and the Vibration API",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "haptics",
+    "vibration",
+    "vibrate",
+    "feedback",
+    "mobile app",
+    "capacitor haptics",
+    "tactile",
+    "game feel"
+  ],
+  "when": "The user wants subtle vibration on taps, success or errors in a phone app or game, and needs it to degrade quietly where unsupported.",
+  "inputs": [
+    "moments that deserve feedback",
+    "web app or Capacitor shell"
+  ],
+  "prompt": "Goal: haptics.js exposes tap(), success() and warn() that use native haptics in the shell, navigator.vibrate on the web and do nothing elsewhere.\nSteps:\n1. Native: import { Haptics, ImpactStyle, NotificationType } from \"@capacitor/haptics\"; tap() calls Haptics.impact({ style: ImpactStyle.Light }); success() calls Haptics.notification({ type: NotificationType.Success }).\n2. Web: if (\"vibrate\" in navigator) use navigator.vibrate(10) for tap and navigator.vibrate([30, 40, 30]) for warn; one phone OS browser has no Vibration API, so feature detect.\n3. Keep pulses short: 10 to 20 ms for taps, under 300 ms total for patterns.\n4. A \"Vibration\" switch in settings, stored in localStorage inside try/catch, default on; read it before each call.\n5. Skip haptics when matchMedia(\"(prefers-reduced-motion: reduce)\").matches is true unless the user turned them on explicitly.\n6. Call haptics only inside user gesture handlers; the web API ignores calls without a recent tap.\n7. Never use vibration as the only signal; pair it with a visual change.\nQuality bar:\n- Feedback marks meaningful moments, not every scroll.\n- Unsupported devices see no errors.\nPitfalls:\n- Long buzz patterns that feel like a phone call.\n- Unhandled promise from the native plugin on the web.\nVerify:\n- [ ] Feature detection guards navigator.vibrate.\n- [ ] The settings switch is respected.\n- [ ] Storage access is in try/catch.\nOutput: haptics.js, the settings toggle and calls in the event handlers.",
+  "checks": [
+    "js.storage-guarded",
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "vibrar o celular quando o jogador acerta",
+      "output": "haptics.js with native impact, web vibrate fallback, settings toggle and reduced motion check"
+    }
+  ],
+  "size": 421,
+  "version": 1
+}

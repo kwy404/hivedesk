@@ -1,0 +1,38 @@
+{
+  "id": "skeleton-loader",
+  "title": "Skeleton loading screens",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "skeleton",
+    "skeleton screen",
+    "skeleton loader",
+    "shimmer",
+    "content loader",
+    "ghost cards",
+    "loading state"
+  ],
+  "when": "The user wants grey shapes that show the layout of content while it loads, instead of a spinner.",
+  "inputs": [
+    "the layout being loaded (cards, list, profile)",
+    "expected load time"
+  ],
+  "prompt": "Goal: Skeleton shapes that match the final layout, are hidden from screen readers and swap to content without layout shift.\nSteps:\n1. Build skeleton blocks with the same sizes as the real content: same image aspect-ratio, line heights and gaps.\n2. Mark the skeleton container aria-hidden=\"true\" and put a visually hidden Loading articles in a role=\"status\" region.\n3. Set aria-busy=\"true\" on the content region while loading.\n4. Shimmer: a linear-gradient with background-size: 200% 100% animating background-position; static under prefers-reduced-motion.\n5. When data arrives, build the real nodes with createElement, replace the skeleton, clear aria-busy and update the status.\n6. Show skeletons only when loading lasts over 300 ms.\nQuality bar:\n- No jump between skeleton and content.\n- Skeleton colors come from tokens and work in dark mode.\n- Three to six repeated items, not a whole page.\nPitfalls:\n- Skeletons that never go away on errors.\n- Screen readers reading empty boxes.\n- Shapes unrelated to the final layout.\nVerify:\n- [ ] Skeletons are aria-hidden.\n- [ ] A status region says what is loading.\n- [ ] Reduced motion stops the shimmer.\n- [ ] Content renders with textContent.\nOutput: Skeleton markup, skeleton.css and the swap logic in the page script.",
+  "checks": [
+    "html.aria-live",
+    "css.reduced-motion",
+    "js.safe-dom",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "skeleton enquanto carrega os cards de produtos",
+      "output": "six grey card shapes with image and two lines, shimmer off with reduced motion, swapped for real cards with no shift"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

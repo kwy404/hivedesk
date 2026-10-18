@@ -1,0 +1,37 @@
+{
+  "id": "responsive-qa-breakpoints",
+  "title": "Responsive QA at standard widths",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "designer"
+  ],
+  "tags": [
+    "responsive testing",
+    "mobile testing",
+    "screen widths",
+    "layout bugs",
+    "horizontal scroll",
+    "responsive qa",
+    "overflow"
+  ],
+  "when": "The user wants a built page checked at phone, tablet and desktop widths for layout bugs, overflow and readability.",
+  "inputs": [
+    "the pages",
+    "any known problem width"
+  ],
+  "prompt": "Goal: A width by width pass from 320 to 1920 px that records each overflow, overlap or broken layout with its width and element.\nSteps:\n1. Test at 320, 375, 414, 768, 1024, 1280 and 1920 px, then drag slowly between them to catch in between breaks.\n2. At each width: no sideways scroll (document.documentElement.scrollWidth equals clientWidth), no clipped text, no stretched images, no overlapping buttons.\n3. Hunt the overflow cause: fixed widths, long words or URLs (overflow-wrap: anywhere), wide tables (wrap in a scroll box), negative margins.\n4. Touch: targets at least 44 px on phones, hover features reachable by tap, sticky bars not covering content.\n5. Also try phone landscape (667 by 375) and 200 percent zoom on desktop, which acts like a narrow screen.\n6. Log each bug with width range, selector, what it looks like, and a CSS fix.\nQuality bar:\n- Every listed width checked.\n- Bugs give the width range where they occur.\n- Fixes add no new fixed sizes.\nPitfalls:\n- Only checking device presets.\n- Skipping landscape.\n- Hiding overflow with overflow-x: hidden on body.\nVerify:\n- [ ] All widths tested.\n- [ ] scrollWidth check done.\n- [ ] Touch target check done.\n- [ ] Each bug has width range and fix.\nOutput: responsive-qa.md with a widths table and the bugs.",
+  "checks": [
+    "css.media-query",
+    "css.no-fixed-width",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "testa meu site em celular e tablet",
+      "output": "320 to 360 px: price table overflows by 40 px; 768 px: nav wraps under logo; fixes: scroll box, gap reduce"
+    }
+  ],
+  "size": 364,
+  "version": 1
+}

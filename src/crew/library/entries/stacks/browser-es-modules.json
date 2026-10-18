@@ -1,0 +1,40 @@
+{
+  "id": "browser-es-modules",
+  "title": "Browser app structure with ES modules",
+  "category": "stacks",
+  "roles": [
+    "dev",
+    "architect"
+  ],
+  "tags": [
+    "javascript",
+    "modules",
+    "es modules",
+    "import",
+    "export",
+    "organize code",
+    "vanilla js",
+    "folders",
+    "split files"
+  ],
+  "when": "The user wants a small web app split into clean files, asks how to organize JavaScript, or one script has grown too long to manage.",
+  "inputs": [
+    "features of the app",
+    "where data is stored"
+  ],
+  "prompt": "Goal: A no build app where each module has one job, imports are explicit, and the entry point only wires things together.\nSteps:\n1. Load a single entry: <script type=\"module\" src=\"js/main.js\"></script>; modules are deferred and strict by default.\n2. Split by job: state.js (data and changes), storage.js (persistence), view.js (rendering), api.js (requests), util.js (pure helpers).\n3. Named exports only; relative import paths that include the extension (./state.js).\n4. No side effects at import time except in main.js, which queries the DOM, attaches listeners and calls the first render.\n5. Pass dependencies in (render(root, state)) instead of sharing globals on window; events call state functions, state notifies, the view re-renders.\nQuality bar:\n- No circular imports.\n- Pure helpers can be imported by a node:test file without a DOM.\n- Files stay under about 200 lines.\nPitfalls:\n- Opening index.html from file://, where module scripts are blocked; serve the folder from a local server.\n- Bare specifiers (import x from \"lib\") that need a build step.\n- Mixing default and named exports for the same thing.\nVerify:\n- [ ] index.html loads only main.js as a module.\n- [ ] Every import path is relative and ends in .js.\n- [ ] Every file parses.\n- [ ] Nothing is attached to window.\nOutput: index.html, js/main.js and the feature modules, plus a README line on serving the folder.",
+  "checks": [
+    "js.syntax",
+    "html.script-defer",
+    "js.no-var",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "meu app.js tem 900 linhas, organiza em módulos",
+      "output": "main.js wiring state.js, storage.js, view.js and util.js with named exports"
+    }
+  ],
+  "size": 396,
+  "version": 1
+}

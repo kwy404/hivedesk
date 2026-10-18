@@ -1,0 +1,40 @@
+{
+  "id": "unsafe-deserialization",
+  "title": "Safe deserialization of untrusted data",
+  "category": "security",
+  "roles": [
+    "security",
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "deserialization",
+    "pickle",
+    "yaml.load",
+    "safe_load",
+    "unserialize",
+    "eval json",
+    "prototype pollution",
+    "untrusted data",
+    "security"
+  ],
+  "when": "Code turns data from files, caches, cookies, queues or the network into objects with pickle, yaml.load, eval, node:vm or custom revivers, and must be checked for code execution or object injection.",
+  "inputs": [
+    "loader code",
+    "where the bytes come from"
+  ],
+  "prompt": "Goal: Untrusted bytes only become plain data through safe parsers, never code or arbitrary objects.\nSteps:\n1. Python sinks: pickle.load and loads, shelve, joblib.load, marshal, yaml.load without SafeLoader, yaml.unsafe_load, eval or exec on read text.\n2. JS sinks: eval, new Function, vm.runInNewContext on data, require or import of a user given path, serializers that revive functions, deep merges of parsed JSON.\n3. Replace with json.loads and JSON.parse for data, yaml.safe_load for YAML, and build Python objects explicitly from validated dicts.\n4. If pickle must stay for a local cache, load only files the app wrote and check an HMAC over them before loading.\n5. Block prototype pollution: skip __proto__, constructor and prototype keys while merging, or merge into Object.create(null); copy with structuredClone.\n6. Cap input size before parsing and validate the parsed shape before use.\nQuality bar:\n- No path leads from network or user files to pickle or unsafe YAML.\n- Each finding names the byte source and the sink.\n- Tests feed a YAML with !!python/object/apply and a __proto__ JSON and expect refusal.\nPitfalls:\n- Calling a pickle internal while users can upload or edit it.\n- Treating a vm context as a sandbox; it is not one.\n- An HMAC key that also sits in the repo.\nVerify:\n- [ ] No pickle or unsafe YAML on untrusted input.\n- [ ] No eval or new Function on data.\n- [ ] Merges skip prototype keys.\n- [ ] Payload tests pass.\nOutput: Findings in SECURITY-AUDIT.md and the fixed loader modules.",
+  "checks": [
+    "js.no-eval",
+    "js.json-parse-guarded",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "meu servico python carrega config com yaml.load e cache com pickle",
+      "output": "yaml.safe_load, pickle only for app written files with HMAC, prototype key filter, payload tests"
+    }
+  ],
+  "size": 432,
+  "version": 1
+}

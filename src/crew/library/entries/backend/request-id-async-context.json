@@ -1,0 +1,40 @@
+{
+  "id": "request-id-async-context",
+  "title": "Request ids carried through async code",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev",
+    "ops"
+  ],
+  "tags": [
+    "request id",
+    "correlation id",
+    "asynclocalstorage",
+    "tracing",
+    "x-request-id",
+    "async context",
+    "logging context",
+    "backend",
+    "debugging"
+  ],
+  "when": "Logs from deep inside a Node service (database layer, jobs, outgoing calls) lack the request they belong to, and one id should follow each request everywhere without passing it through every function.",
+  "inputs": [
+    "current logger",
+    "outgoing calls and jobs"
+  ],
+  "prompt": "Goal: An AsyncLocalStorage context per request, read by the logger and forwarded on outgoing calls and queued jobs.\nSteps:\n1. context.mjs: export const als = new AsyncLocalStorage() from node:async_hooks and getContext() returning als.getStore() ?? {}.\n2. First thing per request: keep an incoming X-Request-Id only if it matches /^[\\w-]{8,64}$/, else crypto.randomUUID(); then als.run({ requestId, userId: null }, () => handle(req, res)).\n3. Set the X-Request-Id reply header at once so error replies carry it too.\n4. The logger merges getContext() into each line, so db.mjs and jobs print the id without new arguments.\n5. Outgoing fetch adds the header from context; enqueue() saves requestId on the job and the worker runs it inside als.run with that id.\n6. After auth set store.userId, an id and never an email.\nQuality bar:\n- Error bodies show the id so users can quote it.\n- No module keeps the current request in a global.\n- A test fires two concurrent requests and checks their lines never mix.\nPitfalls:\n- A module level variable for the id, which mixes requests under load.\n- Echoing any incoming value, allowing newline log injection.\n- Context lost in old callback APIs; wrap with AsyncResource.bind.\nVerify:\n- [ ] Every line inside a request has requestId.\n- [ ] Bad incoming ids are replaced.\n- [ ] Job lines carry the original id.\n- [ ] The concurrency test passes.\nOutput: context.mjs, logger wiring, test/context.test.mjs.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.test-runner"
+  ],
+  "examples": [
+    {
+      "input": "nao consigo ligar o erro do banco ao request que causou",
+      "output": "AsyncLocalStorage per request, validated X-Request-Id, logger merges context, jobs keep the id"
+    }
+  ],
+  "size": 412,
+  "version": 1
+}

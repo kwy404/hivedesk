@@ -1,0 +1,37 @@
+{
+  "id": "release-notes",
+  "title": "Release notes for users",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "ops"
+  ],
+  "tags": [
+    "release notes",
+    "release",
+    "announcement",
+    "what is new",
+    "new version",
+    "upgrade notes",
+    "highlights"
+  ],
+  "when": "The user wants announcement style notes for a release, for users or customers rather than developers.",
+  "inputs": [
+    "the changes in this version",
+    "the audience",
+    "any upgrade steps"
+  ],
+  "prompt": "Goal: Short notes that lead with the most valuable change, explain benefits in user terms, and flag anything that needs action.\nSteps:\n1. Title with product name and version, then one sentence summarizing the release theme.\n2. Highlights: 2 or 3 most valuable changes, each with a bold lead phrase and one or two sentences of benefit.\n3. Improvements and fixes as short bullets grouped by area.\n4. Action required: upgrade steps, breaking changes or settings to review, placed before the long lists if present.\n5. Known issues with workarounds, if any.\n6. Close with where to get it and where to report problems.\nQuality bar:\n- Benefits over implementation details.\n- Plain language without internal codenames.\n- Readable in under two minutes.\nPitfalls:\n- Burying breaking changes at the bottom.\n- Copying the developer changelog verbatim.\n- Vague items like \"various improvements\".\nVerify:\n- [ ] Highlights come first.\n- [ ] Every breaking change has an action.\n- [ ] No placeholder text.\n- [ ] Code fences, if any, are closed.\nOutput: Release notes in Markdown (RELEASE_NOTES.md or text to paste).",
+  "checks": [
+    "text.no-placeholder",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "escreva as notas da versão 3.0 do app",
+      "output": "Highlights: offline mode, faster search; Action required: re-login once; fixes list"
+    }
+  ],
+  "size": 314,
+  "version": 1
+}

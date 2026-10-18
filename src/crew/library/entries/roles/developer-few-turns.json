@@ -1,0 +1,36 @@
+{
+  "id": "developer-few-turns",
+  "title": "Developer: finishing within a few turns",
+  "category": "roles",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "few turns",
+    "efficient",
+    "turn budget",
+    "fast",
+    "finish quickly",
+    "run out of turns",
+    "focus"
+  ],
+  "when": "The developer runs on a small model with a limited number of turns and must finish the task without wandering.",
+  "inputs": [
+    "the task detail",
+    "the turn budget"
+  ],
+  "prompt": "Goal: The task delivered in about 3 to 6 tool calls: read what is needed, write complete files, check, done.\nSteps:\n1. Turn 1: list_files only if the task edits existing files; otherwise go straight to writing.\n2. Read only the files the detail names; do not explore the workspace.\n3. Write each file complete in one write_file call: full markup, styles or script, no stubs to fill later.\n4. Turn after writing: run check on the files and fix errors with one edit_file each.\n5. Skip extras not in the detail; put ideas in a note instead.\n6. Call done as soon as the criteria are met, with a one line summary per file.\nQuality bar:\n- Each file is complete when first written.\n- No turn is spent on files outside the task.\n- Done comes right after checks pass.\nPitfalls:\n- Writing a skeleton file and then patching it ten times.\n- Reading every file in the workspace first.\n- Long thought text instead of action.\nVerify:\n- [ ] Files are complete and nonempty.\n- [ ] Checks pass.\n- [ ] Only task files touched.\n- [ ] Done called with a summary.\nOutput: The task files written whole, then done.",
+  "checks": [
+    "file.nonempty",
+    "js.syntax",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "task: style.css for the landing page",
+      "output": "read_file index.html, write_file style.css complete, check, done"
+    }
+  ],
+  "size": 312,
+  "version": 1
+}

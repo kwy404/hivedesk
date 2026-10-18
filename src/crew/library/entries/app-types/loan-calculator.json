@@ -1,0 +1,52 @@
+{
+  "id": "loan-calculator",
+  "title": "Loan payment calculator with amortization schedule",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "loan calculator",
+    "mortgage calculator",
+    "loan",
+    "mortgage",
+    "interest",
+    "monthly payment",
+    "amortization",
+    "financing"
+  ],
+  "when": "The user wants to compute the monthly payment, total interest and payoff schedule of a loan, mortgage or financing, with optional extra payments.",
+  "inputs": [
+    "principal",
+    "annual rate",
+    "term",
+    "extra payment"
+  ],
+  "prompt": "Goal: A payment figure that matches the standard formula and a schedule whose final balance is exactly zero.\nSteps:\n1. Labeled number inputs with min and step: principal, annual rate percent, term in years or months, extra monthly payment.\n2. logic.mjs: payment(P, pct, n) = P r / (1 - (1 + r)^-n) with r = pct / 1200, or P / n at 0 percent.\n3. schedule(P, pct, n, extra) returns rows { month, payment, interest, principal, balance } in cents; trim the last payment so balance ends at 0.\n4. Summary: monthly payment, total paid, total interest, payoff month and months saved by extra payments.\n5. Schedule table with th headers and yearly subtotals, scrolling inside a wrapper; an SVG principal versus interest bar with role=\"img\" and a title.\n6. Note under results: estimate only, fees and taxes not included.\n7. test.mjs: 200,000 at 6 percent over 360 gives 1199.10, zero rate, final balance 0.\nQuality bar:\n- Money rounded per row in cents.\n- Schedule rows sum to total paid.\n- Works for 1 to 480 months.\nPitfalls:\n- Percent used as a fraction twice.\n- A negative last balance.\n- Rendering 360 rows at once without yearly grouping.\nVerify:\n- [ ] Formula tested with a known case.\n- [ ] Inputs labeled with number types.\n- [ ] Table uses th.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (payment and schedule), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "html.labels",
+    "html.table-headers",
+    "html.input-types",
+    "html.svg-a11y",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "simulador de financiamento com tabela de parcelas",
+      "output": "payment 1.199,10, total interest, yearly schedule, extra payment saves 54 months"
+    }
+  ],
+  "size": 387,
+  "version": 1
+}

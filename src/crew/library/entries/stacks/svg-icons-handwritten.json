@@ -1,0 +1,39 @@
+{
+  "id": "svg-icons-handwritten",
+  "title": "Hand written SVG icons and graphics",
+  "category": "stacks",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "svg",
+    "icon",
+    "icons",
+    "vector",
+    "logo",
+    "illustration",
+    "inline svg",
+    "path",
+    "sprite"
+  ],
+  "when": "The page needs icons, a simple logo, badges or decorative drawings without image files or icon fonts.",
+  "inputs": [
+    "icons needed",
+    "stroke or fill style"
+  ],
+  "prompt": "Goal: Crisp, small, accessible SVG drawn by hand on a consistent grid that inherits color and scales cleanly.\nSteps:\n1. Icons use viewBox=\"0 0 24 24\" with no width or height in the markup; size them in CSS (1.5em).\n2. Draw with primitives first (circle, rect with rx, line, polyline), paths only when needed, coordinates on whole or half units.\n3. Set style: fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\".\n4. Decorative: aria-hidden=\"true\" focusable=\"false\"; meaningful: role=\"img\" plus a <title> first child or aria-label.\n5. Icon buttons carry the name on the button (aria-label=\"Close\") and hide the svg.\n6. Repeated icons: a hidden sprite of <symbol id> with <use href=\"#id\">; keep each under about 1 KB and check at 16 and 48 px.\nQuality bar:\n- A set shares stroke width, corners and optical size.\n- Color follows currentColor, so dark mode just works.\n- No raster data inside.\nPitfalls:\n- Exported paths with eight decimals.\n- Fixed width and height that refuse to scale.\n- Meaningful graphics without a text alternative.\nVerify:\n- [ ] Every inline svg has aria-hidden, aria-label or a title.\n- [ ] viewBox on every svg.\n- [ ] currentColor for stroke or fill.\n- [ ] Icon buttons have names.\nOutput: Inline svg in the HTML or an icons.svg sprite, plus sizing CSS.",
+  "checks": [
+    "html.svg-a11y",
+    "html.balanced",
+    "html.unique-ids"
+  ],
+  "examples": [
+    {
+      "input": "ícones de menu, fechar e busca sem usar imagem",
+      "output": "three 24x24 stroke icons with currentColor in a symbol sprite, buttons with aria-label"
+    }
+  ],
+  "size": 378,
+  "version": 1
+}

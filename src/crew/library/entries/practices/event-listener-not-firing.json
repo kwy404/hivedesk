@@ -1,0 +1,34 @@
+{
+  "id": "event-listener-not-firing",
+  "title": "Fix event listeners that do not fire",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "event listener",
+    "click not working",
+    "addeventlistener",
+    "event delegation",
+    "button not working",
+    "dom events",
+    "bug"
+  ],
+  "when": "A click, submit, input or key handler does nothing, fires twice, or stops working after the list re-renders.",
+  "inputs": [
+    "the HTML and the script that attaches the handler"
+  ],
+  "prompt": "Goal: Every handler is attached once to an element that exists, with the right event name, and survives re-rendering.\nSteps:\n1. Confirm the script runs after the elements exist: defer, type=\"module\", or code inside DOMContentLoaded.\n2. Check the selector matches exactly one intended element (ids are unique, classes spelled right).\n3. Check the event name: click, submit on the form (not the button), input for live typing, keydown for keys.\n4. For items added later, use delegation: one listener on the stable parent and event.target.closest(\".item\") inside.\n5. Look for blockers: an overlay with higher z-index, pointer-events: none, a disabled button, or a form reload without preventDefault.\n6. Attach listeners in one setup function called once, so re-render code never adds duplicates.\nQuality bar:\n- Listeners live in script, not inline attributes.\n- Delegated handlers ignore clicks outside items.\n- Form handlers call preventDefault only when handling the submit in script.\nPitfalls:\n- Calling the handler instead of passing it (addEventListener(\"click\", save())).\n- Re-adding listeners on every render, firing many times.\n- Listening for click on a form for keyboard submit.\nVerify:\n- [ ] The handler fires once per action.\n- [ ] It still works after items are added or removed.\n- [ ] No inline on attributes remain for this feature.\n- [ ] Files parse.\nOutput: The fixed script (and HTML if attributes change), plus the cause in one line.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "o botão de excluir não funciona nos itens novos",
+      "output": "one delegated listener on #list using closest(\".delete\"), set up once at start"
+    }
+  ],
+  "size": 414,
+  "version": 1
+}

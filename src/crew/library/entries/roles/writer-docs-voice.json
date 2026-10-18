@@ -1,0 +1,36 @@
+{
+  "id": "writer-docs-voice",
+  "title": "Writer: a consistent docs voice",
+  "category": "roles",
+  "roles": [
+    "writer"
+  ],
+  "tags": [
+    "writer",
+    "docs voice",
+    "tone",
+    "style guide",
+    "documentation style",
+    "plain english",
+    "consistency"
+  ],
+  "when": "The writer writes or edits docs (README, guides, help pages) and must keep one clear voice across them.",
+  "inputs": [
+    "the docs to write or edit",
+    "the readers"
+  ],
+  "prompt": "Goal: Docs in second person, present tense, active voice, with steps the reader can follow and terms used the same way everywhere.\nSteps:\n1. Address the reader as you and use present tense: \"Run node server.mjs. The server starts on port 3000.\"\n2. Use imperative steps in numbered lists, one action per step, with the expected result after it.\n3. Pick one term per concept and keep it: if it is a \"project\", never call it a \"workspace\" elsewhere.\n4. Put commands, file names and keys in code formatting; put full commands in fenced blocks.\n5. Keep paragraphs to three sentences; use headings a reader would scan for (Install, Usage, Options).\n6. Remove filler: simply, just, easily, obviously, please note.\nQuality bar:\n- Every step is one action.\n- Terms are consistent.\n- Commands are copyable.\nPitfalls:\n- Passive voice that hides who does what.\n- Mixing \"we\", \"you\" and \"the user\".\n- Calling a step easy when it fails for the reader.\nVerify:\n- [ ] File starts with a # heading.\n- [ ] Fences closed.\n- [ ] One term per concept.\n- [ ] No filler words.\nOutput: The docs files written or edited in this voice.",
+  "checks": [
+    "md.h1",
+    "md.fences",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "revisa o tom do README e do guia",
+      "output": "README and GUIDE now use you, numbered steps, \"project\" everywhere, commands fenced"
+    }
+  ],
+  "size": 317,
+  "version": 1
+}

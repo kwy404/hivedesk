@@ -1,0 +1,37 @@
+{
+  "id": "edge-cases-numbers-money",
+  "title": "Edge cases for numbers and money",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "money",
+    "currency",
+    "rounding",
+    "floating point",
+    "prices",
+    "totals",
+    "decimal",
+    "tax"
+  ],
+  "when": "A feature computes prices, totals, taxes, discounts, percentages or quantities, and the user wants it tested for numeric bugs.",
+  "inputs": [
+    "where amounts are computed and shown",
+    "the rounding rule, if any"
+  ],
+  "prompt": "Goal: A check that money and number logic is exact, rounds once in the right place and formats per locale, with failing examples.\nSteps:\n1. Find every calculation on money and confirm amounts live as integer cents (or decimal.Decimal in Python), not floats.\n2. Float traps: 0.1 + 0.2, 1.005 rounded to 2 places, 0.01 summed a thousand times; compare with the cents result.\n3. Rounding policy: per line or on the total, half up or half even, and refunds (negative amounts) rounding the same way.\n4. Limits: zero and negative quantity, Number.MAX_SAFE_INTEGER, huge totals, division by zero in averages and percentages.\n5. Discounts and tax: percent then fixed versus fixed then percent, a discount above the price (floor at 0), tax on the discounted amount.\n6. Format and parse: Intl.NumberFormat with currency and locale (1.234,56 versus 1,234.56), user input with a decimal comma.\nQuality bar:\n- Expected values computed by hand in cents.\n- The rounding rule is written once and tested.\n- Displayed lines always add up to the total.\nPitfalls:\n- toFixed used for rounding money.\n- parseFloat on \"1.234,56\".\n- Comparing floats with ===.\nVerify:\n- [ ] Storage type checked.\n- [ ] Float and rounding cases run.\n- [ ] Locale formats checked.\n- [ ] Lines sum to the total.\nOutput: money-edge-cases.md with failing inputs and expected values, plus tests if added.",
+  "checks": [
+    "md.h1",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "o total do pedido as vezes da um centavo diferente",
+      "output": "3 x 19.99 with 10 percent off: per line rounding 53.97, total rounding 53.98; store cents, round once"
+    }
+  ],
+  "size": 388,
+  "version": 1
+}

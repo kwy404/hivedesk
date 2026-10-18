@@ -1,0 +1,37 @@
+{
+  "id": "data-cleaning-normalize",
+  "title": "Cleaning and normalizing messy data",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "clean data",
+    "data cleaning",
+    "normalize",
+    "messy data",
+    "standardize",
+    "fix data",
+    "whitespace",
+    "inconsistent values"
+  ],
+  "when": "Imported or typed data has stray spaces, mixed case, different number or date formats, empty markers or variant spellings.",
+  "inputs": [
+    "sample rows",
+    "locale of numbers",
+    "canonical values"
+  ],
+  "prompt": "Goal: A repeatable cleaning pass with one rule per field, a report of every change, and no silent data loss.\nSteps:\n1. Profile first: per column count empties, distinct values, types seen and the 10 most common values.\n2. Text: normalize(\"NFC\"), turn non breaking and repeated spaces into one space, trim; change case only for codes (country, currency).\n3. Empty markers (\"\", \"-\", \"n/a\", \"null\", \"none\") become null through one configurable function.\n4. Numbers: strip group separators by the declared locale (\"1.234,56\" or \"1,234.56\"), then Number(); keep the raw value when it fails.\n5. Categories: map variants to canonical values with an explicit dictionary.\n6. Return { clean, issues } with row, field, raw, fixed and rule; never drop a row without logging it.\nQuality bar:\n- Rules are a config object, not scattered ifs.\n- A second run changes nothing.\n- Originals are kept until the user accepts the result.\nPitfalls:\n- Guessing the decimal separator per value.\n- Lowercasing names and losing correct capitals.\n- Treating 0 or false as empty.\nVerify:\n- [ ] Each rule has a before and after test.\n- [ ] Issues counted per rule.\n- [ ] Second run yields zero changes.\n- [ ] Null markers configurable.\nOutput: js/clean.js with the rules config, the cleaning function and a report printer.",
+  "checks": [
+    "js.syntax",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "padronizar a coluna cidade que tem \"sp\", \"S. Paulo\" e \"sao paulo\"",
+      "output": "city dictionary to one canonical value, NFC and space cleanup, issues list with row numbers"
+    }
+  ],
+  "size": 369,
+  "version": 1
+}

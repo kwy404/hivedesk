@@ -1,0 +1,39 @@
+{
+  "id": "mobile-indexeddb-storage-wrapper",
+  "title": "On device storage with a small IndexedDB wrapper",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "data"
+  ],
+  "tags": [
+    "indexeddb",
+    "local storage",
+    "offline data",
+    "mobile app",
+    "database on device",
+    "storage quota",
+    "persist",
+    "schema upgrade"
+  ],
+  "when": "The phone app must keep records on the device beyond what localStorage can hold, with schema upgrades and quota errors handled.",
+  "inputs": [
+    "record types and their keys",
+    "expected data volume"
+  ],
+  "prompt": "Goal: db.js, a promise based wrapper over IndexedDB with versioned upgrades, safe writes and clear errors when storage is full or blocked.\nSteps:\n1. Export openDb(), get(store, key), put(store, value), del(store, key) and all(store), each returning a Promise.\n2. indexedDB.open(\"app\", 2); in onupgradeneeded switch on event.oldVersion without break: case 0 creates the \"notes\" store with keyPath \"id\", case 1 adds index \"byUpdated\" on updatedAt.\n3. Resolve writes on transaction.oncomplete and reject on transaction.onerror or onabort, not on request.onsuccess.\n4. Handle request.onblocked (an old tab holds the database) and set db.onversionchange = () => db.close().\n5. After the first real save call navigator.storage.persist(); show navigator.storage.estimate() usage in settings.\n6. Catch QuotaExceededError and tell the user what to delete; if open fails in a private mode, fall back to an in memory Map with a warning.\n7. In a native shell the OS may clear WebView data under storage pressure; for data that must survive, also save a JSON export with the Filesystem plugin.\nQuality bar:\n- One open connection reused by every call.\n- Upgrades run in order from any old version.\nPitfalls:\n- Awaiting unrelated work inside a transaction, which auto commits it.\n- Storing Date objects and class instances that come back as plain data.\n- Assuming storage is unlimited on phones.\nVerify:\n- [ ] Upgrade cases cover every version.\n- [ ] Writes resolve on oncomplete.\n- [ ] Quota and open errors are caught and shown.\nOutput: db.js and a usage example in app.js.",
+  "checks": [
+    "js.async-errors",
+    "js.storage-guarded",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "preciso guardar milhares de registros no celular offline",
+      "output": "db.js wrapper: versioned onupgradeneeded, writes on oncomplete, persist(), quota error message"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

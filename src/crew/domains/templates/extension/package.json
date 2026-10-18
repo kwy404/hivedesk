@@ -1,0 +1,10 @@
+{
+  "name": "page-notes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A Manifest V3 browser extension: one note per website, saved in the browser.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "add-jsdoc-types",
+  "title": "Add types with JSDoc",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "reviewer"
+  ],
+  "tags": [
+    "jsdoc",
+    "types",
+    "type annotations",
+    "typedef",
+    "type checking",
+    "ts-check",
+    "documentation",
+    "javascript types"
+  ],
+  "when": "The user wants type safety or editor hints in plain JavaScript without a compile step.",
+  "inputs": [
+    "the JavaScript files",
+    "the main data shapes"
+  ],
+  "prompt": "Goal: Plain JavaScript with JSDoc types on every public function and shared data shape, checkable by an editor with // @ts-check.\nSteps:\n1. Define shared shapes once with @typedef {Object} Invoice and @property lines, or in a types.js file imported with @typedef {import(\"./types.js\").Invoice}.\n2. Annotate each exported function: @param {string} id, @param {{ limit?: number }} [opts], @returns {Promise<Invoice[]>}.\n3. Use unions for known values: @param {\"draft\" | \"sent\" | \"paid\"} status.\n4. Type callbacks and events: @param {(item: Invoice) => boolean} predicate, @param {MouseEvent} event.\n5. Add // @ts-check at the top of each file and fix the mismatches it reveals in the code, not by widening to any.\n6. Mark nullable returns explicitly (Invoice | null) and handle them at call sites.\nQuality bar:\n- No {*} or {any} unless the value really is unknown.\n- Typedefs live in one place.\n- Comments describe meaning, types describe shape.\nPitfalls:\n- Types that disagree with what the code returns.\n- Copying the same object shape in many files.\n- Casting away errors instead of fixing the code.\nVerify:\n- [ ] Every export has @param and @returns.\n- [ ] Typedef names match their use.\n- [ ] Nullable values are handled.\n- [ ] Files parse.\nOutput: Annotated source files and types.js for shared typedefs.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "add types to cart.js without a build step",
+      "output": "@typedef CartItem, typed addItem and total, // @ts-check found a string price bug"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

@@ -1,0 +1,34 @@
+{
+  "id": "reviewer-constructive-comments",
+  "title": "Reviewer: writing constructive comments",
+  "category": "roles",
+  "roles": [
+    "reviewer"
+  ],
+  "tags": [
+    "reviewer",
+    "comments",
+    "feedback",
+    "constructive",
+    "tone",
+    "review comment",
+    "suggestion"
+  ],
+  "when": "The reviewer writes comments that another agent (often a small model) must understand and act on.",
+  "inputs": [
+    "the problems found",
+    "the author"
+  ],
+  "prompt": "Goal: Comments that are short, kind, specific and actionable, so the author fixes the right thing on the first try.\nSteps:\n1. Lead with the location: file and the snippet or selector.\n2. State the observed problem as fact, not blame: \"submit runs before the field is checked\".\n3. Say why it matters in a few words: the user can send an empty form.\n4. Give the fix as code or an exact instruction.\n5. Use one comment per point and keep each under three lines.\n6. Add one line on what is good when something is clearly well done, so the author keeps it.\nQuality bar:\n- Each comment has location, problem, reason, fix.\n- Neutral wording.\n- Short enough for a small model to follow.\nPitfalls:\n- Questions like \"why did you do this?\" with no direction.\n- Sarcasm or absolutes (\"this is wrong everywhere\").\n- Long essays that hide the fix.\nVerify:\n- [ ] Every comment has a location.\n- [ ] Every comment has a fix.\n- [ ] No blame wording.\n- [ ] Under three lines each.\nOutput: The issues list written in this format.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "author used a div as button",
+      "output": "index.html .buy div: not reachable by keyboard; users on Tab miss it; use <button type=\"button\" class=\"buy\">"
+    }
+  ],
+  "size": 289,
+  "version": 1
+}

@@ -1,0 +1,50 @@
+{
+  "id": "trades-business-site",
+  "title": "Local trades and home services site",
+  "category": "web-pages",
+  "roles": [
+    "dev",
+    "writer"
+  ],
+  "tags": [
+    "plumber",
+    "electrician",
+    "cleaning",
+    "repair",
+    "home services",
+    "quote",
+    "local business"
+  ],
+  "when": "The user wants a site for a plumber, electrician, cleaner, painter, mechanic or similar local service.",
+  "inputs": [
+    "business name and trade",
+    "services and service area",
+    "phone and hours",
+    "licenses or guarantees"
+  ],
+  "prompt": "Goal: A practical site that gets a phone call or quote request from someone with a problem right now.\nSteps:\n1. Phone number in the header as a tel link, big and visible on phones.\n2. Hero: the trade, the area served and Call now plus Request a quote buttons.\n3. Services list with typical jobs and, if given, price ranges.\n4. Trust block: years of work, license, guarantee, reviews the user provided.\n5. Quote form: name, phone, address area, problem description, preferred time.\n6. Service area as a list of neighborhoods or cities in text.\nQuality bar:\n- The tel link works and is the first action on phones.\n- Plain words a homeowner uses.\n- Fast to load on mobile data.\nPitfalls:\n- Hiding the phone in a menu.\n- Stock style claims with no detail.\n- Quote forms with too many required fields.\nVerify:\n- [ ] tel link in the header.\n- [ ] Form labels and submit present.\n- [ ] Service area in text.\n- [ ] One h1.\nOutput: index.html and style.css, optional quote.js for validation.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "html.img-alt",
+    "css.media-query",
+    "css.focus-visible",
+    "text.no-placeholder",
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "html.json-ld"
+  ],
+  "examples": [
+    {
+      "input": "site para meu serviço de eletricista em Campinas",
+      "output": "header tel link, services with typical jobs, area list, quote form"
+    }
+  ],
+  "size": 281,
+  "version": 1
+}

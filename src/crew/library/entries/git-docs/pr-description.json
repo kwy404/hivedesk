@@ -1,0 +1,37 @@
+{
+  "id": "pr-description",
+  "title": "Pull request description",
+  "category": "git-docs",
+  "roles": [
+    "dev",
+    "writer",
+    "reviewer"
+  ],
+  "tags": [
+    "pull request",
+    "pr",
+    "pullrequest",
+    "description",
+    "pr description",
+    "merge request",
+    "code review"
+  ],
+  "when": "The user opens a pull request or merge request and needs a description, or asks to summarize a branch for reviewers.",
+  "inputs": [
+    "the diff or commit list",
+    "the linked issue",
+    "how it was tested"
+  ],
+  "prompt": "Goal: A description that lets a reviewer understand the purpose, scope, risk and testing in one read.\nSteps:\n1. Title: imperative and specific, the same style as a good commit subject.\n2. Summary: two or three sentences on the problem and the chosen solution, with the issue reference (Closes #42).\n3. Changes: a short bullet list grouped by area, naming files or modules where it helps navigation.\n4. Testing: what was run (commands, manual steps, browsers or devices), and the result.\n5. Risk and rollout: breaking changes, migrations, config changes, and how to roll back.\n6. Reviewer notes: where to start reading and any open questions; add before and after screenshots for UI changes.\nQuality bar:\n- Scope matches the diff exactly.\n- Testing is concrete, not \"tested locally\".\n- Short enough to read in a minute.\nPitfalls:\n- Repeating every commit message.\n- Hiding a breaking change.\n- Leaving template headings empty.\nVerify:\n- [ ] Summary states the why.\n- [ ] Testing lists real steps.\n- [ ] Breaking changes are called out.\n- [ ] No placeholder text.\nOutput: The pull request title and Markdown description as text.",
+  "checks": [
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "write the PR description for my dark mode branch",
+      "output": "Add dark mode with system default and toggle; changes, tested at 375 px and keyboard, no breaking changes"
+    }
+  ],
+  "size": 322,
+  "version": 1
+}

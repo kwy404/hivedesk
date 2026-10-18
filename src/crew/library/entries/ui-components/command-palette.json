@@ -1,0 +1,41 @@
+{
+  "id": "command-palette",
+  "title": "Command palette opened with Ctrl K",
+  "category": "ui-components",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "command palette",
+    "quick search",
+    "ctrl k",
+    "command menu",
+    "quick actions",
+    "launcher",
+    "jump to",
+    "search commands"
+  ],
+  "when": "The user wants a keyboard driven palette that searches commands and pages and runs the chosen one.",
+  "inputs": [
+    "the commands with labels and actions",
+    "groups (pages, actions, settings)",
+    "the open shortcut"
+  ],
+  "prompt": "Goal: A modal palette that opens with Ctrl+K or Meta+K, filters commands as you type and runs one with Enter.\nSteps:\n1. <dialog aria-label=\"Command palette\"> with a labeled <input role=\"combobox\" aria-expanded=\"true\" aria-controls=\"cmd-list\"> and <ul id=\"cmd-list\" role=\"listbox\">.\n2. Commands come from one array of { id, label, group, keywords, run }; render options with createElement and textContent.\n3. Open on keydown when (ctrlKey or metaKey) and key is k, with preventDefault; also offer a visible button.\n4. Match when every query word prefixes a word of the label or keywords; rank label starts first; group with role=\"group\" and aria-label.\n5. Arrow keys move aria-activedescendant; Enter runs the command and closes; Escape closes natively.\n6. Show recent commands when the query is empty and the result count in role=\"status\".\nQuality bar:\n- Opens in under 100 ms with focus in the input.\n- Each option shows its shortcut if it has one.\n- Up to about 50 results, scrolling.\nPitfalls:\n- Stealing Ctrl+K while the user types in a text field that uses it.\n- Real focus moving into the list.\n- Commands that run twice on a held Enter.\nVerify:\n- [ ] The dialog has a name and a Close button.\n- [ ] The input has a label.\n- [ ] Ctrl+K and Meta+K open it.\n- [ ] The count is announced.\nOutput: Dialog markup, palette.css and palette.js with the commands array.",
+  "checks": [
+    "html.dialog-a11y",
+    "html.labels",
+    "html.aria-live",
+    "js.safe-dom",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "paleta de comandos com ctrl k no meu app",
+      "output": "dialog with combobox input, grouped options Pages and Actions, prefix matching, Enter runs, recent commands first"
+    }
+  ],
+  "size": 391,
+  "version": 1
+}

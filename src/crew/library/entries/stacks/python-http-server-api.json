@@ -1,0 +1,38 @@
+{
+  "id": "python-http-server-api",
+  "title": "Python backend with http.server",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "python server",
+    "python api",
+    "http.server",
+    "backend",
+    "basehttprequesthandler",
+    "endpoint",
+    "local server"
+  ],
+  "when": "The user wants a small backend or local API in Python without frameworks, for example to serve data to a web page.",
+  "inputs": [
+    "routes and methods",
+    "data storage"
+  ],
+  "prompt": "Goal: A ThreadingHTTPServer with explicit routes, body size limits, JSON in and out, and correct status codes.\nSteps:\n1. Subclass BaseHTTPRequestHandler with do_GET, do_POST, do_PUT, do_DELETE (and do_OPTIONS for cross origin pages).\n2. Route on urllib.parse.urlsplit(self.path).path with a table of (method, regex) to handler, using re.fullmatch for ids.\n3. Body: length = int(self.headers.get(\"Content-Length\", 0)); over 1_000_000 answer 413; json.loads(self.rfile.read(length)) in try, 400 on ValueError.\n4. send_json(status, data): send_response, Content-Type application/json; charset=utf-8, Content-Length, end_headers, write bytes.\n5. Answer 404 unknown paths, 405 wrong methods, 422 invalid fields, 500 generic after logging the exception.\n6. Run ThreadingHTTPServer((\"127.0.0.1\", port), Handler) under the main guard; on KeyboardInterrupt call server_close().\nQuality bar:\n- Bad requests get JSON, never an HTML error page.\n- Localhost only by default.\n- Handlers are small functions that unit tests can call.\nPitfalls:\n- Reading rfile without Content-Length, which blocks.\n- Single threaded HTTPServer frozen by one slow client.\n- Exposing http.server directly on the open internet.\nVerify:\n- [ ] Main guard and no bare except.\n- [ ] Content-Length limit with 413.\n- [ ] Each response sets status and content type.\n- [ ] 404 fallback exists.\nOutput: server.py with handler and routes; README with example requests.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard"
+  ],
+  "examples": [
+    {
+      "input": "uma API em python simples para meu site listar produtos",
+      "output": "server.py with GET /api/products, POST with 1 MB limit, 404 and 422 JSON errors"
+    }
+  ],
+  "size": 407,
+  "version": 1
+}

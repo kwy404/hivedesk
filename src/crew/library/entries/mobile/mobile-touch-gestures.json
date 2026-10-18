@@ -1,0 +1,40 @@
+{
+  "id": "mobile-touch-gestures",
+  "title": "Touch gestures with pointer events and finger sized targets",
+  "category": "mobile",
+  "roles": [
+    "mobile",
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "touch",
+    "gestures",
+    "swipe",
+    "long press",
+    "tap targets",
+    "pointer events",
+    "mobile app",
+    "touch-action",
+    "thumb"
+  ],
+  "when": "The phone UI needs swipe, long press or drag gestures that do not fight native scrolling, plus controls large enough for a thumb.",
+  "inputs": [
+    "which gestures and what they do",
+    "list or card layout"
+  ],
+  "prompt": "Goal: gestures.js adds swipe and long press through Pointer Events, keeps vertical scroll native and gives every gesture a visible button alternative.\nSteps:\n1. Size every control to at least 48 by 48 CSS px with min-height, min-width or padding, and keep 8 px between neighbors.\n2. Listen to pointerdown, pointermove, pointerup and pointercancel; call el.setPointerCapture(e.pointerId) on down so the gesture keeps its target.\n3. Swipe rule: a horizontal move over 60 px, where abs(dx) is more than twice abs(dy), within 400 ms; anything else is a scroll.\n4. CSS touch-action: pan-y on swipeable rows keeps vertical scroll native; touch-action: manipulation on buttons removes the double tap zoom delay.\n5. Long press: start a 500 ms timer on down, cancel it on a move over 10 px or on up, then open a menu; the same menu opens from a visible \"more\" button.\n6. Register touchstart and touchmove handlers with { passive: true } unless they must call preventDefault.\n7. Show pressed feedback with :active styles within 100 ms.\nQuality bar:\n- No action exists only as a gesture.\n- Scrolling a long list never triggers a swipe by accident.\nPitfalls:\n- preventDefault on touchmove for the whole page, which kills scrolling.\n- Hover only menus that a finger cannot open.\n- Forgetting pointercancel, which leaves rows half swiped.\nVerify:\n- [ ] Tap targets measure 48 px or more.\n- [ ] pointercancel resets state.\n- [ ] Each gesture has a button twin.\nOutput: gestures.js and the touch CSS rules in app.css.",
+  "checks": [
+    "js.syntax",
+    "html.button-type",
+    "js.strict-equality"
+  ],
+  "examples": [
+    {
+      "input": "swipe para apagar item da lista no celular",
+      "output": "Pointer events swipe with 60 px threshold, touch-action pan-y rows, delete button twin, 48 px targets"
+    }
+  ],
+  "size": 429,
+  "version": 1
+}

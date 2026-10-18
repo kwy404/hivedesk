@@ -1,0 +1,39 @@
+{
+  "id": "haversine-distance",
+  "title": "Geographic distance and nearest places",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "distance",
+    "haversine",
+    "latitude",
+    "longitude",
+    "nearest",
+    "closest",
+    "km",
+    "miles",
+    "radius search",
+    "geo"
+  ],
+  "when": "The app must compute distances between coordinates, sort places by distance, or find everything within a radius.",
+  "inputs": [
+    "list of places with coordinates",
+    "reference point",
+    "unit"
+  ],
+  "prompt": "Goal: Correct great circle distances with haversine, fast nearest and radius queries, and distances in the right unit.\nSteps:\n1. Validate: latitude -90 to 90, longitude -180 to 180, numbers not strings.\n2. Haversine in radians: a = sin^2(dlat / 2) + cos(lat1) * cos(lat2) * sin^2(dlon / 2); d = 2 * R * asin(sqrt(a)), R = 6371.0088 km.\n3. Radius queries prefilter with a bounding box (dlat = r / 111.32, dlon = r / (111.32 * cos lat)) before exact distances.\n4. Compute each distance once, then sort; never inside the comparator.\n5. Format with Intl.NumberFormat unit \"kilometer\" or \"mile\" by locale, meters below 1 km rounded to 10 m.\n6. Handle the antimeridian in the box and label results as straight line, not travel distance.\nQuality bar:\n- Known pairs match within 0.5 percent (Paris to London about 344 km).\n- Thousands of places sort instantly.\n- Units follow the locale.\nPitfalls:\n- Pythagoras on degrees.\n- Forgetting degree to radian conversion.\n- Swapping latitude and longitude.\nVerify:\n- [ ] Radian conversion present.\n- [ ] Tests with known distances.\n- [ ] Bounding box prefilter.\n- [ ] Range validation.\nOutput: js/geo.js exporting distanceKm(a, b), withinRadius(points, center, km) and formatDistance.",
+  "checks": [
+    "js.syntax",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "ordenar as clínicas pela distância do usuário",
+      "output": "distanceKm haversine, clinics sorted by precomputed distance, \"1,2 km\" and \"850 m\" labels"
+    }
+  ],
+  "size": 349,
+  "version": 1
+}

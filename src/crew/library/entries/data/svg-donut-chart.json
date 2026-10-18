@@ -1,0 +1,38 @@
+{
+  "id": "svg-donut-chart",
+  "title": "Donut chart for parts of a whole",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "donut chart",
+    "pie chart",
+    "pie",
+    "percentage",
+    "share",
+    "breakdown",
+    "proportion",
+    "doughnut"
+  ],
+  "when": "The user wants to show how a total splits into a few parts (budget by category, survey answers, disk usage).",
+  "inputs": [
+    "parts with values",
+    "what the total means"
+  ],
+  "prompt": "Goal: A donut of at most six slices with exact angles, percentages that add to 100, and a legend readable without color.\nSteps:\n1. Sort parts descending; fold slices under 3 percent, or beyond the sixth, into \"Other\".\n2. Circle technique: r = 15.915 (circumference 100), fill none, stroke-width 6, stroke-dasharray \"pct 100\", stroke-dashoffset 25 minus the running total, so slices start at the top.\n3. Or build arc paths with Math.cos and Math.sin, setting the large arc flag above 180 degrees.\n4. Put the total or the leading share as text in the center.\n5. Legend as an HTML list: swatch, label, value, percent; round with the largest remainder method so the sum is exactly 100.\n6. Separate slices with a thin gap; give the svg role=\"img\" and a <title> summarizing the split.\nQuality bar:\n- Largest slice first, clockwise from the top.\n- Percentages total 100.\n- Nothing depends on hover.\nPitfalls:\n- Ten or more slices; switch to bars.\n- Rounding each percent alone, totaling 99 or 101.\n- 3D or exploded slices that distort angles.\nVerify:\n- [ ] Six slices plus Other at most.\n- [ ] Legend list with values.\n- [ ] svg title present.\n- [ ] Parts sum to the total.\nOutput: js/donut.js exporting donutChart(container, parts) with the legend it renders.",
+  "checks": [
+    "js.syntax",
+    "js.safe-dom",
+    "html.svg-a11y"
+  ],
+  "examples": [
+    {
+      "input": "gráfico de pizza do orçamento por categoria",
+      "output": "donut of 5 categories plus Other, total R$ 4.200 in the center, legend with percentages"
+    }
+  ],
+  "size": 358,
+  "version": 1
+}

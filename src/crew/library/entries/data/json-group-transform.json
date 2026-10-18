@@ -1,0 +1,38 @@
+{
+  "id": "json-group-transform",
+  "title": "Reshaping JSON: group, index and summarize",
+  "category": "data",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "json",
+    "transform",
+    "group by",
+    "reduce",
+    "aggregate",
+    "reshape",
+    "summarize",
+    "nested data",
+    "array of objects"
+  ],
+  "when": "Data must be grouped, totaled, indexed by id, flattened or nested differently before display or export.",
+  "inputs": [
+    "sample input records",
+    "the shape the view needs"
+  ],
+  "prompt": "Goal: Clear, pure transform functions that turn raw records into exactly the shape the view needs, without touching the input.\nSteps:\n1. Write the target shape as a small example object first, then the functions that produce it.\n2. Index for lookups with new Map(items.map((x) => [x.id, x])) instead of find inside loops.\n3. Group with Object.groupBy or Map.groupBy where available, else a reduce pushing into arrays; keep group order stable.\n4. Summarize each group in one pass (count, sum, min, max) and derive averages at the end.\n5. Flatten nested data for tables (one row per order line with order fields copied); nest flat rows into trees with a parentId Map.\n6. Return new arrays and objects (structuredClone for deep copies) and sort with a comparator that handles ties and missing values.\nQuality bar:\n- Each transform is pure and named after its result (totalsByMonth).\n- Linear time on large arrays.\n- Missing keys fall into a named bucket (\"Uncategorized\").\nPitfalls:\n- sort or push on the source array.\n- Plain objects as maps with keys like __proto__; use Map.\n- Summing money as floats; sum integer cents.\nVerify:\n- [ ] Inputs are not mutated.\n- [ ] Map used for lookups.\n- [ ] A test with sample input and expected output.\n- [ ] Empty input returns an empty result.\nOutput: js/transform.js with the named transforms and a test file with sample data.",
+  "checks": [
+    "js.syntax",
+    "js.strict-equality",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "agrupar as despesas por categoria e mês",
+      "output": "totalsByCategoryMonth(expenses) returning Map category to { \"2026-09\": cents }, with tests"
+    }
+  ],
+  "size": 390,
+  "version": 1
+}

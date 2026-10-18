@@ -2,18 +2,48 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { detectHardware, formatBytes, diskFree } from './hardware.js';
-import { MODELS, modelById, pickModel, chooseModel, smallerModel, isCached, modelPath, downloadModel, DownloadError, modelsDir } from './models.js';
+import { MODELS, modelById, isCached, modelPath, modelParts, downloadModel, DownloadError, modelsDir } from './models.js';
 import { loadRuntime, findRuntime, RUNTIME_PACKAGE } from './runtime.js';
 import { createLocalBrain } from './local.js';
 import { createCloudBrain, PROVIDERS, listModels, testConnection } from './cloud.js';
 import { KeyStore } from './keys.js';
 import { createOllamaBrain, createOpenAIBrain, probeOllama, probeLmStudio, pickServerModel, OLLAMA_URL, LMSTUDIO_URL } from './http.js';
+import { resolvePick, pick as catalogPick, allPicks } from './catalog/index.js';
+import { recommend, explainText } from './catalog/recommend.js';
+import { ConsentStore, downloadGate } from './catalog/consent.js';
+import { RouterSettings, ModelPool, createAutoBrain } from './rotation.js';
+import { route as routeTurn } from './catalog/router.js';
+
+/** A legacy MODELS entry (Q4_K_M) as its catalog pick, so ids, files and checksums are the same everywhere. */
+export function asPick(m) {
+  if (!m) return null;
+  if (m.quant && Array.isArray(m.files)) return m;
+  return resolvePick(`${m.id}:Q4_K_M`) || m;
+}
+
+/** What the UI and the log show about a pick before a download. */
+export function pickInfo(m) {
+  return {
+    model: m.name, id: m.id, file: m.file, url: m.url, bytes: m.bytes, source: m.source,
+    ...(m.license ? { license: { id: m.license.id, name: m.license.name, url: m.license.url || null, notes: m.license.notes || null, commercial: m.license.commercial ?? null } } : {}),
+    ...(m.files?.length > 1 ? { parts: m.files.length } : {})
+  };
+}
+
+/** The next smaller entry of the same family on the GPU: a cached one first, else the next size down at Q4_K_M. */
+export function smallerPick(p, isCachedFn = () => false) {
+  const fam = allPicks().filter((x) => x.family === p.family && x.bytes < p.bytes && x.params < p.params);
+  if (!fam.length) return null;
+  const cached = fam.filter((x) => isCachedFn(x)).sort((a, b) => b.bytes - a.bytes)[0];
+  if (cached) return cached;
+  return fam.filter((x) => x.quant === 'Q4_K_M').sort((a, b) => b.bytes - a.bytes)[0] || null;
+}
 
 export class BrainManager {
   /**
    * @param {{
    *   bus: import('../bus.js').EventBus, scheduler: import('../crew/scheduler.js').Scheduler, home: string,
-   *   flags?: { brain?: string, model?: string, url?: string, key?: string, noDownload?: boolean, gpu?: boolean, ctx?: number },
+   *   flags?: { brain?: string, model?: string, url?: string, key?: string, noDownload?: boolean, gpu?: boolean, ctx?: number, gpuLayers?: 'max' },
    *   log?: (line: string) => void, progress?: (text: string | null) => void,
    *   fetchImpl?: typeof fetch, loadRuntimeImpl?: typeof loadRuntime, createLocalImpl?: typeof createLocalBrain, hardware?: any,
    *   isCachedImpl?: typeof isCached
@@ -38,6 +68,19 @@ export class BrainManager {
     /** brainId -> brain, for workers that use another brain than the main one */
     this.workerBrains = new Map();
     this.downloadCtrl = null;
+    this.consent = opts.consentStore || new ConsentStore(opts.home);
+    /** Picks named on the command line or chosen in the wizard ("Download it now?"): an explicit yes. */
+    this.cliConsent = new Set();
+    for (const spec of [this.flags.modelId, this.flags.model]) {
+      const p = spec ? asPick(modelById(spec)) || resolvePick(spec) : null;
+      if (p) this.cliConsent.add(p.id);
+    }
+    /** The pick waiting for a yes (shown by the consent card and the first launch dialog). */
+    this.pending = null;
+    this.currentPick = null;
+    /** Automatic rotation (on by default): pins per role, overrides per task, how many models stay loaded. */
+    this.router = opts.routerSettings || new RouterSettings(opts.home);
+    this.pool = null;
   }
 
   status(state, data = {}) {
@@ -73,7 +116,7 @@ export class BrainManager {
   }
 
   async hw() {
-    if (!this.hardware) this.hardware = await detectHardware({ dir: this.home });
+    if (!this.hardware) this.hardware = await detectHardware({ dir: this.home, home: this.home });
     if (!this._hwShown) {
       this._hwShown = true;
       const h = this.hardware;
@@ -91,7 +134,7 @@ export class BrainManager {
     if (f.brain === 'openai' && (f.url || this.key)) return this._openai();
     if (PROVIDERS[f.brain]) return this._cloud(f.brain, f.model);
     if (f.model && (!f.brain || f.brain === 'local')) return this._localFromFlag(f.model);
-    if (f.modelId) return this._localAuto(modelById(f.modelId) || undefined);
+    if (f.modelId) return this._localAuto(asPick(modelById(f.modelId)) || resolvePick(f.modelId) || undefined);
     // Auto: a running model server first.
     if (f.brain !== 'local') {
       if (await this._ollama(OLLAMA_URL, undefined, false)) return;
@@ -137,12 +180,13 @@ export class BrainManager {
 
   async _localFromFlag(spec) {
     // --model 7b, 3b, 1.5b, 0.5b or 14b: that catalog model, downloaded when needed.
-    const short = modelById(spec);
+    // 7b, 3b (Q4_K_M), or a catalog entry such as qwen2.5-coder-7b:Q3_K_M.
+    const short = asPick(modelById(spec)) || (/^[\w.-]+[:@][\w]+$/.test(spec) ? resolvePick(spec) : null);
     if (short) return this._localAuto(short);
     if (/^(hf:|https?:)/i.test(spec)) {
-      const known = MODELS.find((m) => spec.includes(m.file) || spec.includes(m.repo));
-      if (known) return this._localAuto(known);
-      this.status('error', { backend: 'local', detail: `only the listed Qwen2.5-Coder GGUF files can be downloaded by URI: ${spec}`, hint: 'Download the file yourself and pass its path to --model.' });
+      const known = resolvePick(spec);
+      if (known) { this.cliConsent.add(known.id); return this._localAuto(known); }
+      this.status('error', { backend: 'local', detail: `only GGUF files listed in the catalog can be downloaded by URI: ${spec}`, hint: 'Download the file yourself and pass its path to --model.' });
       return;
     }
     const p = path.resolve(spec);
@@ -155,37 +199,60 @@ export class BrainManager {
     await this._load(runtime, p, path.basename(p), this.flags.gpu !== false, null);
   }
 
-  /** Auto pick by hardware, download when needed, load. */
+  /** The catalog picks already in the cache. */
+  installedPicks() {
+    return allPicks().filter((p) => this.isCached(this.home, p) || (p.quant === 'Q4_K_M' && MODELS.some((m) => p.modelId === m.id && this.isCached(this.home, m))));
+  }
+
+  /** The recommendation for this machine (Settings, Models, the first launch dialog). */
+  async analyze(opts = {}) {
+    const hw = await this.hw();
+    const installed = this.installedPicks().map((p) => p.id);
+    const ctx = Number(opts.ctx) || this.flags.ctx || contextFor(hw, null, !!hw.gpu && this.flags.gpu !== false);
+    const r = recommend(hw, { ctx, task: opts.task || 'coding', installed, current: this.currentPick?.id || null, gpu: this.flags.gpu });
+    return { ...r, installed, selected: this.consent.data.selected || null, current: r.current, firstLaunch: this.consent.firstLaunch, pending: this.pending ? pickInfo(this.pending) : null, brain: { state: this.bus.state.brain?.state || 'none', backend: this.bus.state.brain?.backend || null }, queue: this.queueState(), disk: this.disk() };
+  }
+
+  /** Auto pick by hardware (or the forced pick), download only with consent, load. */
   async _localAuto(forced) {
     const hw = await this.hw();
-    const choice = chooseModel(hw, { gpu: this.flags.gpu });
-    let model = forced || choice.model;
-    const onGpu = choice.gpu || (!!forced && this.flags.gpu !== false && !!hw.gpu && (hw.gpu.vramBytes || 0) >= 3.8e9);
-    const reason = forced ? `${model.name} chosen with --model or in Settings, ${onGpu ? 'on the GPU' : 'on the CPU'}.` : choice.reason;
-    this.bus.emit('brain.choice', {
-      model: model.name, id: model.id, file: model.file, bytes: model.bytes, source: model.source,
-      gpu: onGpu, reason, ...(choice.warning && !forced ? { warning: choice.warning } : {})
-    });
-    this.log(reason);
-    if (choice.warning && !forced) this.log(choice.warning);
-    // Not enough disk: step down to a model that fits.
-    if (!this.isCached(this.home, model)) {
-      const free = hw.diskFreeBytes ?? diskFree(fs.existsSync(this.home) ? this.home : path.dirname(this.home));
-      let m = model;
-      while (m && free != null && free < m.bytes + 100e6 && !this.isCached(this.home, m)) m = smallerModel(m);
-      if (!m) {
-        this.status('error', { backend: 'local', model: model.name, detail: `not enough disk space: ${formatBytes(free)} free, the smallest model needs ${formatBytes(MODELS[0].bytes)}`, hint: 'Free some space, use --model with a GGUF file you already have, or run Ollama or LM Studio.' });
+    const cachedIds = new Set(this.installedPicks().map((p) => p.id));
+    let model = forced ? asPick(forced) : null;
+    let reason;
+    let onGpu;
+    let warning = null;
+    if (model) {
+      onGpu = this.flags.gpu !== false && !!hw.gpu && (hw.gpu.vramBytes || 0) >= 3.8e9;
+      reason = `${model.name} chosen with --model or in Settings, ${onGpu ? 'on the GPU' : 'on the CPU'}.`;
+    } else {
+      const ctx = this.flags.ctx || contextFor(hw, null, !!hw.gpu && this.flags.gpu !== false);
+      const r = recommend(hw, { ctx, task: 'coding', installed: [...cachedIds], gpu: this.flags.gpu });
+      const ok = r.options.filter((o) => o.runnable);
+      const sel = this.consent.data.selected;
+      // The user's last choice, else the best model already downloaded, else the recommendation (which needs a yes).
+      const best = (sel && cachedIds.has(sel) && ok.find((o) => o.id === sel)) || ok.find((o) => cachedIds.has(o.id)) || r.recommended;
+      if (!best) {
+        this.status('error', { backend: 'local', detail: 'no model in the catalog fits this machine', hint: 'Free some disk or RAM, use --model with a GGUF file, or use Ollama, LM Studio or a cloud key.' });
         return;
       }
-      if (m !== model) {
-        this.bus.emit('brain.fallback', { from: { backend: 'local', model: model.name }, to: { backend: 'local', model: m.name }, reason: `not enough disk space for ${model.name}` });
-        this.log(`not enough disk for ${model.name}, using ${m.name}`);
-        model = m;
-      }
+      model = catalogPick(best.modelId, best.quant);
+      onGpu = best.where === 'gpu' || best.where === 'partial';
+      const gpuName = hw.gpu?.name && onGpu ? `${hw.gpu.name} (${(hw.gpu.vramBytes / 1e9).toFixed(1)} GB VRAM) found` : hw.gpu ? `${hw.gpu.name || 'The GPU'} is too small for it` : 'No usable GPU';
+      const shown = best.id === r.recommended?.id ? r.recommended : { ...best, why: [{ k: 'installed' }, { k: best.measured ? 'measured' : 'estimated', tps: best.tps }] };
+      reason = `${gpuName}: using ${explainText(shown)}.`;
+      if (best.quality < 30) warning = 'Results with this small model will be basic. For better work, use Ollama, LM Studio or an endpoint with a key (--brain).';
     }
-    // Runtime and model in parallel.
-    const [runtime, file] = await Promise.all([this._runtime(), this._ensureModel(model)]);
-    if (!runtime || !file) return;
+    this.bus.emit('brain.choice', {
+      model: model.name, id: model.id, file: model.file, bytes: model.bytes, source: model.source, license: model.license?.id || null,
+      gpu: onGpu, reason, ...(warning ? { warning } : {})
+    });
+    this.log(reason);
+    if (warning) this.log(warning);
+    // Model first (it may wait for a yes), then the runtime.
+    const file = await this._ensureModel(model, forced ? 'user' : 'auto');
+    if (!file) return;
+    const runtime = await this._runtime();
+    if (!runtime) return;
     await this._load(runtime, file, model.name, onGpu, model);
   }
 
@@ -207,19 +274,31 @@ export class BrainManager {
     }
   }
 
-  /** Returns the model path, downloading it when needed; null when it is not available. */
-  async _ensureModel(model) {
+  /** Returns the model path, downloading it when needed and allowed; null when it is not available. */
+  async _ensureModel(model, trigger = 'user') {
+    model = asPick(model);
     const target = modelPath(this.home, model);
     if (this.isCached(this.home, model)) return target;
-    const info = { model: model.name, file: model.file, url: model.url, bytes: model.bytes, source: model.source };
+    // The legacy entry for the same file (MODELS) counts as cached.
+    const legacy = MODELS.find((m) => m.file === model.file && (model.files?.length || 1) === 1);
+    if (legacy && this.isCached(this.home, legacy)) return modelPath(this.home, legacy);
+    const info = pickInfo(model);
     this.bus.emit('brain.download.required', info);
-    if (this.flags.noDownload) {
-      this.status('needs_download', { backend: 'local', model: model.name, detail: `${formatBytes(model.bytes)} from ${model.source}`, hint: 'Started with --no-download: press Download in Settings, or use --model, or Ollama or LM Studio.' });
+    const gate = downloadGate(model, { store: this.consent, cli: this.cliConsent, noDownload: this.flags.noDownload });
+    if (!gate.ok) {
+      this.pending = model;
+      const hint = gate.reason === 'no_download'
+        ? 'Started with --no-download: press Download in Settings, or use --model, or Ollama or LM Studio.'
+        : 'Nothing is downloaded without your yes: answer in the app (it shows the size, the source and the license), or start with --model <name>.';
+      // trigger: 'auto' (the start picked it), 'user' (chosen in Settings or Models), 'fallback' (a step down).
+      this.bus.emit('models.consent.required', { ...info, reason: gate.reason, trigger });
+      this.status('needs_download', { backend: 'local', model: model.name, detail: `${formatBytes(model.bytes)} from ${model.source}${model.license ? `, ${model.license.name}` : ''}`, hint, consent: gate.reason === 'needs_consent' });
       return null;
     }
+    this.pending = null;
     this.status('downloading', { backend: 'local', model: model.name, detail: `${formatBytes(model.bytes)} from ${model.source}` });
     this.bus.emit('brain.download.started', { ...info, path: target });
-    this.log(`downloading ${model.name}, ${formatBytes(model.bytes)}, from ${model.source}`);
+    this.log(`downloading ${model.name}, ${formatBytes(model.bytes)}, from ${model.source}${model.license ? ` (${model.license.name})` : ''}`);
     const started = Date.now();
     this.downloadCtrl = new AbortController();
     try {
@@ -228,13 +307,13 @@ export class BrainManager {
         fetchImpl: this.fetch,
         freeBytes: this.hardware?.diskFreeBytes,
         signal: this.downloadCtrl.signal,
-        onProgress: ({ received, total, bps }) => {
-          this.bus.live('brain.download.progress', { model: model.name, received, total, bps });
+        onProgress: ({ received, total, bps, part, parts }) => {
+          this.bus.live('brain.download.progress', { model: model.name, id: model.id, received, total, bps, ...(parts ? { part, parts } : {}) });
           this.progress(bar(model.name, received, total, bps));
         }
       });
       this.progress(null);
-      this.bus.emit('brain.download.finished', { model: model.name, path: out, bytes: model.bytes, ms: Date.now() - started });
+      this.bus.emit('brain.download.finished', { model: model.name, id: model.id, path: out, bytes: model.bytes, ms: Date.now() - started });
       return out;
     } catch (err) {
       this.progress(null);
@@ -242,9 +321,9 @@ export class BrainManager {
       if (e.code === 'checksum' && !this._retriedChecksum) {
         this._retriedChecksum = true;
         this.log('checksum mismatch, downloading again');
-        return this._ensureModel(model);
+        return this._ensureModel(model, trigger);
       }
-      this.bus.emit('brain.download.failed', { model: model.name, code: e.code, message: e.message, hint: e.hint });
+      this.bus.emit('brain.download.failed', { model: model.name, id: model.id, code: e.code, message: e.message, hint: e.hint });
       this.status('error', { backend: 'local', model: model.name, detail: e.message, hint: e.hint });
       return null;
     } finally {
@@ -255,11 +334,13 @@ export class BrainManager {
   async _load(runtime, file, name, gpu, model) {
     this.status('loading', { backend: 'local', model: name, detail: gpu ? 'GPU' : 'CPU' });
     try {
-      const brain = await this.createLocal({ mod: runtime.mod, modelPath: file, gpu, name, contextSize: this.flags.ctx || contextFor(this.hardware, file, gpu), id: 'local' });
+      this.currentPick = model ? asPick(model) : resolvePick(String(file).split(/[\\/]/).pop());
+      const brain = await this.createLocal({ mod: runtime.mod, modelPath: file, gpu, name, contextSize: this.flags.ctx || contextFor(this.hardware, file, gpu), id: 'local', ...(this.flags.gpuLayers ? { gpuLayers: this.flags.gpuLayers } : {}) });
       const info = brain.info?.() || {};
       const onGpu = info.gpu && info.gpu !== 'cpu' && info.gpu !== false;
       const layers = info.totalLayers ? `${info.gpuLayers} of ${info.totalLayers}` : `${info.gpuLayers}`;
-      this.attach(brain, { backend: 'local', model: name, detail: onGpu ? `${info.gpu}, ${layers} layers on the GPU` : 'CPU', ctx: info.contextSize });
+      this.runtimeMod = runtime.mod;
+      this.attach(this._rotating(brain, gpu, info.contextSize), { backend: 'local', model: name, detail: onGpu ? `${info.gpu}, ${layers} layers on the GPU` : 'CPU', ctx: info.contextSize, auto: this.router.data.auto });
       return true;
     } catch (err) {
       if (err.code === 'no_memory' || !gpu) {
@@ -269,8 +350,8 @@ export class BrainManager {
       // The GPU works but the model does not fit in its VRAM: the next smaller model, still on the GPU.
       const vramFull = /VRAM|layers fit|too large/i.test(String(err.message));
       if (vramFull) {
-        const known = model || MODELS.find((m) => /qwen2\.5-coder/i.test(String(file)) && String(file).toLowerCase().includes(`-${m.short}-`)) || null;
-        const smaller = known ? smallerModel(known) : null;
+        const known = model ? asPick(model) : resolvePick(String(file).split(/[\\/]/).pop());
+        const smaller = known ? smallerPick(known, (p) => this.isCached(this.home, p)) : null;
         if (smaller && smaller.bytes >= 1e9) {
           this.bus.emit('brain.fallback', {
             from: { backend: 'local', model: name, gpu: true },
@@ -278,13 +359,13 @@ export class BrainManager {
             reason: `the model does not fit in the GPU memory: ${String(err.message).slice(0, 200)}`
           });
           this.log(`${name} does not fit in the GPU memory (${err.message}); trying ${smaller.name} on the GPU`);
-          const f3 = await this._ensureModel(smaller);
+          const f3 = await this._ensureModel(smaller, 'fallback');
           if (!f3) return false;
           return this._load(runtime, f3, smaller.name, true, smaller);
         }
       }
       // The GPU could not take the model: the 1.5B model on the CPU (small enough for most machines).
-      const small = modelById('qwen2.5-coder-1.5b');
+      const small = asPick(modelById('qwen2.5-coder-1.5b'));
       const same = model && model.id === small.id;
       this.bus.emit('brain.fallback', {
         from: { backend: 'local', model: name, gpu: true },
@@ -292,7 +373,7 @@ export class BrainManager {
         reason: `the GPU could not load the model: ${String(err.message).slice(0, 200)}`
       });
       this.log(`GPU failed (${err.message}); trying ${small.name} on the CPU`);
-      const f2 = same ? file : await this._ensureModel(small);
+      const f2 = same ? file : await this._ensureModel(small, 'fallback');
       if (!f2) return false;
       return this._load(runtime, f2, small.name, false, small);
     }
@@ -390,7 +471,7 @@ export class BrainManager {
     this.bus.emit('settings.changed', { brain: shown });
     const next = { brain: backend, model: undefined, modelId: undefined, url: choice.url };
     if (backend === 'local' && choice.model) {
-      const m = modelById(choice.model) || MODELS.find((x) => x.name === choice.model);
+      const m = asPick(modelById(choice.model) || MODELS.find((x) => x.name === choice.model)) || resolvePick(choice.model);
       if (m) next.modelId = m.id;
       else next.model = choice.model;
     } else if (choice.model) {
@@ -401,36 +482,253 @@ export class BrainManager {
     return this.bus.state.brain;
   }
 
-  /** The command `brain.download`: start or retry the automatic download. */
+  /**
+   * The command `brain.download`: start or retry the download. Without a yes for that file it only opens the
+   * consent card (models.consent.required); the yes is `models.consent`.
+   */
   download(modelId) {
     this.flags.noDownload = false;
-    const m = modelId ? modelById(modelId) || MODELS.find((x) => x.name === modelId) : null;
+    const m = modelId ? asPick(modelById(modelId) || MODELS.find((x) => x.name === modelId)) || resolvePick(modelId) || allPicks().find((x) => x.name === modelId) : null;
     if (m) this.flags = { ...this.flags, brain: 'local', modelId: m.id, model: undefined };
     this.start();
+  }
+
+  /**
+   * The command `models.consent`: the user said yes to this file (the dialog showed its size, source and
+   * license). Remembers the yes and the choice, then downloads (with resume and SHA-256) and loads it.
+   * @param {{ id: string, via?: 'dialog' | 'models' | 'card', answer?: string }} d
+   */
+  consentTo(d = {}) {
+    const p = resolvePick(String(d.id || ''));
+    if (!p) throw Object.assign(new Error('no such model in the catalog'), { code: 'not_found' });
+    const via = ['dialog', 'models', 'card'].includes(d.via) ? d.via : 'models';
+    this.consent.grant(p, via);
+    if (d.answer && d.answer !== 'later') this.consent.answerFirstLaunch(d.answer);
+    this.consent.select(p.id);
+    this.bus.emit('models.consent.given', { id: p.id, via, license: p.license?.id || null, bytes: p.bytes });
+    this.flags = { ...this.flags, brain: 'local', modelId: p.id, model: undefined, noDownload: false };
+    this.start();
+    return { id: p.id };
+  }
+
+  /** "Agora não": nothing downloads, the dialog does not open by itself again; Settings, Models still offers it. */
+  later() {
+    this.consent.answerFirstLaunch('later');
+    this.bus.emit('models.consent.declined', { id: this.pending?.id || null });
+    return { firstLaunch: this.consent.firstLaunch };
+  }
+
+  cancelDownload(id) {
+    if (id && this.installing?.id === id) { this.installing.ctrl.abort(); return { cancelled: true }; }
+    if (id && this.installQueue?.some((q) => q.id === id)) {
+      this.installQueue = this.installQueue.filter((q) => q.id !== id);
+      this.bus.emit('models.install.cancelled', { id });
+      return { cancelled: true };
+    }
+    const had = !!this.downloadCtrl;
+    this.downloadCtrl?.abort();
+    return { cancelled: had };
+  }
+
+  /**
+   * The command models.install: the yes for one file, then a download in the background queue, one at a
+   * time, without switching the model in use (the Models window installs several).
+   */
+  install(id) {
+    const p = resolvePick(String(id || ''));
+    if (!p) throw Object.assign(new Error('no such model in the catalog'), { code: 'not_found' });
+    this.consent.grant(p, 'models');
+    this.installQueue ||= [];
+    if (this.isCached(this.home, p)) return { id: p.id, installed: true };
+    if (this.installing?.id === p.id || this.installQueue.some((q) => q.id === p.id)) return { id: p.id, queued: true };
+    this.installQueue.push({ id: p.id, at: Date.now() });
+    this.bus.emit('models.install.queued', { id: p.id, model: p.name, bytes: p.bytes, position: this.installQueue.length });
+    this._pumpInstalls();
+    return { id: p.id, queued: true, position: this.installQueue.length };
+  }
+
+  async _pumpInstalls() {
+    if (this.installing || !this.installQueue?.length) return;
+    const next = this.installQueue.shift();
+    const p = resolvePick(next.id);
+    if (!p || this.flags.noDownload) return this._pumpInstalls();
+    const ctrl = new AbortController();
+    this.installing = { id: p.id, ctrl, received: 0, total: p.bytes };
+    this.bus.emit('models.install.started', { id: p.id, model: p.name, bytes: p.bytes, source: p.source });
+    const started = Date.now();
+    try {
+      await downloadModel(p, {
+        home: this.home, fetchImpl: this.fetch, signal: ctrl.signal,
+        onProgress: ({ received, total, bps, part, parts }) => {
+          Object.assign(this.installing, { received, total, bps });
+          this.bus.live('models.install.progress', { id: p.id, received, total, bps, ...(parts ? { part, parts } : {}) });
+        }
+      });
+      this._installedCache = null;
+      this.bus.emit('models.install.finished', { id: p.id, model: p.name, bytes: p.bytes, ms: Date.now() - started });
+    } catch (err) {
+      this.bus.emit(ctrl.signal.aborted ? 'models.install.cancelled' : 'models.install.failed', { id: p.id, code: err.code || 'io', message: String(err.message || err).slice(0, 300) });
+    } finally {
+      this.installing = null;
+      this._pumpInstalls();
+    }
+  }
+
+  queueState() {
+    return {
+      current: this.installing ? { id: this.installing.id, received: this.installing.received, total: this.installing.total } : null,
+      waiting: (this.installQueue || []).map((q) => q.id)
+    };
+  }
+
+  /** Disk use of the model folder: every installed file, the total, and the free space. */
+  disk() {
+    const dir = modelsDir(this.home);
+    let total = 0;
+    const files = [];
+    try {
+      for (const name of fs.readdirSync(dir)) {
+        if (!/\.gguf(\.part)?$/i.test(name)) continue;
+        const bytes = fs.statSync(path.join(dir, name)).size;
+        total += bytes;
+        files.push({ file: name, bytes, partial: name.endsWith('.part') });
+      }
+    } catch { /* no folder yet */ }
+    return { dir, total, files, free: diskFree(fs.existsSync(dir) ? dir : this.home) };
+  }
+
+  /** Switch to an installed model (or ask for the yes when it is not downloaded). */
+  switchTo(id) {
+    const p = resolvePick(String(id || ''));
+    if (!p) throw Object.assign(new Error('no such model in the catalog'), { code: 'not_found' });
+    if (this.isCached(this.home, p)) this.consent.select(p.id);
+    this.flags = { ...this.flags, brain: 'local', modelId: p.id, model: undefined };
+    this.start();
+    return { id: p.id, installed: this.isCached(this.home, p) };
+  }
+
+  /** Deletes the files of a downloaded model (and any partial download). Not the one in use. */
+  async deleteModel(id) {
+    const p = resolvePick(String(id || ''));
+    if (!p) throw Object.assign(new Error('no such model in the catalog'), { code: 'not_found' });
+    const loaded = this.pool?.resident.get(p.id);
+    if (loaded?.busy || (!this.pool && this.currentPick?.id === p.id && this.brain)) throw Object.assign(new Error('this model is in use: switch to another one first'), { code: 'conflict' });
+    if (loaded) {
+      if (this.pool.resident.size <= 1) throw Object.assign(new Error('this is the only loaded model: switch to another one first'), { code: 'conflict' });
+      await this.pool._unload(p.id, 'deleted');
+    }
+    let freed = 0;
+    for (const part of modelParts(p)) {
+      for (const f of [path.join(modelsDir(this.home), part.file), path.join(modelsDir(this.home), part.file + '.part')]) {
+        try { freed += fs.statSync(f).size; fs.rmSync(f, { force: true }); } catch { /* not there */ }
+      }
+    }
+    this.consent.revoke(p.id);
+    if (this.consent.data.selected === p.id) this.consent.select(null);
+    this.bus.emit('models.deleted', { id: p.id, freed });
+    return { id: p.id, freed };
   }
 
   /** The command `brain.probe`. */
   async probe() {
     const hw = await this.hw();
     const [ollama, lms] = await Promise.all([probeOllama(OLLAMA_URL, this.fetch), probeLmStudio(LMSTUDIO_URL, this.fetch)]);
-    const choice = chooseModel(hw, { gpu: this.flags.gpu });
-    const rec = choice.model;
+    const a = await this.analyze();
+    const rec = a.recommended;
     const runtime = await findRuntime(this.home);
+    const installed = new Set(a.installed);
+    const local = [...MODELS.map((m) => asPick(m))];
+    for (const id of [rec?.id, ...a.installed]) if (id && !local.some((p) => p.id === id)) local.push(resolvePick(id));
     const options = [
-      ...MODELS.map((m) => ({
-        backend: 'local', label: m.name, model: m.id, available: true, bytes: m.bytes, recommended: m.id === rec.id,
-        reason: `${this.isCached(this.home, m) ? 'downloaded' : formatBytes(m.bytes) + ' download'}${runtime ? '' : ', runtime install needed'}`
+      ...local.filter(Boolean).sort((x, y) => x.bytes - y.bytes).map((m) => ({
+        backend: 'local', label: m.name, model: m.id, available: true, bytes: m.bytes, recommended: m.id === rec?.id, license: m.license?.id,
+        reason: `${installed.has(m.id) ? 'downloaded' : formatBytes(m.bytes) + ' download'}${runtime ? '' : ', runtime install needed'}`
       })),
       { backend: 'ollama', label: 'Ollama', url: OLLAMA_URL, model: pickServerModel(ollama || []) || undefined, available: !!(ollama && ollama.length), reason: ollama ? (ollama.length ? `${ollama.length} models` : 'no models') : 'not running' },
       { backend: 'lmstudio', label: 'LM Studio', url: LMSTUDIO_URL, model: pickServerModel(lms || []) || undefined, available: !!(lms && lms.length), reason: lms ? (lms.length ? `${lms.length} models` : 'no model loaded') : 'not running' },
       { backend: 'openai', label: 'OpenAI compatible endpoint', available: true, reason: 'needs a URL, a model name and a key' }
     ];
-    return { hardware: hw, options, recommended: { backend: 'local', model: rec.id, label: rec.name, reason: choice.reason, gpu: choice.gpu, ...(choice.warning ? { warning: choice.warning } : {}) } };
+    return { hardware: hw, options, recommended: rec ? { backend: 'local', model: rec.id, label: rec.name, reason: explainText(rec), gpu: rec.where === 'gpu' || rec.where === 'partial', ...(a.warning === 'basic' ? { warning: 'Results with this small model will be basic.' } : {}) } : null };
   }
 
   cachedModels() {
     const dir = modelsDir(this.home);
     try { return fs.readdirSync(dir).filter((f) => f.endsWith('.gguf')); } catch { return []; }
+  }
+
+  /**
+   * With automatic rotation on, the loaded model goes into a pool and the scheduler gets the automatic
+   * brain, which picks a model per turn by role and task (src/brain/rotation.js). Off: the model itself.
+   */
+  _rotating(brain, gpu, ctx) {
+    if (!this.router.data.auto || !this.currentPick?.quant) { this.pool = null; return brain; }
+    const pool = new ModelPool({
+      hw: this.hardware, bus: this.bus, log: this.log, maxResident: () => this.router.data.maxResident,
+      load: (p, o) => this._loadPick(p, o)
+    });
+    pool.adopt(this.currentPick, brain, { where: gpu ? 'gpu' : 'cpu', ctx: ctx || this.flags.ctx || contextFor(this.hardware, null, gpu) });
+    this.pool = pool;
+    let cache = null;
+    let cacheAt = 0;
+    return createAutoBrain({
+      pool, settings: this.router, bus: this.bus, hw: this.hardware, log: this.log,
+      defaultCtx: this.flags.ctx || contextFor(this.hardware, null, gpu),
+      installed: () => {
+        if (!cache || Date.now() - cacheAt > 5000) { cache = this.installedPicks().map((p) => p.id); cacheAt = Date.now(); }
+        return cache;
+      },
+      fallback: () => this.consent.data.selected || this.currentPick?.id || null,
+      worker: (id) => (this.bus.state.crew || []).find((w) => w.id === id) || null,
+      peek: () => this.scheduler.queueState?.().waiting?.[0] || null
+    });
+  }
+
+  /** Loads one more installed model for the pool (never downloads: the router only picks installed models). */
+  async _loadPick(p, { gpu, ctx }) {
+    const legacy = MODELS.find((m) => m.file === p.file && (p.files?.length || 1) === 1);
+    const file = this.isCached(this.home, p) ? modelPath(this.home, p) : legacy && this.isCached(this.home, legacy) ? modelPath(this.home, legacy) : null;
+    if (!file) throw Object.assign(new Error(`${p.name} is not downloaded`), { code: 'not_installed' });
+    const mod = this.runtimeMod || (await this._runtime())?.mod;
+    if (!mod) throw new Error('the local runtime is not available');
+    return this.createLocal({ mod, modelPath: file, gpu, name: p.name, contextSize: ctx, id: `local:${p.id}` });
+  }
+
+  /** The command models.router.set: automatic on or off, pins per role, overrides per task, models kept loaded. */
+  setRouter(patch = {}) {
+    const before = this.router.data.auto;
+    const data = this.router.set(patch);
+    this.bus.emit('models.router.changed', data);
+    // Switching automatic on or off swaps the brain the scheduler sees: reload once.
+    if (before !== data.auto && this.brain && this.brain.kind === 'local') this.start();
+    return data;
+  }
+
+  routerState() {
+    return { ...this.router.data, resident: this.pool ? this.pool.list() : [], failures: this.brain?.failures || {}, preview: this.routerPreview() };
+  }
+
+  /** What each crew member would use now, and why (the Models window shows it). */
+  routerPreview() {
+    if (!this.brain?.decide) {
+      // No local model is loaded yet: what the router would pick among the installed models.
+      if (!this.hardware) return [];
+      const installed = this.installedPicks().map((p) => p.id);
+      if (!installed.length) return [];
+      const ctx = this.flags.ctx || contextFor(this.hardware, null, !!this.hardware.gpu);
+      const crew = [['mel', 'Mel', 'plan'], ['dev', 'Dev', 'code'], ['designer', 'Designer', 'design'], ['qa', 'QA', 'review'], ['writer', 'Writer', 'write'], ['chat', 'Chat', 'chat']];
+      return crew.map(([workerId, name, profile]) => {
+        const d = routeTurn({ profile, ctx, hw: this.hardware, installed, pin: this.router.data.pins[workerId] || null, worker: name });
+        return { workerId, name, id: d.choice?.id || null, model: d.choice?.name || null, where: d.choice?.where || null, reason: d.reason, why: d.why };
+      });
+    }
+    const crew = (this.bus.state.crew || []).length ? this.bus.state.crew : [{ id: 'mel' }, { id: 'dev' }, { id: 'designer' }, { id: 'qa' }, { id: 'writer' }];
+    const rows = crew.map((w) => {
+      const d = this.brain.decide({ workerId: w.id, kind: 'job' }, [], { maxTokens: 1024 });
+      return { workerId: w.id, name: w.name || w.id, id: d.choice?.id || null, model: d.choice?.name || null, where: d.choice?.where || null, reason: d.reason, why: d.why };
+    });
+    const chat = this.brain.decide({ workerId: 'mel' }, [], { maxTokens: 600 });
+    rows.push({ workerId: 'chat', name: 'Chat', id: chat.choice?.id || null, model: chat.choice?.name || null, where: chat.choice?.where || null, reason: chat.reason, why: chat.why });
+    return rows;
   }
 
   async close() {

@@ -1,0 +1,40 @@
+{
+  "id": "offline-game-pwa",
+  "title": "Package a browser game as an installable offline app",
+  "category": "games",
+  "roles": [
+    "dev",
+    "devops"
+  ],
+  "tags": [
+    "offline game",
+    "pwa",
+    "installable game",
+    "service worker",
+    "manifest",
+    "fullscreen",
+    "home screen",
+    "play offline",
+    "game"
+  ],
+  "when": "A finished browser game should install to the home screen, launch fullscreen in the right orientation, and play with no network, including levels, sprites and sounds.",
+  "inputs": [
+    "asset list",
+    "orientation"
+  ],
+  "prompt": "Goal: After the first visit the whole game, with every asset, loads and plays in airplane mode.\nSteps:\n1. manifest.webmanifest: name, short_name, start_url \"./\", scope \"./\", display \"fullscreen\", orientation, background_color, theme_color, icons 192 and 512 png plus a \"maskable\" one.\n2. Link it in index.html with <link rel=\"manifest\" href=\"manifest.webmanifest\"> and a theme-color meta.\n3. sw.js: const CACHE = \"game-v3\"; install runs cache.addAll(ASSETS) with html, js, css, levels, sprites and audio.\n4. activate deletes every cache whose name is not CACHE, then calls clients.claim().\n5. fetch answers cache first with network fallback; audio Range requests get the full cached response matched by URL.\n6. main.js: if (\"serviceWorker\" in navigator) call navigator.serviceWorker.register(\"sw.js\") in a load listener with a catch.\n7. When a new worker waits, an \"Update ready\" button posts a message so the worker calls self.skipWaiting().\n8. Saves stay in guarded localStorage; clearing site data deletes them, so say so in the options.\nQuality bar:\n- The devtools installability check passes and an offline reload works.\n- Bumping CACHE ships new assets without a stale mix.\nPitfalls:\n- An asset missing from the list, which breaks only offline.\n- Absolute paths that fail when hosted in a subfolder.\n- Huge music files slowing the first install; stay under about 20 MB.\nVerify:\n- [ ] An offline reload plays a full level with sound.\n- [ ] Old caches are gone after an update.\nOutput: manifest.webmanifest, sw.js, icons/, updated index.html and main.js.",
+  "checks": [
+    "pwa.manifest",
+    "pwa.service-worker",
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "quero instalar meu jogo no celular e jogar sem internet",
+      "output": "fullscreen manifest, versioned asset cache with audio, update prompt, guarded saves"
+    }
+  ],
+  "size": 446,
+  "version": 1
+}

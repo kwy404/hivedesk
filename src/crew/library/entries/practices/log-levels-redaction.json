@@ -1,0 +1,37 @@
+{
+  "id": "log-levels-redaction",
+  "title": "Log levels and redacting sensitive data",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "ops",
+    "reviewer"
+  ],
+  "tags": [
+    "log levels",
+    "redaction",
+    "redact",
+    "sensitive data",
+    "pii",
+    "debug logs",
+    "privacy",
+    "logging"
+  ],
+  "when": "Logs are too noisy or too quiet, or may contain passwords, tokens, emails or other personal data.",
+  "inputs": [
+    "current log calls",
+    "which fields are sensitive"
+  ],
+  "prompt": "Goal: Levels used by a clear rule, set by configuration, and sensitive values removed before any line is written.\nSteps:\n1. Define the rule: error needs action now, warn is unexpected but handled, info is a business event, debug is developer detail.\n2. Read the minimum level from LOG_LEVEL (default info) and drop lower calls cheaply.\n3. Redact by key in one place before writing: password, token, secret, authorization, cookie, apiKey, card become \"[redacted]\", recursively.\n4. Mask personal data that is useful partly: emails as a***@example.com, keep only the last 4 of numbers.\n5. Never log raw request bodies or headers; log a chosen allowlist of fields.\n6. Add a test that logs an object with a password and asserts the output does not contain it.\nQuality bar:\n- Production at info is readable.\n- Redaction cannot be skipped by a call site.\n- Every error line has enough context to act.\nPitfalls:\n- Logging full URLs with tokens in the query string.\n- Using error for expected validation failures.\n- Redaction that mutates the original object.\nVerify:\n- [ ] Sensitive keys never appear in output.\n- [ ] LOG_LEVEL changes what is printed.\n- [ ] Redaction works on nested objects.\n- [ ] Files parse.\nOutput: Updated logger with level filtering and a redact function, plus its test.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "os logs estão mostrando a senha dos usuários",
+      "output": "redact() for password, token, authorization at any depth; LOG_LEVEL=warn in production"
+    }
+  ],
+  "size": 368,
+  "version": 1
+}

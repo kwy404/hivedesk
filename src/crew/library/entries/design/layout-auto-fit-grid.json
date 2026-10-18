@@ -1,0 +1,37 @@
+{
+  "id": "layout-auto-fit-grid",
+  "title": "Auto fit card grid without media queries",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "card grid",
+    "auto-fit",
+    "responsive grid",
+    "cards",
+    "gallery grid",
+    "minmax",
+    "grid columns"
+  ],
+  "when": "The user wants a grid of cards, products, photos or features that adapts its column count to the screen width.",
+  "inputs": [
+    "the items and what each card shows",
+    "smallest comfortable card width"
+  ],
+  "prompt": "Goal: A card grid that fits as many columns as the width allows, down to one on phones, from a single grid rule.\nSteps:\n1. Grid rule: grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr)); gap: var(--space-5).\n2. Keep min() inside minmax so a container narrower than 16rem does not overflow.\n3. Use auto-fit to stretch few items across the row, auto-fill to keep empty tracks so short lists keep normal card widths.\n4. Equal height cards: inside each card use a flex column and margin-block-start: auto on the footer or button.\n5. Give card media one ratio (aspect-ratio: 4 / 3) with object-fit: cover.\n6. Mark the collection up as ul and li so screen readers announce the count.\nQuality bar:\n- Titles and buttons line up across each row.\n- Minimum card width at least 15rem.\n- Gap from the spacing scale.\nPitfalls:\n- Fixed column counts that break on tablets.\n- Forgetting min(), causing sideways scroll at 320 px.\n- Column based masonry that scrambles reading order.\nVerify:\n- [ ] One repeat(auto-fit or auto-fill, minmax()) rule.\n- [ ] Cards pin their footer.\n- [ ] Images share a ratio and have alt.\n- [ ] Markup is a list.\nOutput: Grid and card rules in style.css and the list markup in the page.",
+  "checks": [
+    "css.media-query",
+    "css.no-fixed-width",
+    "html.img-alt"
+  ],
+  "examples": [
+    {
+      "input": "grid of 9 product cards that works on phone and desktop",
+      "output": "repeat(auto-fit, minmax(min(16rem, 100%), 1fr)), 4:3 images, button pinned to the card bottom"
+    }
+  ],
+  "size": 348,
+  "version": 1
+}

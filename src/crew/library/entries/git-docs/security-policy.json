@@ -1,0 +1,37 @@
+{
+  "id": "security-policy",
+  "title": "SECURITY.md vulnerability policy",
+  "category": "git-docs",
+  "roles": [
+    "writer",
+    "ops"
+  ],
+  "tags": [
+    "security.md",
+    "security policy",
+    "vulnerability disclosure",
+    "report vulnerability",
+    "responsible disclosure",
+    "security"
+  ],
+  "when": "The user wants a security policy that tells people how to report vulnerabilities and what to expect.",
+  "inputs": [
+    "a private contact channel",
+    "supported versions",
+    "response times the maintainers can keep"
+  ],
+  "prompt": "Goal: A SECURITY.md with supported versions, a private reporting channel, what to include and realistic response times.\nSteps:\n1. Start with # Security Policy and one line on how seriously reports are taken.\n2. ## Supported versions: a table of version ranges and whether they receive security fixes.\n3. ## Reporting a vulnerability: a private channel (a security email address the user provides), and a clear request not to open public issues.\n4. List what to include: affected version, steps or proof of concept, impact, and any suggested fix.\n5. ## What to expect: acknowledgment time (for example 3 business days), update cadence, and coordinated disclosure after a fix.\n6. Optional: scope (what is not a vulnerability) and credit for reporters.\nQuality bar:\n- Times are ones the maintainers can meet.\n- Contact details come from the user, never invented.\n- Short and specific.\nPitfalls:\n- Asking reporters to post publicly.\n- A fake or example email address.\n- Promising bounties that do not exist.\nVerify:\n- [ ] Starts with a # heading.\n- [ ] Has supported versions and reporting sections.\n- [ ] The contact is real or clearly requested from the user.\n- [ ] Code fences, if any, are closed.\nOutput: SECURITY.md at the repository root.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "adicione uma política de segurança ao repositório",
+      "output": "# Security Policy, supported 2.x, report to the email given, reply within 3 business days"
+    }
+  ],
+  "size": 355,
+  "version": 1
+}

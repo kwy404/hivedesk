@@ -1,0 +1,42 @@
+{
+  "id": "http-error-class-handler",
+  "title": "HttpError class and one central error handler",
+  "category": "backend",
+  "roles": [
+    "backend",
+    "dev"
+  ],
+  "tags": [
+    "http error",
+    "error handler",
+    "error class",
+    "throw",
+    "500",
+    "exception mapping",
+    "error codes",
+    "backend",
+    "unhandled rejection"
+  ],
+  "when": "Handlers in a Node API each build their own error replies, and the user wants to throw typed errors anywhere and have one place turn them into responses and log lines.",
+  "inputs": [
+    "current error cases",
+    "the documented error body"
+  ],
+  "prompt": "Goal: Handlers throw HttpError; one function turns any thrown value into the documented JSON error and logs it exactly once.\nSteps:\n1. errors.mjs: class HttpError extends Error with (status, code, message, details), plus helpers notFound(), conflict(), forbidden().\n2. Wrap each route: try { await handler(ctx) } catch (err) { sendError(ctx, err) }.\n3. sendError: an HttpError keeps its status and code; map known errors (a body SyntaxError to 400, a unique constraint error to 409); anything else becomes 500 with code internal.\n4. Body: { \"error\": { \"code\", \"message\", \"details\", \"requestId\" } }; a 500 gets a generic message and its stack goes only to the log.\n5. Log 4xx at warn without stacks and 5xx at error with stack and request id.\n6. When res.headersSent is already true, log and call res.destroy() instead of writing again.\nQuality bar:\n- Codes are snake_case and listed in docs/errors.md.\n- Status and code never disagree.\n- process.on(\"unhandledRejection\") logs and exits so bugs are loud.\nPitfalls:\n- Throwing plain strings, which carry no stack.\n- Sending err.message of a 500 to clients, leaking paths and SQL.\n- Catching inside a handler and replying 200.\nVerify:\n- [ ] A thrown HttpError(409) yields 409 and its code.\n- [ ] A surprise TypeError yields 500 with no stack in the body.\n- [ ] The headersSent path does not throw again.\n- [ ] docs/errors.md lists every code.\nOutput: errors.mjs, the wrapper in server.mjs, docs/errors.md.",
+  "checks": [
+    "js.syntax",
+    "node.esm",
+    "node.http-status",
+    "node.json-content-type",
+    "js.async-errors",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "every route handles errors differently, centralize it",
+      "output": "HttpError(status, code), sendError mapping, generic 500 body with requestId, docs/errors.md"
+    }
+  ],
+  "size": 415,
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "id": "ext-popup-ui",
+  "title": "Extension popup UI",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "extension popup",
+    "popup.html",
+    "toolbar button",
+    "action popup",
+    "popup ui",
+    "quick actions",
+    "browser extension",
+    "small window"
+  ],
+  "when": "A browser extension needs a small window that opens from its toolbar button to show status or quick actions.",
+  "inputs": [
+    "what the popup shows",
+    "actions",
+    "settings it toggles"
+  ],
+  "prompt": "Goal: A fast, accessible popup whose script lives in a file, loads state from storage on open and saves on every change, because the popup dies when it closes.\nSteps:\n1. manifest.json: \"action\": { \"default_popup\": \"popup.html\", \"default_icon\": { \"16\": \"icons/16.png\", \"32\": \"icons/32.png\" } }.\n2. popup.html: <!doctype html>, <html lang=\"en\">, <meta charset=\"utf-8\">, a <main> with a heading, labeled controls, <button type=\"button\">, and <script type=\"module\" src=\"popup.js\"></script>.\n3. CSS: body width 320px to 380px, no fixed height; browsers cap popups near 800 by 600 pixels.\n4. popup.js: const s = await chrome.storage.local.get({ enabled: true }); render, then attach listeners with addEventListener.\n5. Save every change at once; blur closes the popup and its variables vanish.\n6. Current page: const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }); opening the popup grants activeTab.\n7. Status text in an element with aria-live=\"polite\"; prefers-color-scheme dark styles; visible :focus-visible outlines.\nQuality bar:\n- Opens instantly: no network on open, small script.\n- Fully usable by keyboard.\nPitfalls:\n- Inline <script> or onclick, both blocked by the extension CSP.\n- State kept in popup variables and lost on blur.\n- Long work started in the popup; hand it to the service worker.\nVerify:\n- [ ] Doctype, charset and lang.\n- [ ] No inline handlers or scripts.\n- [ ] Buttons have type=\"button\".\n- [ ] State saved on change.\nOutput: popup.html, popup.css, popup.js and the action entry in manifest.json.",
+  "checks": [
+    "html.doctype",
+    "html.charset",
+    "html.no-inline-handlers",
+    "html.button-type",
+    "ext.no-remote-code"
+  ],
+  "examples": [
+    {
+      "input": "a popup with an on and off switch for my extension",
+      "output": "popup.html with labeled toggle and status, popup.js module reading and saving storage on change, 340px wide, dark mode"
+    }
+  ],
+  "size": 441,
+  "version": 1
+}

@@ -1,0 +1,38 @@
+{
+  "id": "layout-holy-grail",
+  "title": "Holy grail layout with CSS grid areas",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "holy grail",
+    "page layout",
+    "three column",
+    "grid-template-areas",
+    "header footer",
+    "sidebars",
+    "css grid"
+  ],
+  "when": "The user wants a page with header, footer, a main column and one or two side columns such as navigation and related links.",
+  "inputs": [
+    "what goes in each side column",
+    "which column matters most on phones"
+  ],
+  "prompt": "Goal: A header, nav, main, aside and footer layout that stacks on phones and becomes three columns on wide screens.\nSteps:\n1. Mark up header, nav, main, aside and footer in reading order as direct children of one wrapper.\n2. Wrapper: display: grid; min-height: 100dvh; grid-template-rows: auto 1fr auto; single column areas \"header\" \"nav\" \"main\" \"aside\" \"footer\".\n3. From about 48em: columns 12rem minmax(0, 1fr), areas \"header header\" \"nav main\" \"nav aside\" \"footer footer\".\n4. From about 72em: 12rem minmax(0, 1fr) 16rem, areas \"header header header\" \"nav main aside\" \"footer footer footer\".\n5. Keep minmax(0, 1fr) on main so long code or tables do not blow out the grid.\n6. Make a long side nav sticky: position: sticky; top: var(--space-4); align-self: start.\nQuality bar:\n- Visual order equals DOM order.\n- Main keeps a readable measure.\n- Gaps come from the spacing scale.\nPitfalls:\n- Floats or absolute positioning for columns.\n- Fixed px side widths that overflow phones.\n- Hiding the nav on phones with no other way to reach it.\nVerify:\n- [ ] All five landmarks exist.\n- [ ] Areas are defined per breakpoint.\n- [ ] Main uses minmax(0, 1fr).\n- [ ] One column at 375 px.\nOutput: index.html with the landmarks and the grid rules in style.css.",
+  "checks": [
+    "html.main",
+    "html.nav",
+    "css.media-query",
+    "css.no-fixed-width"
+  ],
+  "examples": [
+    {
+      "input": "layout with menu on the left, ads on the right, header and footer",
+      "output": "grid areas: one column on phones, nav and main at 48em, nav main aside at 72em"
+    }
+  ],
+  "size": 357,
+  "version": 1
+}

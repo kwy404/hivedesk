@@ -1,0 +1,42 @@
+{
+  "id": "accordion-disclosure",
+  "title": "Accordion of collapsible sections",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "accordion",
+    "collapse",
+    "expand",
+    "disclosure",
+    "collapsible sections",
+    "details summary",
+    "toggle content",
+    "show hide"
+  ],
+  "when": "The user wants stacked sections that expand and collapse, for long content, settings groups or step details.",
+  "inputs": [
+    "section titles",
+    "section content",
+    "whether only one may be open at a time"
+  ],
+  "prompt": "Goal: Sections that expand in place with the right semantics, optional motion and deep links.\nSteps:\n1. Simple case: native <details><summary>; give grouped details the same name attribute when only one may be open.\n2. Custom case: an h3 wrapping <button type=\"button\" aria-expanded=\"false\" aria-controls=\"sec-1\">, then <div id=\"sec-1\" role=\"region\" aria-labelledby hidden>.\n3. Rotate an aria-hidden chevron on [aria-expanded=\"true\"] or details[open].\n4. Animate with a grid wrapper from grid-template-rows: 0fr to 1fr; drop the transition under prefers-reduced-motion.\n5. If location.hash matches a section id on load, open it and scroll to it.\nQuality bar:\n- The whole header row is the click target.\n- Content in a closed section is out of the Tab order.\n- Headings keep the page outline in order.\nPitfalls:\n- Clickable divs with no keyboard support.\n- Animating max-height to a huge value.\n- Removing the summary marker with no visible cue left.\nVerify:\n- [ ] Every toggle is a button or a summary.\n- [ ] aria-expanded matches the visible state.\n- [ ] aria-controls ids exist and are unique.\n- [ ] Reduced motion stops the animation.\nOutput: Accordion markup in the page, its CSS, and accordion.js only for the custom variant.",
+  "checks": [
+    "html.button-type",
+    "html.unique-ids",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.reduced-motion",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "accordion for course modules, only one open at a time",
+      "output": "details elements sharing name=\"modules\", summary with module title and duration, rotating chevron"
+    }
+  ],
+  "size": 352,
+  "version": 1
+}

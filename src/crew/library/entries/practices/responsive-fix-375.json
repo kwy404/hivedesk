@@ -1,0 +1,40 @@
+{
+  "id": "responsive-fix-375",
+  "title": "Fix responsive layout on phones at 375 px",
+  "category": "practices",
+  "roles": [
+    "designer",
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "responsive",
+    "mobile",
+    "phone",
+    "375px",
+    "media query",
+    "small screen",
+    "mobile layout",
+    "breakpoints"
+  ],
+  "when": "A page looks wrong on a phone: tiny text, cut off content, sideways scroll, crowded menus or unusable buttons.",
+  "inputs": [
+    "the HTML and CSS",
+    "screenshots or a description of what breaks"
+  ],
+  "prompt": "Goal: A mobile first layout that reads and works at 375 px and grows at breakpoints chosen by content.\nSteps:\n1. Confirm <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> is in the head.\n2. Rewrite base styles for one column at small widths, then add min-width media queries (about 40em, 64em) where the content needs more room.\n3. Body text at least 16 px, line length up to about 70 characters, side padding of 16 px.\n4. Touch targets at least 44 by 44 px with spacing; collapse long nav into a toggle button.\n5. Tables: wrap in a scrollable container or turn rows into stacked cards; forms: full width inputs with labels above.\n6. Test at 320, 375, 414 and 768 px, in portrait and landscape.\nQuality bar:\n- No sideways scroll at 320 px.\n- Nothing important is hidden on mobile.\n- Breakpoints are few and based on content.\nPitfalls:\n- Desktop first max-width overrides stacked on top of each other.\n- Fixed heights that cut text.\n- Hover only menus that do not open on touch.\nVerify:\n- [ ] The viewport meta exists.\n- [ ] At least one width media query exists.\n- [ ] No fixed width wider than a phone outside media queries.\n- [ ] Buttons are large enough to tap.\nOutput: The updated stylesheet (mobile first) and any HTML changes for the nav toggle.",
+  "checks": [
+    "html.viewport",
+    "css.media-query",
+    "css.no-fixed-width",
+    "css.min-font-size"
+  ],
+  "examples": [
+    {
+      "input": "no celular o site fica todo quebrado",
+      "output": "mobile first rewrite: one column, 16px text, nav toggle, cards stack, two breakpoints at 40em and 64em"
+    }
+  ],
+  "size": 363,
+  "version": 1
+}

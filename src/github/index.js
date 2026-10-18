@@ -18,6 +18,7 @@ import { parseIntent, parseRules, looksLikeGitIntent, cleanRepoName, fold } from
 import { jobReport, templateCommitMessage, commitPrompt, messageFromModel, COMMIT_SCHEMA, prBody, commitSubject } from '../changelog/report.js';
 import { melAsk } from '../changelog/mel.js';
 import registerChangelog from '../changelog/index.js';
+import { say } from '../crew/say.js';
 
 export { parseIntent, parseRules, looksLikeGitIntent };
 
@@ -633,6 +634,10 @@ export function createGitHub(ctx) {
   }
 
   // ---- chat: Mel answers GitHub requests with a confirmation card ----
+  // In the user's language (src/crew/say.js); a host without say() gets the English line.
+  const speak = (key, params, channel) => (typeof hive?.say === 'function'
+    ? hive.say('mel', key, params, { channel })
+    : hive?.chat?.('mel', say('en', key, params), undefined, channel));
   const offChat = bus.on((e) => {
     if (e.type !== 'chat.message') return;
     const d = e.data || {};
@@ -646,10 +651,10 @@ export function createGitHub(ctx) {
       try {
         const plan = await buildPlan(rules, {});
         const lines = plan.steps.map((s, i) => `${i + 1}. ${stepText(s, plan)}`);
-        hive?.chat?.('mel', `Before I do anything, here is exactly what will happen:\n${lines.join('\n')}\nAnswer Yes on the card to run it, or No to stop.`, undefined, d.channel);
+        speak('crew.say.gitPlan', { steps: lines.join('\n') }, d.channel);
         bus.live('github.plan', { plan, origin: 'chat', text: String(d.text).slice(0, 300), by: from });
       } catch (err) {
-        hive?.chat?.('mel', `I cannot do that yet: ${clean(err.message)}`, undefined, d.channel);
+        speak('crew.say.gitFailed', { error: clean(err.message) }, d.channel);
       }
     }, 0);
   });

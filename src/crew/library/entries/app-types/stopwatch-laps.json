@@ -1,0 +1,50 @@
+{
+  "id": "stopwatch-laps",
+  "title": "Stopwatch with laps and split times",
+  "category": "app-types",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "stopwatch",
+    "lap timer",
+    "laps",
+    "split times",
+    "chronometer",
+    "race timer",
+    "timer"
+  ],
+  "when": "The user wants a stopwatch with start, stop, reset and lap times, showing hundredths and the fastest and slowest laps.",
+  "inputs": [
+    "precision wanted",
+    "export needs"
+  ],
+  "prompt": "Goal: A jitter free stopwatch whose elapsed time and laps are exact and survive a reload.\nSteps:\n1. Elapsed = accumulated + (running ? Date.now() - startedAt : 0); stopping adds to accumulated.\n2. logic.mjs: format(ms) as mm:ss.cc and h:mm:ss.cc past an hour, laps(marks) giving lap and total, fastest and slowest indexes.\n3. Buttons: Start and Stop toggle with a changing label, Lap while running, Reset while stopped; Space and L as shortcuts outside fields.\n4. Display with font-variant-numeric: tabular-nums, redrawn by requestAnimationFrame only while running.\n5. Laps table newest first with th headers (number, lap, total); fastest and slowest marked with words; new lap announced in aria-live.\n6. Persist startedAt, accumulated and marks in localStorage guarded; Copy or Download CSV of laps.\n7. test.mjs: format rounding, lap math, fastest and slowest with ties.\nQuality bar:\n- Digits do not shift width.\n- A reload mid run keeps counting.\n- Buttons are at least 48 px.\nPitfalls:\n- Adding 10 ms per interval tick.\n- Keyboard shortcuts firing while typing.\n- requestAnimationFrame running while stopped.\nVerify:\n- [ ] Elapsed from timestamps.\n- [ ] Table uses th.\n- [ ] Reset clears laps.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (time math), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.table-headers",
+    "html.button-type",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "cronometro com voltas para corrida",
+      "output": "00:42.17 display, Start/Lap/Reset, laps table with fastest and slowest"
+    }
+  ],
+  "size": 371,
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "id": "tile-map-json-levels",
+  "title": "Tile maps and level data stored as JSON",
+  "category": "games",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "tile map",
+    "tilemap",
+    "level data",
+    "level json",
+    "level format",
+    "tiles",
+    "levels",
+    "game"
+  ],
+  "when": "Levels are grids of tiles loaded from JSON files, with solid tiles, spawn points and exits, drawn efficiently and queried by collision code.",
+  "inputs": [
+    "tile size",
+    "tile kinds",
+    "entities per level"
+  ],
+  "prompt": "Goal: A level format that is easy to edit by hand, validated on load, and fast to draw and query.\nSteps:\n1. levels/level1.json: { \"version\": 1, \"tileSize\": 16, \"width\": 40, \"height\": 15, \"tiles\": [\"#....\", ...] as equal length strings, \"legend\": { \"#\": \"wall\", \".\": \"empty\", \"^\": \"spike\" }, \"entities\": [{ \"type\": \"player\", \"x\": 2, \"y\": 12 }, { \"type\": \"exit\", \"x\": 38, \"y\": 12 }] }.\n2. loadLevel(text) wraps JSON.parse in try/catch, then checks version, tiles.length === height, each row length === width, every char in legend, and exactly one player.\n3. Convert rows to a Uint8Array of tile ids with index = y * width + x; tileAt(x, y) returns \"wall\" outside the bounds.\n4. Paint static tiles once onto an offscreen canvas, then drawImage only its visible slice each frame.\n5. World to tile: tx = Math.floor(px / tileSize); collision code asks isSolid(tx, ty).\n6. Keep levels/index.json as the list of level files so a new level needs no code change.\nQuality bar:\n- A broken level shows a message naming the row and column.\n- A 200 by 100 map costs one drawImage per frame for the static layer.\nPitfalls:\n- Swapping x and y between rows and columns.\n- Fetching levels over file:// URLs, which browsers block; serve the folder with a local server.\n- Editing the loaded data when a tile breaks, so a restart keeps it broken.\nVerify:\n- [ ] A node:test file loads every level in levels/index.json without errors.\n- [ ] Out of bounds counts as solid.\n- [ ] A level without a player is rejected.\nOutput: js/level.js, levels/index.json, levels/level1.json and test/level.test.mjs.",
+  "checks": [
+    "json.valid",
+    "js.json-parse-guarded",
+    "node.test-runner",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "carregar fases do meu jogo de plataforma de arquivos json",
+      "output": "string row level format, validating loader, Uint8Array tiles, prerendered static layer, level tests"
+    }
+  ],
+  "size": 450,
+  "version": 1
+}

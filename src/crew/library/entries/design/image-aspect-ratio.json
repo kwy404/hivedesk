@@ -1,0 +1,38 @@
+{
+  "id": "image-aspect-ratio",
+  "title": "Image aspect ratios and object-fit",
+  "category": "design",
+  "roles": [
+    "designer",
+    "dev"
+  ],
+  "tags": [
+    "images",
+    "aspect ratio",
+    "object-fit",
+    "crop",
+    "thumbnails",
+    "photos",
+    "stretched image",
+    "srcset"
+  ],
+  "when": "Images in cards, galleries or heroes have mixed shapes, look stretched, or make the layout jump while loading.",
+  "inputs": [
+    "where images appear",
+    "the files and their pixel sizes"
+  ],
+  "prompt": "Goal: Every image slot has a chosen ratio, crops without distortion and reserves its space before the file loads.\nSteps:\n1. Pick ratios by role: 16 / 9 hero and video, 4 / 3 or 3 / 2 cards, 1 / 1 avatars and product tiles, 3 / 4 portraits.\n2. Put width and height attributes with the intrinsic size on every img, plus img { max-width: 100%; height: auto }, so the box is reserved.\n3. Fixed slots: aspect-ratio: 4 / 3; width: 100%; object-fit: cover; object-position: 50% 30% keeps faces in frame.\n4. Logos and product shots that must not crop: object-fit: contain on a neutral background.\n5. Offer srcset (400w, 800w, 1600w) with sizes when several files exist; first visible image eager, the rest loading=\"lazy\".\n6. Write alt per image: what it shows and why it matters; decorative images get alt=\"\".\nQuality bar:\n- No stretched or squashed image.\n- No layout shift during load.\n- Crops keep the subject visible on phones.\nPitfalls:\n- A fixed px height with width 100 percent, which distorts.\n- Background images for content photos, which lose alt.\n- Huge files shrunk only by CSS.\nVerify:\n- [ ] Every img has alt, width and height.\n- [ ] Slots use aspect-ratio and object-fit.\n- [ ] Images after the first are lazy.\n- [ ] Logos use contain.\nOutput: Image rules in style.css and updated img tags in the pages.",
+  "checks": [
+    "html.img-alt",
+    "html.img-dimensions",
+    "html.lazy-images"
+  ],
+  "examples": [
+    {
+      "input": "as fotos dos produtos ficam esticadas e de tamanhos diferentes",
+      "output": "tiles 1 / 1 with object-fit cover, logos contain, width and height on each img, lazy after the first row"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

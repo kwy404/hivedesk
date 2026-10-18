@@ -1,0 +1,44 @@
+{
+  "id": "navbar-responsive",
+  "title": "Responsive navigation bar with menu toggle",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "navbar",
+    "navigation",
+    "nav bar",
+    "header",
+    "menu",
+    "hamburger",
+    "top bar",
+    "mobile menu"
+  ],
+  "when": "The user wants a site header with a logo and links that collapses into a menu button on small screens.",
+  "inputs": [
+    "brand name or logo file",
+    "the links and their targets",
+    "the current page",
+    "an optional action button"
+  ],
+  "prompt": "Goal: A header nav that shows links inline on wide screens and behind one labeled toggle on phones, fully usable by keyboard.\nSteps:\n1. <header> with the brand link, <button type=\"button\" aria-expanded=\"false\" aria-controls=\"site-menu\">Menu</button> and <nav aria-label=\"Main\"> holding <ul id=\"site-menu\">.\n2. Mark the current link with aria-current=\"page\" and an underline or weight, not color alone.\n3. Below 720 px the list stays collapsed unless the nav has data-open; from @media (min-width: 720px) hide the toggle and use display: flex.\n4. The toggle flips aria-expanded and data-open; Escape closes and returns focus to the toggle.\n5. Close the menu when a link is chosen or when matchMedia reports the wide layout.\n6. Links get a 44 px hit area and a :focus-visible outline with an offset.\nQuality bar:\n- Without JS the links stay reachable: the script adds the collapsed state.\n- The toggle icon is aria-hidden.\n- Header height does not jump when the menu opens.\nPitfalls:\n- A div with a click listener as the toggle.\n- role=\"menu\" on site links, which changes keyboard expectations.\n- A leftover class hiding links on desktop.\nVerify:\n- [ ] Links sit in a nav with an aria-label.\n- [ ] aria-expanded matches what is visible.\n- [ ] Escape closes and focus lands on the toggle.\n- [ ] No horizontal scroll at 375 px.\nOutput: Header markup in the page, nav rules in style.css, nav.js loaded with defer.",
+  "checks": [
+    "html.nav",
+    "html.link-text",
+    "html.button-type",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.media-query",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "menu responsivo com hamburguer para o meu site",
+      "output": "header with logo, nav aria-label Main, Menu toggle with aria-expanded under 720 px, flex row above"
+    }
+  ],
+  "size": 403,
+  "version": 1
+}

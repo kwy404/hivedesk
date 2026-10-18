@@ -1,0 +1,41 @@
+{
+  "id": "quantity-stepper-input",
+  "title": "Quantity stepper with minus and plus buttons",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "quantity",
+    "quantity input",
+    "stepper input",
+    "plus minus buttons",
+    "number input",
+    "spin button",
+    "cart quantity",
+    "increment"
+  ],
+  "when": "The user wants a number field with minus and plus buttons, such as product quantity in a cart or guests in a booking.",
+  "inputs": [
+    "min, max and step",
+    "what changing the value updates",
+    "label text"
+  ],
+  "prompt": "Goal: A quantity control built on a real number input, with labeled minus and plus buttons, clamped values and an announced total.\nSteps:\n1. <label for=\"qty\">Quantity</label>, then <button type=\"button\" aria-label=\"Decrease quantity\">, <input type=\"number\" id=\"qty\" inputmode=\"numeric\" min=\"1\" max=\"10\" step=\"1\" value=\"1\"> and <button type=\"button\" aria-label=\"Increase quantity\">.\n2. The buttons call input.stepDown() or input.stepUp(), then dispatch an input event so every listener follows one path.\n3. Disable minus at min and plus at max; on change clamp typed values and restore the last valid one when the field is empty or not a number.\n4. Update the dependent total and announce it in a role=\"status\" region (Total R$ 59,80), formatted with Intl.NumberFormat.\n5. Buttons and input at least 44 px tall, the input about 4ch wide with text-align: center; hide native spin arrows only because the buttons replace them.\nQuality bar:\n- Typing a number works as well as the buttons.\n- A held button does not fire hundreds of updates.\n- The control fits a cart row at 375 px.\nPitfalls:\n- A text span between buttons that nobody can edit.\n- Values below min after typing.\n- Icon only buttons with no name.\nVerify:\n- [ ] The input has a label and min, max and step.\n- [ ] Buttons have names and type=\"button\".\n- [ ] Limits disable the right button.\n- [ ] The total is announced.\nOutput: Stepper markup, stepper.css and stepper.js wiring every [data-stepper].",
+  "checks": [
+    "html.labels",
+    "html.button-type",
+    "html.aria-live",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "campo de quantidade com botoes de mais e menos no carrinho",
+      "output": "label Quantity, Decrease and Increase buttons around a number input 1 to 10, total announced in status"
+    }
+  ],
+  "size": 417,
+  "version": 1
+}

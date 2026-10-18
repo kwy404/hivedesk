@@ -1,0 +1,37 @@
+{
+  "id": "architect-architecture-review",
+  "title": "Architect: reviewing an existing code structure",
+  "category": "roles",
+  "roles": [
+    "architect",
+    "reviewer"
+  ],
+  "tags": [
+    "architect",
+    "architecture review",
+    "code structure",
+    "coupling",
+    "modules",
+    "design review",
+    "maintainability"
+  ],
+  "when": "A workspace already has code and the architect must judge its structure before new work is added on top.",
+  "inputs": [
+    "the existing files",
+    "the planned change"
+  ],
+  "prompt": "Goal: A short review that maps what exists, names the two or three structural problems that block the planned change, and proposes minimal moves.\nSteps:\n1. Run list_files and read the entry points first (index.html, main script, package.json if present).\n2. Map modules: what each file does, what it imports, which global names it shares.\n3. Find blockers for the planned change: logic mixed with DOM code, globals written from many files, duplicated functions, one file over 400 lines.\n4. Rank problems by how much they block the change, not by taste.\n5. Propose the smallest move per problem: extract a pure function to a module, pass state as a parameter, delete the duplicate.\n6. Write the map and the moves to ARCHITECTURE.md; leave unrelated issues as a short Later list.\nQuality bar:\n- The map is accurate to the files.\n- Each problem names file and lines.\n- Moves are small enough for one task each.\nPitfalls:\n- Proposing a full rewrite.\n- Listing style nits as architecture.\n- Reviewing without reading the entry points.\nVerify:\n- [ ] ARCHITECTURE.md has a map and a problems section.\n- [ ] Each problem cites a file.\n- [ ] At most three blocking problems.\n- [ ] Later list kept separate.\nOutput: ARCHITECTURE.md with Map, Problems, Moves and Later sections.",
+  "checks": [
+    "md.h1",
+    "md.sections",
+    "text.no-placeholder"
+  ],
+  "examples": [
+    {
+      "input": "vamos adicionar login local nesse app, a estrutura aguenta?",
+      "output": "map of 5 files; problem: state global in 3 files; move: state.js with get and set"
+    }
+  ],
+  "size": 362,
+  "version": 1
+}

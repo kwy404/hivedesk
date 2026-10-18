@@ -1,0 +1,34 @@
+{
+  "id": "plan-tests",
+  "title": "Planning which tests to write",
+  "category": "planning",
+  "roles": [
+    "mel",
+    "architect",
+    "qa"
+  ],
+  "tags": [
+    "test plan",
+    "tests",
+    "testing",
+    "test cases",
+    "coverage",
+    "what to test",
+    "edge cases"
+  ],
+  "when": "A job contains logic (calculations, parsing, state changes, routes) and the plan must say which tests exist and who writes them.",
+  "inputs": [
+    "the functions or routes planned",
+    "acceptance criteria"
+  ],
+  "prompt": "Goal: A short list of test cases that cover the logic most likely to break, assigned to the task that owns the code.\nSteps:\n1. List the units with logic: pure functions, parsers, reducers, route handlers. Skip markup and styles.\n2. For each unit write cases: one normal, one boundary (empty, zero, last item), one bad input.\n3. Add one case per acceptance criterion that involves behavior.\n4. Keep the logic importable: functions exported from a module with no DOM access, so node can run them.\n5. Assign tests to the dev task that writes the code, in test.mjs with node:assert or node:test.\n6. QA runs node test.mjs and treats a failure as a high finding.\nQuality bar:\n- Cases name input and expected output.\n- Every behavior criterion has a case.\n- Tests run with plain node, no install.\nPitfalls:\n- Testing that the DOM exists instead of the logic.\n- Only happy path cases.\n- Logic trapped inside event handlers, so it cannot be tested.\nVerify:\n- [ ] Units with logic are listed.\n- [ ] Each has normal, boundary and bad cases.\n- [ ] Tests belong to the code owner.\n- [ ] QA runs them.\nOutput: A test case table in the summary and a test.mjs line in the matching dev task detail.",
+  "checks": [],
+  "examples": [
+    {
+      "input": "calculadora de juros compostos",
+      "output": "cases: 1000 at 1% for 12 months, 0 months returns principal, negative rate rejected"
+    }
+  ],
+  "size": 338,
+  "version": 1
+}

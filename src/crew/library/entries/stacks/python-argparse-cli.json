@@ -1,0 +1,39 @@
+{
+  "id": "python-argparse-cli",
+  "title": "Python command line tool with argparse",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "cli",
+    "argparse",
+    "command line",
+    "script",
+    "arguments",
+    "flags",
+    "subcommands",
+    "terminal"
+  ],
+  "when": "The user wants a Python script with options, subcommands, a help screen and exit codes, using only the standard library.",
+  "inputs": [
+    "what the tool does",
+    "arguments and options"
+  ],
+  "prompt": "Goal: A clean argparse CLI with typed arguments, helpful --help, stdin and stdout support, and exit codes scripts can rely on.\nSteps:\n1. Start with #!/usr/bin/env python3, a module docstring, and def main(argv=None) -> int.\n2. parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter), with an epilog of two examples.\n3. Type every argument: type=int, type=pathlib.Path, choices=[...], action=\"store_true\", nargs=\"+\", each with help text.\n4. Several actions: add_subparsers(dest=\"command\", required=True) with set_defaults(func=handler) per subcommand.\n5. Accept \"-\" for stdin or stdout; print \"error: ...\" to sys.stderr and return 1 on runtime errors; parser.error() handles usage (exit 2); KeyboardInterrupt returns 130.\n6. End with if __name__ == \"__main__\": sys.exit(main()).\nQuality bar:\n- main(argv) is testable with a list.\n- Help shows defaults and examples.\n- No traceback for expected errors such as a missing file.\nPitfalls:\n- Reading sys.argv by hand.\n- A bare except that swallows KeyboardInterrupt.\n- Errors printed to stdout.\nVerify:\n- [ ] Main guard present.\n- [ ] No bare except.\n- [ ] Every argument has help.\n- [ ] Exit codes 0, 1 and 2 used as described.\nOutput: tool.py (or a package with __main__.py) and usage examples in README.",
+  "checks": [
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except",
+    "py.main-guard"
+  ],
+  "examples": [
+    {
+      "input": "script python que redimensiona imagens com opções de largura e pasta",
+      "output": "resize.py with --width int, --out Path, positional files, subcommand-free, exit codes 0/1/2"
+    }
+  ],
+  "size": 373,
+  "version": 1
+}

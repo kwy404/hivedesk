@@ -1,0 +1,37 @@
+{
+  "id": "review-i18n",
+  "title": "Internationalization review",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "dev"
+  ],
+  "tags": [
+    "i18n",
+    "internationalization",
+    "localization",
+    "translation",
+    "l10n",
+    "multi language",
+    "locale"
+  ],
+  "when": "The user wants an app or site reviewed for readiness to translate and to serve other locales and languages.",
+  "inputs": [
+    "the files",
+    "target languages"
+  ],
+  "prompt": "Goal: A review finding hard coded strings, locale unaware formatting and layouts that break with translation, each with a fix.\nSteps:\n1. Find hard coded user facing strings in HTML and JS; they belong in one messages file per locale (messages.en.json, messages.pt.json).\n2. Concatenation: \"You have \" + n + \" items\" breaks word order; use full templates with named slots and Intl.PluralRules.\n3. Formatting: dates, numbers, currency and lists through Intl.DateTimeFormat, NumberFormat and ListFormat with the active locale.\n4. Layout: room for 30 to 40 percent longer text in buttons and nav; logical properties (margin-inline-start) and dir=\"rtl\" support.\n5. Markup: lang per page and on passages in another language; a language switcher with hreflang and each name in its own language.\n6. Data: sorting with Intl.Collator; names not forced into first and last.\nQuality bar:\n- Findings list file and string.\n- Fixes use built in Intl APIs.\n- Expansion tested with a long pseudo translation.\nPitfalls:\n- Flags used for languages.\n- Translation by string concatenation.\n- Assuming one plural form.\nVerify:\n- [ ] Hard coded strings listed.\n- [ ] Concatenations listed.\n- [ ] Intl usage checked.\n- [ ] Expansion and right to left checked.\nOutput: i18n-review.md with findings and an outline of the messages file.",
+  "checks": [
+    "html.lang",
+    "json.valid",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "quero traduzir meu app para ingles e espanhol, esta pronto?",
+      "output": "41 hard coded strings, 6 concatenations, prices with toFixed; proposed messages.en.json keys"
+    }
+  ],
+  "size": 374,
+  "version": 1
+}

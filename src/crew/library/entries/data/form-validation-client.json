@@ -1,0 +1,39 @@
+{
+  "id": "form-validation-client",
+  "title": "Client side form validation with clear errors",
+  "category": "data",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "form validation",
+    "validate form",
+    "required fields",
+    "error messages",
+    "invalid input",
+    "constraint validation",
+    "form errors"
+  ],
+  "when": "A form must check fields before submit and show helpful, accessible errors (sign up, checkout, contact, settings).",
+  "inputs": [
+    "fields and their rules",
+    "what happens on success"
+  ],
+  "prompt": "Goal: Native constraints plus custom rules, errors next to fields and in a summary, announced to screen readers.\nSteps:\n1. Declare what HTML can: required, type=\"email\", minlength, maxlength, min, max, pattern, autocomplete; add novalidate to render custom messages.\n2. On submit run form.checkValidity(); map each field.validity flag (valueMissing, typeMismatch, tooShort, patternMismatch) to a human message.\n3. Cross field rules (passwords match, end after start) use setCustomValidity(msg), cleared with setCustomValidity(\"\").\n4. Show each error in <p id=\"email-error\"> linked by aria-describedby and set aria-invalid=\"true\".\n5. Failed submit: an error summary with role=\"alert\" at the top, links to each field, focus moved to it, submission stopped.\n6. Validate on blur after the first attempt and on input once a field is invalid, never on the first keystroke.\nQuality bar:\n- Messages say how to fix it (\"Use at least 8 characters\").\n- Typed values are never cleared on error.\n- The server repeats the checks.\nPitfalls:\n- Errors shown only as red borders.\n- A disabled submit button that never explains why.\n- Email regex so strict real addresses fail.\nVerify:\n- [ ] Every field labeled; errors linked by aria-describedby.\n- [ ] aria-invalid toggles.\n- [ ] Summary gets focus on failure.\n- [ ] The form has a submit button.\nOutput: Form markup with constraints and js/validate-form.js with the message map and handlers.",
+  "checks": [
+    "js.syntax",
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "html.aria-live"
+  ],
+  "examples": [
+    {
+      "input": "validar o formulário de cadastro antes de enviar",
+      "output": "novalidate form, messages from validity flags, password match via setCustomValidity, role=alert summary"
+    }
+  ],
+  "size": 408,
+  "version": 1
+}

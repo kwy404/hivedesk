@@ -1,0 +1,53 @@
+{
+  "id": "appointment-booking",
+  "title": "Appointment slot booking",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "booking",
+    "appointments",
+    "scheduling",
+    "time slots",
+    "book appointment",
+    "availability",
+    "reservation"
+  ],
+  "when": "The user wants a page where clients pick a service, a day and a free time slot and confirm a booking, stored locally with no server.",
+  "inputs": [
+    "services and durations",
+    "opening hours and breaks",
+    "slot step"
+  ],
+  "prompt": "Goal: Only truly free slots are offered, overlaps are impossible, and the booking is confirmed in plain words.\nSteps:\n1. Config: services with minutes, hours per weekday, breaks, slot step 15 or 30, days ahead.\n2. logic.mjs slotsFor(day, service, config, bookings, now): starts where the whole duration fits, outside breaks, not overlapping (start < otherEnd and end > otherStart), not past; book() rejects taken slots.\n3. Flow: service radio cards, a strip of the next 14 days (closed days disabled), slot buttons with aria-pressed, then a name and phone form.\n4. Confirmation in role=\"status\" with service, date, time and duration; offer an .ics download.\n5. Owner view: bookings by day with Cancel.\n6. State that bookings live in this browser only; persist in localStorage guarded.\n7. test.mjs: back to back allowed, breaks, closing cut off, past hidden.\nQuality bar:\n- Times shown in local format.\n- Disabled days explain why.\n- Phone field uses type=\"tel\".\nPitfalls:\n- Slots that end after closing.\n- Overlap check with less than or equal that blocks back to back.\n- Implying the business got the booking.\nVerify:\n- [ ] Form labeled and submits.\n- [ ] Status announced.\n- [ ] Overlap tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (slots), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.form-submit",
+    "html.input-types",
+    "html.aria-live",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "agendamento de horarios para minha barbearia",
+      "output": "Corte 30 min, next 14 days, 09:00 to 18:00 slots, lunch break hidden"
+    }
+  ],
+  "size": 370,
+  "version": 1
+}

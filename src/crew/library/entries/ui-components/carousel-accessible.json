@@ -1,0 +1,40 @@
+{
+  "id": "carousel-accessible",
+  "title": "Accessible carousel with scroll snap",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "carousel",
+    "slider",
+    "slideshow",
+    "image slider",
+    "slides",
+    "rotating banner",
+    "swipe slides"
+  ],
+  "when": "The user wants slides that move sideways with arrows, dots or swipe, such as featured products or a banner.",
+  "inputs": [
+    "the slides",
+    "whether autoplay is required",
+    "controls wanted"
+  ],
+  "prompt": "Goal: A carousel built on CSS scroll snap, with labeled controls, a polite live region and no autoplay unless asked and pausable.\nSteps:\n1. <section aria-roledescription=\"carousel\" aria-label=\"Featured\">; each slide is <div role=\"group\" aria-roledescription=\"slide\" aria-label=\"2 of 5\">.\n2. The track uses overflow-x: auto and scroll-snap-type: x mandatory, so swipe and no JS scrolling work.\n3. Previous and Next buttons call scrollBy with one slide width; dot buttons have aria-label Go to slide 3, the active one aria-current=\"true\", tracked with IntersectionObserver.\n4. A track wrapper with aria-live=\"polite\" announces slide changes made by the buttons.\n5. Autoplay only if asked: 7 s or more, a visible Pause button, pause on hover and focus, set aria-live to off while playing, never under prefers-reduced-motion.\nQuality bar:\n- Each slide works alone; key content is not only in slide 3.\n- Controls are visible and 44 px.\n- Scroll smoothing is off for reduced motion.\nPitfalls:\n- Autoplay with no pause.\n- Only dots, no Previous and Next.\n- Cloned slides for looping that screen readers read twice.\nVerify:\n- [ ] Buttons have type and names.\n- [ ] A polite live region exists.\n- [ ] Swipe works by scroll snap.\n- [ ] Reduced motion disables autoplay.\nOutput: Carousel markup, carousel.css and carousel.js.",
+  "checks": [
+    "html.button-type",
+    "html.aria-live",
+    "css.reduced-motion",
+    "css.focus-visible",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "carrossel de banners na home",
+      "output": "section carousel with five slide groups, scroll snap track, Previous and Next, dots with Go to slide n, no autoplay"
+    }
+  ],
+  "size": 376,
+  "version": 1
+}

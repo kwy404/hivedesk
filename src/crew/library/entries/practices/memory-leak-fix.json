@@ -1,0 +1,36 @@
+{
+  "id": "memory-leak-fix",
+  "title": "Find and fix memory leaks",
+  "category": "practices",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "memory leak",
+    "memory",
+    "leak",
+    "heap",
+    "detached dom",
+    "listeners",
+    "intervals",
+    "gets slower over time"
+  ],
+  "when": "An app gets slower or uses more memory the longer it runs, or a long running Node process grows until it crashes.",
+  "inputs": [
+    "the long running code paths",
+    "how memory grows (per action, per request, over time)"
+  ],
+  "prompt": "Goal: Every resource created per view, request or action is released, and memory stays flat after repeated use.\nSteps:\n1. Reproduce: repeat the suspected action 50 times and watch memory (heap snapshot in dev tools, process.memoryUsage() in Node).\n2. Check timers: every setInterval and long setTimeout needs a clearInterval or clearTimeout when its view or job ends.\n3. Check listeners: listeners added to window, document or shared emitters must be removed, or use an AbortController signal and abort it on teardown.\n4. Check caches and maps that grow without limit: cap their size, evict old keys, or use WeakMap for per object data.\n5. Check closures that keep big arrays or detached DOM nodes alive after removal.\n6. In Node, look for arrays that collect every request or log line and for streams never closed.\nQuality bar:\n- Each setup has a matching teardown function.\n- Caches have a maximum size.\n- Memory after 50 repetitions returns close to the start.\nPitfalls:\n- Removing a listener with a different function reference than the one added.\n- Global arrays used as debug history.\n- Assuming removed DOM nodes are freed while a variable still points to them.\nVerify:\n- [ ] Repeating the action does not grow memory steadily.\n- [ ] Every interval has a clear.\n- [ ] Global listeners are removed on teardown.\n- [ ] Files parse.\nOutput: The fixed modules with teardown functions and a short note of the leaks found.",
+  "checks": [
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "the dashboard gets slow after an hour open",
+      "output": "setInterval per widget never cleared and a growing log array; added destroy() and capped the cache at 200 keys"
+    }
+  ],
+  "size": 407,
+  "version": 1
+}

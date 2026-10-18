@@ -1,0 +1,39 @@
+{
+  "id": "ext-logic-node-tests",
+  "title": "Testing extension logic with node:test",
+  "category": "tools",
+  "roles": [
+    "dev",
+    "qa"
+  ],
+  "tags": [
+    "extension tests",
+    "node:test",
+    "unit tests",
+    "fake chrome api",
+    "fake storage",
+    "manifest test",
+    "browser extension",
+    "testing"
+  ],
+  "when": "A browser extension has growing logic such as URL matching, settings migration or message handlers, and the user wants fast tests that run without opening a browser.",
+  "inputs": [
+    "logic modules",
+    "message handlers",
+    "manifest"
+  ],
+  "prompt": "Goal: Pure logic modules free of the global chrome object, tested with node:test and small fakes, plus a manifest guard test.\nSteps:\n1. Move logic into lib/*.js ES modules: matchSite(url, rules), migrate(old), and handlers that receive dependencies (handleSave(payload, { storage })).\n2. Only thin glue files (background.js, popup.js) call chrome.*; they pass chrome.storage.local into lib functions.\n3. test/fake-storage.js: an in memory store with async get(defaults), set(obj), remove(keys) and change listeners, returning the same shapes as the real API.\n4. test/logic.test.mjs imports test from node:test and assert from node:assert/strict; per handler test a valid payload, missing fields, an unknown type and a rejecting fake.\n5. Migration tests: an old schemaVersion object becomes the expected new one, and a second run changes nothing.\n6. test/manifest.test.mjs: parse manifest.json, assert manifest_version 3, no \"<all_urls>\", and every referenced file (worker, icons, pages) exists on disk.\n7. package.json \"test\": \"node --test\"; no browser or network needed.\nQuality bar:\n- Tests run in under two seconds.\n- lib/ never mentions chrome or window.\nPitfalls:\n- A global chrome mock leaking between tests; pass dependencies instead.\n- Fakes resolving undefined where the real API returns the defaults object.\nVerify:\n- [ ] Tests import node:test and node:assert.\n- [ ] Manifest test present.\n- [ ] lib/ free of chrome calls.\n- [ ] node --test passes.\nOutput: lib/*.js, test/fake-storage.js, test/logic.test.mjs, test/manifest.test.mjs and the test script.",
+  "checks": [
+    "node.test-runner",
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "testar a logica da minha extensao sem abrir o navegador",
+      "output": "lib/ modules with injected storage, test/fake-storage.js, logic and migration tests, manifest test checking v3 and files on disk"
+    }
+  ],
+  "size": 447,
+  "version": 1
+}

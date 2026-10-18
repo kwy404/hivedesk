@@ -1,0 +1,36 @@
+{
+  "id": "edge-case-tests",
+  "title": "Write tests for edge cases",
+  "category": "practices",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "edge cases",
+    "boundary values",
+    "corner cases",
+    "tests",
+    "empty input",
+    "invalid input",
+    "testing"
+  ],
+  "when": "Tests exist for the happy path and the user wants coverage of tricky inputs: empty, huge, invalid, boundary or unusual values.",
+  "inputs": [
+    "the function or feature",
+    "existing tests"
+  ],
+  "prompt": "Goal: A table of meaningful edge inputs, each with an expected result, encoded as compact table driven tests.\nSteps:\n1. Walk through categories: empty (empty string, [], {}), zero and negatives, boundaries (min, max, max plus one), wrong types, null and undefined.\n2. Add text cases: whitespace only, very long strings, non ASCII letters, emoji input, mixed line endings.\n3. Add time cases if dates are involved: month end, leap day, time zone change, midnight.\n4. Write the expected result for each before running, from the requirement.\n5. Encode as a table: const cases = [{ input, expected }] and loop with one test per row named after the input.\n6. Report any case where the code is wrong, then fix it or mark it clearly as a known bug with a skipped test and reason.\nQuality bar:\n- Every case targets a different rule.\n- Expected values come from the spec, not from running the code.\n- Test names say the input.\nPitfalls:\n- Dozens of similar cases that test the same branch.\n- Random inputs without a fixed seed.\n- Accepting a crash as expected behavior.\nVerify:\n- [ ] Each row runs as its own test.\n- [ ] Empty and boundary inputs are present.\n- [ ] The suite runs green or lists known failures with reasons.\n- [ ] The file parses.\nOutput: Additions to the test file, grouped in a describe block for edge cases.",
+  "checks": [
+    "file.test",
+    "js.syntax"
+  ],
+  "examples": [
+    {
+      "input": "test the weird inputs of parseQuantity",
+      "output": "table of 11 cases: \"\", \" 3 \", \"-1\", \"1e9\", \"3.5\", \"abc\", null; two bugs found and fixed"
+    }
+  ],
+  "size": 377,
+  "version": 1
+}

@@ -1,0 +1,53 @@
+{
+  "id": "month-calendar",
+  "title": "Month calendar view with events",
+  "category": "app-types",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "calendar",
+    "month view",
+    "calendar app",
+    "events",
+    "planner",
+    "agenda",
+    "schedule"
+  ],
+  "when": "The user wants a month calendar grid to browse months and add, edit and delete events on days.",
+  "inputs": [
+    "week start day",
+    "event fields",
+    "locale"
+  ],
+  "prompt": "Goal: A correct month grid for any month and locale, navigable by keyboard, with simple event editing.\nSteps:\n1. logic.mjs: monthGrid(year, month, weekStart) returns 6 rows of 7 { key, inMonth, isToday } from local Date(year, month, 1); eventsOn(events, key).\n2. Render a table with weekday th headers from Intl.DateTimeFormat; each day is a button labeled with the full date and event count.\n3. Header: month name, Previous, Today, Next; arrows move focus with roving tabindex, PageUp and PageDown change month.\n4. Clicking a day opens a dialog with aria-labelledby and a Close button: list events, add with title, time and color, edit, delete.\n5. Up to 3 chips per cell plus \"+2 more\"; under 600 px show an agenda list for the month.\n6. Persist events in localStorage calendar.v1 guarded.\n7. test.mjs: February in leap and common years, Monday and Sunday starts, a 6 row month.\nQuality bar:\n- Today is marked with text for screen readers.\n- Weekday names follow the locale.\n- Focus returns to the day after closing the dialog.\nPitfalls:\n- toISOString keys off by a day.\n- Grids that assume months start on Sunday.\n- Click only day cells.\nVerify:\n- [ ] th weekday headers.\n- [ ] Dialog has a name and close.\n- [ ] Grid tested.\n- [ ] node test.mjs passes.\nOutput: index.html, style.css, app.js, logic.mjs (grid and events), test.mjs.",
+  "checks": [
+    "html.doctype",
+    "html.lang",
+    "html.title",
+    "html.viewport",
+    "html.h1",
+    "html.main",
+    "css.media-query",
+    "css.focus-visible",
+    "js.syntax",
+    "js.safe-dom",
+    "text.no-placeholder",
+    "js.storage-guarded",
+    "js.json-parse-guarded",
+    "html.labels",
+    "html.table-headers",
+    "html.button-type",
+    "html.dialog-a11y",
+    "file.test"
+  ],
+  "examples": [
+    {
+      "input": "calendario mensal para marcar meus compromissos",
+      "output": "Monday first grid, Prev/Today/Next, day dialog with events"
+    }
+  ],
+  "size": 381,
+  "version": 1
+}

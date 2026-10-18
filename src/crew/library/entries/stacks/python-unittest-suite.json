@@ -1,0 +1,40 @@
+{
+  "id": "python-unittest-suite",
+  "title": "Python tests with unittest",
+  "category": "stacks",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "python",
+    "unittest",
+    "test",
+    "tests",
+    "unit test",
+    "testing",
+    "mock",
+    "test suite",
+    "regression"
+  ],
+  "when": "The user wants tests for Python code using only the standard library, or a bug fix that needs a regression test.",
+  "inputs": [
+    "modules to test",
+    "known edge cases"
+  ],
+  "prompt": "Goal: A unittest suite that runs with python -m unittest, covers edge cases, and isolates files, time and network.\nSteps:\n1. Create tests/__init__.py and tests/test_<module>.py importing the real code.\n2. One TestCase class per unit (TestParsePrice) with test_<behavior> methods.\n3. Cover normal input, boundaries, invalid input with assertRaises(ValueError) as ctx plus a check of str(ctx.exception), and one test per fixed bug.\n4. Tables of cases with self.subTest(raw=raw) inside a loop.\n5. Isolate with tempfile.TemporaryDirectory() and addCleanup; patch time, environment and network with unittest.mock.patch.\n6. Use assertEqual, assertAlmostEqual, assertIn, assertRegex so failures show values; run with python -m unittest discover -s tests -v.\nQuality bar:\n- Tests run in any order within seconds.\n- One behavior per test.\n- Nothing touches the real home folder or network.\nPitfalls:\n- Methods without the test_ prefix that never run.\n- Mocking the function under test.\n- Exact equality on floats.\nVerify:\n- [ ] Files named test_*.py under tests/.\n- [ ] Edge and error cases present.\n- [ ] Temp resources cleaned up.\n- [ ] No bare except.\nOutput: tests/test_*.py files and a Testing section in README.",
+  "checks": [
+    "file.test",
+    "py.indent",
+    "py.balanced",
+    "py.no-bare-except"
+  ],
+  "examples": [
+    {
+      "input": "cria testes para a função que calcula frete",
+      "output": "tests/test_shipping.py with subTest table of weights, zero weight error, regression for rounding bug"
+    }
+  ],
+  "size": 346,
+  "version": 1
+}

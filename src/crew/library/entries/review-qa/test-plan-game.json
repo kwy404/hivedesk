@@ -1,0 +1,35 @@
+{
+  "id": "test-plan-game",
+  "title": "Test plan for a browser game",
+  "category": "review-qa",
+  "roles": [
+    "qa"
+  ],
+  "tags": [
+    "game testing",
+    "game test plan",
+    "playtest",
+    "game qa",
+    "canvas game",
+    "game controls",
+    "game states"
+  ],
+  "when": "The user wants a plan to test a small browser game: rules, controls, scoring, win and lose, pause and performance.",
+  "inputs": [
+    "the game rules",
+    "input methods supported"
+  ],
+  "prompt": "Goal: A game test plan covering rules, every input method, state transitions and edge moments, with observable expected outcomes.\nSteps:\n1. Rewrite the rules as testable statements: a full row clears, +100 per row, game over when a new piece cannot spawn.\n2. Controls: each key, touch or click and gamepad if supported; key repeat, two keys at once, input while paused and after game over.\n3. States: start, playing, paused, game over, restart; each transition both ways, and restart resets score, timers and speed.\n4. Edges: first and last level, top score, top speed, window resize, hidden tab (visibilitychange pauses), very long sessions.\n5. Feel and speed: steady frame rate on a mid range phone, no stutter on spawn, audio starts only after a user gesture.\n6. Saves: high score survives reload; corrupted storage does not crash.\nQuality bar:\n- Each rule maps to a case.\n- Outcomes are observable (score shows 300).\n- A 5 minute free play session is included.\nPitfalls:\n- Only playing normally, never trying to break it.\n- Skipping touch and small screens.\n- Forgetting pause on tab switch.\nVerify:\n- [ ] Rules list written.\n- [ ] Every state transition covered.\n- [ ] All input methods covered.\n- [ ] Save cases present.\nOutput: game-test-plan.md with Rules, Controls, States, Edges and Results sections.",
+  "checks": [
+    "md.h1",
+    "md.sections"
+  ],
+  "examples": [
+    {
+      "input": "como testar meu jogo da cobrinha?",
+      "output": "rules: eat adds 1 and grows, wall or self hit ends; cases for reverse key, pause on hidden tab, high score after reload"
+    }
+  ],
+  "size": 375,
+  "version": 1
+}

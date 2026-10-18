@@ -1,0 +1,36 @@
+{
+  "id": "indexeddb-wrapper",
+  "title": "IndexedDB storage wrapper with promises",
+  "category": "stacks",
+  "roles": [
+    "dev"
+  ],
+  "tags": [
+    "indexeddb",
+    "database",
+    "browser database",
+    "offline data",
+    "large data",
+    "object store",
+    "save records",
+    "blobs"
+  ],
+  "when": "The app stores more than localStorage should hold (many records, blobs, files) or needs indexed queries in the browser.",
+  "inputs": [
+    "record types and their keys",
+    "queries the app runs"
+  ],
+  "prompt": "Goal: A small promise module over IndexedDB with a versioned schema, simple CRUD and clean error handling.\nSteps:\n1. openDB(name, version) wraps indexedDB.open; onupgradeneeded switches on event.oldVersion to apply schema steps in order (case 0, then case 1).\n2. Create stores with keyPath (\"notes\", { keyPath: \"id\" }) and indexes for queries (createIndex(\"byUpdated\", \"updatedAt\")).\n3. Wrap requests: new Promise((ok, fail) => { req.onsuccess = () => ok(req.result); req.onerror = () => fail(req.error); }).\n4. Export get, getAll, put, remove and byIndex; each opens its own transaction in the right mode, and writes resolve on tx.oncomplete.\n5. Handle onblocked and db.onversionchange (close, ask to reload) so two tabs cannot block an upgrade.\n6. If open fails (private mode, missing API), keep data in memory and tell the user it will not persist.\nQuality bar:\n- Upgrades never lose existing data.\n- Bulk writes share one transaction.\nPitfalls:\n- Awaiting unrelated work inside a transaction, which auto commits it (TransactionInactiveError).\n- Changing the schema without bumping the version.\n- Storing class instances; store plain objects.\nVerify:\n- [ ] onupgradeneeded uses oldVersion steps.\n- [ ] Every request has an error path.\n- [ ] Write helpers wait for transaction complete.\n- [ ] A fallback exists when open fails.\nOutput: js/db.js exporting openDB and the CRUD helpers, used by the app modules.",
+  "checks": [
+    "js.syntax",
+    "js.async-errors"
+  ],
+  "examples": [
+    {
+      "input": "store thousands of notes with images in the browser",
+      "output": "db.js with a notes store keyed by id, byUpdated index, promise get/put/remove"
+    }
+  ],
+  "size": 403,
+  "version": 1
+}

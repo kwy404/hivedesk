@@ -1,0 +1,39 @@
+{
+  "id": "review-security-pass",
+  "title": "Security review pass",
+  "category": "review-qa",
+  "roles": [
+    "reviewer",
+    "qa"
+  ],
+  "tags": [
+    "security review",
+    "security audit",
+    "vulnerabilities",
+    "xss",
+    "injection",
+    "secrets",
+    "path traversal",
+    "csrf"
+  ],
+  "when": "The user asks to check code for security problems: injection, XSS, leaked secrets, unsafe file access or weak input handling.",
+  "inputs": [
+    "the code",
+    "what data is sensitive",
+    "who can reach the app"
+  ],
+  "prompt": "Goal: A threat focused pass that maps where untrusted input enters, follows it to dangerous sinks, and reports each exploitable path with a fix.\nSteps:\n1. Sources: URL params, form fields, fetch responses, uploads, request bodies and headers, localStorage, CLI arguments.\n2. Sinks: innerHTML and insertAdjacentHTML, eval and new Function, string setTimeout, SQL strings, child_process exec, fs paths, redirects.\n3. Trace each source to each sink; an unvalidated, unencoded path is a finding. Give the payload that would exploit it (<img src=x onerror=alert(1)>, ../../etc/passwd).\n4. Secrets: search code, config and committed files for keys, tokens and passwords; any hit is a blocker.\n5. Server side: body limits, login attempt limits, cookies HttpOnly, Secure and SameSite, no wildcard CORS with credentials.\n6. Rate each finding critical, high, medium or low by impact and ease, with a one line fix.\nQuality bar:\n- Every finding has source, sink, payload and fix.\n- No speculative finding without a path.\n- Fixes use platform APIs (textContent, parameterized queries, a path.resolve root check).\nPitfalls:\n- Testing payloads anywhere except local copies.\n- Generic advice instead of paths in this code.\n- Missing stored XSS that comes back from localStorage.\nVerify:\n- [ ] Source and sink lists exist.\n- [ ] Each finding names file and line.\n- [ ] Secrets search done.\n- [ ] Severity assigned.\nOutput: security-review.md with sources, sinks, findings by severity and fixes.",
+  "checks": [
+    "js.no-eval",
+    "js.safe-dom",
+    "md.h1"
+  ],
+  "examples": [
+    {
+      "input": "is my guestbook page safe?",
+      "output": "critical: comment text into innerHTML (stored XSS) at guestbook.js:18, payload img onerror; fix textContent"
+    }
+  ],
+  "size": 422,
+  "version": 1
+}

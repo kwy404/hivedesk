@@ -1,0 +1,38 @@
+{
+  "id": "toggle-switch",
+  "title": "Accessible toggle switch",
+  "category": "ui-components",
+  "roles": [
+    "dev",
+    "designer"
+  ],
+  "tags": [
+    "toggle",
+    "switch",
+    "toggle switch",
+    "on off",
+    "settings toggle",
+    "checkbox switch",
+    "enable disable"
+  ],
+  "when": "The user wants on and off switches for settings such as notifications, dark mode or privacy options.",
+  "inputs": [
+    "the setting names",
+    "whether they apply at once or on save"
+  ],
+  "prompt": "Goal: A switch built on a real checkbox with role=\"switch\", clear on and off states and instant effect.\nSteps:\n1. <input type=\"checkbox\" role=\"switch\" id=\"notify\"> with <label for=\"notify\">Email notifications</label>; the label never changes with the state.\n2. Style the input itself: appearance: none, 2.75rem by 1.5rem, a ::before knob moved with translateX when :checked.\n3. Show the state with the knob position plus a fill, and keep a border for forced-colors mode.\n4. Apply the change on change; if it saves remotely, set aria-busy and revert with a message on failure.\n5. Transition the knob in 150 ms and remove the transition under prefers-reduced-motion.\nQuality bar:\n- Space toggles it, as a checkbox.\n- The hit area is at least 44 px tall including the label.\n- Disabled switches look disabled and say why nearby.\nPitfalls:\n- A div with a click listener that keyboards cannot reach.\n- Labels that flip between On and Off.\n- Switches for choices that only apply after Save (use a checkbox).\nVerify:\n- [ ] Each switch has a label.\n- [ ] role=\"switch\" on a checkbox input.\n- [ ] Focus ring is visible.\n- [ ] Reduced motion removes the slide.\nOutput: Switch markup, switch.css and a small switch.js when the change does more than submit.",
+  "checks": [
+    "html.labels",
+    "html.no-inline-handlers",
+    "css.focus-visible",
+    "css.reduced-motion"
+  ],
+  "examples": [
+    {
+      "input": "botoes liga e desliga para as notificacoes",
+      "output": "checkbox role switch labeled Email notifications, knob slides on checked, change applies at once"
+    }
+  ],
+  "size": 356,
+  "version": 1
+}

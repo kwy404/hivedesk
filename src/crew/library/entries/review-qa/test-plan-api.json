@@ -1,0 +1,36 @@
+{
+  "id": "test-plan-api",
+  "title": "Test plan for an HTTP API",
+  "category": "review-qa",
+  "roles": [
+    "qa",
+    "dev"
+  ],
+  "tags": [
+    "api testing",
+    "api test plan",
+    "endpoints",
+    "http api",
+    "rest api",
+    "status codes",
+    "integration tests"
+  ],
+  "when": "The user wants a plan to test an HTTP API or local server: endpoints, status codes, bodies, errors and limits.",
+  "inputs": [
+    "the endpoints",
+    "request and response shapes"
+  ],
+  "prompt": "Goal: An endpoint by endpoint plan with example requests and exact expected status, headers and body, ready for node:test with fetch.\nSteps:\n1. Table the endpoints: method, path, input shape, response shape.\n2. Per endpoint: success (200 or 201 with body shape), validation failure (400 naming the field), 404, 405, oversized body (413), malformed JSON (400).\n3. Headers: application/json on JSON, Location after create, cache headers where relevant.\n4. State: create then read returns the same data, PUT is idempotent, a second DELETE gives 404, data survives a restart.\n5. Concurrency: two writes at once lose nothing; list order is stable.\n6. Running: start the server on port 0 in a before hook, call it with fetch, close it in after.\nQuality bar:\n- Each case lists the request and the exact expected response.\n- Error bodies share one shape.\n- Cases need no third party tools.\nPitfalls:\n- Asserting status but not body.\n- Tests that rely on each other running in order.\n- Calling a real remote service.\nVerify:\n- [ ] Endpoint table exists.\n- [ ] Each endpoint has success and error cases.\n- [ ] State and restart cases present.\n- [ ] Run instructions included.\nOutput: api-test-plan.md, and optionally test/api.test.mjs with the first cases in node:test.",
+  "checks": [
+    "md.h1",
+    "md.fences"
+  ],
+  "examples": [
+    {
+      "input": "plano de testes para a API de tarefas",
+      "output": "GET /tasks 200 list, POST /tasks 201 with Location, POST bad JSON 400, PATCH missing id 404, body over 1 MB 413"
+    }
+  ],
+  "size": 360,
+  "version": 1
+}
