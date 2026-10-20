@@ -134,6 +134,17 @@ function capResult(tool, text) {
 }
 
 /**
+ * For a top level path that does not exist: the one existing file with the same name inside a folder
+ * (www/index.html for index.html), or null.
+ * @param {string} target @param {{ exists: (p: string) => boolean, list: () => Array<{ path: string }> }} ws
+ */
+export function folderTwin(target, ws) {
+  if (!target || target.includes('/') || ws.exists(target)) return null;
+  const same = ws.list().map((f) => f.path).filter((p) => p.includes('/') && p.split('/').pop() === target && !/^(test|tests|node_modules)\//.test(p));
+  return same.length === 1 ? same[0] : null;
+}
+
+/**
  * Keeps a worker's turn inside the model's context: an older read of a file that is read again later is
  * shortened (the newer copy is the one that counts), then the oldest steps go and the longest results are
  * cut until the prompt and the reply fit. A local model on a 6 GB card is reloaded with a longer context
@@ -309,6 +320,13 @@ export async function runTask(ctx) {
     const target = typeof action.args?.path === 'string' ? action.args.path.trim().replace(/\\/g, '/').replace(/^\.\//, '') : '';
     if ((action.tool === 'edit_file' || action.tool === 'write_file') && target && !known.has(target) && toolbox.ws.exists(target)) {
       steps.push({ action, result: `Error: ${target} already exists and you have not read it. Read it first with read_file, then change it with a small edit_file.` });
+      continue;
+    }
+    // A new top level file next to a project file of the same name in a folder (index.html when the
+    // skeleton has www/index.html): the model forgot the folder, so it is told which file to change.
+    const twin = ['edit_file', 'write_file', 'read_file'].includes(action.tool) ? folderTwin(target, toolbox.ws) : null;
+    if (twin) {
+      steps.push({ action, result: `Error: there is no ${target} at the top of the project; the project's file is ${twin}. Read ${twin} with read_file, then change ${twin}.` });
       continue;
     }
     bus.emit('worker.status', { workerId: worker.id, status: 'tool', detail: `${action.tool}${action.args?.path ? ' ' + action.args.path : ''}`, taskId: task.id }, jobOpt);

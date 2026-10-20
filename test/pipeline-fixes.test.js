@@ -68,3 +68,28 @@ describe('worker history fits the context', () => {
     expect(fitHistory(m, 100000)).toEqual(m);
   });
 });
+
+describe('the folder of a skeleton file', async () => {
+  const { folderTwin } = await import('../src/crew/worker.js');
+  const { chainBuild } = await import('../src/crew/planner.js');
+  const files = ['www/index.html', 'www/app.js', 'test/app.js', 'capacitor.config.json'];
+  const ws = { exists: (p) => files.includes(p), list: () => files.map((path) => ({ path })) };
+  it('points index.html to www/index.html', () => {
+    expect(folderTwin('index.html', ws)).toBe('www/index.html');
+    expect(folderTwin('app.js', ws)).toBe('www/app.js');
+  });
+  it('leaves new, existing and folder paths alone', () => {
+    expect(folderTwin('style2.css', ws)).toBe(null);
+    expect(folderTwin('capacitor.config.json', ws)).toBe(null);
+    expect(folderTwin('www/index.html', ws)).toBe(null);
+  });
+  it('chains build tasks for one local model, QA keeps its dependencies', () => {
+    const out = chainBuild([
+      { title: 'a', kind: 'build', dependsOn: [] },
+      { title: 'b', kind: 'build', dependsOn: [] },
+      { title: 'c', kind: 'docs', dependsOn: [0] },
+      { title: 'qa', kind: 'qa', dependsOn: [0, 1, 2] }
+    ]);
+    expect(out.map((t) => t.dependsOn)).toEqual([[], [0], [0, 1], [0, 1, 2]]);
+  });
+});

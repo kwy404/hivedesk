@@ -147,6 +147,17 @@ export function mergeByWorker(tasks) {
   });
 }
 
+/** Each build task waits for the build task before it (QA still waits for all of them). */
+export function chainBuild(tasks) {
+  let prev = -1;
+  return tasks.map((t, i) => {
+    if (t.kind === 'qa') return t;
+    const out = prev >= 0 && !t.dependsOn.includes(prev) ? { ...t, dependsOn: [...t.dependsOn, prev].sort((a, b) => a - b) } : t;
+    prev = i;
+    return out;
+  });
+}
+
 export async function makePlan({ scheduler, request, crew, playbook, files, notes, jobId, signal, merge = false, domain }) {
   const ids = crew.map((w) => w.id);
   const prefer = DOMAINS[domain]?.specialist || undefined;
@@ -158,7 +169,9 @@ export async function makePlan({ scheduler, request, crew, playbook, files, note
       options: { schema: planSchema(assignees), maxTokens: 1200, temperature: 0.2 }
     });
     let tasks = normalizePlan(result.json, ids, request, prefer);
-    if (merge) tasks = mergeByWorker(tasks);
+    // One local model serves one turn at a time, so parallel build tasks only make workers edit the
+    // same files at once: they run one after the other.
+    if (merge) tasks = chainBuild(mergeByWorker(tasks));
     // A plan written by a model on another machine is untrusted: the caller marks the whole job with its origin.
     return { tasks, summary: String(result.json?.summary || '').slice(0, 400), source: 'model', ...(result.remote ? { remote: result.remote } : {}) };
   } catch (err) {
