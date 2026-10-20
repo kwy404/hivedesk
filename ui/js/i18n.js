@@ -168,3 +168,15 @@ export function fmtKeys(kb) {
 export function fmtList(items, type = 'conjunction') {
   try { return new Intl.ListFormat(code, { style: 'long', type }).format(items); } catch { return items.join(', '); }
 }
+
+/**
+ * A download, install or load failure in the user's language, from its code: what happened and what to
+ * do. The engine's own English line (sizes, paths, the HTTP status) stays as the detail under it.
+ * @param {{ code?: string, message?: string, detail?: string, hint?: string, status?: number }} d
+ */
+export function dlError(d = {}) {
+  const key = `dl.err.${d.code}`;
+  const raw = d.message || d.detail || '';
+  if (d.code && has(key)) return { text: t(key, { status: d.status ?? '' }), detail: raw };
+  return { text: [raw, d.hint].filter(Boolean).join(' ') || t('dl.err.unknown'), detail: '' };
+}

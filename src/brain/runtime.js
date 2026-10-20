@@ -107,9 +107,15 @@ export async function installRuntime(home, opts = {}) {
     if (r.noNpm) {
       throw new RuntimeError('no_npm', 'Could not install the local runtime (node-llama-cpp): npm was not found.', 'Reinstall hivedesk from the site (the app brings its own npm), install Node.js 20 or newer, or use --brain ollama or --brain lmstudio.');
     }
-    throw new RuntimeError(r.offline ? 'no_network' : 'install_failed',
-      r.offline ? `Could not download the local runtime (node-llama-cpp): no network.${why}` : `Installing the local runtime (node-llama-cpp) failed (exit code ${r.code}).${why}`,
-      r.offline ? 'Check the connection and press Retry, or use --brain ollama or --brain lmstudio.' : 'Run hivedesk --doctor, or use --brain ollama or --brain lmstudio.');
+    if (r.offline) throw new RuntimeError('no_network', `Could not download the local runtime (node-llama-cpp): no network.${why}`, 'Check the connection and press Retry, or use --brain ollama or --brain lmstudio.');
+    if (/EBUSY|EPERM|EACCES|resource busy|locked/i.test(r.reason || '')) {
+      throw new RuntimeError('locked', `Installing the local runtime (node-llama-cpp) failed: a file in the runtime folder is in use.${why}`, 'Close other hivedesk windows, wait for the antivirus scan or allow the hivedesk folder in it, then press Retry.');
+    }
+    if (/E404|404 Not Found/i.test(r.reason || '')) {
+      throw new RuntimeError('not_found', `Installing the local runtime (node-llama-cpp) failed: the npm registry does not have it (404).${why}`, 'Press Retry later or update hivedesk; meanwhile use --brain ollama or --brain lmstudio.');
+    }
+    throw new RuntimeError('install_failed', `Installing the local runtime (node-llama-cpp) failed:${why || ' npm stopped without saying why.'}`,
+      'Press Retry, run hivedesk --doctor, or use --brain ollama or --brain lmstudio.');
   }
   const found = installedEntry(home);
   if (!found) throw new RuntimeError('install_failed', 'The runtime was installed but could not be found.', 'Delete the runtime folder in the cache and try again.');

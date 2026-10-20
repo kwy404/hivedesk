@@ -10,7 +10,7 @@ import * as act from '../actions.js';
 import { brainInfo, backendLabel, shortModel } from '../brainstate.js';
 import { setMuted, isMuted, preview as previewSound } from '../sound.js';
 import { enableSystem, systemEnabled, notify } from '../notify.js';
-import { t, tmap, fmtNumber, fmtKeys, fmtList, L, LOCALES, locale, setLocale } from '../i18n.js';
+import { t, tmap, fmtNumber, fmtKeys, fmtList, L, LOCALES, locale, setLocale, dlError } from '../i18n.js';
 import { voiceSettings } from '../voice/index.js';
 import { setTip } from '../tooltip.js';
 import { track, btn } from './util.js';
@@ -66,7 +66,7 @@ function downloadCard() {
         h('span', { class: 'tiny muted', text: t('settings.download.orChoose') })));
     }
   } else if (phase === 'failed') {
-    card.append(h('div', { class: 'honest bad', style: 'margin:0 0 10px' }, icon('x'), h('div', {}, h('b', { text: dd.message || t('settings.download.failed') }), dd.hint ? h('div', { class: 'small', style: 'margin-top:3px', text: dd.hint }) : null)),
+    card.append(h('div', { class: 'honest bad', style: 'margin:0 0 10px' }, icon('x'), h('div', {}, h('b', { text: dd.code ? dlError(dd).text : dd.message || t('settings.download.failed') }), (dd.code ? dlError(dd).detail : dd.hint) ? h('div', { class: 'small', style: 'margin-top:3px', text: dd.code ? dlError(dd).detail : dd.hint }) : null)),
       h('div', { class: 'row' }, tipped(btn(t('settings.download.retry'), () => act.startDownload(dd.model), 'btn btn-sm btn-primary', 'download'), 'tip.settings.retry')));
   }
   return card;

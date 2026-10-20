@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pcmToWav } from './wav.js';
+import { startError } from './whisper.js';
 
 export const MAX_TTS_CHARS = 600;
 
@@ -33,13 +34,13 @@ export function piperSpeak(o) {
     o.signal?.addEventListener('abort', onAbort, { once: true });
     child.stdout.on('data', (c) => chunks.push(c));
     child.stderr?.on('data', (c) => { err = (err + c).slice(-1500); });
-    child.on('error', (e) => { clearTimeout(timer); reject(Object.assign(new Error(`piper: ${e.message}`), { code: 'tts_failed' })); });
+    child.on('error', (e) => { clearTimeout(timer); reject(Object.assign(new Error(`piper: ${startError(-1, '', e, o.binary).message}`), { code: e.code === 'ENOENT' ? 'tts_missing' : 'tts_failed' })); });
     child.on('close', (code) => {
       clearTimeout(timer);
       o.signal?.removeEventListener('abort', onAbort);
       const pcm = Buffer.concat(chunks);
       if (o.signal?.aborted) return reject(Object.assign(new Error('stopped'), { code: 'aborted' }));
-      if (code !== 0 || !pcm.length) return reject(Object.assign(new Error(`piper: ${err.trim().split(/\r?\n/).pop() || `exit ${code}`}`), { code: 'tts_failed' }));
+      if (code !== 0 || !pcm.length) return reject(Object.assign(new Error(`piper: ${code !== 0 ? startError(code, err, null, o.binary).message.replace(/^whisper-server stopped: /, '') : err.trim().split(/\r?\n/).pop() || 'no audio'}`), { code: 'tts_failed' }));
       resolve(pcmToWav(pcm.length % 2 ? pcm.subarray(0, pcm.length - 1) : pcm, rate));
     });
     child.stdin.end(`${text}\n`);

@@ -13,7 +13,7 @@ import * as net from '/js/net.js';
 import { rev } from '/js/store.js';
 import { openDialog } from '/js/dialog.js';
 import { notify } from '/js/notify.js';
-import { fmtNumber, L } from '/js/i18n.js';
+import { fmtNumber, L, dlError } from '/js/i18n.js';
 import { track } from '/js/widgets/util.js';
 import { T, strings } from './t.js';
 import { mx, analyze, loadCatalog, optionOf, shortName, modelOf, hardwarePanel, whyText, whereText, speedText, qualityBars, licenseLine, put, gb, errText, openConsent } from './index.js';
@@ -43,7 +43,7 @@ net.on('event', (frame) => {
   } else if (/^models\.install\.(finished|failed|cancelled|queued|started)$/.test(e.type) || e.type === 'models.deleted' || e.type === 'brain.download.finished') {
     if (/finished|deleted/.test(e.type)) analyze();
     else refreshDisk();
-    if (e.type === 'models.install.failed') notify({ title: T('models.dl.failed'), body: e.data.message, tone: 'bad', icon: 'download' });
+    if (e.type === 'models.install.failed') notify({ title: T('models.dl.failed'), body: dlError(e.data).text, tone: 'bad', icon: 'download' });
   } else if (/^pool\.(lend|share|flag|build)/.test(e.type)) {
     loadShare();
   } else if (e.type === 'models.router.changed') {

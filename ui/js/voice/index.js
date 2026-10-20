@@ -9,7 +9,7 @@
 // Piper voice. Mel always asks before she acts (session.js).
 
 import { h, icon, reducedMotion, clear, append } from '../dom.js';
-import { t, locale, onLocale, LOCALES, setLocale } from '../i18n.js';
+import { t, locale, onLocale, LOCALES, setLocale, dlError } from '../i18n.js';
 import { format } from '/i18n/index.js';
 import { S, worker, currentJob, jobTasks, onEvent } from '../store.js';
 import { command, on as onFrame, token } from '../net.js';
@@ -310,6 +310,7 @@ function showError(code, err) {
     NotFoundError: 'voice.err.mic', 'audio-capture': 'voice.err.mic', 'language-not-supported': 'voice.err.lang', network: 'voice.err.network',
     needs_download: 'voice.ui.errNeedsModel', needs_browser_consent: 'voice.ui.errNeedsBrowserOk', browser_unsupported: 'voice.err.unsupported',
     stt_failed: 'voice.ui.errStt', timeout: 'voice.ui.errTimeout',
+    stt_missing: 'voice.ui.errSttMissing', stt_blocked: 'voice.ui.errSttBlocked', stt_start: 'voice.ui.errSttStart', stt_model: 'voice.ui.errSttModel',
   }[code];
   session.state.reply = key ? vt(key) : vt('voice.say.failed', { message: err?.message || code });
   showOrb();
@@ -478,7 +479,7 @@ function paintDownloads() {
   const list = [...downloads.entries()];
   el.dl.hidden = !list.length;
   el.dl.replaceChildren(...list.map(([id, d]) => h('div', { class: 'vo-dl-i' },
-    h('span', { class: 'tiny', text: d.error ? vt('voice.ui.dlFailed', { id, error: d.error }) : vt('voice.ui.dlProgress', { id, pct: pct(d) }) }),
+    h('span', { class: 'tiny', text: d.error ? vt('voice.ui.dlFailed', { id, error: dlError({ ...d, message: d.error }).text }) : vt('voice.ui.dlProgress', { id, pct: pct(d) }) }),
     d.error ? null : h('div', { class: 'vo-bar' }, h('i', { style: `width:${pct(d)}%` })))));
 }
 

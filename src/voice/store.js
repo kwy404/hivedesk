@@ -83,7 +83,8 @@ export class VoiceStore {
     if (pkg.binary) {
       await (opts.untar || untar)(file, dir);
       fs.rmSync(file, { force: true });
-      if (!this.binaryOf(pkg)) throw Object.assign(new Error(`${pkg.binary} was not found in ${pkg.file}`), { code: 'install_failed' });
+      // An antivirus that quarantines the program right after unpacking leaves no file behind.
+      if (!this.binaryOf(pkg)) throw Object.assign(new Error(`${pkg.binary} is missing after unpacking ${pkg.file}; an antivirus may have quarantined it.`), { code: 'quarantined', hint: 'Allow the hivedesk folder in the antivirus, then press Retry.' });
       if (process.platform !== 'win32') { try { fs.chmodSync(this.binaryOf(pkg), 0o755); } catch { /* read only */ } }
     }
     return dir;

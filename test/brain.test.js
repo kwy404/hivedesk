@@ -400,7 +400,7 @@ describe('runtime install', () => {
     const home = path.join(tmpDir(), 'First Last', '.hivedesk');
     const f = await npmFake(() => ({ code: 1, out: 'npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/x\nnpm error A complete log of this run can be found in: C:\\log.txt\n' }));
     const err = await installRuntime(home, { spawnImpl: f.spawnImpl }).catch((e) => e);
-    expect(err).toMatchObject({ code: 'install_failed' });
+    expect(err).toMatchObject({ code: 'not_found' });
     expect(err.message).toMatch(/404 Not Found/);
     expect(err.message).not.toMatch(/complete log/);
     expect(f.calls).toHaveLength(3);

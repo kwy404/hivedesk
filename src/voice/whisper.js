@@ -40,6 +40,23 @@ export function cleanTranscript(text) {
     .trim();
 }
 
+/**
+ * Why whisper-server could not start, in words: gone (an antivirus quarantine), blocked, a missing DLL,
+ * a processor without the instructions of the build, a taken port, a bad model file. Never only an exit code.
+ */
+export function startError(code, tail, spawnErr, binary) {
+  const err = (c, message, extra) => Object.assign(new Error(message), { code: c, ...extra });
+  const last = String(tail || '').split(/\r?\n/).filter(Boolean).slice(-2).join(' ');
+  if (spawnErr?.code === 'ENOENT') return err('stt_missing', `The speech program is missing (${binary}); an antivirus may have quarantined it.`);
+  if (spawnErr) return err('stt_blocked', `Windows or an antivirus blocked the speech program from starting (${spawnErr.code || spawnErr.message}).`);
+  if (/bind|address already in use|EADDRINUSE/i.test(last)) return err('stt_failed', `whisper-server could not use its port: ${last}`, { portInUse: true });
+  const u = Number(code) >>> 0;
+  if (u === 0xC0000135 || u === 0xC0000139 || u === 0xC000007B) return err('stt_start', `The speech program could not start: a system library (DLL) it needs is missing (0x${u.toString(16).toUpperCase()}).`);
+  if (u === 0xC000001D) return err('stt_start', 'The speech program could not start: this processor lacks an instruction the build needs.');
+  if (/failed to (load|read|open|initialize)|invalid model|bad magic/i.test(last)) return err('stt_model', `whisper-server could not read the speech model: ${last}`);
+  return err('stt_failed', `whisper-server stopped: ${last || `exit ${code}`}`);
+}
+
 export class WhisperServer {
   /**
    * @param {{ binary: string, model: string, gpu?: boolean, threads?: number, idleMs?: number, spawnImpl?: typeof spawn, fetchImpl?: typeof fetch, log?: (s: string) => void }} o
@@ -62,36 +79,48 @@ export class WhisperServer {
 
   async start() {
     if (this.ready) return this.ready;
+    // A port taken between the probe and the bind (another program got there first): another port, twice at most.
     this.ready = (async () => {
-      this.port = await freePort();
-      const args = ['-m', this.o.model, '--host', '127.0.0.1', '--port', String(this.port), '-t', String(this.o.threads), '-l', 'auto', '-nt', '-sns'];
-      if (!this.o.gpu) args.push('-ng');
-      const sp = this.o.spawnImpl || spawn;
-      const child = sp(this.o.binary, args, { cwd: path.dirname(this.o.binary), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-      this.child = child;
-      let tail = '';
-      const onData = (c) => { tail = (tail + c).slice(-3000); };
-      child.stdout?.on('data', onData);
-      child.stderr?.on('data', onData);
-      const exited = new Promise((resolve) => child.on('exit', (code) => resolve(code)));
-      child.on('error', (err) => { tail += String(err.message); });
-      exited.then(() => { if (this.child === child) { this.child = null; this.ready = null; } });
-      const f = this.o.fetchImpl || fetch;
-      const deadline = Date.now() + 60000;
-      while (Date.now() < deadline) {
-        const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(undefined), 250))]);
-        if (code !== undefined) throw Object.assign(new Error(`whisper-server stopped: ${tail.split(/\r?\n/).filter(Boolean).slice(-2).join(' ') || `exit ${code}`}`), { code: 'stt_failed' });
-        try {
-          // The server answers only after the model is loaded.
-          const r = await f(`http://127.0.0.1:${this.port}/health`, { signal: AbortSignal.timeout(1000) });
-          if (r.status) return;
-        } catch { /* not up yet */ }
+      for (let attempt = 0; ; attempt++) {
+        try { return await this._launch(); } catch (err) { if (!err.portInUse || attempt >= 2) throw err; }
       }
-      this.stop();
-      throw Object.assign(new Error('whisper-server did not start within a minute'), { code: 'stt_failed' });
     })();
     try { await this.ready; } catch (err) { this.ready = null; throw err; }
     return this.ready;
+  }
+
+  async _launch() {
+    this.port = await freePort();
+    // The model and program paths are single arguments with no shell, so spaces and accents stay intact.
+    const args = ['-m', this.o.model, '--host', '127.0.0.1', '--port', String(this.port), '-t', String(this.o.threads), '-l', 'auto', '-nt', '-sns'];
+    if (!this.o.gpu) args.push('-ng');
+    const sp = this.o.spawnImpl || spawn;
+    const child = sp(this.o.binary, args, { cwd: path.dirname(this.o.binary), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    this.child = child;
+    let tail = '';
+    let spawnErr = null;
+    const onData = (c) => { tail = (tail + c).slice(-3000); };
+    child.stdout?.on('data', onData);
+    child.stderr?.on('data', onData);
+    // A program that cannot start (gone, blocked) emits error and maybe no exit: both end the wait.
+    const exited = new Promise((resolve) => {
+      child.on('exit', (code) => resolve(code));
+      child.on('error', (err) => { spawnErr = err; resolve(-1); });
+    });
+    exited.then(() => { if (this.child === child) this.child = null; });
+    const f = this.o.fetchImpl || fetch;
+    const deadline = Date.now() + 60000;
+    while (Date.now() < deadline) {
+      const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(undefined), 250))]);
+      if (code !== undefined) throw startError(code, tail, spawnErr, this.o.binary);
+      try {
+        // The server answers only after the model is loaded.
+        const r = await f(`http://127.0.0.1:${this.port}/health`, { signal: AbortSignal.timeout(1000) });
+        if (r.status) return;
+      } catch { /* not up yet */ }
+    }
+    this.stop();
+    throw Object.assign(new Error('whisper-server did not start within a minute'), { code: 'stt_failed' });
   }
 
   /**

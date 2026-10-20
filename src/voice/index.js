@@ -128,7 +128,7 @@ export function createVoiceEngine(o) {
         o.bus.emit('voice.installed', { id: p.id, kind: p.kind });
         o.bus.live('voice.download', { id: p.id, received: p.bytes, total: p.bytes, done: true });
       })
-      .catch((err) => o.bus.live('voice.download', { id: p.id, error: String(err.message || err), code: err.code || 'failed' }))
+      .catch((err) => o.bus.live('voice.download', { id: p.id, error: String(err.message || err), code: err.code || 'failed', ...(err.hint ? { hint: err.hint } : {}), ...(err.status ? { status: err.status } : {}), ...(err.retryAfter ? { retryAfter: err.retryAfter } : {}) }))
       .finally(() => downloads.delete(p.id));
     return { id: p.id, downloading: true };
   }

@@ -21,6 +21,20 @@ export function asPick(m) {
   return resolvePick(`${m.id}:Q4_K_M`) || m;
 }
 
+/** The free disk now (it shrinks as models download), never more than the hardware probe saw. */
+function freshFree(dir, probed) {
+  const now = diskFree(fs.existsSync(dir) ? dir : path.dirname(dir));
+  if (now == null) return probed ?? null;
+  return probed == null ? now : Math.min(now, probed);
+}
+
+/** The numbers a translated download error shows (HTTP status, seconds to wait, space needed and free). */
+function dlFacts(e) {
+  const out = {};
+  for (const k of ['status', 'retryAfter', 'need', 'free']) if (e?.[k] != null) out[k] = e[k];
+  return out;
+}
+
 /** What the UI and the log show about a pick before a download. */
 export function pickInfo(m) {
   return {
@@ -268,8 +282,9 @@ export class BrainManager {
       this.bus.emit('brain.runtime', { state: 'ready', package: RUNTIME_PACKAGE, version: r.version, path: r.entry });
       return r;
     } catch (err) {
-      this.bus.emit('brain.runtime', { state: 'failed', package: RUNTIME_PACKAGE, message: String(err.message), hint: err.hint });
-      this.status('error', { backend: 'local', detail: String(err.message), hint: err.hint || 'Run hivedesk --doctor, or use --brain ollama or --brain lmstudio.' });
+      const code = `runtime_${err.code || 'install_failed'}`;
+      this.bus.emit('brain.runtime', { state: 'failed', package: RUNTIME_PACKAGE, message: String(err.message), hint: err.hint, code });
+      this.status('error', { backend: 'local', code, detail: String(err.message), hint: err.hint || 'Run hivedesk --doctor, or use --brain ollama or --brain lmstudio.' });
       return null;
     }
   }
@@ -305,7 +320,7 @@ export class BrainManager {
       const out = await downloadModel(model, {
         home: this.home,
         fetchImpl: this.fetch,
-        freeBytes: this.hardware?.diskFreeBytes,
+        freeBytes: freshFree(modelsDir(this.home), this.hardware?.diskFreeBytes),
         signal: this.downloadCtrl.signal,
         onProgress: ({ received, total, bps, part, parts }) => {
           this.bus.live('brain.download.progress', { model: model.name, id: model.id, received, total, bps, ...(parts ? { part, parts } : {}) });
@@ -323,8 +338,9 @@ export class BrainManager {
         this.log('checksum mismatch, downloading again');
         return this._ensureModel(model, trigger);
       }
-      this.bus.emit('brain.download.failed', { model: model.name, id: model.id, code: e.code, message: e.message, hint: e.hint });
-      this.status('error', { backend: 'local', model: model.name, detail: e.message, hint: e.hint });
+      const facts = dlFacts(e);
+      this.bus.emit('brain.download.failed', { model: model.name, id: model.id, code: e.code, message: e.message, hint: e.hint, ...facts });
+      this.status('error', { backend: 'local', model: model.name, code: e.code, detail: e.message, hint: e.hint, ...facts });
       return null;
     } finally {
       this.downloadCtrl = null;
@@ -344,7 +360,7 @@ export class BrainManager {
       return true;
     } catch (err) {
       if (err.code === 'no_memory' || !gpu) {
-        this.status('error', { backend: 'local', model: name, detail: `could not load the model: ${err.message}`, hint: err.hint || 'Try a smaller model, close other apps to free memory, or use Ollama or LM Studio.' });
+        this.status('error', { backend: 'local', model: name, code: err.code === 'no_memory' ? 'no_memory' : 'load_failed', detail: `could not load the model: ${err.message}`, hint: err.hint || 'Try a smaller model, close other apps to free memory, or use Ollama or LM Studio.' });
         return false;
       }
       // The GPU works but the model does not fit in its VRAM: the next smaller model, still on the GPU.
@@ -567,7 +583,7 @@ export class BrainManager {
       this._installedCache = null;
       this.bus.emit('models.install.finished', { id: p.id, model: p.name, bytes: p.bytes, ms: Date.now() - started });
     } catch (err) {
-      this.bus.emit(ctrl.signal.aborted ? 'models.install.cancelled' : 'models.install.failed', { id: p.id, code: err.code || 'io', message: String(err.message || err).slice(0, 300) });
+      this.bus.emit(ctrl.signal.aborted ? 'models.install.cancelled' : 'models.install.failed', { id: p.id, model: p.name, code: err.code || 'io', message: String(err.message || err).slice(0, 300), hint: err.hint, ...dlFacts(err) });
     } finally {
       this.installing = null;
       this._pumpInstalls();

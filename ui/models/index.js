@@ -11,7 +11,7 @@ import * as net from '/js/net.js';
 import { S, rev, ui, extra, onEvent } from '/js/store.js';
 import { openDialog } from '/js/dialog.js';
 import { notify } from '/js/notify.js';
-import { fmtNumber, L } from '/js/i18n.js';
+import { fmtNumber, L, dlError } from '/js/i18n.js';
 import { track } from '/js/widgets/util.js';
 import { T, strings, ready } from './t.js';
 
@@ -169,7 +169,8 @@ function progressView(onClose) {
       return;
     }
     if (d.phase === 'failed' || b.state === 'error') {
-      put(box, h('div', { class: 'honest bad' }, icon('x'), h('div', {}, h('b', { text: d.message || b.detail || T('models.dl.failed') }), d.hint || b.hint ? h('div', { class: 'small', text: d.hint || b.hint }) : null)),
+      const failure = dlError(d.phase === 'failed' ? d : { ...b, message: b.detail });
+      put(box, h('div', { class: 'honest bad' }, icon('x'), h('div', {}, h('b', { text: failure.text || T('models.dl.failed') }), failure.detail ? h('div', { class: 'small', text: failure.detail }) : null)),
         h('div', { class: 'row', style: 'justify-content:flex-end' },
           d.id ? h('button', { type: 'button', class: 'btn btn-sm btn-primary', text: T('models.btn.retry'), on: { click: () => consent(d.id, { via: 'card' }) } }) : null,
           h('button', { type: 'button', class: 'btn btn-sm btn-quiet', text: T('models.btn.close'), on: { click: onClose } })));

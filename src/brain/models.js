@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { once } from 'node:events';
 import { diskFree, formatBytes } from './hardware.js';
 
 const HF = 'https://huggingface.co';
@@ -141,11 +142,12 @@ export function isCached(home, model) {
 }
 
 export class DownloadError extends Error {
-  /** @param {'no_disk'|'no_network'|'http'|'aborted'|'io'|'checksum'} code */
-  constructor(code, message, hint) {
+  /** @param {'no_disk'|'no_network'|'not_found'|'forbidden'|'rate_limited'|'server'|'http'|'aborted'|'io'|'locked'|'checksum'|'too_big'} code */
+  constructor(code, message, hint, extra) {
     super(message);
     this.code = code;
     this.hint = hint;
+    if (extra) Object.assign(this, extra);
   }
 }
 
@@ -154,17 +156,29 @@ function networkCode(err) {
   return /ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|EHOSTUNREACH|UND_ERR/.test(c) || err?.name === 'TypeError';
 }
 
+/** A file in use by another program (an antivirus scan, a second window): Windows says EBUSY or EPERM. */
+const LOCKED = /^(EBUSY|EPERM|EACCES|EISDIR|ETXTBSY)$/;
+
 async function hashFile(file, hash) {
   await new Promise((resolve, reject) => {
     fs.createReadStream(file).on('data', (c) => hash.update(c)).on('end', resolve).on('error', reject);
   });
 }
 
+const hostOf = (url) => { try { return new URL(url).host; } catch { return 'the download server'; } };
+const sleep = (ms, signal) => new Promise((resolve) => {
+  const t = setTimeout(resolve, ms);
+  signal?.addEventListener('abort', () => { clearTimeout(t); resolve(); }, { once: true });
+});
+
+/** Downloads in progress, by target file: a second download of the same model waits for the first. */
+const inflight = new Map();
+
 /**
  * Downloads a model into the cache with resume (`.part`) and SHA-256 verification of every file.
  * A split model (catalog picks of the biggest files) downloads its parts one after the other.
  * @param {{ name: string, bytes: number, file?: string, url?: string, sha256?: string | null, files?: { file?: string, path?: string, bytes: number, sha256: string, url: string }[] }} model
- * @param {{ home: string, dir?: string, onProgress?: (p: { received: number, total: number, bps: number, part?: number, parts?: number }) => void, signal?: AbortSignal, fetchImpl?: typeof fetch, freeBytes?: number | null }} opts
+ * @param {{ home: string, dir?: string, onProgress?: (p: { received: number, total: number, bps: number, part?: number, parts?: number }) => void, signal?: AbortSignal, fetchImpl?: typeof fetch, freeBytes?: number | null, retryDelayMs?: number }} opts
  * @returns {Promise<string>} the path to load (the first part)
  */
 export async function downloadModel(model, opts) {
@@ -176,7 +190,17 @@ export async function downloadModel(model, opts) {
     if (!Number.isSafeInteger(p.bytes) || p.bytes <= 0 || p.bytes > MAX_PART_BYTES) throw new DownloadError('too_big', `${model.name} has a part with no size or one over ${formatBytes(MAX_PART_BYTES)}.`, 'Pick a model from the catalog, or point --model at a GGUF file you already have.');
     if (typeof p.file !== 'string' || !p.file || p.file !== path.basename(p.file) || p.file.startsWith('.')) throw new DownloadError('io', `${model.name} has a part with a bad file name.`, 'Pick a model from the catalog.');
   }
-  fs.mkdirSync(dir, { recursive: true });
+  const key = path.resolve(dir, parts[0].file).toLowerCase();
+  while (inflight.has(key)) { try { await inflight.get(key); } catch { /* this one tries for itself */ } }
+  const job = downloadParts(model, parts, dir, opts);
+  inflight.set(key, job);
+  try { return await job; } finally { inflight.delete(key); }
+}
+
+async function downloadParts(model, parts, dir, opts) {
+  try { fs.mkdirSync(dir, { recursive: true }); } catch (err) {
+    throw new DownloadError(LOCKED.test(err.code) ? 'locked' : 'io', `Could not create the folder ${dir} (${err.code || err.message}).`, 'Check that the folder can be written, then press Retry.');
+  }
   const total = parts.reduce((n, p) => n + p.bytes, 0);
   const sizeOf = (f) => { try { return fs.statSync(f).size; } catch { return 0; } };
   // Disk: what is still missing, plus room.
@@ -191,7 +215,7 @@ export async function downloadModel(model, opts) {
   const need = missing + 100e6;
   if (missing > 0 && free != null && free < need) {
     throw new DownloadError('no_disk', `Not enough disk space for ${model.name}: needs ${formatBytes(need)}, ${formatBytes(free)} free in ${dir}.`,
-      'Free some space, use a smaller model, point --model at a GGUF file you already have, or run Ollama or LM Studio.');
+      'Free some space, use a smaller model, point --model at a GGUF file you already have, or run Ollama or LM Studio.', { need, free });
   }
   let done = 0;
   for (let i = 0; i < parts.length; i++) {
@@ -205,46 +229,121 @@ export async function downloadModel(model, opts) {
   return path.join(dir, parts[0].file);
 }
 
+/** Retry-After in seconds (a number or an HTTP date), or null. */
+function retryAfter(res) {
+  const v = res.headers?.get?.('retry-after');
+  if (!v) return null;
+  const n = Number(v);
+  if (Number.isFinite(n)) return Math.max(0, Math.ceil(n));
+  const t = Date.parse(v);
+  return Number.isFinite(t) ? Math.max(0, Math.ceil((t - Date.now()) / 1000)) : null;
+}
+
+/** The error for an HTTP status, with what to do. */
+function httpError(res, name, url) {
+  const host = hostOf(url);
+  const st = res.status;
+  if (st === 404 || st === 410) return new DownloadError('not_found', `${name} is no longer at ${host} (HTTP ${st}).`, 'Use another model; updating hivedesk refreshes the catalog. Press Retry if the server was being updated.', { status: st });
+  if (st === 401 || st === 403) return new DownloadError('forbidden', `${host} refused the download of ${name} (HTTP ${st}).`, 'Press Retry later or use another model. A network filter or proxy can also block it.', { status: st });
+  if (st === 429) {
+    const after = retryAfter(res);
+    return new DownloadError('rate_limited', `${host} asks to wait before downloading again (HTTP 429)${after ? `, about ${after} seconds` : ''}.`, 'Wait a little and press Retry; the download continues where it stopped.', { status: st, retryAfter: after });
+  }
+  if (st >= 500) return new DownloadError('server', `${host} had a problem sending ${name} (HTTP ${st}).`, 'Press Retry in a few minutes; the download continues where it stopped.', { status: st });
+  return new DownloadError('http', `The download of ${name} failed with HTTP ${st}.`, 'Press Retry later, or use another model.', { status: st });
+}
+
+/** Moves the verified part into place, waiting out a short lock (an antivirus scanning the new file). */
+async function moveIntoPlace(part, final, opts) {
+  const delay = opts.retryDelayMs ?? 500;
+  for (let i = 0; ; i++) {
+    try {
+      fs.renameSync(part, final);
+      return final;
+    } catch (err) {
+      if (!LOCKED.test(err?.code || '')) throw new DownloadError('io', `Could not save ${final} (${err.code || err.message}).`, 'Check that the folder can be written, then press Retry.');
+      if (i >= 5) {
+        throw new DownloadError('locked', `${final} is in use by another program (${err.code}), so the verified download could not be put in place.`,
+          'An antivirus scan or another hivedesk window may hold it: wait a moment, or allow the hivedesk folder in the antivirus, then press Retry. The verified download is kept.');
+      }
+      await sleep(delay * (i + 1));
+    }
+  }
+}
+
 async function downloadFile(p, final, opts) {
   const f = opts.fetchImpl || fetch;
   const part = final + '.part';
+  const host = hostOf(p.url);
   let have = 0;
   try { have = fs.statSync(part).size; } catch { /* fresh */ }
   if (have > p.bytes) { fs.rmSync(part, { force: true }); have = 0; }
   const hash = crypto.createHash('sha256');
   if (have > 0) await hashFile(part, hash);
-  const report = (received, bps) => opts.onProgress?.({ received: opts.offset + received, total: opts.total, bps, ...(opts.count > 1 ? { part: opts.index + 1, parts: opts.count } : {}) });
-  let res;
-  try {
-    res = await f(p.url, { headers: have ? { range: `bytes=${have}-` } : {}, redirect: 'follow', signal: opts.signal });
-  } catch (err) {
-    if (opts.signal?.aborted) throw new DownloadError('aborted', 'The download was stopped.', 'Press Retry to continue where it stopped.');
-    if (networkCode(err)) {
-      throw new DownloadError('no_network', `Could not reach huggingface.co to download ${opts.name}.`,
-        'Check the connection and press Retry, or use --model <file.gguf>, or --demo to look around.');
-    }
-    throw new DownloadError('io', String(err.message || err), 'Press Retry.');
-  }
-  if (have && res.status === 200) {
-    // The server ignored the range: start over.
+  if (have === p.bytes) {
+    // A complete part left by a crash or a lock: verify it, no request needed.
+    if (hash.digest('hex') === String(p.sha256).toLowerCase()) return moveIntoPlace(part, final, opts);
     fs.rmSync(part, { force: true });
-    hash.destroy?.();
     return downloadFile(p, final, opts);
   }
-  if (!res.ok && res.status !== 206) throw new DownloadError('http', `The download failed with HTTP ${res.status}.`, 'Press Retry later, or use --model <file.gguf>.');
-  const out = fs.createWriteStream(part, { flags: have ? 'a' : 'w' });
+  const report = (received, bps) => opts.onProgress?.({ received: opts.offset + received, total: opts.total, bps, ...(opts.count > 1 ? { part: opts.index + 1, parts: opts.count } : {}) });
+  const aborted = () => new DownloadError('aborted', 'The download was stopped.', 'Press Retry to continue where it stopped.');
+  let res;
+  for (let tries = 0; ; tries++) {
+    try {
+      res = await f(p.url, { headers: have ? { range: `bytes=${have}-` } : {}, redirect: 'follow', signal: opts.signal });
+    } catch (err) {
+      if (opts.signal?.aborted) throw aborted();
+      if (networkCode(err)) {
+        throw new DownloadError('no_network', `Could not reach ${host} to download ${opts.name}.`,
+          'Check the connection and press Retry, or use --model <file.gguf>, or --demo to look around.');
+      }
+      throw new DownloadError('io', String(err.message || err), 'Press Retry.');
+    }
+    // Too many requests with a short wait named by the server: wait and ask again, twice at most.
+    const wait = res.status === 429 ? retryAfter(res) : null;
+    if (wait != null && wait <= 30 && tries < 2) {
+      await res.body?.cancel?.().catch(() => {});
+      await sleep(wait * 1000, opts.signal);
+      if (opts.signal?.aborted) throw aborted();
+      continue;
+    }
+    break;
+  }
+  const restart = async () => {
+    await res.body?.cancel?.().catch(() => {});
+    fs.rmSync(part, { force: true });
+    return downloadFile(p, final, opts);
+  };
+  // The server ignored the range, or could not serve it: start over.
+  if (have && (res.status === 200 || res.status === 416)) return restart();
+  if (have && res.status === 206) {
+    const m = /bytes (\d+)-/.exec(res.headers?.get?.('content-range') || '');
+    if (m && Number(m[1]) !== have) return restart();
+  }
+  if (!res.ok && res.status !== 206) {
+    await res.body?.cancel?.().catch(() => {});
+    throw httpError(res, opts.name, p.url);
+  }
+  let out = null;
+  let wErr = null;
   let received = have;
   let lastTick = 0;
   let lastBytes = received;
   let lastTime = Date.now();
   let bps = 0;
   try {
+    if (!res.body) throw new Error('empty body');
+    out = fs.createWriteStream(part, { flags: have ? 'a' : 'w' });
+    // A write error (disk full, the file locked) must end the download, never crash or hang it.
+    out.on('error', (e) => { wErr ||= e; });
     for await (const chunk of res.body) {
+      if (wErr) throw wErr;
       hash.update(chunk);
       received += chunk.length;
       // Never more than the size the catalog names: a server sending more is cut off and the part is dropped.
-      if (received > p.bytes) { out.destroy(); fs.rmSync(part, { force: true }); throw Object.assign(new Error('too big'), { tooBig: true }); }
-      if (!out.write(chunk)) await new Promise((r) => out.once('drain', r));
+      if (received > p.bytes) throw Object.assign(new Error('too big'), { tooBig: true });
+      if (!out.write(chunk)) await once(out, 'drain');
       const now = Date.now();
       if (now - lastTick > 250) {
         const dt = (now - lastTime) / 1000;
@@ -253,24 +352,30 @@ async function downloadFile(p, final, opts) {
         report(received, bps);
       }
     }
+    await new Promise((resolve, reject) => out.end((err) => (err || wErr ? reject(err || wErr) : resolve())));
   } catch (err) {
-    out.end();
+    const e = wErr || err;
+    await new Promise((resolve) => { if (!out || out.closed) return resolve(); out.once('close', resolve); out.destroy(); });
+    res.body?.cancel?.().catch(() => {});
     if (err?.tooBig) { fs.rmSync(part, { force: true }); throw new DownloadError('checksum', `The server sent more than the ${formatBytes(p.bytes)} of ${opts.name}.`, 'It was deleted; press Retry to download it again.'); }
-    if (opts.signal?.aborted) throw new DownloadError('aborted', 'The download was stopped.', 'Press Retry to continue where it stopped.');
-    if (err?.code === 'ENOSPC') throw new DownloadError('no_disk', 'The disk is full.', 'Free some space and press Retry; the download continues where it stopped.');
-    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Press Retry; the download continues where it stopped.');
+    if (opts.signal?.aborted) throw aborted();
+    if (e?.code === 'ENOSPC') throw new DownloadError('no_disk', 'The disk is full.', 'Free some space and press Retry; the download continues where it stopped.');
+    if (LOCKED.test(e?.code || '')) {
+      throw new DownloadError('locked', `${part} is in use by another program (${e.code}).`,
+        'An antivirus scan or another hivedesk window may hold it: wait a moment, or allow the hivedesk folder in the antivirus, then press Retry.');
+    }
+    if (e?.syscall) throw new DownloadError('io', `Could not write ${part} (${e.code || e.message}).`, 'Check that the folder can be written and has free space, then press Retry.');
+    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Check the connection and press Retry; the download continues where it stopped.');
   }
-  await new Promise((resolve, reject) => out.end((err) => (err ? reject(err) : resolve())));
   report(received, bps);
   if (p.bytes && received < p.bytes) {
     // The body ended early without an error: keep the part, the next try resumes.
-    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Press Retry; the download continues where it stopped.');
+    throw new DownloadError('no_network', `The connection dropped at ${formatBytes(opts.offset + received)} of ${formatBytes(opts.total)}.`, 'Check the connection and press Retry; the download continues where it stopped.');
   }
   const digest = hash.digest('hex');
   if (digest !== String(p.sha256).toLowerCase()) {
     fs.rmSync(part, { force: true });
     throw new DownloadError('checksum', `The downloaded file for ${opts.name} is corrupt (checksum mismatch).`, 'It was deleted; press Retry to download it again.');
   }
-  fs.renameSync(part, final);
-  return final;
+  return moveIntoPlace(part, final, opts);
 }

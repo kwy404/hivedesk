@@ -38,7 +38,7 @@ import * as act from './actions.js';
 import { initOffice, addView, setMode, getMode } from '../office/office.js';
 import { initCity } from '../city/city.js';
 import * as i18n from './i18n.js';
-import { t } from './i18n.js';
+import { t, dlError } from './i18n.js';
 import * as tooltip from './tooltip.js';
 import { celebrate } from './fx.js';
 import '../github/index.js'; // GitHub and Changelog windows, dock buttons, Ctrl K entries, runIntent
@@ -272,7 +272,7 @@ onEvent((ev) => {
       if (d.state === 'error') notify({ title: t('brain.error.label'), body: d.detail || t('brain.error.detail'), tone: 'bad', sound: 'error', actions: [{ label: t('dock.settings'), run: () => wm.open('settings') }] });
       prevBrain = d.state;
       break;
-    case 'brain.download.failed': notify({ title: t('note.dlStopped'), body: [d.message, d.hint].filter(Boolean).join(' '), tone: 'bad', sound: 'error', sticky: true, key: 'dl-fail', actions: [{ label: t('note.retry'), primary: true, run: () => act.startDownload(d.model) }, { label: t('dock.settings'), run: () => wm.open('settings') }] }); break;
+    case 'brain.download.failed': notify({ title: t('note.dlStopped'), body: dlError(d).text, tone: 'bad', sound: 'error', sticky: true, key: 'dl-fail', actions: [{ label: t('note.retry'), primary: true, run: () => act.startDownload(d.model) }, { label: t('dock.settings'), run: () => wm.open('settings') }] }); break;
     case 'brain.download.finished': notify({ title: t('note.dlDone'), body: shortModel(d.model), tone: 'ok', quiet: true }); break;
     case 'brain.fallback': notify({ title: t('note.fallback'), body: d.reason, tone: 'warn', icon: 'gpu', timeout: 9000 }); break;
     case 'brain.attached': if (d.kind === 'remote') notify({ title: t('note.brainJoined', { label: d.label }), body: t('note.brainJoinedBody'), tone: 'ok', icon: 'lend' }); break;
