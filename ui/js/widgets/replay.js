@@ -1,6 +1,6 @@
 // Replay scrubber: rebuild any moment from events.jsonl and show it on the whole desktop.
 
-import { h, icon, clear, fmtTime } from '../dom.js';
+import { h, icon, clear, fmtTime, append } from '../dom.js';
 import { register } from '../wm.js';
 import { rev, ui, liveState, enterReplay, exitReplay, onEvent, worker } from '../store.js';
 import { command } from '../net.js';
@@ -115,11 +115,11 @@ register('replay', {
       clear(info);
       const ev = events.find((e) => e.seq === seq) || events[events.length - 1];
       if (!last) { info.append(h('span', { class: 'muted', text: t('replay.empty') })); return; }
-      info.append(
+      append(info, [
         ui.replay ? h('span', { class: 'hchip hchip-honey', text: t('replay.replaying') }) : h('span', { class: 'hchip hchip-ok', text: t('replay.live') }),
         h('span', { class: 'mono tiny muted', text: t('replay.position', { seq, last }) }),
         ev?.ts ? h('span', { class: 'tiny muted', text: fmtTime(ev.ts) }) : null,
-        h('span', { class: 'grow ellipsis', text: loaded ? describe(ev) : t('replay.loading') }));
+        h('span', { class: 'grow ellipsis', text: loaded ? describe(ev) : t('replay.loading') })]);
       liveBtn.disabled = !ui.replay;
       ctx.setSub(ui.replay ? t('replay.sub.at', { seq }) : t('replay.sub.live'));
     }

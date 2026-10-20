@@ -1,6 +1,6 @@
 // Files: the workspace tree with a diff viewer, plus the Code viewer window.
 
-import { h, icon, clear, fmtBytes, ago } from '../dom.js';
+import { h, icon, clear, fmtBytes, ago, append } from '../dom.js';
 import { beeAvatar } from '../bees.js';
 import { register } from '../wm.js';
 import * as wm from '../wm.js';
@@ -200,9 +200,9 @@ register('code', {
       const f = S().files[path];
       ctx.setSub(path);
       clear(head);
-      head.append(h('div', { class: 'grow crumbs ellipsis', text: path }), f ? h('span', { class: 'hchip hchip-mono', text: fmtBytes(f.bytes) }) : null,
+      append(head, [h('div', { class: 'grow crumbs ellipsis', text: path }), f ? h('span', { class: 'hchip hchip-mono', text: fmtBytes(f.bytes) }) : null,
         h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.menu.copyPath'), tip: 'tip.files.copyPath', on: { click: () => act.copy(path, t('files.pathCopied')) } }, icon('copy')),
-        h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.menu.reveal'), tip: 'tip.files.reveal', on: { click: () => showFile(path) } }, icon('folder')));
+        h('button', { class: 'ibtn', type: 'button', 'aria-label': t('files.menu.reveal'), tip: 'tip.files.reveal', on: { click: () => showFile(path) } }, icon('folder'))]);
       if (!f) { clear(pane).append(stateBox({ icon: 'code', title: t('files.missing.title'), text: t('files.missing.text') })); lastSeq = -1; return; }
       if (f.lastSeq === lastSeq) return;
       lastSeq = f.lastSeq;

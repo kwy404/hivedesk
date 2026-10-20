@@ -201,7 +201,8 @@ wm.register('phone', {
       const phones = s.phones || [];
       list.replaceChildren(
         h('h3', { class: 'ph-h', text: tr('phone.list.title') }),
-        phones.length ? null : h('div', { class: 'small muted', text: tr('phone.list.empty') }),
+        // No null here: replaceChildren would show it as the text "null" above the first phone.
+        ...(phones.length ? [] : [h('div', { class: 'small muted', text: tr('phone.list.empty') })]),
         ...phones.map((p) => h('div', { class: 'ph-item', attrs: { 'data-device': p.deviceId } },
           h('div', { class: 'ph-item-h' },
             h('span', { class: `ph-dot ${p.online ? 'on' : ''}`, 'aria-hidden': 'true' }),

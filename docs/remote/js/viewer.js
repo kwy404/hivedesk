@@ -85,9 +85,9 @@ export function openViewer({ client, control, t, toast, onClose }) {
 
   function show() {
     const s = stateInfo;
-    status.replaceChildren(
+    status.replaceChildren(...[
       h('b', { class: 'rv-state', text: !granted ? t('rd.asking') : s.locked ? t('rd.locked') : s.paused ? t('rd.paused') : s.control ? t('rd.controlOn') : t('rd.viewOnly') }),
-      granted ? h('span', { class: 'rv-left', text: `${t('rd.until', { time: new Date(granted.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })}` }) : null);
+      granted ? h('span', { class: 'rv-left', text: `${t('rd.until', { time: new Date(granted.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })}` }) : null].filter(Boolean));
     askBtn.hidden = !granted || granted.mode === 'control';
     root.classList.toggle('rv-ctl', !!s.control);
     cur.hidden = mode !== 'touchpad' || !s.control;

@@ -1,7 +1,7 @@
 // Memory: what the crew remembers about this project and about you, and the past sessions.
 // Everything shown here lives in .hivedesk/memory.json, ~/.hivedesk/memory.json and .hivedesk/sessions/.
 
-import { h, icon, clear, copyText } from '../dom.js';
+import { h, icon, clear, copyText, append } from '../dom.js';
 import { register } from '../wm.js';
 import { S, ui, onEvent } from '../store.js';
 import { command } from '../net.js';
@@ -46,11 +46,11 @@ function sessionRow(s, refresh) {
     if (!r) return;
     const report = [...r.records].reverse().find((x) => x.type === 'report');
     const decisions = r.records.filter((x) => x.type === 'decision');
-    detail.append(
+    append(detail, [
       report?.report ? h('p', { class: 'small', text: report.report.built || '' }) : h('p', { class: 'small muted', text: 'No report for this session.' }),
       report?.improvedPrompt ? h('div', { class: 'rep-prompt' }, h('div', { class: 'row' }, h('h4', { class: 'grow', text: 'Improved prompt' }), btn('Copy', () => copyText(report.improvedPrompt), 'btn btn-xs btn-quiet', 'copy')), h('pre', { class: 'brief-text', text: report.improvedPrompt })) : null,
       decisions.length ? h('ul', { class: 'rep-list' }, ...decisions.map((d) => h('li', { class: 'small', text: `${d.workerId}: ${d.text}` }))) : null,
-      h('div', { class: 'row', style: 'margin-top:8px' }, input, btn('Continue this session', async () => { const x = await send('session.continue', { id: s.id, request: input.value }, 'Could not continue'); if (x) notify({ title: 'Continuing the session', tone: 'ok', timeout: 1800 }); }, 'btn btn-xs btn-ok')));
+      h('div', { class: 'row', style: 'margin-top:8px' }, input, btn('Continue this session', async () => { const x = await send('session.continue', { id: s.id, request: input.value }, 'Could not continue'); if (x) notify({ title: 'Continuing the session', tone: 'ok', timeout: 1800 }); }, 'btn btn-xs btn-ok'))]);
   };
   return h('li', { class: 'mem-srow' },
     h('div', { class: 'row' },

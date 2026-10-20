@@ -3,7 +3,7 @@
 // same engine events as every widget. Click a bee to chat, right click for its menu,
 // drag a sticky note from Mel's board onto a bee to hand the task over.
 
-import { h, icon, clear, reducedMotion } from '/js/dom.js';
+import { h, icon, clear, reducedMotion, append } from '/js/dom.js';
 import { S, rev, ui, worker, onEvent, currentJob, jobTasks } from '/js/store.js';
 import * as net from '/js/net.js';
 import * as wm from '/js/wm.js';
@@ -590,9 +590,9 @@ function showNoteTip(el, id) {
   const t = s.tasks[id];
   if (!t) return;
   clear(tip);
-  tip.append(h('div', { class: 'of-tip-h' }, h('div', {}, h('strong', { text: t.title }), h('div', { class: 'of-faint', text: `${TASK_LABEL[t.status] || t.status} · ${worker(t.assignee).name}` }))),
+  append(tip, [h('div', { class: 'of-tip-h' }, h('div', {}, h('strong', { text: t.title }), h('div', { class: 'of-faint', text: `${TASK_LABEL[t.status] || t.status} · ${worker(t.assignee).name}` }))),
     t.detail ? h('div', { class: 'of-tip-d', text: String(t.detail).slice(0, 180) }) : null,
-    h('div', { class: 'of-tip-f', text: t.status === 'done' ? 'Done' : 'Drag onto a bee to hand it over · Enter for options' }));
+    h('div', { class: 'of-tip-f', text: t.status === 'done' ? 'Done' : 'Drag onto a bee to hand it over · Enter for options' })]);
   tip.dataset.for = `note:${id}`;
   place(el);
 }

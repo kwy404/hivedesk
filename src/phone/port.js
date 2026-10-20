@@ -84,7 +84,7 @@ export function createPhonePort(hub, o = {}) {
     },
     peer(deviceId) {
       const p = hub.store?.get(deviceId);
-      return p ? { peerId: p.deviceId, name: p.name, words: p.words, publicKey: p.publicKey, trust: 'known', kind: 'phone' } : null;
+      return p ? { peerId: p.deviceId, name: p.name || 'Phone', words: p.words, publicKey: p.publicKey, trust: 'known', kind: 'phone' } : null;
     },
     send(sessionId, stream, type, body) {
       const rec = live(sessionId);

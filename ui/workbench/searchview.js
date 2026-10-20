@@ -2,7 +2,7 @@
 // (src/workbench/search.js) and streams results to this window; replace shows a preview of
 // every changed line first and applies only the files you keep checked.
 
-import { h, clear } from '/js/dom.js';
+import { h, clear, append } from '/js/dom.js';
 import { badgeOf } from '/editor/languages.js';
 import { wb, onFrame } from './net.js';
 import { tw } from './strings.js';
@@ -117,11 +117,11 @@ export function createSearch(ctx) {
     if (st.searchId && !st.summary) summary.append(h('span', { class: 'wb-spin' }), h('span', { text: tw('wb.se.searching', { hits, files: files.length }) }));
     else if (st.summary) {
       const s = st.summary;
-      summary.append(h('span', { text: s.hits ? tw('wb.se.found', { hits: s.hits, files: s.files }) : tw('wb.se.none') }),
+      append(summary, [h('span', { text: s.hits ? tw('wb.se.found', { hits: s.hits, files: s.files }) : tw('wb.se.none') }),
         s.truncated ? h('span', { class: 'wb-warn', text: tw('wb.se.truncated') }) : null,
         s.timedOut ? h('span', { class: 'wb-warn', text: tw('wb.se.timedOut') }) : null,
         s.skippedLarge ? h('span', { class: 'wb-faint', text: tw('wb.se.skipped', { n: s.skippedLarge }) }) : null,
-        h('span', { class: 'wb-faint', text: tw('wb.se.ms', { ms: Math.round(s.ms) }) }));
+        h('span', { class: 'wb-faint', text: tw('wb.se.ms', { ms: Math.round(s.ms) }) })]);
     }
     for (const path of files) {
       const hs = st.results.get(path);

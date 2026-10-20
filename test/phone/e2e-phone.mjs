@@ -27,6 +27,9 @@ const browserPath = candidates.find((p) => fs.existsSync(p));
 if (!browserPath) { console.error('no Edge or Chrome found; set HIVEDESK_BROWSER'); process.exit(2); }
 const out = process.argv[2] || path.join(os.tmpdir(), 'hivedesk-phone-e2e');
 const calm = (p) => p.evaluate(() => document.querySelector('.toasts')?.replaceChildren());
+// A name that was null or undefined somewhere shows up as the word, on a line of its own or inside a short line.
+const nullLines = (p, sel = 'body') => p.evaluate((q) => [...document.querySelectorAll(q)].flatMap((el) => el.innerText.split('\n'))
+  .map((l) => l.trim()).filter((l) => l.length < 60 && /\b(null|undefined)\b/.test(l)), sel);
 fs.mkdirSync(out, { recursive: true });
 
 const failures = [];
@@ -60,6 +63,8 @@ try {
   // ---------- desktop window ----------
   const dctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
   await dctx.routeWebSocket(/^wss:\/\/(broker\.emqx\.io|test\.mosquitto\.org|broker\.hivemq\.com|broker-cn\.emqx\.io)/, (ws) => broker.attach(ws));
+  // The guided tour would cover the buttons this test clicks.
+  await dctx.addInitScript(() => { try { localStorage.setItem('hivedesk.tour.v1', 'done'); } catch { /* none */ } });
   desk = await dctx.newPage();
   desk.on('pageerror', (e) => errors.push(`desktop: ${e.message}`));
   await desk.goto(`${app.url}&view=desktop&notour=1`, { waitUntil: 'load' });
@@ -112,6 +117,16 @@ try {
   await ph.waitForSelector('nav [data-tab=status]', { timeout: 20000 });
   await ph.waitForSelector('.city', { timeout: 20000 });
   check(phone.hub.phones().length === 1 && phone.hub.phones()[0].online, 'the desktop lists the paired phone as connected');
+  await desk.waitForSelector('.ph-item .ph-who-name', { timeout: 10000 });
+  const listed = await desk.$$eval('.ph-list > *', (els) => els.map((e) => e.innerText.split('\n')[0].trim()));
+  check(listed[1] === 'Pixel 9' && !(await nullLines(desk, '.ph-list')).length, `the phone list shows the phone by name, with no "null" line (${listed.slice(0, 3).join(' | ')})`);
+  check((await ph.$eval('.top .host b', (e) => e.textContent)) === 'Studio PC', 'the phone header names the computer');
+  await ph.click('.top .ibtn');
+  const sheet = await (await ph.waitForSelector('.sheet')).innerText();
+  check(sheet.includes('Studio PC') && sheet.includes('Pixel 9') && !(await nullLines(ph, '.sheet')).length, 'the phone settings name the computer and the phone');
+  await ph.click('.sheet .btn-ghost');
+  const phoneNull = await nullLines(ph);
+  check(!phoneNull.length, `no "null" or "undefined" on the phone${phoneNull.length ? `: ${phoneNull.join(' | ')}` : ''}`);
 
   // ---------- send a request: the job starts through the refiner ----------
   await ph.click('[data-tab=crew]');
@@ -180,8 +195,12 @@ try {
   await ph.click('[data-rd=control]');
   const req = await waitFor(() => remote.desk.snapshot().requests[0], 15000, 'remote request');
   check(req.wants === 'control' && req.name.length > 0, 'the computer sees the phone asking for control');
+  const askingNull = await nullLines(ph, '.rv');
+  check(!askingNull.length, `the phone viewer shows no "null" while it asks${askingNull.length ? `: ${askingNull.join(' | ')}` : ''}`);
   // The person at the computer ticks control and accepts in the Stream 6 dialog.
   await desk.waitForSelector('.rd-ask', { timeout: 10000 });
+  const askNull = await nullLines(desk, '.rd-ask');
+  check(!askNull.length && (await desk.$eval('.rd-ask', (e) => e.innerText)).includes('Pixel 9'), `the accept dialog names the phone${askNull.length ? `: ${askNull.join(' | ')}` : ''}`);
   const boxes = await desk.$$('.rd-ask input[type=checkbox]');
   for (const b of boxes.slice(0, 2)) await b.check();
   await desk.click('.rd-ask .btn-primary');

@@ -207,7 +207,10 @@ export async function startHive(opts) {
   let phone = null;
   if (fs.existsSync(path.join(PACKAGE_ROOT, 'src', 'phone', 'index.js'))) {
     try {
-      phone = await (await import('./phone/index.js')).default({ bus, server: { route: server.route, command: server.command }, home, p2p, hostName: () => opts.name || os.hostname(), run: (type, data) => server.runCommand(type, data, null, { kind: 'user' }) });
+      // The name the phone shows for this computer: --name, the profile name, the OS host name, then "hivedesk".
+      const { hostLabel } = await import('./phone/hub.js');
+      const hostName = () => hostLabel(opts.name, profile?.store?.profile?.name, os.hostname());
+      phone = await (await import('./phone/index.js')).default({ bus, server: { route: server.route, command: server.command }, home, p2p, hostName, run: (type, data) => server.runCommand(type, data, null, { kind: 'user' }) });
     } catch (err) { log(`phone remote failed to load: ${err.message}`); }
   }
 

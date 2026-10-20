@@ -13,7 +13,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { PhoneStore, loadHostKey, publicRecord } from './store.js';
 import { statusView, chatView, approvalCard, feedItem, noticeOf, SNAPSHOT_EVENTS } from './view.js';
-import { PairHost, KnownHost, PhoneHandshakeError, failMessage, parseHs } from '../../ui/phone/core/handshake.js';
+import { PairHost, KnownHost, PhoneHandshakeError, failMessage, parseHs, cleanName } from '../../ui/phone/core/handshake.js';
 import { FrameSession } from '../../ui/phone/core/session.js';
 import { b64u, fromB64u, randomBytes } from '../../ui/phone/core/crypto.js';
 import { inviteLink, deriveInvite, homeTopic, homeSeal, INVITE_MS, PAGE_URL } from '../../ui/phone/core/invite.js';
@@ -55,6 +55,15 @@ const userOnly = (origin) => {
   if (!origin || origin.kind !== 'user') throw new PhoneError('forbidden', 'only the person at this computer can do that');
 };
 
+/** The computer's name for the phones: the first usable name in the list, else "hivedesk". */
+export function hostLabel(...names) {
+  for (const n of names) {
+    const s = typeof n === 'string' ? cleanName(n, '') : '';
+    if (s) return s;
+  }
+  return 'hivedesk';
+}
+
 export class PhoneHub extends EventEmitter {
   /**
    * @param {{ home: string, run: (type: string, data: object) => Promise<any>, state: () => any,
@@ -67,7 +76,9 @@ export class PhoneHub extends EventEmitter {
     this.run = o.run;
     this.getState = o.state;
     this.auditFn = o.audit || (() => null);
-    this.hostName = o.hostName || (() => 'hivedesk');
+    const hostName = o.hostName || (() => null);
+    // Every name the phones see goes through here: never null, empty or hidden characters.
+    this.hostName = () => { try { return hostLabel(hostName()); } catch { return 'hivedesk'; } };
     this.peerId = o.peerId || (() => null);
     this.now = o.now || (() => Date.now());
     this.inviteMs = o.inviteMs ?? INVITE_MS;

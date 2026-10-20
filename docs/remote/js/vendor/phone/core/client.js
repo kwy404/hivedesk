@@ -8,13 +8,19 @@
 //         'state' (snapshot), 'feed' (items), 'notice' (body), 'grants' (list), 'remote' (msg), 'close' (reason)
 
 import { Emitter } from '../../lend/core/emitter.js';
-import { PairGuest, KnownGuest, PhoneHandshakeError, failMessage, parseHs } from './handshake.js';
+import { PairGuest, KnownGuest, PhoneHandshakeError, failMessage, parseHs, cleanName } from './handshake.js';
 import { FrameSession } from './session.js';
 
 export const PING_MS = 10_000;
 export const SILENCE_MS = 35_000;
 export const CMD_TIMEOUT_MS = 20_000;
 const HS_MS = 20_000;
+
+/** The computer as the desktop names it, never without a printable name. */
+const hostOf = (v) => {
+  const o = v && typeof v === 'object' ? v : {};
+  return { ...o, name: cleanName(o.name, 'hivedesk') };
+};
 
 /** Turns a link's callbacks into "wait for the next text". */
 class Inbox {
@@ -151,8 +157,8 @@ export class PhoneClient extends Emitter {
         this.accepted = true;
         this.grants = Array.isArray(m.body.grants) ? m.body.grants.map(String) : [];
         this.deviceId = typeof m.body.deviceId === 'string' ? m.body.deviceId : this.deviceId;
-        this._decide?.({ accepted: true, grants: this.grants, host: m.body.host });
-        this.emit('paired', { deviceId: this.deviceId, grants: this.grants, host: m.body.host });
+        this._decide?.({ accepted: true, grants: this.grants, host: hostOf(m.body.host) });
+        this.emit('paired', { deviceId: this.deviceId, grants: this.grants, host: hostOf(m.body.host) });
         return undefined;
       case 'pair.refuse':
         this._decide?.({ accepted: false, reason: m.body.reason });
@@ -161,8 +167,8 @@ export class PhoneClient extends Emitter {
       case 'welcome':
         this.accepted = true;
         this.grants = Array.isArray(m.body.grants) ? m.body.grants.map(String) : [];
-        this.welcome = m.body;
-        return this.emit('welcome', m.body);
+        this.welcome = { ...m.body, name: cleanName(m.body.name), host: hostOf(m.body.host) };
+        return this.emit('welcome', this.welcome);
       case 'grants':
         this.grants = Array.isArray(m.body.grants) ? m.body.grants.map(String) : [];
         return this.emit('grants', this.grants);

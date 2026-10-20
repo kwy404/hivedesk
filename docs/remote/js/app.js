@@ -9,6 +9,7 @@ import { t, init as initI18n, setLocale, LOCALES, locale, ago, clock } from './i
 import * as store from './store.js';
 import { readInviteHash, deriveInvite, homeTopic, homeSeal } from './vendor/phone/core/invite.js';
 import { PhoneClient } from './vendor/phone/core/client.js';
+import { cleanName } from './vendor/phone/core/handshake.js';
 import { dial, rendezvousOf } from './vendor/phone/core/connect.js';
 
 if (window.top !== window.self) throw new Error('hivedesk remote does not run inside a frame');
@@ -19,6 +20,9 @@ const S = {
   channel: 'general', mode: 'request', notify: false, host: null, conn: 'off', toasts: null, viewer: null
 };
 const has = (g) => S.grants.includes(g);
+// The names on screen: the computer's (from the desktop) and this phone's (chosen when pairing), never empty.
+const hostName = (pairing = S.pairing) => cleanName(S.host?.name || pairing?.host?.name, 'hivedesk');
+const phoneName = () => cleanName(S.pairing?.name);
 const live = (el) => el && el.setAttribute('aria-live', 'polite');
 
 // ---------------------------------------------------------------- toasts
@@ -122,7 +126,7 @@ async function runPair(invite, name) {
     if (!decision.accepted) {
       return failure({ title: t('pair.refused.title'), body: t(decision.reason === 'sas_mismatch' ? 'pair.refused.mismatch' : 'pair.refused.body'), actions: [h('button', { class: 'btn btn-ghost', type: 'button', text: t('action.close'), on: { click: welcome } })] });
     }
-    const pairing = { deviceId: me.deviceId, name, host: { key: r.host.key, pin: invite.pin, name: r.host.name, peerId: r.host.peerId }, reconnect: r.reconnect, pairedAt: new Date().toISOString() };
+    const pairing = { deviceId: me.deviceId, name: cleanName(name), host: { key: r.host.key, pin: invite.pin, name: r.host.name, peerId: r.host.peerId }, reconnect: r.reconnect, pairedAt: new Date().toISOString() };
     await store.savePairing(pairing);
     S.pairing = pairing;
     S.grants = decision.grants;
@@ -165,7 +169,7 @@ async function reconnect(pairing, attempt = 0) {
   S.pairing = pairing;
   if (S.screen !== 'shell') {
     const box = h('div');
-    screen(h('div', { class: 'brand' }, mark(), h('span', { text: pairing.host.name })), h('h1', { text: t('connect.title', { host: pairing.host.name }) }), box);
+    screen(h('div', { class: 'brand' }, mark(), h('span', { text: hostName(pairing) })), h('h1', { text: t('connect.title', { host: hostName(pairing) }) }), box);
     box.replaceChildren(progress(['pair.step.relays', 'pair.step.link', 'pair.step.keys'], 0));
   } else setConn('wait');
   try {
@@ -289,7 +293,7 @@ function renderNav() {
 
 function render() {
   if (S.screen !== 'shell') return;
-  els.name.textContent = S.host?.name || S.pairing?.host?.name || 'hivedesk';
+  els.name.textContent = hostName();
   setConn(S.conn);
   renderNav();
   const v = els.view;
@@ -538,8 +542,8 @@ function settings() {
   const sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('settings.title') },
     h('div', { class: 'grab', 'aria-hidden': 'true' }),
     h('h2', { text: t('settings.title') }),
-    h('div', { class: 'setting' }, icon('remote'), h('div', { class: 'grow' }, h('b', { text: S.pairing?.host?.name || '' }), h('div', { class: 'small dim', text: t('settings.paired', { when: S.pairing ? ago(S.pairing.pairedAt) : '' }) }))),
-    h('div', { class: 'setting' }, icon('phone'), h('div', { class: 'grow' }, h('b', { text: S.pairing?.name || '' }), h('div', { class: 'small dim', text: t('settings.grants', { list: S.grants.map((g) => t(`grant.${g}`)).join(', ') }) }))),
+    h('div', { class: 'setting' }, icon('remote'), h('div', { class: 'grow' }, h('b', { text: hostName() }), h('div', { class: 'small dim', text: t('settings.paired', { when: S.pairing ? ago(S.pairing.pairedAt) : '' }) }))),
+    h('div', { class: 'setting' }, icon('phone'), h('div', { class: 'grow' }, h('b', { text: phoneName() }), h('div', { class: 'small dim', text: t('settings.grants', { list: S.grants.map((g) => t(`grant.${g}`)).join(', ') }) }))),
     h('label', { class: 'setting' }, icon('bell'), h('div', { class: 'grow' }, h('b', { text: t('settings.notify') }), h('div', { class: 'small dim', text: has('phone.notify') ? t('settings.notifyHelp') : t('locked.notify') })), h('span', { class: 'switch' }, nt, h('span'))),
     h('div', { class: 'setting' }, h('div', { class: 'grow' }, h('b', { text: t('settings.language') })), langPicker()),
     S.expiresAt ? h('div', { class: 'small dim', text: t('settings.expires', { time: clock(new Date(S.expiresAt).toISOString()) }) }) : null,

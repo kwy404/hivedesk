@@ -1,7 +1,7 @@
 // The offline shell of hivedesk remote: every file of the page is cached at install, so the page
 // opens without a network and says what it needs. It caches only this folder's own files (no data:
 // the phone talks to its computer over WebRTC, which a service worker never sees).
-const VERSION = 'hivedesk-remote-1.0.0-1';
+const VERSION = 'hivedesk-remote-1.0.0-2';
 const SHELL = [
   './', 'index.html', 'app.css', 'viewer.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable.png',
   'js/app.js', 'js/dom.js', 'js/i18n.js', 'js/store.js', 'js/viewer.js',
