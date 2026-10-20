@@ -234,6 +234,7 @@ export function reduce(state, event) {
       if (d.i18n) m.i18n = d.i18n;
       if (d.choices) m.choices = d.choices;
       if (d.replyTo) m.replyTo = d.replyTo;
+      if (event.jobId) m.jobId = event.jobId;
       // The question card this line announces (src/crew/domains/, docs/1.0/DOMAINS.md).
       if (d.question) m.question = String(d.question).slice(0, 80);
       state.chat[ch].push(m);

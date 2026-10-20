@@ -217,8 +217,8 @@ describe('no canned English for system replies', () => {
     expect(literal).toEqual([]);
     expect(src).not.toMatch(/Type a request in the top bar/);
     // Every crew line has a use: the engine, or Mel's lines in the changelog, theme, extension and GitHub flows.
-    const all = [src, ...['changelog/index.js', 'extensions/index.js', 'extensions/create.js', 'github/index.js'].map((f) => fs.readFileSync(path.join(ROOT, 'src', f), 'utf8'))].join('\n');
-    for (const k of Object.keys(en).filter((x) => x.startsWith('crew.'))) expect(all.includes(`'${k}'`) || k.startsWith('crew.talk.choice.'), k).toBe(true);
+    const all = [src, ...['changelog/index.js', 'extensions/index.js', 'extensions/create.js', 'github/index.js', 'crew/legacy.js'].map((f) => fs.readFileSync(path.join(ROOT, 'src', f), 'utf8'))].join('\n');
+    for (const k of Object.keys(en).filter((x) => x.startsWith('crew.'))) expect(all.includes(`'${k}'`) || /^crew.(talk.choice|talk.brief|role)./.test(k), k).toBe(true);
     for (const f of ['changelog/index.js', 'extensions/index.js', 'extensions/create.js', 'github/index.js']) {
       expect(fs.readFileSync(path.join(ROOT, 'src', f), 'utf8'), f).not.toMatch(/hive\??\.chat\??\.?\(\s*'mel',\s*`/);
     }

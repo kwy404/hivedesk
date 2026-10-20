@@ -2,12 +2,13 @@
 // Use this and Use mine), and the end of job report with the improved prompt and next prompts.
 // It keeps its own small state from the engine events, so it does not depend on the store reducer.
 
-import { h, icon, clear, copyText, fmtDuration } from '../dom.js';
+import { h, icon, clear, copyText, fmtDuration, mdNode } from '../dom.js';
 import { register, open } from '../wm.js';
-import { S, ui, onEvent, worker } from '../store.js';
+import { S, ui, rev, onEvent, worker } from '../store.js';
 import { beeAvatar } from '../bees.js';
 import { command } from '../net.js';
-import { notify } from '../notify.js';
+import { notify, dismissKey } from '../notify.js';
+import { mdLine } from '../md.js';
 import { t, tmap } from '../i18n.js';
 import { setTip } from '../tooltip.js';
 import { track, stateBox, btn } from './util.js';
@@ -38,16 +39,26 @@ function latest() {
   return null;
 }
 
+/** Jobs whose waiting brief was already brought to the front in this window. */
+const shown = new Set();
+
+/** The brief never waits unseen: the window opens and a toast stays until the brief is decided. */
+function showWaiting(jobId) {
+  shown.add(jobId);
+  open('brief');
+  notify({ title: t('brief.notify.title'), body: t('brief.notify.body'), tone: 'info', icon: 'plan', key: `brief-${jobId}`, sticky: true, actions: [{ label: t('brief.notify.review'), primary: true, run: () => open('brief') }] });
+}
+
 onEvent((ev) => {
   const d = ev.data || {};
   if (ev.type === 'brief.proposed') {
     const e = entry(ev.jobId);
     Object.assign(e, { request: d.original, proposed: d.brief, approved: null });
     box.v++;
-    open('brief');
-    notify({ title: t('brief.notify.title'), body: t('brief.notify.body'), tone: 'info', icon: 'plan', key: `brief-${ev.jobId}`, actions: [{ label: t('brief.notify.review'), primary: true, run: () => open('brief') }] });
+    showWaiting(ev.jobId);
   } else if (ev.type === 'brief.approved') {
     entry(ev.jobId).approved = { text: d.text, source: d.source };
+    dismissKey(`brief-${ev.jobId}`);
     box.v++;
   } else if (ev.type === 'job.report') {
     entry(ev.jobId).report = { ...d.report, improvedPrompt: d.improvedPrompt, nextPrompts: d.nextPrompts };
@@ -56,6 +67,12 @@ onEvent((ev) => {
   } else if (ev.type === 'job.created' || ev.type === 'job.done' || ev.type === 'job.failed') {
     box.v++;
   }
+});
+
+// A brief that already waited when this window connected (a reload, a restart of hivedesk) opens too, once.
+track(() => [ui.hello, rev.jobs], () => {
+  if (!ui.hello || ui.replay) return;
+  for (const j of S().jobs) if (j.status === 'awaiting_brief' && !shown.has(j.id)) showWaiting(j.id);
 });
 
 async function send(type, data, fail) {
@@ -81,7 +98,7 @@ function briefView(id, e) {
   const area = h('textarea', { class: 'brief-edit', rows: 14, 'aria-label': t('brief.editTitle') });
   area.value = p.text;
   const original = h('section', { class: 'brief-col' }, h('h4', { text: t('brief.request'), tip: 'tip.brief.head.request' }), h('p', { class: 'brief-orig', text: e.request }));
-  const improved = h('section', { class: 'brief-col' }, h('h4', { tip: 'tip.brief.head.improved' }, t('brief.improved'), ' ', h('span', { class: 'hchip hchip-honey', text: t('brief.byMel') })), h('pre', { class: 'brief-text', text: p.text }));
+  const improved = h('section', { class: 'brief-col' }, h('h4', { tip: 'tip.brief.head.improved' }, t('brief.improved'), ' ', h('span', { class: 'hchip hchip-honey', text: t('brief.byMel') })), mdNode(p.text, 'brief-text brief-md'));
   const editing = h('section', { class: 'brief-col brief-editing', hidden: true }, h('h4', { text: t('brief.editTitle'), tip: 'tip.brief.head.editing' }), area);
   const busy = (b) => { for (const x of actions.querySelectorAll('button')) x.disabled = b || !!ui.replay; };
   const approve = async (use) => {
@@ -109,23 +126,23 @@ function briefView(id, e) {
 function reportView(id, r) {
   const files = h('ul', { class: 'rep-list' }, ...(r.files.length ? r.files.map((f) => h('li', {}, h('span', { class: 'mono', text: f.path }), ' ', h('span', { class: 'tiny faint', text: f.added || f.removed ? t('brief.report.fileStat', { op: f.op, added: f.added, removed: f.removed }) : f.op }))) : [h('li', { class: 'muted', text: t('brief.report.noFiles') })]));
   const checks = h('ul', { class: 'rep-list' }, ...(r.checks.length ? r.checks.map((c) => h('li', {}, h('span', { class: `hchip ${c.ok ? 'hchip-ok' : 'hchip-bad'}`, text: c.ok ? t('brief.report.checkOk') : t('brief.report.checkFailed') }), ' ', h('span', { class: 'mono small', text: c.name }), ' ', h('span', { class: 'tiny faint', text: c.detail || '' }))) : [h('li', { class: 'muted', text: t('brief.report.noChecks') })]));
-  const missing = r.missing.length ? h('ul', { class: 'rep-list' }, ...r.missing.map((m) => h('li', { text: m }))) : h('p', { class: 'small muted', text: t('brief.report.noMissing') });
+  const missing = r.missing.length ? h('ul', { class: 'rep-list' }, ...r.missing.map((m) => h('li', { text: mdLine(m) }))) : h('p', { class: 'small muted', text: t('brief.report.noMissing') });
   const save = setTip(btn(t('brief.report.save'), async () => { const x = await send('playbook.save', { jobId: id }, t('brief.error.playbook')); if (x) notify({ title: t('brief.report.saved'), tone: 'ok', timeout: 1800 }); }, 'btn btn-xs btn-quiet', 'playbook'), { key: 'tip.brief.save' });
   if (ui.replay) save.disabled = true;
   return h('article', { class: 'appr report' },
     h('div', { class: 'appr-h' }, beeAvatar(worker('mel'), 30), h('div', { class: 'grow' }, h('div', { class: 'appr-t', text: t('brief.report.title') }), h('div', { class: 'small muted', text: t('brief.report.stats', { turns: r.turns, duration: fmtDuration(r.seconds * 1000) }) }))),
     h('div', { class: 'rep-body' },
-      h('h4', { text: t('brief.report.built'), tip: 'tip.brief.head.built' }), h('p', { class: 'small', text: r.built }),
+      h('h4', { text: t('brief.report.built'), tip: 'tip.brief.head.built' }), mdNode(r.built, 'small'),
       h('h4', { text: t('brief.report.files'), tip: 'tip.brief.head.files' }), files,
       h('h4', { text: t('brief.report.checks'), tip: 'tip.brief.head.checks' }), checks,
       h('h4', { text: t('brief.report.missing'), tip: 'tip.brief.head.missing' }), missing,
       h('div', { class: 'rep-prompt' },
         h('div', { class: 'row' }, h('h4', { class: 'grow', text: t('brief.report.prompt'), tip: 'tip.brief.head.prompt' }), copyBtn(r.improvedPrompt, t('brief.report.promptCopied'), 'tip.brief.copyPrompt'), save),
         h('p', { class: 'small muted', text: t('brief.report.promptHelp') }),
-        h('pre', { class: 'brief-text', text: r.improvedPrompt })),
+        mdNode(r.improvedPrompt, 'brief-text brief-md')),
       h('h4', { text: t('brief.report.next'), tip: 'tip.brief.head.next' }),
       h('div', { class: 'rep-next' }, ...(r.nextPrompts || []).map((p) => h('div', { class: 'row' },
-        h('button', { type: 'button', class: 'btn btn-xs btn-quiet grow rep-next-b', text: p, tip: 'tip.brief.next', on: { click: () => newJob(p) }, disabled: !!ui.replay }),
+        h('button', { type: 'button', class: 'btn btn-xs btn-quiet grow rep-next-b', text: mdLine(p), tip: 'tip.brief.next', on: { click: () => newJob(p) }, disabled: !!ui.replay }),
         copyBtn(p, t('brief.report.nextCopied'), 'tip.brief.copyNext'))))));
 }
 
@@ -161,6 +178,7 @@ const css = `
 .brief-grid h4, .rep-body h4 { margin: 10px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-t); }
 .brief-orig { margin: 0; padding: 10px; border: 1px dashed var(--line-2); border-radius: 6px; color: var(--text-2); }
 .brief-text { margin: 0; padding: 10px; white-space: pre-wrap; word-break: break-word; font: 12.5px/1.5 var(--font-mono); background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; max-height: 340px; overflow: auto; }
+.brief-md { white-space: normal; font: 13px/1.55 var(--font-sans, inherit); color: var(--text-2); }
 .brief-editing { grid-column: 2; }
 .brief-edit { width: 100%; box-sizing: border-box; font: 12.5px/1.5 var(--font-mono); color: var(--text); background: var(--bg-2); border: 1px solid var(--accent-line); border-radius: 6px; padding: 10px; resize: vertical; }
 .rep-body { padding: 0 12px 12px; }

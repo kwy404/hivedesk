@@ -10,12 +10,16 @@ import { modelFamily } from './prompts/index.js';
 import { runWithOrigin, crewOrigin } from '../core/origin.js';
 import { BRIEF_SCHEMA, briefMessages, normalizeBrief, briefText, acceptanceFrom, answerBrief, isVague, REPORT_SCHEMA, reportMessages, buildReport, fallbackPrompt } from './brief.js';
 import { say, localeOf, languageName } from './say.js';
-import { INTENT_SCHEMA, keywordIntent, decideIntent, intentMessages, replyMessages, cleanReply } from './talk.js';
+import { INTENT_SCHEMA, keywordIntent, decideIntent, intentMessages, replyMessages, cleanReply, briefReply, isStatusQuestion, isRefusal, claimsWork } from './talk.js';
 import { looksLikeGitIntent, parseRules } from '../github/intent.js';
 import { validate, extractJson } from '../brain/schema.js';
 import { startDomain, jobCrew } from './domains/flow.js';
+import { tagLegacyChat } from './legacy.js';
 
 const MAX_FIX_ROUNDS = 3;
+/** The buttons under the line that says a brief is ready: use it, keep the original, open the Brief window to edit. */
+const BRIEF_CHOICES = ['use', 'original', 'open'].map((id) => ({ id, key: `crew.talk.choice.${id}` }));
+const shortRequest = (r) => { const s = String(r || ''); return s.length > 160 ? `${s.slice(0, 157)}...` : s; };
 /** Mel stops a job that uses more model turns than this (a loop that does not converge). */
 const JOB_TURN_BUDGET = 160;
 let chatSeq = 0;
@@ -106,8 +110,11 @@ export class Hive {
     for (const w of BUILTIN) if (!have.has(w.id)) this.bus.emit('crew.hired', { worker: w });
     const known = new Set(this.state.playbooks.map((p) => p.id));
     for (const p of this.playbooks.list()) if (!known.has(p.id)) this.bus.emit('playbook.saved', { playbook: p });
+    // Chat lines from before 1.0 have no i18n key: give them one, so they show in the desktop language.
+    tagLegacyChat(this.state.chat);
     for (const j of this.state.jobs) {
-      if (j.status === 'planning' || j.status === 'running') {
+      // A brief that waited for the user still waits: approving it starts the job again (_revive).
+      if (j.status === 'planning' || j.status === 'running' || j.status === 'refining' || (j.status === 'awaiting_brief' && !j.briefProposed)) {
         for (const id of j.taskIds) {
           const t = this.state.tasks[id];
           if (t && (t.status === 'running' || t.status === 'pending' || t.status === 'review')) this.bus.emit('task.status', { taskId: id, status: 'skipped', note: 'hivedesk stopped' }, { jobId: j.id });
@@ -245,7 +252,8 @@ export class Hive {
   /** Is this worker busy with a task or with planning in a running job? */
   _inJob(workerId) {
     for (const run of this.active.values()) {
-      if (!run.graph) { if (workerId === 'mel') return true; continue; }
+      // Mel is not busy while a brief waits for the user.
+      if (!run.graph) { if (workerId === 'mel' && !run.briefWaiter) return true; continue; }
       if (run.graph.all().some((t) => t.status === 'running' && t.assignee === workerId)) return true;
     }
     return false;
@@ -278,6 +286,12 @@ export class Hive {
   }
 
   async _talk({ id, channel, text, who, lang, running, jobs }) {
+    // A brief waits for the user: "ok", "pode continuar" approve it, a change request edits it.
+    const waiting = jobs ? this._briefWaiting() : null;
+    const reply = waiting ? briefReply(text, lang) : null;
+    if (reply) return this._briefFromChat(waiting, reply, { channel, who, lang, text, replyTo: id });
+    // "cade a landingpage?": the status comes from the engine, never from the model.
+    if (isStatusQuestion(text)) return this._status({ channel, who, lang, replyTo: id, jobs });
     const c = await this._classify(text, who, lang);
     this.bus.live('chat.intent', { messageId: id, channel, intent: c.intent, model: c.model?.intent || null, keywords: c.keywords.intent || null });
     if (c.intent === 'request') {
@@ -302,8 +316,17 @@ export class Hive {
 
   /** The command `chat.choose`: the user picked "start as a task" or "just talk" for a message. */
   chooseChat(messageId, choice, opts = {}) {
-    const ask = this.choices.get(messageId);
+    const id = String(messageId || '');
+    const ask = this.choices.get(id) || (id.startsWith('brief:') ? { kind: 'brief', jobId: id.slice(6), channel: 'general', who: 'mel' } : null);
     if (!ask) throw Object.assign(new Error('that choice is no longer open'), { code: 'conflict' });
+    if (ask.kind === 'brief') {
+      if (!['use', 'original'].includes(choice)) throw Object.assign(new Error('choice must be use or original'), { code: 'bad_request' });
+      if (opts.lang) this.setLang(opts.lang);
+      const job = this.state.jobs.find((j) => j.id === ask.jobId);
+      if (!job || !this._briefWaiting() || this._briefWaiting().id !== job.id) throw Object.assign(new Error('that choice is no longer open'), { code: 'conflict' });
+      this._briefFromChat(job, choice === 'use' ? 'approve' : 'original', { channel: ask.channel, who: ask.who, lang: opts.lang ? this.lang : ask.lang || job.lang || this.lang, replyTo: id });
+      return { jobId: job.id };
+    }
     if (!['task', 'chat'].includes(choice)) throw Object.assign(new Error('choice must be task or chat'), { code: 'bad_request' });
     if (opts.lang) this.setLang(opts.lang);
     this.choices.delete(messageId);
@@ -346,10 +369,95 @@ export class Hive {
       const r = await this._chatTurn(who, messages, { maxTokens: 320, temperature: 0.5, talk: true }, this.answerTimeoutMs);
       const answer = cleanReply(r.text, worker);
       if (!answer) return this.say(who, 'crew.talk.empty', {}, { lang, channel, replyTo });
+      // Never the generic "I am an AI and cannot create files", never a promise of work no job is doing:
+      // the real status from the engine instead.
+      if (isRefusal(answer) || claimsWork(answer)) return this._status({ channel, who, lang, replyTo });
       return this.chat(who, answer, undefined, channel, undefined, { replyTo });
     } catch (err) {
       return this.say(who, 'crew.talk.failed', { error: String(err.message || err).slice(0, 200) }, { lang, channel, replyTo });
     }
+  }
+
+  /** The job whose brief waits for the user (live, or left waiting when hivedesk stopped). */
+  _briefWaiting() {
+    for (let i = this.state.jobs.length - 1; i >= 0; i--) {
+      const j = this.state.jobs[i];
+      if (j.status !== 'awaiting_brief') continue;
+      const run = this.active.get(j.id);
+      if (run ? run.briefWaiter : j.briefProposed) return j;
+    }
+    return null;
+  }
+
+  /** The user answered a waiting brief in the chat (or with the buttons under Mel's line). */
+  _briefFromChat(job, reply, { channel, who, lang, text, replyTo }) {
+    const o = { lang, channel, replyTo, jobId: job.id };
+    if (reply === 'cancel') {
+      if (this.active.has(job.id)) this.cancelJob(job.id);
+      else this.bus.emit('job.cancelled', { by: 'user' }, { jobId: job.id });
+      this._closeBriefChoices(job.id, 'cancel');
+      return this.say(who, 'crew.talk.brief.cancel', { request: shortRequest(job.request) }, o);
+    }
+    const use = reply === 'approve' ? 'refined' : reply === 'original' ? 'original' : 'edited';
+    const proposed = this.state.jobs.find((j) => j.id === job.id)?.briefProposed;
+    const edited = use === 'edited' ? { text: `${proposed?.text || job.request}
+
+Change asked by the user: ${String(text || '').slice(0, 2000)}` } : {};
+    // Mel says it first, then the job moves on.
+    const said = this.say(who, `crew.talk.brief.${reply}`, { request: shortRequest(job.request) }, o);
+    try {
+      this.approveBrief(job.id, { use, ...edited });
+    } catch (err) {
+      return this.say(who, 'crew.talk.startFailed', { error: String(err.message || err).slice(0, 200) }, o);
+    }
+    return said;
+  }
+
+  /** Takes the brief buttons away from the chat once the brief is decided. */
+  _closeBriefChoices(jobId, choice) {
+    for (const [mid, ask] of [...this.choices]) {
+      if (ask.kind !== 'brief' || ask.jobId !== jobId) continue;
+      this.choices.delete(mid);
+      this.bus.emit('chat.chosen', { messageId: mid, channel: ask.channel, choice });
+    }
+    const mid = `brief:${jobId}`;
+    for (const [ch, list] of Object.entries(this.state.chat || {})) {
+      if ((list || []).some((m) => m.replyTo === mid && m.choices && !m.chosen)) this.bus.emit('chat.chosen', { messageId: mid, channel: ch, choice });
+    }
+  }
+
+  /** The job the user is most likely asking about: the one going on, else the last one. */
+  _currentJob() {
+    const jobs = this.state.jobs.filter((j) => !j.cityTaskId);
+    for (let i = jobs.length - 1; i >= 0; i--) if (['refining', 'awaiting_brief', 'planning', 'running'].includes(jobs[i].status)) return jobs[i];
+    return jobs[jobs.length - 1] || null;
+  }
+
+  /** "Where is the landing page?": what the job waits for, what is done and what is next, from the engine state. */
+  _status({ channel, who, lang, replyTo, jobs = true }) {
+    const job = this._currentJob();
+    const o = { lang, channel, replyTo };
+    if (!job) return this.say(who, 'crew.status.none', {}, o);
+    o.jobId = job.id;
+    const request = shortRequest(job.request);
+    const files = this.toolbox.ws.list().map((f) => f.path);
+    const fileList = files.length ? files.slice(0, 6).join(', ') + (files.length > 6 ? ` (+${files.length - 6})` : '') : say(lang, 'crew.status.noFiles');
+    if (job.status === 'awaiting_brief') {
+      if (jobs && this._briefWaiting()?.id === job.id) o.choices = this._offer(replyTo, { kind: 'brief', jobId: job.id, channel, who, lang }, ['use', 'original', 'open']);
+      return this.say(who, 'crew.status.brief', { request }, o);
+    }
+    if (job.status === 'refining') return this.say(who, 'crew.status.refining', { request }, o);
+    if (job.status === 'planning') return this.say(who, 'crew.status.planning', { request }, o);
+    if (job.status === 'running') {
+      const tasks = (job.taskIds || []).map((id) => this.state.tasks[id]).filter(Boolean);
+      const done = tasks.filter((t) => t.status === 'done').length;
+      const now = tasks.find((t) => t.status === 'running') || tasks.find((t) => t.status === 'pending');
+      const name = now ? this.crewById().get(now.assignee)?.name || now.assignee : '';
+      return this.say(who, 'crew.status.running', { request, done, count: tasks.length, now: now ? `${name}: ${now.title}` : '-', files: fileList }, o);
+    }
+    if (job.status === 'done') return this.say(who, 'crew.status.done', { request, files: fileList }, o);
+    if (job.status === 'failed') return this.say(who, 'crew.status.failed', { request, error: String(job.error || '').slice(0, 200) }, o);
+    return this.say(who, 'crew.status.cancelled', { request }, o);
   }
 
   // ---- jobs ----
@@ -386,8 +494,14 @@ export class Hive {
     this.active.set(jobId, run);
     const created = this.bus.emit('job.created', { job }, { jobId });
     // Everything the job does from here is the crew's doing, caused by job.created (src/core/origin.js).
-    run.promise = runWithOrigin(crewOrigin('mel'), () => (plan ? this._runPlanned(job, run, plan) : this._runJob(job, run, spec.playbookId)), created.seq).catch((err) => {
-      if (ctrl.signal.aborted) return;
+    this._launch(jobId, run, () => (plan ? this._runPlanned(job, run, plan) : this._runJob(job, run, spec.playbookId)), created.seq);
+    return { jobId, done: run.promise };
+  }
+
+  /** Runs a job's work as the crew, failing the job on an error and putting busy workers back to idle. */
+  _launch(jobId, run, fn, cause) {
+    run.promise = runWithOrigin(crewOrigin('mel'), fn, cause).catch((err) => {
+      if (run.ctrl.signal.aborted) return;
       this.bus.emit('job.failed', { error: String(err?.message || err) }, { jobId });
     }).finally(() => {
       this.active.delete(jobId);
@@ -397,7 +511,15 @@ export class Hive {
         }
       }
     });
-    return { jobId, done: run.promise };
+  }
+
+  /** A job whose brief waited when hivedesk stopped: the user's decision on it starts it again from the brief. */
+  _revive(job, decision) {
+    const copy = { ...job, refine: true, taskIds: [...(job.taskIds || [])] };
+    const run = { ctrl: new AbortController(), notes: new Map(), promise: null, preDecision: decision };
+    this.active.set(job.id, run);
+    this._launch(job.id, run, () => this._runJob(copy, run));
+    return run;
   }
 
   _busyElsewhere(workerId) {
@@ -434,7 +556,7 @@ export class Hive {
     const crewById = this.crewById();
     // 1. The prompt refiner: Mel turns the request into a brief, the user approves, edits or keeps the original.
     if (job.refine) {
-      this._jobSay(job, 'mel', 'crew.say.onItBrief', { request: job.request }, undefined, run.replyTo);
+      if (!run.preDecision) this._jobSay(job, 'mel', 'crew.say.onItBrief', { request: job.request }, undefined, run.replyTo);
       await this._refine(job, run);
       if (signal.aborted) return;
     } else {
@@ -702,6 +824,33 @@ export class Hive {
   async _refine(job, run) {
     const jobId = job.id;
     const ev = { jobId };
+    let brief;
+    let decision;
+    if (run.preDecision && job.briefProposed) {
+      // Revived after a restart: the brief was proposed before and the user just decided.
+      brief = { ...job.briefProposed };
+      decision = run.preDecision;
+    } else {
+      const r = await this._proposeBrief(job, run);
+      if (!r) return;
+      ({ brief, decision } = r);
+    }
+    if (!decision) return;
+    if (decision.answers && decision.use !== 'original') brief = answerBrief(brief, decision.answers);
+    let text = brief.text;
+    let source = 'refined';
+    if (decision.use === 'original') { text = job.request; source = 'original'; }
+    else if (decision.use === 'edited' && typeof decision.text === 'string' && decision.text.trim()) { text = decision.text.trim().slice(0, 8000); source = 'edited'; }
+    job.brief = source === 'original' ? null : text;
+    job.acceptance = source === 'original' ? [] : acceptanceFrom(text);
+    this.bus.emit('brief.approved', { brief: source === 'refined' ? brief : null, text, source, ...(decision.by ? { by: decision.by } : {}) }, ev);
+    this._closeBriefChoices(jobId, decision.use === 'original' ? 'original' : 'use');
+  }
+
+  /** Mel writes the brief and waits for the user's decision (or the auto approve). null: no brief, the job goes on with the request. */
+  async _proposeBrief(job, run) {
+    const jobId = job.id;
+    const ev = { jobId };
     this.bus.emit('job.refining', { workerId: 'mel' }, ev);
     let brief;
     try {
@@ -714,15 +863,18 @@ ${job.decisions}` : job.request, this.toolbox.ws.list().map((f) => f.path)),
       });
       brief = normalizeBrief(r.json, job.request);
     } catch (err) {
-      if (run.ctrl.signal.aborted) return;
+      if (run.ctrl.signal.aborted) return null;
       this._jobSay(job, 'system', 'crew.say.briefFailed', { error: err.message });
       job.brief = null;
       this.bus.emit('brief.approved', { brief: null, text: job.request, source: 'original' }, ev);
-      return;
+      return null;
     }
     brief.text = briefText(brief);
     this.bus.emit('brief.proposed', { original: job.request, brief, vague: isVague(job.request) }, ev);
-    this._jobSay(job, 'mel', 'crew.say.briefReady');
+    // Mel waits for the user now, she is not thinking: the status says so.
+    if (!this.scheduler.waiting.some((i) => i.workerId === 'mel')) this.bus.emit('worker.status', { workerId: 'mel', status: 'idle' });
+    // The line carries the buttons, so the brief never waits unseen: use it, keep the request, open it to edit.
+    this.say('mel', 'crew.say.briefReady', {}, { lang: job.lang || 'en', jobId, replyTo: `brief:${jobId}`, choices: BRIEF_CHOICES });
     const decision = await new Promise((resolve, reject) => {
       run.briefWaiter = resolve;
       if (this.autoApproveBriefMs) {
@@ -732,22 +884,20 @@ ${job.decisions}` : job.request, this.toolbox.ws.list().map((f) => f.path)),
       run.ctrl.signal.addEventListener('abort', () => reject(new Error('cancelled')), { once: true });
     }).catch(() => null);
     run.briefWaiter = null;
-    if (!decision) return;
-    if (decision.answers && decision.use !== 'original') brief = answerBrief(brief, decision.answers);
-    let text = brief.text;
-    let source = 'refined';
-    if (decision.use === 'original') { text = job.request; source = 'original'; }
-    else if (decision.use === 'edited' && typeof decision.text === 'string' && decision.text.trim()) { text = decision.text.trim().slice(0, 8000); source = 'edited'; }
-    job.brief = source === 'original' ? null : text;
-    job.acceptance = source === 'original' ? [] : acceptanceFrom(text);
-    this.bus.emit('brief.approved', { brief: source === 'refined' ? brief : null, text, source, ...(decision.by ? { by: decision.by } : {}) }, ev);
+    return { brief, decision };
   }
 
   /** The command `brief.approve`. */
   approveBrief(jobId, { use = 'refined', text, answers } = {}) {
-    const run = this.active.get(jobId);
-    if (!run || !run.briefWaiter) throw Object.assign(new Error('no brief is waiting for that job'), { code: 'conflict' });
     if (!['refined', 'edited', 'original'].includes(use)) throw Object.assign(new Error('use must be refined, edited or original'), { code: 'bad_request' });
+    const run = this.active.get(jobId);
+    const job = this.state.jobs.find((j) => j.id === jobId);
+    // A brief left waiting when hivedesk stopped: the decision starts the job again from it.
+    if (!run && job?.status === 'awaiting_brief' && job.briefProposed) {
+      this._revive(job, { use, text, answers, by: 'user' });
+      return {};
+    }
+    if (!run || !run.briefWaiter) throw Object.assign(new Error('no brief is waiting for that job'), { code: 'conflict' });
     run.briefWaiter({ use, text, answers, by: 'user' });
     return {};
   }

@@ -180,8 +180,8 @@ export function init(el) {
     const done = tasks.filter((t) => t.status === 'done').length;
     strip.append(h('div', { class: 'strip-cells', role: 'img', 'aria-label': t('top.strip.done', { done, count: tasks.length }) },
       tasks.length ? tasks.map((task) => h('span', { class: 'cell', dataset: { s: task.status }, 'data-tip-title': task.title, 'data-tip-help': TASK_LABEL[task.status] || task.status })) : h('span', { class: 'cell', dataset: { s: 'running' } })),
-    h('button', { type: 'button', class: 'strip-label', style: 'border:0;background:none;cursor:pointer;text-align:left', 'data-tip-title': j.request, 'data-tip-help': t('tip.top.strip.help'), on: { click: () => wm.open('timeline') } },
-      j.status === 'planning' ? t('top.strip.planning') : j.status === 'running' ? t('top.strip.running', { done, count: tasks.length, request: j.request }) : t('top.strip.ended', { status: j.status, request: j.request })));
+    h('button', { type: 'button', class: 'strip-label', style: 'border:0;background:none;cursor:pointer;text-align:left', 'data-tip-title': j.request, 'data-tip-help': t('tip.top.strip.help'), on: { click: () => wm.open(j.status === 'awaiting_brief' ? 'brief' : 'timeline') } },
+      j.status === 'refining' ? t('top.strip.refining') : j.status === 'awaiting_brief' ? t('top.strip.brief') : j.status === 'planning' ? t('top.strip.planning') : j.status === 'running' ? t('top.strip.running', { done, count: tasks.length, request: j.request }) : t('top.strip.ended', { status: j.status, request: j.request })));
   });
 
   document.addEventListener('keydown', (e) => {

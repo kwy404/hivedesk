@@ -92,6 +92,19 @@ export function applyEvent(ev) {
   else bump('all');
 }
 
+// The roles of the built in workers and specialists come from the engine in English: shown in the desktop's language.
+const ROLE_KEY = {
+  'Foreman and planner': 'mel', Developer: 'dev', 'UI and styles': 'designer', 'Checks and tests': 'qa', 'README, copy and docs': 'writer',
+  'Mobile developer': 'mobile', 'Desktop app developer': 'desktop', 'Backend developer': 'backend', 'Security reviewer': 'security',
+  'Data engineer': 'data', 'DevOps engineer': 'devops'
+};
+/** A worker's role in the current language (a role the user typed stays as typed). Takes a worker or a role. */
+export function roleName(w) {
+  const role = typeof w === 'string' ? w : w?.role;
+  const k = ROLE_KEY[role];
+  return k ? t(`crew.role.${k}`) : role || '';
+}
+
 function workerOf(s, id) { return s.crew.find((w) => w.id === id); }
 export const worker = (id) => workerOf(S(), id) || fallbackWorker(id);
 function fallbackWorker(id) {
@@ -138,6 +151,11 @@ export function reduce(s, ev, isLive) {
       if (j) { j.status = 'running'; if (d.playbookId) j.playbookId = d.playbookId; }
       bump('jobs', 'tasks'); break;
     }
+    // The brief step: the job card, the top bar and the Office say what the job waits for.
+    case 'job.refining': { const j = job(s, ev.jobId); if (j) j.status = 'refining'; bump('jobs'); break; }
+    case 'brief.proposed': { const j = job(s, ev.jobId); if (j) { j.status = 'awaiting_brief'; j.briefProposed = d.brief; } bump('jobs'); break; }
+    case 'brief.approved': { const j = job(s, ev.jobId); if (j) { j.status = 'planning'; j.brief = { text: d.text, source: d.source }; } bump('jobs'); break; }
+    case 'job.resumed': { const j = job(s, ev.jobId); if (j) { j.status = 'running'; delete j.finishedAt; delete j.error; } bump('jobs'); break; }
     case 'job.done': { const j = job(s, ev.jobId); if (j) Object.assign(j, { status: 'done', summary: d.summary, files: d.files, finishedAt: ev.ts }); bump('jobs'); break; }
     case 'job.failed': { const j = job(s, ev.jobId); if (j) Object.assign(j, { status: 'failed', error: d.error, finishedAt: ev.ts }); bump('jobs'); break; }
     case 'job.cancelled': { const j = job(s, ev.jobId); if (j) Object.assign(j, { status: 'cancelled', finishedAt: ev.ts }); bump('jobs'); break; }
@@ -168,7 +186,7 @@ export function reduce(s, ev, isLive) {
     case 'worker.status': s.workers[d.workerId] = { ...(s.workers[d.workerId] || {}), status: d.status, detail: d.detail, taskId: d.taskId ?? s.workers[d.workerId]?.taskId }; bump('workers'); break;
     case 'chat.message': {
       const ch = d.channel || 'general';
-      (s.chat[ch] ||= []).push({ ...d, ts: d.ts || ev.ts, seq: ev.seq });
+      (s.chat[ch] ||= []).push({ ...d, ts: d.ts || ev.ts, seq: ev.seq, ...(ev.jobId && !d.jobId ? { jobId: ev.jobId } : {}) });
       if (s.chat[ch].length > 200) s.chat[ch].splice(0, s.chat[ch].length - 200);
       bump('chat'); break;
     }
@@ -257,7 +275,7 @@ export function jobTasks(s, j) {
 }
 
 export function currentJob(s = S()) {
-  for (let i = s.jobs.length - 1; i >= 0; i--) if (['planning', 'running'].includes(s.jobs[i].status)) return s.jobs[i];
+  for (let i = s.jobs.length - 1; i >= 0; i--) if (['refining', 'awaiting_brief', 'planning', 'running'].includes(s.jobs[i].status)) return s.jobs[i];
   return s.jobs[s.jobs.length - 1] || null;
 }
 

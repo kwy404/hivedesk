@@ -165,7 +165,8 @@ export async function startDomain(hive, job, run) {
   if (signal.aborted) return { domain: cls.domain, specialist: null, seeded: [], notes: [], cancelled: true };
   // A job started on purpose (the top bar) with a question still builds, as before: on the web stack.
   if (cls.domain === 'chat') cls = { ...cls, domain: 'web', confidence: 'low', words: [], files: [], source: 'keywords' };
-  const asks = job.refine !== false && !job.cityTaskId && hive.state.settings.questions !== false;
+  // A job revived from its waiting brief was asked before: no questions again.
+  const asks = job.refine !== false && !job.cityTaskId && !run.preDecision && hive.state.settings.questions !== false;
   if (asks) {
     const r = await ask(hive, job, run, cls);
     if (r.cancelled || signal.aborted) return { domain: cls.domain, specialist: null, seeded: [], notes: [], cancelled: true };

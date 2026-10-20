@@ -468,7 +468,8 @@ export class PhoneHub extends EventEmitter {
       }
       case 'chat.send': {
         const channel = a.channel === undefined || a.channel === 'general' ? 'general' : `dm:${worker(String(a.channel).replace(/^dm:/, ''))}`;
-        return this.run('chat.send', { channel, text: str(a.text, 2000, 'text') });
+        // phone.crew also lets the phone start jobs (job.create): a request typed in the chat starts one too, in the phone's language.
+        return this.run('chat.send', { channel, text: str(a.text, 2000, 'text'), jobs: true, ...(typeof a.lang === 'string' && /^[a-zA-Z-]{2,10}$/.test(a.lang) ? { lang: a.lang } : {}) });
       }
       case 'chat.log':
         return chatView(state, typeof a.channel === 'string' ? a.channel : 'general');

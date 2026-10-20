@@ -4,7 +4,7 @@ import { myAvatarEl } from '/profile/ui.js';
 import { h, icon, clear, fmtTime, richText, syncList } from '../dom.js';
 import { beeAvatar } from '../bees.js';
 import { register } from '../wm.js';
-import { S, rev, ui, worker } from '../store.js';
+import { S, rev, ui, worker, roleName } from '../store.js';
 import { provide } from '../menu.js';
 import * as act from '../actions.js';
 import { t, fmtList } from '../i18n.js';
@@ -29,13 +29,18 @@ export function msgText(m) {
 /** The buttons under a crew question ("start as a task" or "just talk"); gone once one is picked. */
 function choiceRow(m) {
   if (!m.choices?.length || m.chosen || !m.replyTo || ui.replay) return null;
-  const row = h('div', { class: 'row msg-choices', style: 'gap:6px;margin-top:6px;flex-wrap:wrap' });
+  // The brief buttons (use it, keep my request, open it) only while that brief still waits.
+  const briefJob = m.choices.some((c) => c.id === 'use') ? m.jobId : null;
+  if (briefJob && !briefWaits(briefJob)) return null;
+  const row = h('div', { class: 'row msg-choices', style: 'gap:6px;margin-top:6px;flex-wrap:wrap', dataset: briefJob ? { job: briefJob } : {} });
   const buttons = () => [...row.querySelectorAll('button')];
   for (const c of m.choices) {
     row.append(h('button', {
-      type: 'button', class: `btn btn-xs${c.id === 'task' ? ' btn-primary' : ''}`, text: t(c.key),
+      type: 'button', class: `btn btn-xs${c.id === 'task' || c.id === 'use' ? ' btn-primary' : ''}`, text: t(c.key),
       on: {
         click: async () => {
+          // "Open the brief" stays on this desktop: the Brief window has Edit.
+          if (c.id === 'open') { wm.open('brief'); return; }
           for (const b of buttons()) b.disabled = true;
           const r = await act.chooseChat(m.replyTo, c.id);
           if (r) row.remove();
@@ -46,6 +51,8 @@ function choiceRow(m) {
   }
   return row;
 }
+
+const briefWaits = (jobId) => S().jobs.find((j) => j.id === jobId)?.status === 'awaiting_brief';
 
 function msgNode(m, prev) {
   const text = msgText(m);
@@ -60,7 +67,7 @@ function msgNode(m, prev) {
     h('div', { style: 'min-width:0' },
       h('div', { class: 'msg-h' },
         h('span', { class: 'msg-n', text: w.name, style: m.from !== 'user' ? `color:color-mix(in oklab, ${w.color || '#F2A93B'} 45%, var(--text))` : '' }),
-        w.role && m.from !== 'user' ? h('span', { class: 'msg-r', text: w.role }) : null,
+        w.role && m.from !== 'user' ? h('span', { class: 'msg-r', text: roleName(w) }) : null,
         h('span', { class: 'msg-t', text: fmtTime(m.ts) })),
       quote ? h('div', { class: 'reply-to', text: quote }) : null,
       // A question card line: the card replaces the plain text version (kept for the CLI and the voice orb).
@@ -135,6 +142,11 @@ export function chatFeed(channel, { placeholder, emptyTitle, emptyText, args } =
   });
 
   let shown = 0;
+  // A brief decided elsewhere (its window, another chat, "ok"): its buttons go away here too.
+  track(() => [rev.jobs, rev.chat], () => {
+    for (const row of feed.querySelectorAll('.msg-choices[data-job]')) if (!briefWaits(row.dataset.job)) row.remove();
+  });
+
   track(() => [rev.chat, rev.crew, ui.replay], () => {
     const list = S().chat[channel] || [];
     const pinned = sticky.before();
