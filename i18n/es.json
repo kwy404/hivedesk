@@ -55,6 +55,8 @@
   "boot.failed.retry": "Reintentar",
   "boot.failed.text": "Una parte del escritorio no se pudo cargar. Comprueba que hivedesk sigue en ejecución en el terminal y vuelve a intentarlo.",
   "boot.failed.title": "La Colmena no se abrió",
+  "boot.offline.text": "Esta ventana no pudo conectar con hivedesk en este ordenador ({host}). Sigue intentándolo sola. Si hivedesk se cerró, ábrelo de nuevo y pulsa Reintentar.",
+  "boot.offline.title": "hivedesk no responde",
   "boot.text": "Conectando con hivedesk en este ordenador.",
   "boot.title": "Abriendo la Colmena",
   "brain.auth.detail": "Abre la dirección que aparece en el terminal.",

@@ -59,7 +59,12 @@ export function connect() {
   const url = `${proto}//${location.host}/ws${token ? `?t=${encodeURIComponent(token)}` : ''}`;
   setState(connection.attempts ? 'reconnecting' : 'connecting');
   try { ws = new WebSocket(url); } catch (err) { scheduleRetry(); return; }
+  // A socket that neither opens nor fails (a port that swallows the handshake) is closed after a while,
+  // so the close handler retries instead of waiting on it forever.
+  const sock = ws;
+  const openTimer = setTimeout(() => { if (sock.readyState === 0) { try { sock.close(); } catch {} } }, 10000);
   ws.addEventListener('open', () => {
+    clearTimeout(openTimer);
     retry = 0;
     connection.attempts = 0;
     setState('open');
@@ -83,6 +88,7 @@ export function connect() {
     emit(frame.kind, frame);
   });
   ws.addEventListener('close', () => {
+    clearTimeout(openTimer);
     ws = null;
     for (const [id, p] of pending) {
       if (p.sentWhileOpen) { clearTimeout(p.timer); p.reject(Object.assign(new Error(tr('net.lostBeforeAnswer')), { code: 'offline' })); pending.delete(id); }

@@ -55,6 +55,8 @@
   "boot.failed.retry": "다시 시도",
   "boot.failed.text": "데스크톱 일부를 불러오지 못했어요. 터미널에서 hivedesk가 아직 실행 중인지 확인한 뒤 다시 시도해 주세요.",
   "boot.failed.title": "Hive가 열리지 않았어요",
+  "boot.offline.text": "이 창이 이 컴퓨터의 hivedesk({host})에 연결하지 못했어요. 계속 자동으로 다시 시도해요. hivedesk를 닫았다면 다시 실행한 다음 다시 시도를 눌러 주세요.",
+  "boot.offline.title": "hivedesk가 응답하지 않아요",
   "boot.text": "이 컴퓨터의 hivedesk에 연결하는 중이에요.",
   "boot.title": "Hive 여는 중",
   "brain.auth.detail": "터미널에 표시된 주소를 열어 주세요.",

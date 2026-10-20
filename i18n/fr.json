@@ -55,6 +55,8 @@
   "boot.failed.retry": "Réessayer",
   "boot.failed.text": "Une partie du bureau n'a pas pu se charger. Vérifiez que hivedesk tourne toujours dans le terminal, puis réessayez.",
   "boot.failed.title": "La Ruche ne s'est pas ouverte",
+  "boot.offline.text": "Cette fenêtre n'a pas pu joindre hivedesk sur cet ordinateur ({host}). Elle continue d'essayer toute seule. Si hivedesk a été fermé, relancez-le puis cliquez sur Réessayer.",
+  "boot.offline.title": "hivedesk ne répond pas",
   "boot.text": "Connexion à hivedesk sur cet ordinateur.",
   "boot.title": "Ouverture de la Ruche",
   "brain.auth.detail": "Ouvrez l'adresse affichée dans le terminal.",

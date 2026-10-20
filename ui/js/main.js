@@ -203,10 +203,47 @@ function paintConnection(c) {
     boot.querySelector('.spin')?.remove();
     return;
   }
-  if (!ui.hello) return; // the boot screen already says "connecting"
+  if (!ui.hello) {
+    // Before the first hello the boot screen says "connecting"; after a few failed tries it says why and offers Retry.
+    if (c.state === 'offline' && c.attempts >= 3) bootStuck();
+    return;
+  }
   conn.replaceChildren(icon('offline'), h('span', { text: c.state === 'offline' ? t('conn.lost', { s: Math.max(1, Math.round((c.nextRetryAt - Date.now()) / 1000)) }) : t('conn.reconnecting') }),
     h('button', { type: 'button', class: 'btn btn-xs btn-quiet', text: t('conn.retry'), tip: 'tip.conn.retry', on: { click: () => net.retryNow() } }));
   conn.classList.add('on');
+}
+// The boot screen never spins without end: no hello within BOOT_WAIT_MS (the engine is not reachable, the
+// socket hangs, or it opened and nothing came) or a few failed tries show the reason and a Retry button.
+const BOOT_WAIT_MS = 12000;
+let bootWatch = setTimeout(bootStuck, BOOT_WAIT_MS);
+function bootSay(title, text, params) {
+  const h1 = boot.querySelector('h1');
+  const p = boot.querySelector('p');
+  h1.dataset.tx = title;
+  p.dataset.tx = text;
+  if (params) p.setAttribute('data-tx-args', JSON.stringify(params)); else p.removeAttribute('data-tx-args');
+  h1.textContent = t(title);
+  p.textContent = t(text, params);
+}
+function bootStuck() {
+  clearTimeout(bootWatch);
+  if (ui.hello || ui.connection === 'unauthorized' || boot.classList.contains('stuck')) return;
+  boot.classList.add('stuck');
+  bootSay('boot.offline.title', 'boot.offline.text', { host: location.host });
+  boot.querySelector('.spin')?.setAttribute('hidden', '');
+  const retry = h('button', { type: 'button', class: 'btn btn-primary boot-retry', tx: 'boot.failed.retry', on: { click: bootRetry } });
+  boot.querySelector('.boot-in').append(retry);
+  retry.focus();
+}
+function bootRetry() {
+  boot.classList.remove('stuck');
+  boot.querySelector('.boot-retry')?.remove();
+  bootSay('boot.title', 'boot.text');
+  boot.querySelector('.spin')?.removeAttribute('hidden');
+  // A socket that is open but sent no hello is not worth keeping: load the page again.
+  if (net.isOpen()) { location.reload(); return; }
+  net.retryNow();
+  bootWatch = setTimeout(bootStuck, BOOT_WAIT_MS);
 }
 let connTimer = null;
 net.on('connection', (c) => {
@@ -220,6 +257,9 @@ let firstHello = true;
 net.on('hello', (f) => {
   loadHello(f);
   if (f.state?.settings?.sound === false) setMuted(true);
+  clearTimeout(bootWatch);
+  boot.classList.remove('stuck');
+  boot.querySelector('.boot-retry')?.remove();
   boot.classList.add('gone');
   setTimeout(() => boot.setAttribute('hidden', ''), 400);
   if (firstHello) {

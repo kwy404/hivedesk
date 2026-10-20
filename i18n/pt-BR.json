@@ -55,6 +55,8 @@
   "boot.failed.retry": "Tentar de novo",
   "boot.failed.text": "Uma parte da área de trabalho não carregou. Verifique se o hivedesk ainda está rodando no terminal e tente de novo.",
   "boot.failed.title": "A Colmeia não abriu",
+  "boot.offline.text": "Esta janela não conseguiu falar com o hivedesk neste computador ({host}). Ela continua tentando sozinha. Se o hivedesk foi fechado, abra de novo e clique em Tentar de novo.",
+  "boot.offline.title": "O hivedesk não está respondendo",
   "boot.text": "Conectando ao hivedesk neste computador.",
   "boot.title": "Abrindo a Colmeia",
   "brain.auth.detail": "Abra o endereço mostrado no terminal.",

@@ -55,6 +55,8 @@
   "boot.failed.retry": "重试",
   "boot.failed.text": "桌面的某个部分加载失败。请确认 hivedesk 仍在终端中运行，然后重试。",
   "boot.failed.title": "蜂巢未能打开",
+  "boot.offline.text": "此窗口无法连接这台电脑上的 hivedesk（{host}）。它会自动继续尝试。如果 hivedesk 已关闭，请重新启动，然后点击重试。",
+  "boot.offline.title": "hivedesk 没有响应",
   "boot.text": "正在连接这台电脑上的 hivedesk。",
   "boot.title": "正在打开蜂巢",
   "brain.auth.detail": "请打开终端中打印的地址。",

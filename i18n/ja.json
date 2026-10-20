@@ -55,6 +55,8 @@
   "boot.failed.retry": "再試行",
   "boot.failed.text": "デスクトップの一部を読み込めませんでした。ターミナルで hivedesk がまだ動いているか確認してから、もう一度お試しください。",
   "boot.failed.title": "ハイブを開けませんでした",
+  "boot.offline.text": "このウィンドウはこのコンピューターの hivedesk ({host}) に接続できませんでした。自動で再試行を続けます。hivedesk を閉じた場合はもう一度起動してから、再試行を押してください。",
+  "boot.offline.title": "hivedesk が応答していません",
   "boot.text": "このコンピューターの hivedesk に接続しています。",
   "boot.title": "ハイブを開いています",
   "brain.auth.detail": "ターミナルに表示されたアドレスを開いてください。",

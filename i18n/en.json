@@ -55,6 +55,8 @@
   "boot.failed.retry": "Retry",
   "boot.failed.text": "A part of the desktop failed to load. Check that hivedesk is still running in the terminal, then try again.",
   "boot.failed.title": "The Hive did not open",
+  "boot.offline.text": "This window could not reach hivedesk on this computer ({host}). It keeps trying on its own. If hivedesk was closed, start it again, then press Retry.",
+  "boot.offline.title": "hivedesk is not answering",
   "boot.text": "Connecting to hivedesk on this computer.",
   "boot.title": "Opening the Hive",
   "brain.auth.detail": "Open the address printed in the terminal.",

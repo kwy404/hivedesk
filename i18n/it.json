@@ -55,6 +55,8 @@
   "boot.failed.retry": "Riprova",
   "boot.failed.text": "Una parte del desktop non si è caricata. Controlla che hivedesk sia ancora in esecuzione nel terminale, poi riprova.",
   "boot.failed.title": "L'alveare non si è aperto",
+  "boot.offline.text": "Questa finestra non è riuscita a raggiungere hivedesk su questo computer ({host}). Continua a provare da sola. Se hivedesk è stato chiuso, avvialo di nuovo e premi Riprova.",
+  "boot.offline.title": "hivedesk non risponde",
   "boot.text": "Connessione a hivedesk su questo computer.",
   "boot.title": "Apertura dell'alveare",
   "brain.auth.detail": "Apri l'indirizzo stampato nel terminale.",
