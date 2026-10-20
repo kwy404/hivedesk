@@ -40,6 +40,12 @@ export function cleanTranscript(text) {
     .trim();
 }
 
+/** A path as seen from a working folder: relative (plain ASCII here) when it is inside it, else as it is. */
+export function relativeTo(cwd, file) {
+  const r = path.relative(cwd, file);
+  return r && !path.isAbsolute(r) ? r : file;
+}
+
 /**
  * Why whisper-server could not start, in words: gone (an antivirus quarantine), blocked, a missing DLL,
  * a processor without the instructions of the build, a taken port, a bad model file. Never only an exit code.
@@ -91,11 +97,14 @@ export class WhisperServer {
 
   async _launch() {
     this.port = await freePort();
-    // The model and program paths are single arguments with no shell, so spaces and accents stay intact.
-    const args = ['-m', this.o.model, '--host', '127.0.0.1', '--port', String(this.port), '-t', String(this.o.threads), '-l', 'auto', '-nt', '-sns'];
+    // No shell, so spaces stay inside one argument. whisper.cpp reads its arguments in the ANSI code page on
+    // Windows, so a user folder like C:UsersJosé turns into garbage: the model is passed relative to the
+    // working folder, which Windows sets from the full Unicode path.
+    const cwd = path.dirname(this.o.model);
+    const args = ['-m', relativeTo(cwd, this.o.model), '--host', '127.0.0.1', '--port', String(this.port), '-t', String(this.o.threads), '-l', 'auto', '-nt', '-sns'];
     if (!this.o.gpu) args.push('-ng');
     const sp = this.o.spawnImpl || spawn;
-    const child = sp(this.o.binary, args, { cwd: path.dirname(this.o.binary), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = sp(this.o.binary, args, { cwd, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     this.child = child;
     let tail = '';
     let spawnErr = null;

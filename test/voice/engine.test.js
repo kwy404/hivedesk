@@ -119,7 +119,7 @@ describe('local speech to text', () => {
     const r = await ws.transcribe(wav(), 'pt');
     expect(r).toMatchObject({ text: 'hello there', device: 'cpu' });
     const args = fw.spawned[0].args;
-    expect(args).toEqual(expect.arrayContaining(['--host', '127.0.0.1', '-m', '/m/ggml-tiny.bin', '-ng']));
+    expect(args).toEqual(expect.arrayContaining(['--host', '127.0.0.1', '-m', 'ggml-tiny.bin', '-ng']));
     const call = fw.fetchImpl.mock.calls.find(([u]) => String(u).endsWith('/inference'));
     expect(String(call[0])).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/inference$/);
     expect(call[1].body.get('language')).toBe('pt');

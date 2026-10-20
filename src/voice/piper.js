@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pcmToWav } from './wav.js';
-import { startError } from './whisper.js';
+import { startError, relativeTo } from './whisper.js';
 
 export const MAX_TTS_CHARS = 600;
 
@@ -22,11 +22,16 @@ export function piperSpeak(o) {
   const text = String(o.text || '').replace(/\s+/g, ' ').trim().slice(0, MAX_TTS_CHARS);
   if (!text) return Promise.reject(Object.assign(new Error('nothing to say'), { code: 'bad_request' }));
   const rate = o.rate || voiceRate(o.config);
-  const args = ['-m', o.model, '-c', o.config, '--output_raw', '-q'];
+  // Piper, like whisper.cpp, reads ANSI arguments on Windows: paths relative to the voice folder keep
+  // accented user folders out of them (its espeak-ng data too, found next to the program).
+  const cwd = path.dirname(o.model);
+  const args = ['-m', relativeTo(cwd, o.model), '-c', relativeTo(cwd, o.config), '--output_raw', '-q'];
+  const espeak = path.join(path.dirname(o.binary), 'espeak-ng-data');
+  if (fs.existsSync(espeak)) args.push('--espeak_data', relativeTo(cwd, espeak));
   if (o.lengthScale && Number.isFinite(o.lengthScale)) args.push('--length_scale', String(Math.min(2, Math.max(0.5, o.lengthScale))));
   return new Promise((resolve, reject) => {
     const sp = o.spawnImpl || spawn;
-    const child = sp(o.binary, args, { cwd: path.dirname(o.binary), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = sp(o.binary, args, { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     const chunks = [];
     let err = '';
     const timer = setTimeout(() => { try { child.kill(); } catch { /* gone */ } }, o.timeoutMs || 30000);
