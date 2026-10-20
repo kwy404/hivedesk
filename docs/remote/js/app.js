@@ -11,6 +11,7 @@ import { readInviteHash, deriveInvite, homeTopic, homeSeal } from './vendor/phon
 import { PhoneClient } from './vendor/phone/core/client.js';
 import { cleanName } from './vendor/phone/core/handshake.js';
 import { dial, rendezvousOf } from './vendor/phone/core/connect.js';
+import { mdStrip, mdLine } from './vendor/js/md.js';
 
 if (window.top !== window.self) throw new Error('hivedesk remote does not run inside a frame');
 
@@ -367,7 +368,7 @@ function feedList() {
   if (!S.feed.length) return h('div', { class: 'empty', text: t('status.noActivity') });
   return h('ul', { class: 'feed', id: 'feed', 'aria-live': 'polite' }, ...S.feed.slice(0, 30).map((f) => {
     const [ic, tone] = FEED_ICON[f.k] || ['bolt', ''];
-    const text = f.k === 'chat' ? `${f.from}: ${f.text}` : t(`feed.${f.k}`, { text: f.text || '', path: f.path || '', n: f.n || 0, worker: f.workerId || '' });
+    const text = f.k === 'chat' ? `${f.from}: ${mdLine(f.text, 160)}` : t(`feed.${f.k}`, { text: f.text || '', path: f.path || '', n: f.n || 0, worker: f.workerId || '' });
     return h('li', {}, h('span', { class: `fi ${tone}` }, icon(ic)), h('span', { class: 'grow', text }), h('time', { dateTime: f.ts, text: clock(f.ts) }));
   }));
 }
@@ -406,7 +407,9 @@ function viewCrew() {
     lines.length ? lines.slice(-40).map((m) => {
       const who = m.from === 'user' ? 'me' : m.from === 'system' ? 'sys' : 'them';
       const w = crew.find((x) => x.id === m.from);
-      return h('div', { class: `msg ${who}` }, who === 'them' ? h('span', { class: 'who', text: w?.name || m.from }) : null, m.text);
+      return h('div', { class: `msg ${who}` }, who === 'them' ? h('span', { class: 'who', text: w?.name || m.from }) : null,
+        // Crew text is markdown: the page never builds HTML from data, so the marks are taken out (no raw ** or #).
+        who === 'them' ? mdStrip(m.text) : m.text);
     }) : h('div', { class: 'empty', text: t('crew.empty') })));
   out.push(composer(dm));
   return out;
@@ -427,7 +430,7 @@ function composer(dm) {
         const r = await cmd('job.create', { request: text });
         toast(t('crew.jobStarted', { id: r.jobId }), 'ok');
         S.tab = 'status';
-      } else await cmd('chat.send', { channel: S.channel, text });
+      } else await cmd('chat.send', { channel: S.channel, text, lang: locale() });
       // A state push may have rebuilt the composer meanwhile: clear the one on screen.
       ta.value = '';
       const live = document.getElementById('compose');

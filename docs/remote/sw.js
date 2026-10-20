@@ -11,7 +11,7 @@ const SHELL = [
   'js/vendor/lend/core/sha256.js', 'js/vendor/lend/core/p2p-pipe.js',
   'js/vendor/phone/core/crypto.js', 'js/vendor/phone/core/invite.js', 'js/vendor/phone/core/handshake.js', 'js/vendor/phone/core/messages.js',
   'js/vendor/phone/core/session.js', 'js/vendor/phone/core/client.js', 'js/vendor/phone/core/grants.js', 'js/vendor/phone/core/connect.js',
-  'js/vendor/remote/media.js', 'js/vendor/remote/abr.js', 'js/vendor/remote/pointer.js',
+  'js/vendor/remote/media.js', 'js/vendor/remote/abr.js', 'js/vendor/remote/pointer.js', 'js/vendor/js/md.js',
   'i18n/en.json', 'i18n/pt-BR.json', 'i18n/es.json', 'i18n/fr.json', 'i18n/de.json', 'i18n/it.json', 'i18n/ja.json', 'i18n/ko.json', 'i18n/ru.json', 'i18n/zh-CN.json'
 ];
 

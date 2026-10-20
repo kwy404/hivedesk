@@ -1,6 +1,6 @@
 // Timeline: every job with its task graph (dependency order), status and assignee.
 
-import { h, icon, clear, fmtDuration, ago } from '../dom.js';
+import { h, icon, clear, fmtDuration, ago, mdNode } from '../dom.js';
 import { beeAvatar } from '../bees.js';
 import { register } from '../wm.js';
 import { S, rev, ui, jobTasks, worker, extra } from '../store.js';
@@ -80,7 +80,7 @@ function jobCard(j, isCur) {
       h('div', { class: 'task-r' }, beeAvatar(worker('mel'), 20)))));
   }
   if (tasks.length) card.append(h('div', { class: 'tasks', role: 'list' }, tasks.map((x, i) => taskRow(x, i, tasks))));
-  if (j.status === 'done' && j.summary) card.append(h('div', { class: 'small muted', style: 'padding:0 12px 11px', text: j.summary }));
+  if (j.status === 'done' && j.summary) card.append(h('div', { class: 'small muted', style: 'padding:0 12px 11px' }, mdNode(j.summary)));
   if (j.status === 'failed' && j.error) card.append(h('div', { class: 'honest bad', style: 'margin:0 12px 12px' }, icon('x'), h('div', { text: typeof j.error === 'string' ? j.error : j.error.message || t('timeline.job.failedText') })));
   return card;
 }

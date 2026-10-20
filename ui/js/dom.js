@@ -2,6 +2,7 @@
 // (see store.js) and these helpers only build nodes.
 
 import { t, fmtBytes as iBytes, fmtTime as iTime, fmtDuration as iDuration, fmtAgo } from './i18n.js';
+import { mdToHtml } from './md.js';
 
 /**
  * Creates an element. `props` keys: class, text, html (trusted strings only), style,
@@ -118,25 +119,29 @@ export function copyText(text) {
 
 export function uid(p = 'u') { return `${p}${Math.random().toString(36).slice(2, 9)}`; }
 
-/** Very small markdown: code blocks, inline code, bold, links as text. Returns a fragment. */
+/** Safe markdown (ui/js/md.js) as a fragment: model text in chats, briefs, reports, tasks and Activity. */
 export function richText(text) {
+  const box = mdNode(text);
   const frag = document.createDocumentFragment();
-  const parts = String(text ?? '').split(/```(\w*)\n?([\s\S]*?)```/g);
-  for (let i = 0; i < parts.length; i++) {
-    if (i % 3 === 0) {
-      const lines = parts[i].split('\n');
-      lines.forEach((line, li) => {
-        for (const seg of line.split(/(`[^`]+`|\*\*[^*]+\*\*)/g)) {
-          if (!seg) continue;
-          if (seg.startsWith('`') && seg.endsWith('`') && seg.length > 1) frag.append(h('code', { class: 'ic', text: seg.slice(1, -1) }));
-          else if (seg.startsWith('**') && seg.endsWith('**')) frag.append(h('strong', { text: seg.slice(2, -2) }));
-          else frag.append(seg);
-        }
-        if (li < lines.length - 1) frag.append(h('br'));
-      });
-    } else if (i % 3 === 2) {
-      frag.append(h('pre', { class: 'cb' }, h('code', { text: parts[i].replace(/\n$/, '') })));
-    }
-  }
+  frag.append(...box.childNodes);
   return frag;
+}
+
+/** Safe markdown in a <div class="md">: escaped first, no raw HTML, no images, http and https links only. */
+export function mdNode(text, cls = '') {
+  return h('div', { class: `md${cls ? ` ${cls}` : ''}`, html: mdToHtml(text, { copyLabel: t('md.copy') }) });
+}
+
+// The copy button of a markdown code block, anywhere in the page.
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    const b = e.target?.closest?.('[data-md-copy]');
+    if (!b) return;
+    const code = b.parentElement?.querySelector('pre code');
+    if (!code) return;
+    copyText(code.textContent).then(() => {
+      b.textContent = t('md.copied');
+      setTimeout(() => { b.textContent = t('md.copy'); }, 1500);
+    }, () => {});
+  });
 }

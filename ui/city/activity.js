@@ -5,9 +5,12 @@
 // Lines carry an i18n key and its parameters (`key`, `p`), so the UI renders them in any language
 // and the export can use the English text it is given.
 
+import { mdLine } from '../js/md.js';
+
 export const KINDS = ['task', 'job', 'peer', 'grant', 'approval', 'file', 'git', 'agent', 'city'];
 
-const short = (s, n = 160) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? `${t.slice(0, n - 1)}...` : t; };
+// One line each: model text loses its markdown marks (ui/js/md.js).
+const short = (s, n = 160) => { const t = mdLine(String(s ?? '')); return t.length > n ? `${t.slice(0, n - 1)}...` : t; };
 
 /**
  * One activity entry for an event, or null.

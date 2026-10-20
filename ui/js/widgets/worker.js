@@ -1,11 +1,11 @@
 // A worker's own window: avatar, status, current task, live model output, tool calls
 // and a direct chat.
 
-import { h, icon, clear, fmtDuration } from '../dom.js';
+import { h, icon, clear, fmtDuration, mdNode } from '../dom.js';
 import { beeAvatar } from '../bees.js';
 import { register } from '../wm.js';
 import * as wm from '../wm.js';
-import { S, rev, ui, worker, extra } from '../store.js';
+import { S, rev, ui, worker, extra, roleName } from '../store.js';
 import { provide } from '../menu.js';
 import * as act from '../actions.js';
 import { t, fmtNumber } from '../i18n.js';
@@ -40,7 +40,7 @@ export function workerMenu(w) {
   if (!w) return null;
   const builtin = w.builtin || ['mel', 'dev', 'designer', 'qa', 'writer'].includes(w.id);
   return [
-    { header: t('worker.menu.header', { name: w.name, role: w.role || t('worker.menu.roleFallback') }) },
+    { header: t('worker.menu.header', { name: w.name, role: roleName(w) || t('worker.menu.roleFallback') }) },
     { label: t('worker.menu.chat'), icon: 'chat', action: () => wm.open('worker', w.id) },
     { label: t('worker.menu.assign'), icon: 'plan', disabled: !!ui.replay, action: () => assignTask(w.id) },
     { label: w.paused ? t('worker.menu.resume') : t('worker.menu.pause'), icon: w.paused ? 'arrow' : 'stop', disabled: !!ui.replay, action: () => act.pauseWorker(w.id, !w.paused) },
@@ -87,7 +87,7 @@ register('worker', {
       head.append(beeAvatar(w, 48, { ring: true, status: w.paused ? 'queued' : st.key }),
         h('div', { class: 'grow' },
           h('div', { class: 'wk-name', text: w.name }),
-          h('div', { class: 'wk-role ellipsis', text: w.role || '' }),
+          h('div', { class: 'wk-role ellipsis', text: roleName(w) }),
           h('div', { class: 'wk-stat' }, h('span', { class: `sdot sdot-${st.key}` }), h('span', { class: 'ellipsis', text: task && st.key !== 'idle' ? `${st.label} · ${task.title}` : st.label }))),
         h('button', { class: 'ibtn', type: 'button', 'aria-label': t('worker.actions', { name: w.name }), tip: 'tip.worker.actions', 'aria-haspopup': 'menu', on: { click: (e) => import('../menu.js').then((m) => { const r = e.currentTarget.getBoundingClientRect(); m.open({ x: r.left, y: r.bottom + 4, items: workerMenu(w) }); }) } },
           h('span', { html: '<svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>' })));
@@ -100,15 +100,26 @@ register('worker', {
       const active = !turn.ended && ['thinking', 'tool'].includes(st);
       stream.hidden = !turn.text && !active;
       if (stream.hidden) return;
-      const pre = stream.querySelector('pre') || h('pre', { 'aria-live': 'off' });
+      const pre = stream.querySelector('pre.turn-raw') || h('pre', { class: 'turn-raw', 'aria-live': 'off' });
       const label = active
         ? t('worker.stream.active', { n: turn.n ?? '' })
         : [t('worker.stream.last'), turn.ms ? fmtDuration(turn.ms) : null, turn.tps ? t('worker.stream.tps', { tps: fmtNumber(turn.tps, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) }) : null].filter(Boolean).join(' · ');
       if (!stream.firstChild) stream.append(h('div', { class: 'stream-h', tip: 'tip.worker.stream' }, icon('model', 'ico-sm'), h('span', { class: 'grow lbl-t' }), h('span', { class: 'spin' })), pre);
       stream.querySelector('.lbl-t').textContent = label;
       stream.querySelector('.spin').hidden = !active;
+      stream.querySelector('.md-turn')?.remove();
+      pre.hidden = false;
       let txt = turn.text.length > 4000 ? `...${turn.text.slice(-4000)}` : turn.text;
-      if (!active) { try { txt = JSON.stringify(JSON.parse(turn.text), null, 2); } catch {} }
+      if (!active) {
+        let json = false;
+        try { txt = JSON.stringify(JSON.parse(turn.text), null, 2); json = true; } catch {}
+        // A finished answer in words is markdown ("1. **Dev**: ..."): rendered, not shown raw.
+        if (!json && txt.trim()) {
+          pre.hidden = true;
+          stream.append(mdNode(txt, 'md-turn'));
+          return;
+        }
+      }
       pre.textContent = txt;
       if (active && !turn.text) pre.append(h('span', { class: 'faint', text: `${t('worker.stream.waiting')} ` }));
       if (active) pre.append(h('span', { class: 'caret' }));

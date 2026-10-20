@@ -9,6 +9,7 @@
 // the last QA verdict. Colors come from the theme tokens through ui/js/art.js.
 
 import { beeSvg } from '/js/bees.js';
+import { mdLine } from '/js/md.js';
 import {
   nightFactor, goldenFactor, roundRect, hexPath, hexScreen, wrap, drawNameTag, drawBubble, drawPill,
   iconCheck, drawNoteIcon, drawParcel,
@@ -1762,7 +1763,7 @@ export class CityScene {
       if (a.bubble && A >= 20) {
         const age = now - a.bubble.at;
         ctx.globalAlpha = Math.min(clamp(age / 0.2), clamp((a.bubble.until - now) / 0.25)) * a.alpha;
-        drawBubble(ctx, a.sx, headY, a.bubble.text, clamp(A * 0.4, 10.5, 12.5), this.w, a.ag.color);
+        drawBubble(ctx, a.sx, headY, mdLine(a.bubble.text, 140), clamp(A * 0.4, 10.5, 12.5), this.w, a.ag.color);
       }
       ctx.globalAlpha = 1;
     }

@@ -343,6 +343,26 @@ button { font: inherit; color: inherit; }
 .msg-b .ic { font-family: var(--font-mono); font-size: var(--fs-12); padding: 1px 5px; border-radius: var(--r-sm); background: color-mix(in srgb, var(--text) 7%, transparent); color: var(--honey-2); }
 .msg-b .cb { margin: 6px 0 2px; padding: 9px 11px; border-radius: var(--r-ctl); background: var(--bg-2); border: 1px solid var(--line); font-size: var(--fs-12); overflow: auto; color: var(--text-2); }
 .msg-b strong { color: var(--text); }
+/* Safe markdown (ui/js/md.js): model text in chats, the last turn, briefs, reports, tasks and Activity. */
+.md { min-width: 0; overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p { margin: 0 0 6px; }
+.md ul, .md ol { margin: 2px 0 6px; padding-left: 20px; }
+.md li { margin: 1px 0; }
+.md li::marker { color: var(--faint); }
+.md .md-h { margin: 8px 0 4px; font-size: var(--fs-13); font-weight: var(--fw-semi); color: var(--text); line-height: 1.4; }
+.md h4.md-h { font-size: var(--fs-14, 14px); }
+.md strong { color: var(--text); font-weight: var(--fw-semi); }
+.md a { color: var(--honey-2); text-decoration: underline; text-underline-offset: 2px; }
+.md blockquote { margin: 4px 0; padding: 2px 10px; border-left: 2px solid var(--line); color: var(--muted-t); }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 8px 0; }
+.md .ic { font-family: var(--font-mono); font-size: var(--fs-12); padding: 1px 5px; border-radius: var(--r-sm); background: color-mix(in srgb, var(--text) 7%, transparent); color: var(--honey-2); }
+.md .md-code { position: relative; margin: 6px 0 4px; }
+.md .cb { margin: 0; padding: 9px 11px; border-radius: var(--r-ctl); background: var(--bg-2); border: 1px solid var(--line); font-size: var(--fs-12); overflow: auto; color: var(--text-2); white-space: pre; font-family: var(--font-mono); }
+.md .md-copy { position: absolute; top: 5px; right: 5px; opacity: .75; }
+.md .md-code:hover .md-copy, .md .md-copy:focus-visible { opacity: 1; }
+.stream .md-turn { padding: 9px 11px; max-height: 260px; overflow: auto; font-size: var(--fs-12); line-height: 1.55; color: var(--text-2); }
 .msg.cont { padding-top: 1px; }
 .msg.cont .bee-av, .msg.cont .msg-h { visibility: hidden; height: 0; }
 .msg.cont .bee-av { height: 0; }

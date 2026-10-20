@@ -13,7 +13,7 @@ export const SHARED = [
   'lend/core/pairing.js', 'lend/core/words.js', 'lend/core/wordlist.js', 'lend/core/sha256.js', 'lend/core/p2p-pipe.js',
   'phone/core/crypto.js', 'phone/core/invite.js', 'phone/core/handshake.js', 'phone/core/messages.js', 'phone/core/session.js',
   'phone/core/client.js', 'phone/core/grants.js', 'phone/core/connect.js',
-  'remote/media.js', 'remote/abr.js', 'remote/pointer.js',
+  'remote/media.js', 'remote/abr.js', 'remote/pointer.js', 'js/md.js',
   '../i18n/index.js'
 ];
 const HEADER = '// Copied from {file} by scripts/phone-page.mjs. Edit the source, then run the script.\n';
