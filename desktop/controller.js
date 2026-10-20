@@ -9,6 +9,7 @@ import { checkWebview, decideLaunch } from './detect.js';
 import { ensureRuntime } from './runtime.js';
 import { launchNative, runtimeConfig } from './native.js';
 import { WindowStore, MIN } from './state.js';
+import { WinDisplays, WorkAreaMax, clampToDisplays, centerIn, workAreaBounds, reachable, validRect } from './workarea.js';
 import { lockFile, acquireLock, releaseLock } from './instance.js';
 import { openAppWindow, openDefaultBrowser } from './browser.js';
 import { desktopStrings, pickLocale } from './strings.js';
@@ -17,6 +18,7 @@ import { UpdateService } from './update/service.js';
 import { GALLERY, readProfile, writeProfile } from './profile/index.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+const sleep = (ms) => new Promise((r) => { const t = setTimeout(r, ms); t.unref?.(); });
 const SHELL = path.join(HERE, 'shell.html');
 const OS_NAME = { win32: 'windows', darwin: 'macos', linux: 'linux' };
 
@@ -96,6 +98,20 @@ export async function openDesktop(o) {
   // HIVEDESK_DESKTOP_HIDDEN=1: tests of a whole package, invisible (hidden window, no tray, no browser).
   const hidden = !!o.hidden || env.HIVEDESK_DESKTOP_HIDDEN === '1';
   let settings = store.settings();
+  // The frame of this run (a change in the menu applies at the next start, like the native style).
+  const frame = settings.frame;
+  // Windows with the custom frame: maximize onto the work area of the monitor (desktop/workarea.js).
+  // o.displays: a display source for tests ({ list(): Promise<Display[] | null>, close() }).
+  const workArea = (o.platform || process.platform) === 'win32' && frame !== 'system' && !hidden;
+  const displaySource = workArea ? (o.displays || new WinDisplays()) : null;
+  const displays = () => (displaySource ? displaySource.list().catch(() => null) : Promise.resolve(null));
+  // Asked at once, so the helper is warm and the saved bounds can be checked before the window opens.
+  const displaysAtStart = workArea ? displays() : null;
+  // Neutralino's window.setSize turns WS_THICKFRAME and WS_MAXIMIZEBOX back on when resizable is true (its
+  // default): a sizing border on the borderless window and a native maximize for Win+Up. The custom frame
+  // resizes from its own edges, so on Windows every setSize says resizable: false (the style it started with).
+  const sizeExtra = workArea ? { resizable: false } : {};
+  let wmax = null;
   let native = null;
   let mode = 'none';
   let trayOk = false;
@@ -151,7 +167,11 @@ export async function openDesktop(o) {
       const [size, pos, max, min] = await Promise.all([
         native.call('window.getSize'), native.call('window.getPosition'), native.call('window.isMaximized'), native.call('window.isMinimized')
       ]);
-      return { width: size.width, height: size.height, x: pos.x, y: pos.y, maximized: !!max, minimized: !!min };
+      const bounds = { width: size.width, height: size.height, x: pos.x, y: pos.y };
+      // The custom frame on Windows is never natively maximized: a native maximize (Win+Up, the taskbar)
+      // turns into the work area maximize here, and "maximized" is the work area state.
+      const maximized = wmax ? await wmax.sync({ nativeMax: !!max, minimized: !!min, bounds }) : !!max;
+      return { ...bounds, maximized, minimized: !!min };
     } catch {
       return null;
     }
@@ -160,8 +180,34 @@ export async function openDesktop(o) {
     if (hidden) return;
     const s = await windowState();
     if (!s || s.minimized) return;
-    if (s.maximized) store.save({ maximized: true });
+    // While maximized the normal bounds are the restore bounds (known for the work area maximize).
+    if (s.maximized) store.save(validRect(wmax?.restore) ? { ...wmax.restore, maximized: true } : { maximized: true });
     else store.save({ width: s.width, height: s.height, x: s.x, y: s.y, maximized: false });
+  }
+  async function toggleMaximize() {
+    if (wmax && !wmax.nativeOnly) {
+      if (await wmax.toggle()) return;
+      log('window: no display information, using the native maximize');
+    }
+    await native.call((await native.call('window.isMaximized')) ? 'window.unmaximize' : 'window.maximize');
+  }
+  /** Once the page is up: the saved maximize on the work area, and on macOS and Linux a window kept on its screen. */
+  async function placeAfterReady(state) {
+    if (hidden || !native || native.closed) return;
+    if (wmax) {
+      if (wmax.maximized) await wmax.ensure();
+      else if (state.maximized && !(await wmax.maximize())) await native.call('window.maximize');
+      return;
+    }
+    // The shell reports the screen it is on (CSS pixels, the runtime's units on macOS and Linux).
+    const scr = readyInfo.screen;
+    if (frame === 'system' || state.maximized || !validRect(scr)) return;
+    const [size, pos] = await Promise.all([native.call('window.getSize'), native.call('window.getPosition')]);
+    const b = { x: pos.x, y: pos.y, width: size.width, height: size.height };
+    if (!reachable([{ monitor: scr, work: scr }], b)) {
+      const c = centerIn(scr, b.width, b.height);
+      await native.call('window.move', { x: c.x, y: c.y });
+    }
   }
 
   async function show() {
@@ -180,6 +226,7 @@ export async function openDesktop(o) {
     await saveState();
     store.flush();
     if (!hidden) releaseLock(lock);
+    displaySource?.close();
     if (native) await native.exit();
     if (o.quit) o.quit();
   }
@@ -224,6 +271,7 @@ export async function openDesktop(o) {
     await saveState();
     store.flush();
     releaseLock(lock);
+    displaySource?.close();
     if (native) await native.exit();
     native = null;
     const child = spawn(process.execPath, [process.argv[1], ...argv], { stdio: 'ignore', detached: true, windowsHide: true, env: { ...process.env, HIVEDESK_DESKTOP: '1' } });
@@ -259,7 +307,7 @@ export async function openDesktop(o) {
   server.route('GET', '/api/desktop/shell', (req, res) => {
     const html = fs.readFileSync(SHELL, 'utf8');
     const cfg = {
-      start, platform, native: mode === 'native', strings: shellLabels(), min: MIN, state: publicState(), version: o.version || '', locale: S.locale,
+      start, platform, native: mode === 'native', strings: shellLabels(), min: MIN, state: publicState({ maximized: !!wmax?.maximized }), version: o.version || '', locale: S.locale,
       update: updates ? updates.state() : null,
       // First run (the DMG and the Linux packages have no installer wizard): ask for a name and an avatar once.
       profile: { needed: !hidden && !readProfile(o.home) && !settings.profileAsked, gallery: GALLERY.avatars, nameMax: 32 }
@@ -282,7 +330,7 @@ export async function openDesktop(o) {
   });
   server.route('POST', '/api/desktop/ready', async (req, res) => {
     const b = await readBody(req);
-    if (b.frame) { readyInfo.frame = b.detail || {}; readyResolve(readyInfo); }
+    if (b.frame) { readyInfo.frame = b.detail || {}; if (validRect(b.screen)) readyInfo.screen = b.screen; readyResolve(readyInfo); }
     if (b.shell) readyInfo.shell = true;
     json(res, 200, { ok: true });
   });
@@ -292,12 +340,12 @@ export async function openDesktop(o) {
     try {
       switch (b.op) {
         case 'minimize': await native.call('window.minimize'); break;
-        case 'toggleMaximize': await native.call((await native.call('window.isMaximized')) ? 'window.unmaximize' : 'window.maximize'); await saveState(); break;
+        case 'toggleMaximize': await toggleMaximize(); await saveState(); break;
         case 'close': await onClose(); break;
         case 'move': if (Number.isFinite(b.x) && Number.isFinite(b.y)) await native.call('window.move', { x: Math.round(b.x), y: Math.round(b.y) }); break;
         case 'bounds':
           if ([b.x, b.y, b.width, b.height].every(Number.isFinite)) {
-            await native.call('window.setSize', { width: Math.round(b.width), height: Math.round(b.height) });
+            await native.call('window.setSize', { width: Math.round(b.width), height: Math.round(b.height), ...sizeExtra });
             await native.call('window.move', { x: Math.round(b.x), y: Math.round(b.y) });
           }
           break;
@@ -440,11 +488,38 @@ export async function openDesktop(o) {
       });
       if (shown) { o.progress?.(null); log(S.t('cli.desktop.downloadOk', { size: S.bytes(rt.target.bytes) })); }
       const state = store.load();
+      // Windows, custom frame: saved bounds outside every display are moved onto one, and a window saved
+      // maximized opens straight on the work area of its monitor with the saved normal bounds to restore.
+      let open = state;
+      let restoreAtStart = null;
+      let workAtStart = null;
+      if (workArea) {
+        const list = await Promise.race([displaysAtStart, sleep(3000).then(() => null)]);
+        if (list) {
+          const normal = state.x !== undefined
+            ? clampToDisplays(list, { x: state.x, y: state.y, width: state.width, height: state.height }, MIN)
+            : centerIn((list.find((d) => d.primary) || list[0]).work, state.width, state.height);
+          if (state.x !== undefined) open = { ...state, ...normal };
+          if (state.maximized) {
+            restoreAtStart = normal;
+            workAtStart = workAreaBounds(list, normal);
+            if (workAtStart) open = { ...state, ...workAtStart };
+          }
+        }
+      }
       native = await launchNative({
         binary: rt.path, appDir: path.join(o.home, 'desktop', 'app'),
-        config: runtimeConfig({ url: shellUrl, state, frame: settings.frame, hidden, version: o.version })
+        config: runtimeConfig({ url: shellUrl, state: open, frame, hidden, version: o.version })
       });
       mode = 'native';
+      if (workArea) {
+        wmax = new WorkAreaMax({ call: (m, d) => native.call(m, d), displays, min: MIN, sizeExtra });
+        if (workAtStart) wmax.adopt(restoreAtStart, workAtStart);
+      } else if (state.maximized && !hidden && frame !== 'system') {
+        // macOS ([NSWindow zoom:] uses the visibleFrame) and Linux (the window manager) keep the dock,
+        // the menu bar and the panels free with the native maximize of the borderless window.
+        native.call('window.maximize').catch((err) => log(`window: ${err.message}`));
+      }
       native.on('windowClose', () => { onClose().catch(() => {}); });
       native.on('windowFocus', () => { focused = true; });
       native.on('windowBlur', () => { focused = false; });
@@ -460,6 +535,7 @@ export async function openDesktop(o) {
       const timer = new Promise((r) => setTimeout(() => r(null), Number(env.HIVEDESK_READY_MS) || 30000));
       const ok = await Promise.race([ready, timer]);
       if (!ok) throw Object.assign(new Error('not ready'), { code: 'not_ready' });
+      try { await placeAfterReady(state); } catch (err) { log(`window: ${err.message}`); }
       if (!hidden) {
         try { await native.call('os.setTray', { icon: trayIcon(), menuItems: trayMenu() }); trayOk = true; } catch (err) { log(`tray: ${err.message}`); }
       }
@@ -495,6 +571,7 @@ export async function openDesktop(o) {
     clearInterval(poll);
     store.flush();
     if (!hidden) releaseLock(lock);
+    displaySource?.close();
     if (native) native.kill();
   };
   process.once('exit', onExit);
@@ -512,6 +589,7 @@ export async function openDesktop(o) {
       process.removeListener('exit', onExit);
       store.flush();
       if (!hidden) releaseLock(lock);
+      displaySource?.close();
       if (native) await native.exit();
       native = null;
     }

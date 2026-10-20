@@ -75,7 +75,10 @@ export function runtimeConfig({ url, title = 'hivedesk', state, frame = 'custom'
     hidden: !!hidden, skipTaskbar: !!hidden, center: state.x === undefined
   };
   if (state.x !== undefined && !hidden) { win.x = state.x; win.y = state.y; }
-  if (state.maximized && !hidden) win.maximize = true;
+  // Only the system frame starts natively maximized. A borderless window maximized by the runtime covers the
+  // whole monitor on Windows (taskbar included), so the custom frame opens at normal bounds (or already on
+  // the work area) and the controller maximizes it (desktop/workarea.js).
+  if (state.maximized && !hidden && frame === 'system') win.maximize = true;
   return {
     applicationId: 'io.github.kwy404.hivedesk', version, defaultMode: 'window', port: 0,
     documentRoot: '/resources/', url, enableServer: true, enableNativeAPI: true,
