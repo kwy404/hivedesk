@@ -40,7 +40,8 @@
     "e2e:local": "node test/e2e-local.mjs",
     "smoke:desktop": "node desktop/scripts/smoke.mjs",
     "e2e:phone": "node test/phone/e2e-phone.mjs",
-    "e2e:two": "node test/e2e-two-engines.mjs"
+    "e2e:two": "node test/e2e-two-engines.mjs",
+    "e2e:projects": "node test/e2e-projects.mjs"
   },
   "engines": {
     "node": ">=20"

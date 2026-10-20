@@ -591,7 +591,7 @@ Change asked by the user: ${String(text || '').slice(0, 2000)}` } : {};
     const files = this.toolbox.ws.list().map((f) => f.path);
     const lead = job.lead ? crewById.get(job.lead) : null;
     const leadNote = lead ? [`The user asked ${lead.name} (${lead.role}) directly: ${lead.name} leads this job, so give the main work to ${lead.id}.`] : [];
-    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, merge: modelFamily(this.state.brain) === 'small', notes: [...dom.notes, ...leadNote, ...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal, domain: dom.domain });
+    const plan = await makePlan({ scheduler: this.scheduler, request: work, crew, playbook, files, merge: modelFamily(this.state.brain) !== 'cloud', notes: [...dom.notes, ...leadNote, ...run.memories.map((m) => `memory: ${m}`), ...this.memory.crew(4)], jobId, signal, domain: dom.domain });
     if (signal.aborted) return;
     // The plan came from a remote brain: every write and run of this job now needs the host (SEC-3).
     if (plan.remote && !this.toolbox.originOf?.({ jobId })) {

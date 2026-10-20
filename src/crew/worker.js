@@ -1,7 +1,7 @@
 // One worker doing one task: a loop of model turns, each producing exactly one JSON action.
 import { TOOLS, actionSchema } from '../tools/index.js';
 import { checkWorkspace } from '../tools/check.js';
-import { assembleTaskPrompt } from './prompts/index.js';
+import { assembleTaskPrompt, estimateTokens, FAMILY } from './prompts/index.js';
 
 export const MAX_TURNS = 10;
 const HISTORY_PAIRS = 6;
@@ -134,6 +134,41 @@ function capResult(tool, text) {
 }
 
 /**
+ * Keeps a worker's turn inside the model's context: an older read of a file that is read again later is
+ * shortened (the newer copy is the one that counts), then the oldest steps go and the longest results are
+ * cut until the prompt and the reply fit. A local model on a 6 GB card is reloaded with a longer context
+ * (and slows down to about 1 token per second) when a turn does not fit, so this matters for speed too.
+ * @param {Array<{ role: string, content: string }>} messages system, first user message, then assistant/user pairs
+ * @param {number} limit the prompt tokens allowed
+ * @returns {Array<{ role: string, content: string }>}
+ */
+export function fitHistory(messages, limit) {
+  const out = messages.map((m) => ({ ...m }));
+  const readAt = new Map();
+  for (let i = 2; i < out.length - 1; i += 2) {
+    let a = null;
+    try { a = JSON.parse(out[i].content); } catch { /* not an action */ }
+    if (a?.tool !== 'read_file' || typeof a.args?.path !== 'string') continue;
+    const prev = readAt.get(a.args.path);
+    if (prev !== undefined && out[prev].content.length > 200) out[prev].content = `[the content of ${a.args.path} is shown again further down]`;
+    readAt.set(a.args.path, i + 1);
+  }
+  const cost = () => out.reduce((n, m) => n + estimateTokens(m.content) + 4, 0);
+  // The oldest pairs go first; the last two steps always stay.
+  while (cost() > limit && out.length > 6) out.splice(2, 2);
+  for (let guard = 0; cost() > limit && guard < 20; guard++) {
+    let longest = -1;
+    for (let i = 3; i < out.length; i += 2) if (longest === -1 || out[i].content.length > out[longest].content.length) longest = i;
+    if (longest === -1 || out[longest].content.length < 400) break;
+    const over = Math.ceil((cost() - limit) * 3.5) + 100;
+    const keep = Math.max(300, out[longest].content.length - over);
+    out[longest].content = `${out[longest].content.slice(0, keep)}
+[cut to fit the context]`;
+  }
+  return out;
+}
+
+/**
  * Runs a task to the end.
  * @param {{
  *   job: any, task: any, worker: any, graph?: import('./taskgraph.js').TaskGraph, crewById: Map<string, any>,
@@ -202,7 +237,11 @@ export async function runTask(ctx) {
     let result;
     try {
       if (hint) messages[messages.length - 1] = { ...messages[messages.length - 1], content: `${messages[messages.length - 1].content}\n\n${hint}` };
-      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages, options: { schema, maxTokens: ctx.family === 'cloud' ? 4096 : 2000, temperature: 0.2 }, budget: assembled.budget, signal });
+      // The reply budget the prompt was assembled for, and the history trimmed to fit next to it.
+      const fam = FAMILY[ctx.family] || FAMILY.small;
+      const maxTokens = ctx.family === 'cloud' ? 4096 : fam.replyTokens;
+      const fitted = ctx.family === 'cloud' ? messages : fitHistory(messages, (ctx.contextTokens || fam.contextTokens) - maxTokens - 100);
+      result = await scheduler.turn({ workerId: worker.id, taskId: task.id, jobId: job.id, messages: fitted, options: { schema, maxTokens, temperature: 0.2 }, budget: assembled.budget, signal });
       hint = '';
     } catch (err) {
       if (signal?.aborted) throw err;

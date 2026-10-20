@@ -32,9 +32,18 @@ export class TaskGraph {
     return t;
   }
 
-  /** Pending tasks whose dependencies are all done. */
+  /**
+   * Pending tasks whose dependencies are all done. A QA task also runs when some of its dependencies
+   * failed, once they all ended and at least one is done: its review starts the fix rounds for them.
+   */
   ready() {
-    return this.all().filter((t) => t.status === 'pending' && t.dependsOn.every((d) => this.tasks.get(d)?.status === 'done'));
+    return this.all().filter((t) => t.status === 'pending' && (t.dependsOn.every((d) => this.tasks.get(d)?.status === 'done') || this._reviewable(t)));
+  }
+
+  _reviewable(t) {
+    if (t.kind !== 'qa' || !t.dependsOn.length) return false;
+    const st = t.dependsOn.map((d) => this.tasks.get(d)?.status);
+    return st.some((s) => s === 'done') && st.every((s) => ['done', 'failed', 'blocked', 'skipped'].includes(s));
   }
 
   /**
@@ -48,6 +57,7 @@ export class TaskGraph {
       again = false;
       for (const t of this.all()) {
         if (t.status !== 'pending') continue;
+        if (t.kind === 'qa' && t.dependsOn.some((d) => ['done', 'pending', 'running', 'review', 'ready'].includes(this.tasks.get(d)?.status))) continue;
         if (t.dependsOn.some((d) => ['failed', 'blocked', 'skipped'].includes(this.tasks.get(d)?.status))) {
           t.status = 'blocked';
           changed.push(t);
