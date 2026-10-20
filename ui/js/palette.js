@@ -2,7 +2,7 @@
 
 import { h, icon, esc } from './dom.js';
 import { beeAvatar } from './bees.js';
-import { S, ui } from './store.js';
+import { S, ui, roleName } from './store.js';
 import { brainInfo } from './brainstate.js';
 import * as wm from './wm.js';
 import * as act from './actions.js';
@@ -51,7 +51,7 @@ function commands(q) {
   add('open', t('dock.settings'), () => wm.open('settings'), { icon: 'model' });
   add('open', t('dock.lend'), () => wm.open('lend'), { icon: 'lend' });
   add('open', t('dock.hire'), () => import('./widgets/hire.js').then((m) => m.openHire()), { icon: 'hire' });
-  for (const w of s.crew) add('crew', t('pal.chatWith', { name: w.name }), () => wm.open('worker', w.id), { av: w, hint: w.role });
+  for (const w of s.crew) add('crew', t('pal.chatWith', { name: w.name }), () => wm.open('worker', w.id), { av: w, hint: roleName(w) });
   for (const a of s.approvals || []) {
     add('approvals', t('pal.approve', { what: a.summary || a.tool }), () => act.resolveApproval(a.id, true), { icon: 'check' });
     add('approvals', t('pal.reject', { what: a.summary || a.tool }), () => act.resolveApproval(a.id, false), { icon: 'x' });

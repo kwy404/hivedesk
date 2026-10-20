@@ -4,6 +4,7 @@
 
 import { withToken } from '/js/net.js';
 import { notify } from '/js/notify.js';
+import { t } from '/js/i18n.js';
 
 const W = 360;
 const H = 480;
@@ -16,7 +17,7 @@ export function openWidget() {
   const left = Math.max(0, (screen.availWidth || 1280) - W - 32);
   const win = window.open(url, 'hivedesk-widget', `popup=yes,width=${W},height=${H},left=${left},top=80`);
   if (!win) {
-    notify({ title: 'The browser blocked the pop up', body: 'Allow pop ups for this page, or open /widget.html in a new tab.', tone: 'warn' });
+    notify({ title: t('office.popout.blocked'), body: t('office.popout.blockedHelp'), tone: 'warn' });
     return null;
   }
   win.focus?.();
@@ -29,7 +30,7 @@ export async function openPip() {
   try {
     pipWin = await window.documentPictureInPicture.requestWindow({ width: W, height: H });
   } catch (err) {
-    notify({ title: 'Picture in picture did not open', body: String(err?.message || err), tone: 'warn' });
+    notify({ title: t('office.popout.pipFailed'), body: String(err?.message || err), tone: 'warn' });
     return null;
   }
   const doc = pipWin.document;
@@ -39,7 +40,7 @@ export async function openPip() {
   doc.head.append(style);
   const frame = doc.createElement('iframe');
   frame.src = withToken('/widget.html?pip=1');
-  frame.title = 'hivedesk mini widget';
+  frame.title = t('office.widget.aria');
   doc.body.append(frame);
   pipWin.addEventListener('pagehide', () => { pipWin = null; });
   return pipWin;

@@ -4,7 +4,10 @@
 // drag a sticky note from Mel's board onto a bee to hand the task over.
 
 import { h, icon, clear, reducedMotion, append } from '/js/dom.js';
-import { S, rev, ui, worker, onEvent, currentJob, jobTasks } from '/js/store.js';
+import { S, rev, ui, worker, onEvent, currentJob, jobTasks, roleName } from '/js/store.js';
+import { t, onLocale } from '/js/i18n.js';
+import { mdLine } from '/js/md.js';
+import { setTip } from '/js/tooltip.js';
 import * as net from '/js/net.js';
 import * as wm from '/js/wm.js';
 import * as menu from '/js/menu.js';
@@ -16,11 +19,12 @@ import * as audio from './audio.js';
 import { openWidget, openPip, pipSupported } from './popout.js';
 
 const VIEW_KEY = 'hivedesk.view.v2'; // v2: City became the default home in 0.2.0
-const MODE_LABEL = {
-  idle: 'Idle', sleep: 'Napping (idle)', type: 'Typing', plan: 'Planning on the board', wait: 'In the queue for the model',
-  stuck: 'Waiting for your approval', test: 'Running checks', read: 'Reading files', error: 'Error', celebrate: 'Celebrating',
-  paused: 'Paused', fly: 'Flying over',
-};
+// What a bee is doing in the scene, read in the current language when shown (office.mode.*).
+export const MODES = ['idle', 'sleep', 'type', 'plan', 'wait', 'stuck', 'test', 'read', 'error', 'celebrate', 'paused', 'fly'];
+const modeLabel = (m) => (MODES.includes(m) ? t(`office.mode.${m}`) : '');
+export const JOB_STATES = ['refining', 'awaiting_brief', 'planning', 'running', 'done', 'failed', 'cancelled'];
+const roleOf = (w) => roleName(w) || t('office.worker');
+const statusOf = (w, m, st) => (w.paused ? t('office.mode.paused') : modeLabel(m) || STATUS_LABEL[st.status] || st.status);
 
 let layer;
 let scene;
@@ -63,7 +67,7 @@ export function initOffice({ desk, barRight, addDockItem }) {
   linkCss();
   readHourOverride();
   deskEl = desk;
-  layer = h('section', { class: 'of-layer', hidden: true, 'aria-label': 'Office. The crew at work. Tab to a bee or a note, Enter to open, Shift F10 for its menu.' });
+  layer = h('section', { class: 'of-layer', hidden: true, ta: 'office.view.aria' });
   canvas = h('canvas', { class: 'of-canvas', 'aria-hidden': 'true' });
   hitLayer = h('div', { class: 'of-hits' });
   tip = h('div', { class: 'of-tip', role: 'tooltip', id: 'of-tip' });
@@ -86,23 +90,34 @@ export function initOffice({ desk, barRight, addDockItem }) {
   new ResizeObserver(() => { if (mode === 'office') scene.resize(layer.clientWidth, layer.clientHeight); }).observe(layer);
 
   // the toggle in the top bar
-  seg = h('div', { class: 'of-seg', role: 'group', 'aria-label': 'View' },
-    h('button', { type: 'button', dataset: { v: 'office' }, title: 'Office: the crew at work', on: { click: () => setMode('office') } }, officeGlyph(), h('span', { text: 'Office' })),
-    h('button', { type: 'button', dataset: { v: 'desktop' }, title: 'Desktop: windows and widgets', on: { click: () => setMode('desktop') } }, icon('hive', 'ico-sm'), h('span', { text: 'Desktop' })));
+  const segOffice = h('button', { type: 'button', dataset: { v: 'office' }, on: { click: () => setMode('office') } }, officeGlyph(), h('span', { tx: 'office.seg.office' }));
+  const segDesk = h('button', { type: 'button', dataset: { v: 'desktop' }, on: { click: () => setMode('desktop') } }, icon('hive', 'ico-sm'), h('span', { tx: 'office.seg.desktop' }));
+  seg = h('div', { class: 'of-seg', role: 'group', ta: 'office.seg.aria' }, segOffice, segDesk);
   barRight?.prepend(seg);
 
-  addDockItem?.({
-    id: 'widget', label: 'Mini widget', sub: 'a small always on view',
+  const dockBtn = addDockItem?.({
+    id: 'widget', label: t('office.dock.label'), sub: () => t('office.dock.sub'),
     content: h('span', { class: 'dk-hex' }, miniGlyph()),
     onClick: () => openWidget(),
     menu: () => [
-      { header: 'Mini widget' },
-      { label: 'Pop out a window (360 by 480)', icon: 'preview', action: () => openWidget() },
-      { label: 'Picture in picture', icon: 'preview', disabled: !pipSupported(), action: () => openPip() },
+      { header: t('office.dock.label') },
+      { label: t('office.dock.popOut'), icon: 'preview', action: () => openWidget() },
+      { label: t('office.dock.pip'), icon: 'preview', disabled: !pipSupported(), action: () => openPip() },
       { sep: true },
-      { label: mode === 'office' ? 'Back to the desktop' : 'Open the Office', icon: 'hive', action: () => setMode(mode === 'office' ? 'desktop' : 'office') },
+      { label: mode === 'office' ? t('office.dock.toDesktop') : t('office.dock.toOffice'), icon: 'hive', action: () => setMode(mode === 'office' ? 'desktop' : 'office') },
     ],
   });
+  // the dock keeps the label it got: keep it in the current language
+  const dockTip = () => { if (!dockBtn?.setAttribute) return; dockBtn.setAttribute('aria-label', t('office.dock.label')); setTip(dockBtn, { title: t('office.dock.label'), help: t('office.dock.sub') }); };
+  dockBtn?.addEventListener?.('pointerenter', dockTip);
+  dockBtn?.addEventListener?.('focus', dockTip);
+  const paintStatic = () => {
+    segOffice.title = t('office.seg.officeTitle');
+    segDesk.title = t('office.seg.desktopTitle');
+    dockTip();
+  };
+  paintStatic();
+  onLocale(() => { paintStatic(); paintSound(); if (hud.segs) hud.segs._key = null; paintHud(); });
 
   // engine wiring
   net.on('hello', () => { scene.reset(); shownHoney = null; paintHud(); });
@@ -212,26 +227,30 @@ function buildHud() {
   hud.xpLv = h('span', { class: 'of-xp-lv' });
   // progress is a segmented timeline: one segment per task, colored by its state
   hud.segs = h('span', { class: 'of-tl', 'aria-hidden': 'true' });
-  hud.xp = h('div', { class: 'of-xp', role: 'progressbar', 'aria-label': 'Job progress', 'aria-valuemin': '0', 'aria-valuemax': '100' }, xpFill, hud.segs);
+  hud.xp = h('div', { class: 'of-xp', role: 'progressbar', ta: 'office.hud.progress', 'aria-valuemin': '0', 'aria-valuemax': '100' }, xpFill, hud.segs);
   hud.xpFill = xpFill;
   hud.state = h('span', { class: 'of-chip' });
+  // waiting for the user's OK on Mel's brief: one clear way to it
+  hud.openBrief = h('button', { type: 'button', class: 'btn btn-xs btn-primary of-brief-btn', style: 'justify-self:start', hidden: true, tx: 'office.hud.openBrief', on: { click: () => { setMode('desktop'); wm.open('brief'); } } });
   const job = h('div', { class: 'of-card of-job' },
-    h('div', { class: 'of-row' }, h('span', { class: 'of-k', text: 'Current job' }), hud.state),
+    h('div', { class: 'of-row' }, h('span', { class: 'of-k', tx: 'office.hud.currentJob' }), hud.state),
     hud.req,
     h('div', { class: 'of-row', style: 'gap:10px' }, hud.xpLv, hud.xp),
-    hud.xpText);
+    hud.xpText,
+    hud.openBrief);
 
   const doneMark = h('span', { class: 'of-jar', html: CHECK_SVG, 'aria-hidden': 'true' });
   hud.honeyN = h('b', { text: '0' });
-  hud.honey = h('div', { class: 'of-pill of-honey', title: 'Finished tasks in this workspace' }, doneMark, hud.honeyN, h('span', { class: 'of-faint', text: 'tasks done' }));
+  hud.honeyT = h('span', { class: 'of-faint' });
+  hud.honey = h('div', { class: 'of-pill of-honey' }, doneMark, hud.honeyN, hud.honeyT);
   hud.clock = h('div', { class: 'of-pill of-clock' });
   hud.sound = h('button', { type: 'button', class: 'of-ib', on: { click: () => { audio.setAmbient(!audio.ambientOn()); paintSound(); } } });
-  const pop = h('button', { type: 'button', class: 'of-ib', title: 'Pop out the mini widget', 'aria-label': 'Pop out the mini widget', on: { click: () => openWidget() } }, miniGlyph());
-  const pip = h('button', { type: 'button', class: 'of-ib', title: 'Picture in picture', 'aria-label': 'Picture in picture mini window', hidden: !pipSupported(), on: { click: () => openPip() } }, pipGlyph());
-  const stats = h('div', { class: 'of-stats' }, hud.honey, hud.clock, h('div', { class: 'of-pill of-tools' }, hud.sound, pop, pip));
+  hud.pop = h('button', { type: 'button', class: 'of-ib', ta: 'office.hud.popOut', on: { click: () => openWidget() } }, miniGlyph());
+  hud.pip = h('button', { type: 'button', class: 'of-ib', ta: 'office.hud.pipAria', hidden: !pipSupported(), on: { click: () => openPip() } }, pipGlyph());
+  const stats = h('div', { class: 'of-stats' }, hud.honey, hud.clock, h('div', { class: 'of-pill of-tools' }, hud.sound, hud.pop, hud.pip));
 
   hud.queue = h('div', { class: 'of-card of-queue' });
-  hud.feed = h('ol', { class: 'of-card of-feed', 'aria-label': 'Office activity', 'aria-live': 'polite' });
+  hud.feed = h('ol', { class: 'of-card of-feed', ta: 'office.hud.feed', 'aria-live': 'polite' });
   hud.banner = h('div', { class: 'of-banner', role: 'status', hidden: true });
   hud.empty = h('div', { class: 'of-empty', hidden: true });
   paintSound();
@@ -241,8 +260,12 @@ function buildHud() {
 function paintSound() {
   const on = audio.ambientOn();
   hud.sound.setAttribute('aria-pressed', String(on));
-  hud.sound.setAttribute('aria-label', on ? 'Office sounds on' : 'Office sounds off');
-  hud.sound.title = on ? 'Office sounds on (soft room tone, typing, wings)' : 'Office sounds off';
+  hud.sound.setAttribute('aria-label', on ? t('office.hud.soundOn') : t('office.hud.soundOff'));
+  hud.sound.title = on ? t('office.hud.soundOnTitle') : t('office.hud.soundOff');
+  // the other fixed titles of the HUD, in the current language
+  hud.honey.title = t('office.hud.honeyTitle');
+  hud.pop.title = t('office.hud.popOut');
+  hud.pip.title = t('office.hud.pip');
   hud.sound.innerHTML = on
     ? '<svg class="ico" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg>'
     : '<svg class="ico" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
@@ -269,21 +292,26 @@ function paintHud() {
     hud.xp.setAttribute('aria-valuenow', String(pct));
     hud.xpLv.textContent = `${pct}%`;
     paintTimeline(tasks);
-    hud.xpText.textContent = {
-      refining: 'Mel is writing a clear brief from your request',
-      awaiting_brief: 'Mel waits for you: check the brief in its window',
-      planning: 'Mel is writing the plan on the board',
-    }[j.status] || `${done} of ${total} tasks done${running ? `. Now: ${nowLine(s, runningTasks[0])}${running > 1 ? ` (+${running - 1} more)` : ''}` : ''}`;
-    hud.state.textContent = { refining: 'Brief', awaiting_brief: 'Waiting for you', planning: 'Planning', running: 'Working', done: 'Done', failed: 'Failed', cancelled: 'Cancelled' }[j.status] || j.status;
+    if (['refining', 'awaiting_brief', 'planning'].includes(j.status)) hud.xpText.textContent = t(`office.hud.line.${j.status}`);
+    else {
+      const progress = t('office.hud.done', { done, total });
+      let what = running ? nowLine(s, runningTasks[0]) : '';
+      if (running > 1) what = t('office.hud.more', { what, count: running - 1 });
+      hud.xpText.textContent = running ? t('office.hud.doneNow', { progress, what }) : progress;
+    }
+    hud.state.textContent = JOB_STATES.includes(j.status) ? t(`office.state.${j.status}`) : j.status;
     hud.state.dataset.s = j.status;
+    hud.openBrief.hidden = j.status !== 'awaiting_brief';
   } else {
-    hud.req.textContent = 'No job yet. Ask the crew in the box above.';
+    hud.req.textContent = t('office.hud.noJob');
+    hud.req.title = '';
     hud.xpFill.style.width = '0%';
     hud.xpLv.textContent = '0%';
-    hud.xpText.textContent = 'Each task of a job is one segment of the timeline.';
+    hud.xpText.textContent = t('office.hud.noJobHint');
     paintTimeline([]);
-    hud.state.textContent = 'Resting';
+    hud.state.textContent = t('office.state.idle');
     hud.state.dataset.s = 'idle';
+    hud.openBrief.hidden = true;
   }
   // honey
   const honey = doneCount(s);
@@ -295,32 +323,33 @@ function paintHud() {
   clear(hud.queue);
   const running = s.queue.running || [];
   const waiting = s.queue.waiting || [];
-  hud.queue.append(h('div', { class: 'of-k', text: 'Turn on the model' }));
+  hud.queue.append(h('div', { class: 'of-k', text: t('office.queue.title') }));
   const row = h('div', { class: 'of-qrow' });
   if (running.length) {
-    for (const q of running) row.append(h('span', { class: 'of-q of-q-on', title: `${worker(q.workerId).name} has the model now` }, beeAvatar(worker(q.workerId), 26, { ring: true, status: 'thinking' })));
-    if (running.length === 1) row.append(h('span', { class: 'of-qname' }, h('b', { text: worker(running[0].workerId).name }), h('span', { class: 'of-faint', text: s.tasks[running[0].taskId]?.title || 'thinking' })));
+    for (const q of running) row.append(h('span', { class: 'of-q of-q-on', title: t('office.queue.hasModel', { name: worker(q.workerId).name }) }, beeAvatar(worker(q.workerId), 26, { ring: true, status: 'thinking' })));
+    if (running.length === 1) row.append(h('span', { class: 'of-qname' }, h('b', { text: worker(running[0].workerId).name }), h('span', { class: 'of-faint', text: mdLine(s.tasks[running[0].taskId]?.title || '', 80) || t('office.queue.thinking') })));
   }
-  else row.append(h('span', { class: 'of-faint small', text: 'The model is free' }));
+  else row.append(h('span', { class: 'of-faint small', text: t('office.queue.free') }));
   if (waiting.length) {
     row.append(h('span', { class: 'of-qsep', html: '<svg viewBox="0 0 16 16" class="ico ico-sm"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.6V8l2.4 1.6"/></svg>' }));
-    for (const q of waiting.slice(0, 6)) row.append(h('span', { class: 'of-q', title: `${worker(q.workerId).name} is in the queue` }, beeAvatar(worker(q.workerId), 22, { ring: true })));
+    for (const q of waiting.slice(0, 6)) row.append(h('span', { class: 'of-q', title: t('office.queue.inQueue', { name: worker(q.workerId).name }) }, beeAvatar(worker(q.workerId), 22, { ring: true })));
     if (waiting.length > 6) row.append(h('span', { class: 'of-faint small', text: `+${waiting.length - 6}` }));
   }
-  hud.queue.append(row, h('div', { class: 'of-faint tiny', text: (s.brains || []).length > 1 ? `${s.brains.length} brains attached, so ${s.brains.length} bees can think at once.` : 'One shared model: the bees take turns, so a job takes minutes.' }));
+  hud.queue.append(row, h('div', { class: 'of-faint tiny', text: (s.brains || []).length > 1 ? t('office.queue.brains', { count: s.brains.length }) : t('office.queue.oneModel') }));
   // nothing hired yet / no state yet
   hud.empty.hidden = !!(s.crew || []).length;
-  hud.empty.textContent = ui.hello ? 'The office is empty.' : 'Opening the office...';
+  hud.empty.textContent = ui.hello ? t('office.empty') : t('office.opening');
 }
 
 /** The running task in words: who does what right now, from the worker's real status. */
-function nowLine(s, t) {
-  if (!t) return '';
-  const w = worker(t.assignee);
-  const st = s.workers?.[t.assignee] || {};
-  const what = { thinking: 'is thinking about', tool: 'is working on', queued: 'waits for the model for', waiting_approval: 'waits for your approval on' }[st.status] || (t.status === 'review' ? 'reviews' : 'works on');
-  return `${w.name} ${what} "${t.title}"`;
+function nowLine(s, task) {
+  if (!task) return '';
+  const w = worker(task.assignee);
+  const st = s.workers?.[task.assignee] || {};
+  const what = NOW_KEYS.includes(st.status) ? st.status : task.status === 'review' ? 'review' : 'works';
+  return t(`office.now.${what}`, { name: w.name, title: mdLine(task.title, 80) });
 }
+const NOW_KEYS = ['thinking', 'tool', 'queued', 'waiting_approval'];
 
 function paintClock() {
   const hr = hourNow();
@@ -328,7 +357,10 @@ function paintClock() {
   hud.clock.textContent = `${dayPhase(hr)} · ${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
 
-function paintHoney() { if (hud.honeyN) hud.honeyN.textContent = String(shownHoney ?? 0); }
+function paintHoney() {
+  if (hud.honeyN) hud.honeyN.textContent = String(shownHoney ?? 0);
+  if (hud.honeyT) hud.honeyT.textContent = t('office.hud.tasksDone', { count: shownHoney ?? 0 });
+}
 function bumpHoney() {
   const real = doneCount(S());
   shownHoney = Math.min(real, (shownHoney ?? 0) + 1);
@@ -338,43 +370,46 @@ function bumpHoney() {
 /** The segmented timeline: one segment per task of the job, in order, colored by its state. */
 function paintTimeline(tasks) {
   if (!hud.segs) return;
-  const key = tasks.map((t) => `${t.id}:${t.status}`).join('|');
+  const key = tasks.map((x) => `${x.id}:${x.status}`).join('|');
   if (hud.segs._key === key) return;
   hud.segs._key = key;
   clear(hud.segs);
-  for (const t of tasks) hud.segs.append(h('i', { dataset: { s: t.status }, title: `${t.title}: ${TASK_LABEL[t.status] || t.status}` }));
+  for (const x of tasks) hud.segs.append(h('i', { dataset: { s: x.status }, title: `${mdLine(x.title, 120)}: ${TASK_LABEL[x.status] || x.status}` }));
 }
 
-/* activity feed: short, human lines from real events */
+/* activity feed: short, human lines from real events (tx keys, so a language switch rewrites them) */
 function feed(ev) {
   if (!hud.feed) return;
   const d = ev.data || {};
   const s = S();
   const name = (id) => worker(id).name;
+  const title = (task) => mdLine(task.title, 80);
   let line = null; let tone = '';
   switch (ev.type) {
-    case 'job.created': line = 'New job on the board'; tone = 'honey'; break;
-    case 'job.planned': line = `Mel planned ${d.tasks?.length || 0} tasks`; break;
-    case 'brief.proposed': line = 'Mel wrote a brief: use it, edit it or keep yours'; tone = 'warn'; break;
-    case 'brief.approved': line = d.source === 'original' ? 'Working from your words' : 'Brief approved, planning'; break;
+    case 'job.created': line = ['office.feed.jobCreated']; tone = 'honey'; break;
+    case 'job.planned': line = ['office.feed.jobPlanned', { count: d.tasks?.length || 0 }]; break;
+    case 'brief.proposed': line = ['office.feed.briefProposed']; tone = 'warn'; break;
+    case 'brief.approved': line = [d.source === 'original' ? 'office.feed.briefOriginal' : 'office.feed.briefApproved']; break;
     case 'task.status': {
-      const t = s.tasks[d.taskId];
-      if (!t) break;
-      if (d.status === 'running') line = `${name(t.assignee)} started "${t.title}"`;
-      else if (d.status === 'done') { line = `${name(t.assignee)} finished "${t.title}"`; tone = 'ok'; }
-      else if (d.status === 'failed') { line = `${name(t.assignee)} is stuck on "${t.title}"`; tone = 'bad'; }
+      const task = s.tasks[d.taskId];
+      if (!task) break;
+      if (d.status === 'running') line = ['office.feed.started', { name: name(task.assignee), title: title(task) }];
+      else if (d.status === 'done') { line = ['office.feed.finished', { name: name(task.assignee), title: title(task) }]; tone = 'ok'; }
+      else if (d.status === 'failed') { line = ['office.feed.stuck', { name: name(task.assignee), title: title(task) }]; tone = 'bad'; }
       break;
     }
-    case 'file.changed': line = `${name(d.workerId)} ${d.op === 'create' ? 'wrote' : d.op === 'delete' ? 'deleted' : 'edited'} ${d.path}`; break;
-    case 'approval.requested': line = `${name(d.approval?.workerId)} waits for your approval`; tone = 'warn'; break;
-    case 'qa.report': line = d.passed ? 'QA: all checks passed' : `QA found ${d.issues?.length || 0} issue${d.issues?.length === 1 ? '' : 's'}`; tone = d.passed ? 'ok' : 'bad'; break;
-    case 'task.updated': if (d.task?.assignee) line = `Task handed to ${name(d.task.assignee)}`; break;
-    case 'crew.hired': if (ui.hello && !d.worker?.builtin) { line = `${d.worker?.name} joined the crew`; tone = 'honey'; } break;
-    case 'job.done': line = 'Job complete'; tone = 'ok'; break;
+    case 'file.changed': line = [d.op === 'create' ? 'office.feed.fileCreate' : d.op === 'delete' ? 'office.feed.fileDelete' : 'office.feed.fileEdit', { name: name(d.workerId), path: String(d.path || '') }]; break;
+    case 'approval.requested': line = ['office.feed.approval', { name: name(d.approval?.workerId) }]; tone = 'warn'; break;
+    case 'qa.report': line = d.passed ? ['office.feed.qaPassed'] : ['office.feed.qaIssues', { count: d.issues?.length || 0 }]; tone = d.passed ? 'ok' : 'bad'; break;
+    case 'task.updated': if (d.task?.assignee) line = ['office.feed.handed', { name: name(d.task.assignee) }]; break;
+    case 'crew.hired': if (ui.hello && !d.worker?.builtin) { line = ['office.feed.joined', { name: d.worker?.name || '' }]; tone = 'honey'; } break;
+    case 'job.done': line = ['office.feed.jobDone']; tone = 'ok'; break;
     default: break;
   }
   if (!line) return;
-  const li = h('li', { dataset: { tone } }, h('span', { class: 'of-dot' }), h('span', { text: line }));
+  const li = h('li', { dataset: { tone } }, h('span', { class: 'of-dot' }), h('span', { tx: line[0], txArgs: line[1] }));
+  // the brief waits for the user's OK: the line opens it
+  if (ev.type === 'brief.proposed') li.append(h('button', { type: 'button', class: 'btn btn-xs btn-quiet', style: 'margin-left:6px', tx: 'office.hud.openBrief', on: { click: () => { setMode('desktop'); wm.open('brief'); } } }));
   hud.feed.prepend(li);
   while (hud.feed.children.length > 5) hud.feed.lastChild.remove();
   if (!reducedMotion() && mode === 'office') li.animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: 'cubic-bezier(.2,0,0,1)' });
@@ -385,8 +420,8 @@ function banner(ev) {
   clear(b);
   // a calm activity toast: a check, the summary and one action
   b.append(h('span', { class: 'of-jar of-jar-big', html: CHECK_SVG, 'aria-hidden': 'true' }),
-    h('div', {}, h('strong', { text: 'Job complete' }), h('div', { class: 'of-faint', text: String(ev.data?.summary || 'The crew finished the job.').slice(0, 140) })),
-    h('button', { type: 'button', class: 'btn btn-xs btn-quiet', text: 'Open preview', on: { click: () => { setMode('desktop'); wm.open('preview'); } } }));
+    h('div', {}, h('strong', { tx: 'office.banner.title' }), h('div', { class: 'of-faint', text: mdLine(ev.data?.summary || '', 140) || t('office.banner.fallback') })),
+    h('button', { type: 'button', class: 'btn btn-xs btn-quiet', tx: 'office.banner.preview', on: { click: () => { setMode('desktop'); wm.open('preview'); } } }));
   b.hidden = false;
   if (!reducedMotion()) b.animate([{ opacity: 0, transform: 'translate(-50%, 6px)' }, { opacity: 1, transform: 'translate(-50%, 0)' }], { duration: 200, easing: 'cubic-bezier(.2,0,0,1)' });
   clearTimeout(b._t);
@@ -427,8 +462,8 @@ function syncHits(sc) {
       n.style.width = `${Math.round(hit.w)}px`;
       n.style.height = `${Math.round(hit.h)}px`;
     }
-    const t = s.tasks[hit.id];
-    const label = t ? `Task: ${t.title}. ${TASK_LABEL[t.status] || t.status}. Assigned to ${worker(t.assignee).name}. Enter to hand it to another bee.` : 'Task';
+    const task = s.tasks[hit.id];
+    const label = task ? t('office.note.aria', { title: mdLine(task.title, 120), status: TASK_LABEL[task.status] || task.status, name: worker(task.assignee).name }) : t('office.note.task');
     if (n._label !== label) { n._label = label; n.setAttribute('aria-label', label); }
   }
   for (const [id, n] of notes) if (!nseen.has(id) && !(drag && drag.taskId === id)) { n.remove(); notes.delete(id); }
@@ -437,10 +472,12 @@ function syncHits(sc) {
 function beeLabel(id, a, s) {
   const w = worker(id);
   const st = s.workers[id] || { status: 'idle' };
-  const t = st.taskId && s.tasks[st.taskId];
+  const task = st.taskId && s.tasks[st.taskId];
   const m = a ? (a.seg ? 'fly' : a.mode) : 'idle';
   const lv = levelOf(s, id);
-  return `${w.name}, ${w.role || 'worker'}${lv != null ? `, level ${lv}` : ''}. ${w.paused ? 'Paused' : MODE_LABEL[m] || STATUS_LABEL[st.status] || st.status}${t ? `. Task: ${t.title}` : ''}. Enter to chat.`;
+  const who = lv != null ? t('office.bee.whoLevel', { name: w.name, role: roleOf(w), level: lv }) : t('office.bee.who', { name: w.name, role: roleOf(w) });
+  const status = statusOf(w, m, st);
+  return task ? t('office.bee.ariaTask', { who, status, title: mdLine(task.title, 120) }) : t('office.bee.aria', { who, status });
 }
 
 function makeBee(id) {
@@ -460,14 +497,15 @@ function beeMenu(id) {
   const w = worker(id);
   const s = S();
   const st = s.workers[id] || {};
-  const mine = Object.values(s.tasks).filter((t) => t.assignee === id);
-  const retryable = mine.filter((t) => ['failed', 'blocked'].includes(t.status)).pop() || (st.taskId && s.tasks[st.taskId]);
+  const mine = Object.values(s.tasks).filter((x) => x.assignee === id);
+  const retryable = mine.filter((x) => ['failed', 'blocked'].includes(x.status)).pop() || (st.taskId && s.tasks[st.taskId]);
+  const lv = levelOf(s, id);
   return [
-    { header: `${w.name} · ${w.role || 'worker'}${levelOf(s, id) != null ? ` · level ${levelOf(s, id)}` : ''}` },
-    { label: `Chat with ${w.name}`, icon: 'chat', action: () => wm.open('worker', id) },
-    { label: w.paused ? 'Resume' : 'Pause', icon: w.paused ? 'arrow' : 'stop', disabled: !!ui.replay, action: () => act.pauseWorker(id, !w.paused) },
-    { label: retryable ? `Retry "${retryable.title}"` : 'Retry (nothing to retry)', icon: 'replay', disabled: !retryable || !!ui.replay, action: () => act.retryTask(retryable.id) },
-    { label: 'Open files', icon: 'folder', action: () => { setMode('desktop'); wm.open('files'); } },
+    { header: lv != null ? t('office.menu.headerLevel', { name: w.name, role: roleOf(w), level: lv }) : t('office.menu.header', { name: w.name, role: roleOf(w) }) },
+    { label: t('office.menu.chat', { name: w.name }), icon: 'chat', action: () => wm.open('worker', id) },
+    { label: w.paused ? t('office.menu.resume') : t('office.menu.pause'), icon: w.paused ? 'arrow' : 'stop', disabled: !!ui.replay, action: () => act.pauseWorker(id, !w.paused) },
+    { label: retryable ? t('office.menu.retryTask', { title: mdLine(retryable.title, 60) }) : t('office.menu.retryNone'), icon: 'replay', disabled: !retryable || !!ui.replay, action: () => act.retryTask(retryable.id) },
+    { label: t('office.menu.files'), icon: 'folder', action: () => { setMode('desktop'); wm.open('files'); } },
   ];
 }
 
@@ -491,27 +529,27 @@ function makeNote(id) {
 
 function noteMenu(id) {
   const s = S();
-  const t = s.tasks[id];
-  if (!t) return null;
-  const off = !!ui.replay || t.status === 'done';
+  const task = s.tasks[id];
+  if (!task) return null;
+  const off = !!ui.replay || task.status === 'done';
   return [
-    { header: t.title },
-    { label: 'Hand to', icon: 'hire', disabled: off, items: s.crew.filter((w) => w.id !== t.assignee).map((w) => ({ label: `${w.name} (${w.role || 'worker'})`, iconEl: beeAvatar(w, 18, { ring: false }), action: () => reassign(id, w.id) })) },
-    { label: 'Retry', icon: 'replay', disabled: !!ui.replay || !['failed', 'blocked', 'done', 'skipped'].includes(t.status), action: () => act.retryTask(id) },
-    { label: 'Cancel task', icon: 'x', danger: true, disabled: !!ui.replay || ['done', 'skipped'].includes(t.status), action: () => act.cancelTask(id) },
+    { header: mdLine(task.title, 60) },
+    { label: t('office.menu.handTo'), icon: 'hire', disabled: off, items: s.crew.filter((w) => w.id !== task.assignee).map((w) => ({ label: t('office.menu.handToWho', { name: w.name, role: roleOf(w) }), iconEl: beeAvatar(w, 18, { ring: false }), action: () => reassign(id, w.id) })) },
+    { label: t('office.menu.retry'), icon: 'replay', disabled: !!ui.replay || !['failed', 'blocked', 'done', 'skipped'].includes(task.status), action: () => act.retryTask(id) },
+    { label: t('office.menu.cancel'), icon: 'x', danger: true, disabled: !!ui.replay || ['done', 'skipped'].includes(task.status), action: () => act.cancelTask(id) },
   ];
 }
 
 function reassign(taskId, workerId) {
-  const t = S().tasks[taskId];
-  if (!t || t.assignee === workerId) return;
+  const task = S().tasks[taskId];
+  if (!task || task.assignee === workerId) return;
   act.reassignTask(taskId, workerId);
 }
 
 function startDrag(e, el, id) {
   if (e.button !== 0 || ui.replay) return;
-  const t = S().tasks[id];
-  if (!t || t.status === 'done') return;
+  const task = S().tasks[id];
+  if (!task || task.status === 'done') return;
   const x0 = e.clientX; const y0 = e.clientY;
   let ghost = null;
   const move = (ev) => {
@@ -519,7 +557,7 @@ function startDrag(e, el, id) {
     if (!drag) {
       drag = { taskId: id, el };
       scene.dragTask = id;
-      ghost = h('div', { class: 'of-drag', 'aria-hidden': 'true' }, h('i', { style: `background:${worker(t.assignee).color}` }), h('span', { text: t.title }));
+      ghost = h('div', { class: 'of-drag', 'aria-hidden': 'true' }, h('i', { style: `background:${worker(task.assignee).color}` }), h('span', { text: mdLine(task.title, 60) }));
       layer.append(ghost);
       layer.classList.add('of-dragging');
       hideTip();
@@ -570,29 +608,30 @@ function showTip(el, id) {
   const w = worker(id);
   const a = scene.actors.get(id);
   const st = s.workers[id] || { status: 'idle' };
-  const t = st.taskId && s.tasks[st.taskId];
+  const task = st.taskId && s.tasks[st.taskId];
   const m = a ? (a.seg ? 'fly' : a.mode) : 'idle';
-  const lastTask = t || Object.values(s.tasks).filter((x) => x.assignee === id && x.status === 'running').pop();
+  const lastTask = task || Object.values(s.tasks).filter((x) => x.assignee === id && x.status === 'running').pop();
   const done = Object.values(s.tasks).filter((x) => x.assignee === id && x.status === 'done').length;
+  const lv = levelOf(s, id);
   clear(tip);
   tip.append(
-    h('div', { class: 'of-tip-h' }, beeAvatar(w, 30, { ring: true }), h('div', {}, h('strong', { text: w.name }), h('div', { class: 'of-faint', text: w.role || 'worker' })), levelOf(s, id) != null ? h('span', { class: 'of-lv', text: `L${levelOf(s, id)}` }) : null),
-    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', text: 'Status' }), h('span', { text: w.paused ? 'Paused' : MODE_LABEL[m] || STATUS_LABEL[st.status] || st.status })),
-    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', text: 'Task' }), h('span', { text: lastTask ? lastTask.title : 'None right now' })),
-    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', text: 'Done' }), h('span', { text: `${done} task${done === 1 ? '' : 's'}` })),
-    h('div', { class: 'of-tip-f', text: 'Click to chat · right click for more' }));
+    h('div', { class: 'of-tip-h' }, beeAvatar(w, 30, { ring: true }), h('div', {}, h('strong', { text: w.name }), h('div', { class: 'of-faint', text: roleOf(w) })), lv != null ? h('span', { class: 'of-lv', text: t('office.level', { level: lv }) }) : null),
+    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', tx: 'office.tip.status' }), h('span', { text: statusOf(w, m, st) })),
+    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', tx: 'office.tip.task' }), h('span', { text: lastTask ? mdLine(lastTask.title, 80) : t('office.tip.none') })),
+    h('div', { class: 'of-tip-r' }, h('span', { class: 'of-faint', tx: 'office.tip.done' }), h('span', { text: t('office.tip.doneCount', { count: done }) })),
+    h('div', { class: 'of-tip-f', tx: 'office.tip.foot' }));
   tip.dataset.for = `bee:${id}`;
   place(el);
 }
 
 function showNoteTip(el, id) {
   const s = S();
-  const t = s.tasks[id];
-  if (!t) return;
+  const task = s.tasks[id];
+  if (!task) return;
   clear(tip);
-  append(tip, [h('div', { class: 'of-tip-h' }, h('div', {}, h('strong', { text: t.title }), h('div', { class: 'of-faint', text: `${TASK_LABEL[t.status] || t.status} · ${worker(t.assignee).name}` }))),
-    t.detail ? h('div', { class: 'of-tip-d', text: String(t.detail).slice(0, 180) }) : null,
-    h('div', { class: 'of-tip-f', text: t.status === 'done' ? 'Done' : 'Drag onto a bee to hand it over · Enter for options' })]);
+  append(tip, [h('div', { class: 'of-tip-h' }, h('div', {}, h('strong', { text: mdLine(task.title, 120) }), h('div', { class: 'of-faint', text: t('office.tip.noteMeta', { status: TASK_LABEL[task.status] || task.status, name: worker(task.assignee).name }) }))),
+    task.detail ? h('div', { class: 'of-tip-d', text: mdLine(task.detail, 180) }) : null,
+    h('div', { class: 'of-tip-f', tx: task.status === 'done' ? 'office.tip.noteDone' : 'office.tip.noteFoot' })]);
   tip.dataset.for = `note:${id}`;
   place(el);
 }

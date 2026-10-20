@@ -14,22 +14,22 @@
   <script type="module" src="/widget.js"></script>
 </head>
 <body>
-  <main class="wg" aria-label="hivedesk mini widget">
+  <main class="wg" aria-label="hivedesk mini widget" data-ta="office.widget.aria">
     <header class="wg-top">
       <span class="wg-brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="wg-c"><path d="M32 4 56.2 18v28L32 60 7.8 46V18z"/></clipPath></defs><path d="M32 4 56.2 18v28L32 60 7.8 46V18z" fill="#F2A93B"/><g clip-path="url(#wg-c)" fill="#14171B"><rect x="0" y="24.5" width="64" height="5.5"/><rect x="0" y="36" width="64" height="5.5"/></g></svg>hivedesk</span>
-      <span class="wg-demo" hidden title="No model is running. The crew follows a script.">Demo</span>
+      <span class="wg-demo" hidden title="No model is running. The crew follows a script." data-tx="office.widget.demo">Demo</span>
       <span class="wg-conn" role="status" aria-live="polite"></span>
-      <button type="button" class="wg-ib wg-open" title="Open the full Hive" aria-label="Open the full Hive"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8 8M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
+      <button type="button" class="wg-ib wg-open" title="Open the full Hive" aria-label="Open the full Hive" data-ta="office.widget.open"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8 8M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
     </header>
     <div class="wg-stage"><canvas class="wg-canvas" aria-hidden="true"></canvas></div>
-    <section class="wg-job" aria-label="Current job">
+    <section class="wg-job" aria-label="Current job" data-ta="office.hud.currentJob">
       <div class="wg-req">Connecting...</div>
-      <div class="wg-bar" role="progressbar" aria-label="Job progress" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+      <div class="wg-bar" role="progressbar" aria-label="Job progress" data-ta="office.hud.progress" aria-valuemin="0" aria-valuemax="100"><i></i></div>
       <div class="wg-sub"></div>
     </section>
-    <section class="wg-queue" aria-label="Queue for the model"></section>
-    <section class="wg-chat" aria-label="Latest chat line" aria-live="polite"></section>
-    <section class="wg-appr" aria-label="Approval" hidden></section>
+    <section class="wg-queue" aria-label="Queue for the model" data-ta="office.widget.queueAria"></section>
+    <section class="wg-chat" aria-label="Latest chat line" data-ta="office.widget.chatAria" aria-live="polite"></section>
+    <section class="wg-appr" aria-label="Approval" data-ta="office.widget.approvalAria" hidden></section>
     <footer class="wg-actions">
       <button type="button" class="wg-btn wg-approve" disabled>Approve</button>
       <button type="button" class="wg-btn wg-pause">Pause crew</button>

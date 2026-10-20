@@ -7,7 +7,7 @@ import { h, clear, append, reducedMotion } from '/js/dom.js';
 import * as net from '/js/net.js';
 import * as wm from '/js/wm.js';
 import * as menu from '/js/menu.js';
-import { S, ui, extra, onEvent } from '/js/store.js';
+import { S, ui, extra, onEvent, roleName } from '/js/store.js';
 import { t, onLocale, fmtNumber, locale } from '/js/i18n.js';
 import { notify } from '/js/notify.js';
 import { beeAvatar } from '/js/bees.js';
@@ -553,7 +553,7 @@ function noteMenu(id) {
   return [
     { header: x.title },
     { label: tr('city.tp.open'), icon: 'plan', action: () => openTask(id) },
-    { label: tr('city.menu.handTo'), icon: 'hire', disabled: off, items: Object.values(st.view.agents).map((a) => ({ label: `${a.name} (${a.role})`, iconEl: beeAvatar(avatarOf(a), 18, { ring: false }), action: () => cmd('city.task.assign', { taskId: id, agentId: a.id }).catch(() => {}) })) },
+    { label: tr('city.menu.handTo'), icon: 'hire', disabled: off, items: Object.values(st.view.agents).map((a) => ({ label: `${a.name} (${roleName(a.role)})`, iconEl: beeAvatar(avatarOf(a), 18, { ring: false }), action: () => cmd('city.task.assign', { taskId: id, agentId: a.id }).catch(() => {}) })) },
     { label: tr('city.menu.sendTo'), icon: 'arrow', disabled: off, items: Object.keys(st.view.rooms).map((k) => ({ label: roomName(k), action: () => cmd('city.task.move', { taskId: id, room: k }).catch(() => {}) })) },
     { sep: true },
     { label: tr('city.task.approve'), icon: 'check', disabled: !x.awaiting, action: () => cmd('city.task.approve', { taskId: id }).catch(() => {}) },
@@ -765,7 +765,7 @@ function syncHits(sc) {
       b.style.height = `${Math.round(hit.h)}px`;
     }
     const a = st.view.agents[hit.id];
-    const label = a ? `${a.name}, ${a.role}, ${tr('city.card.level', { n: a.level })}. ${tr(`city.agent.status.${a.status}`)}. ${roomName(a.room)}.` : hit.id;
+    const label = a ? `${a.name}, ${roleName(a.role)}, ${tr('city.card.level', { n: a.level })}. ${tr(`city.agent.status.${a.status}`)}. ${roomName(a.room)}.` : hit.id;
     if (b._label !== label) { b._label = label; b.setAttribute('aria-label', label); }
   }
   for (const [id, b] of bees) if (!seen.has(id)) { b.remove(); bees.delete(id); }
@@ -789,7 +789,7 @@ function agentMenu(id) {
   const a = st.view.agents[id];
   if (!a) return null;
   return [
-    { header: `${a.name} · ${a.role} · ${tr('city.card.level', { n: a.level })}` },
+    { header: `${a.name} · ${roleName(a.role)} · ${tr('city.card.level', { n: a.level })}` },
     { label: tr('city.card.open'), icon: 'hire', action: () => openSide({ kind: 'agent', id }) },
     { label: tr('city.card.moveTo'), icon: 'arrow', items: Object.keys(st.view.rooms).map((k) => ({ label: roomName(k), checked: a.room === k, action: () => cmd('city.agent.move', { agentId: id, room: k }).catch(() => {}) })) },
     { label: tr('city.card.chat'), icon: 'chat', action: () => chatWith(a) },
@@ -889,7 +889,7 @@ function agentCard(id) {
       h('div', { class: 'ct-av', style: `--c:${a.color}` }, beeAvatar(avatarOf(a), 58, { ring: true, status: a.status === 'working' ? 'thinking' : undefined })),
       h('div', { class: 'ct-agent-n' },
         h('strong', { text: a.name }),
-        h('div', { class: 'ct-faint', text: a.role }),
+        h('div', { class: 'ct-faint', text: roleName(a.role) }),
         h('div', { class: 'ct-lvrow' }, h('span', { class: 'ct-lv', text: tr('city.card.level', { n: lv }) }),
           h('div', { class: 'of-xp ct-xp', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(Math.round(xpProgress(a) * 100)) }, h('i', { style: `width:${Math.round(xpProgress(a) * 100)}%` }), h('b'))),
         h('div', { class: 'ct-faint tiny', text: tr('city.card.xp', { xp: fmtNumber(a.xp), left: fmtNumber(Math.max(0, next - a.xp)), next: lv + 1 }) }))),

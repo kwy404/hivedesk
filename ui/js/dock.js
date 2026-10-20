@@ -3,7 +3,7 @@
 
 import { h, icon, clear } from './dom.js';
 import { beeAvatar } from './bees.js';
-import { S, rev, ui, worker } from './store.js';
+import { S, rev, ui, worker, roleName } from './store.js';
 import * as wm from './wm.js';
 import { provide } from './menu.js';
 import { workerMenu, workerStatus } from './widgets/worker.js';
@@ -99,7 +99,7 @@ export function init(el, desktopMenu) {
     clear(crewBox);
     for (const w of s.crew) {
       const st = workerStatus(w.id);
-      const b = dockBtn(`worker:${w.id}`, { raw: w.name, sub: () => t('dock.workerSub', { role: w.role || t('dock.worker'), status: workerStatus(w.id).label }) }, beeAvatar(w, 38, { ring: true, status: st.key }), () => wm.toggleFromDock('worker', w.id));
+      const b = dockBtn(`worker:${w.id}`, { raw: w.name, sub: () => t('dock.workerSub', { role: roleName(w) || t('dock.worker'), status: workerStatus(w.id).label }) }, beeAvatar(w, 38, { ring: true, status: st.key }), () => wm.toggleFromDock('worker', w.id));
       b.dataset.status = st.key;
       const unread = ui.unread[`dm:${w.id}`];
       if (unread) b.append(h('span', { class: 'badge-n', text: String(unread) }));

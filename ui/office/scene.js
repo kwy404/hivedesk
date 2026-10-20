@@ -7,6 +7,9 @@
 import { beeSvg } from '/js/bees.js';
 import { hub } from '/city/hub.js';
 import { artTokens, worldPalette, statusColor, tone, mixHex, alpha, shade, rgb } from '/js/art.js';
+import { t, L } from '/js/i18n.js';
+import { roleName } from '/js/store.js';
+import { mdLine } from '/js/md.js';
 
 const FONT = '"Inter","Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif';
 const MONO = '"JetBrains Mono","Cascadia Mono","Cascadia Code",ui-monospace,Consolas,monospace';
@@ -26,7 +29,7 @@ const MEL_HOME = { x: 4.05, y: 1.35, z: 1.5 };
 const DOOR = { x: 12.45, y: 0.35, z: 1.0 };
 const BOARD = { u0: 0.9, u1: 6.9, t0: 0.2, t1: 2.32 };
 const NOTE_H = 0.3;
-const COLS = ['To do', 'Doing', 'Done'];
+const COLS = ['todo', 'doing', 'done']; // office.board.*
 const COL_OF = { pending: 0, ready: 0, blocked: 0, running: 1, review: 1, failed: 1, done: 2, skipped: 2 };
 const ACTIVE = new Set(['refining', 'awaiting_brief', 'planning', 'running']);
 
@@ -36,7 +39,27 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const rnd = (a, b) => a + Math.random() * (b - a);
-const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+
+/* ---------- texts ---------- */
+// Fixed texts drawn every frame: read once per language, then from the cache.
+const txCache = new Map();
+let txV = -1;
+function tc(key) {
+  if (L.v !== txV) { txCache.clear(); txV = L.v; }
+  let v = txCache.get(key);
+  if (v === undefined) { v = t(key); txCache.set(key, v); }
+  return v;
+}
+/** A task title as plain text for the canvas (markdown marks gone), cached since it is drawn every frame. */
+const plainCache = new Map();
+function plain(text, max = 0) {
+  const k = `${max}|${text}`;
+  let v = plainCache.get(k);
+  if (v === undefined) { v = mdLine(text, max); if (plainCache.size > 400) plainCache.clear(); plainCache.set(k, v); }
+  return v;
+}
+/** One of Mel's lines, in the current language: office.bubble.<base>1..n */
+const melLine = (base, n) => t(`office.bubble.${base}${1 + ((Math.random() * n) | 0)}`);
 
 /* ---------- day and night ---------- */
 /** 0 at noon, 1 at night. */
@@ -51,11 +74,11 @@ function goldenFactor(h) {
   return clamp(1 - d / 1.6);
 }
 export function dayPhase(h) {
-  if (h >= 5 && h < 8) return 'Morning shift';
-  if (h >= 8 && h < 12) return 'Day shift';
-  if (h >= 12 && h < 17) return 'Afternoon shift';
-  if (h >= 17 && h < 20) return 'Evening shift';
-  return 'Night shift';
+  if (h >= 5 && h < 8) return t('office.shift.morning');
+  if (h >= 8 && h < 12) return t('office.shift.day');
+  if (h >= 12 && h < 17) return t('office.shift.afternoon');
+  if (h >= 17 && h < 20) return t('office.shift.evening');
+  return t('office.shift.night');
 }
 
 export class OfficeScene {
@@ -233,7 +256,7 @@ export class OfficeScene {
         this.briefWrite = null;
         this.briefWait = ev.jobId || true;
         const mel = this.actors.get('mel');
-        if (mel) { mel.bubble = { text: 'The brief is ready. Use it, edit it, or keep your words?', at: this.now, until: this.now + 6 }; this.sound('stuck'); }
+        if (mel) { mel.bubble = { text: t('office.bubble.briefReady'), at: this.now, until: this.now + 6 }; this.sound('stuck'); }
         break;
       }
       case 'brief.approved': {
@@ -246,7 +269,7 @@ export class OfficeScene {
       case 'job.planning': {
         this.briefWait = null; this.briefWrite = null;
         const mel = this.actors.get('mel');
-        if (mel) mel.bubble = { text: 'Planning...', at: this.now, until: this.now + 2.5 };
+        if (mel) mel.bubble = { text: t('office.bubble.planning'), at: this.now, until: this.now + 2.5 };
         break;
       }
       case 'job.planned':
@@ -365,9 +388,9 @@ export class OfficeScene {
     const mel = this.actors.get('mel');
     if (!mel) return;
     mel.react = { kind, at: this.now };
-    if (kind === 'nod') mel.bubble = { text: pick(['Thanks. On it.', 'Approved. Back to work.', 'Noted, moving on.']), at: this.now, until: this.now + 2.6 };
-    if (kind === 'curious') mel.bubble = { text: pick(['A new request. Reading it.', 'New job. Let me look.']), at: this.now, until: this.now + 2.8 };
-    if (kind === 'shake') mel.bubble = { text: 'Okay, we skip that.', at: this.now, until: this.now + 2.6 };
+    if (kind === 'nod') mel.bubble = { text: melLine('nod', 3), at: this.now, until: this.now + 2.6 };
+    if (kind === 'curious') mel.bubble = { text: melLine('curious', 2), at: this.now, until: this.now + 2.8 };
+    if (kind === 'shake') mel.bubble = { text: t('office.bubble.skip'), at: this.now, until: this.now + 2.6 };
     mel.idleSince = this.now;
   }
 
@@ -530,10 +553,8 @@ export class OfficeScene {
     if (mel && !jobRunning && !this.mini && !mel.seg && !mel.bubble) {
       if (!this.nextIdleTalk) this.nextIdleTalk = now + 6;
       if (now > this.nextIdleTalk) {
-        const lines = (s.jobs || []).length
-          ? ['Board is clear. What is next?', 'The crew is free for another job.', 'Everything on the board is done.']
-          : ['Type a request in the box above.', 'The crew is ready when you are.', 'A landing page or a small app: just ask.'];
-        mel.bubble = { text: pick(lines), at: now, until: now + 4 };
+        const said = (s.jobs || []).length ? melLine('idleDone', 3) : melLine('idleNew', 3);
+        mel.bubble = { text: said, at: now, until: now + 4 };
         mel.idleSince = now;
         this.nextIdleTalk = now + rnd(28, 40);
       }
@@ -906,7 +927,7 @@ export class OfficeScene {
     ctx.fillStyle = T.ok; ctx.fillRect(u0, t0, 0.03, t1 - t0);
     this.rightT(100);
     ctx.fillStyle = alpha(T.text, 0.5); ctx.font = `600 11px ${FONT}`;
-    ctx.fillText('TASKS DONE', (u0 + 0.14) * 100, (t0 + 0.24) * 100);
+    ctx.fillText(tc('office.board.tasksDone').toLocaleUpperCase(), (u0 + 0.14) * 100, (t0 + 0.24) * 100);
     ctx.fillStyle = T.text; ctx.font = `600 40px ${MONO}`;
     ctx.fillText(String(done), (u0 + 0.12) * 100, (t1 - 0.18) * 100);
     this.base();
@@ -938,7 +959,7 @@ export class OfficeScene {
       ctx.fillStyle = [T.muted, T.accent, T.ok][c];
       ctx.fillRect(x, (t0 + 0.2) * 100 - 4, 8, 8);
       ctx.fillStyle = alpha(T.text, 0.7);
-      ctx.fillText(name.toUpperCase(), x + 14, (t0 + 0.2) * 100);
+      ctx.fillText(tc(`office.board.${name}`).toLocaleUpperCase(), x + 14, (t0 + 0.2) * 100);
       ctx.fillStyle = alpha(T.text, 0.4);
       ctx.font = `500 ${this.mini ? 18 : 13}px ${MONO}`;
       ctx.textAlign = 'right';
@@ -954,9 +975,9 @@ export class OfficeScene {
       const cu = (u0 + u1) / 2; const ct = (t0 + t1) / 2 + 0.15;
       ctx.textAlign = 'center';
       ctx.fillStyle = alpha(T.text, 0.62); ctx.font = `600 17px ${FONT}`;
-      ctx.fillText('Nothing on the board yet', cu * 100, (ct - 0.06) * 100);
+      ctx.fillText(tc('office.board.empty'), cu * 100, (ct - 0.06) * 100);
       ctx.fillStyle = alpha(T.text, 0.38); ctx.font = `400 13px ${FONT}`;
-      ctx.fillText('Ask the crew in the box above', cu * 100, (ct + 0.16) * 100);
+      ctx.fillText(tc('office.board.emptyHint'), cu * 100, (ct + 0.16) * 100);
       ctx.textAlign = 'left';
     }
     // the notes
@@ -991,7 +1012,7 @@ export class OfficeScene {
       ctx.fillStyle = t.status === 'done' ? alpha(T.text, 0.6) : T.text;
       ctx.font = `500 14px ${FONT}`;
       const right = t.status === 'done' || failed ? 0.2 : 0.06;
-      const line = wrap(ctx, t.title || '', (w - 0.14 - right) * 100, 1)[0] || '';
+      const line = wrap(ctx, plain(t.title || ''), (w - 0.14 - right) * 100, 1)[0] || '';
       ctx.fillText(line, (-w / 2 + 0.09) * 100, 0.05 * 100);
       if (t.status === 'done') { ctx.strokeStyle = T.ok; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo((w / 2 - 0.17) * 100, 0); ctx.lineTo((w / 2 - 0.13) * 100, 4); ctx.lineTo((w / 2 - 0.06) * 100, -4); ctx.stroke(); ctx.lineCap = 'butt'; }
       if (failed) { ctx.fillStyle = T.bad; ctx.font = `700 15px ${FONT}`; ctx.fillText('!', (w / 2 - 0.11) * 100, 0.06 * 100); }
@@ -1229,7 +1250,7 @@ export class OfficeScene {
         const on = this.highlight === a.id;
         const t = a.taskId && s.tasks?.[a.taskId];
         drawNameTag(ctx, at[0], at[1] + 6, a.w.name, levelOf(s, a.id), a.w.color, on, Math.max(10.5, Math.min(12, this.a * 0.2)),
-          { status: statusColor(a.seg ? 'idle' : a.mode, T), role: a.w.role, task: t?.title || '' });
+          { status: statusColor(a.seg ? 'idle' : a.mode, T), role: roleName(a.w), task: plain(t?.title || '', 80) });
       }
     }
     for (const a of this.actors.values()) {
@@ -1238,7 +1259,7 @@ export class OfficeScene {
       ctx.globalAlpha = a.alpha;
       if (m === 'stuck' && !this.mini) {
         // waiting for the user: a calm warn chip over the unit
-        drawPill(ctx, a.sx, headY - 4, a.isMel ? 'Check the brief' : 'Needs your OK', T.warn, Math.max(10.5, Math.min(12, this.a * 0.19)));
+        drawPill(ctx, a.sx, headY - 4, a.isMel ? tc('office.pill.brief') : tc('office.pill.ok'), T.warn, Math.max(10.5, Math.min(12, this.a * 0.19)));
       } else if (m === 'error') iconBang(ctx, a.sx + 20 * k, headY + 6 * k, Math.max(12, Math.min(18, this.a * 0.3)));
       if (a.badge) {
         const age = now - a.badge.at;
@@ -1309,11 +1330,9 @@ export function doneCount(s) {
   return n;
 }
 
+/** A chat line as a plain bubble: markdown gone, one line, cut at 88 characters. */
 function cleanText(text) {
-  let t = String(text || '').replace(/\s+/g, ' ').trim();
-  t = t.replace(/^Plan: /, '');
-  if (t.length > 88) t = `${t.slice(0, 85).replace(/\s+\S*$/, '')}...`;
-  return t;
+  return mdLine(String(text || '').trim().replace(/^Plan: /, ''), 88);
 }
 
 function wrap(ctx, text, maxW, maxLines) {
@@ -1372,7 +1391,7 @@ function hexScreen(ctx, cx, cy, r) {
  */
 function drawNameTag(ctx, x, y, name, level, color, on, fs, more) {
   const T = artTokens();
-  const lv = level != null ? `L${level}` : '';
+  const lv = level != null ? t('office.level', { level }) : '';
   ctx.font = `600 ${fs}px ${FONT}`;
   const nw = ctx.measureText(name).width;
   ctx.font = `500 ${fs * 0.82}px ${MONO}`;
