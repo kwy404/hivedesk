@@ -46,6 +46,8 @@ export function checkHtml(file, html, exists) {
   while ((m = refRe.exec(html))) {
     const ref = m[1].trim();
     if (!ref || /^(https?:|mailto:|tel:|data:|javascript:|\/\/)/i.test(ref)) continue;
+    // The Neutralinojs client library is put in place by the neu CLI (neu update), not written by the crew.
+    if (/(^|\/)neutralino\.js$/i.test(ref)) continue;
     const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), ref.replace(/^\//, '')));
     if (exists && !exists(target) && !exists(target.replace(/\/$/, '') + '/index.html')) issues.push(`${file}: links to ${ref}, which does not exist`);
   }

@@ -93,3 +93,12 @@ describe('the folder of a skeleton file', async () => {
     expect(out.map((t) => t.dependsOn)).toEqual([[], [0], [0, 1], [0, 1, 2]]);
   });
 });
+
+describe('the Neutralinojs client link', async () => {
+  const { checkHtml } = await import('../src/tools/check.js');
+  it('is not a missing file (neu update adds it)', () => {
+    const html = '<!doctype html><html lang="pt-BR"><head><title>Notas</title><meta name="viewport" content="width=device-width"><script src="js/neutralino.js" defer></script><script src="js/main.js"></script></head><body></body></html>';
+    const issues = checkHtml('resources/index.html', html, () => false);
+    expect(issues).toEqual(['resources/index.html: links to js/main.js, which does not exist']);
+  });
+});
