@@ -376,6 +376,76 @@ describe('runtime install', () => {
       expect(a.find((x) => x.startsWith('node-llama-cpp@'))).toMatch(/^node-llama-cpp@\d+\.\d+\.\d+$/);
     }
   });
+
+  const npmFake = async (outcome) => {
+    const { EventEmitter } = await import('node:events');
+    const calls = [];
+    const spawnImpl = (cmd, args, opts) => {
+      calls.push({ cmd, args, opts });
+      const child = new EventEmitter();
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      setImmediate(() => {
+        const r = outcome(calls.length, args);
+        if (r.out) child.stderr.emit('data', r.out);
+        child.emit('close', r.code);
+      });
+      return child;
+    };
+    return { calls, spawnImpl };
+  };
+
+  it('runs npm without a shell, keeps a home with spaces as one argument, retries in a fresh folder, and says why it failed', async () => {
+    const { installRuntime } = await import('../src/brain/runtime.js');
+    const home = path.join(tmpDir(), 'First Last', '.hivedesk');
+    const f = await npmFake(() => ({ code: 1, out: 'npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/x\nnpm error A complete log of this run can be found in: C:\\log.txt\n' }));
+    const err = await installRuntime(home, { spawnImpl: f.spawnImpl }).catch((e) => e);
+    expect(err).toMatchObject({ code: 'install_failed' });
+    expect(err.message).toMatch(/404 Not Found/);
+    expect(err.message).not.toMatch(/complete log/);
+    expect(f.calls).toHaveLength(3);
+    for (const c of f.calls) {
+      expect(c.opts.shell).toBeFalsy();
+      expect(c.args[0]).toMatch(/npm-cli\.js$/);
+      expect(c.args[c.args.indexOf('--prefix') + 1]).toContain('First Last');
+    }
+    expect(f.calls[2].args[f.calls[2].args.indexOf('--prefix') + 1]).toMatch(/runtime\.new$/);
+    expect(fs.existsSync(path.join(home, 'runtime.new'))).toBe(false);
+  });
+
+  it('swaps in the fresh folder when only that install works', async () => {
+    const { installRuntime } = await import('../src/brain/runtime.js');
+    const home = path.join(tmpDir(), 'h');
+    const f = await npmFake((n, args) => {
+      if (n < 3) return { code: 1, out: 'npm error EBUSY: resource busy or locked\n' };
+      const prefix = args[args.indexOf('--prefix') + 1];
+      const pkgDir = path.join(prefix, 'node_modules', 'node-llama-cpp');
+      fs.mkdirSync(path.join(pkgDir, 'dist'), { recursive: true });
+      fs.writeFileSync(path.join(pkgDir, 'package.json'), JSON.stringify({ version: '3.22.1', main: 'dist/index.js' }));
+      fs.writeFileSync(path.join(pkgDir, 'dist', 'index.js'), 'export {};');
+      return { code: 0 };
+    });
+    const found = await installRuntime(home, { spawnImpl: f.spawnImpl });
+    expect(found.version).toBe('3.22.1');
+    expect(found.entry).toBe(path.join(home, 'runtime', 'node_modules', 'node-llama-cpp', 'dist', 'index.js'));
+    expect(fs.existsSync(path.join(home, 'runtime.new'))).toBe(false);
+  });
+
+  it('finds the npm of a Node.js on the PATH when the running node has none, and reports a missing npm clearly', async () => {
+    const { npmCli, npmReason } = await import('../src/brain/runtime.js');
+    const root = tmpDir();
+    const bin = path.join(root, 'bin');
+    const exe = process.platform === 'win32' ? 'node.exe' : 'node';
+    fs.mkdirSync(bin, { recursive: true });
+    fs.writeFileSync(path.join(bin, exe), '');
+    const script = process.platform === 'win32' ? path.join(bin, 'node_modules', 'npm', 'bin', 'npm-cli.js') : path.join(root, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js');
+    fs.mkdirSync(path.dirname(script), { recursive: true });
+    fs.writeFileSync(script, '');
+    const bundled = path.join(tmpDir(), 'app', exe);
+    expect(npmCli({ PATH: bin }, bundled)).toEqual({ node: bundled, script: expect.stringMatching(/npm-cli\.js$/) });
+    expect(npmCli({ PATH: '' }, bundled)).toBe(null);
+    expect(npmReason('npm error code ENOENT\nnpm error syscall spawn\nnpm error A complete log of this run can be found in: x')).toBe('code ENOENT syscall spawn');
+  });
 });
 
 describe('local brain guards', () => {

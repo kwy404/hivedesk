@@ -1,6 +1,7 @@
 // Builds the folder of one downloadable package. Used by .github/workflows/desktop.yml.
 //   node desktop/scripts/package.mjs --target windows-x64|macos-universal|linux-x64 --node <node binary> --out <dir>
 //     [--launcher <hivedesk.exe>]   (Windows: the compiled launcher)
+//     [--npm <npm folder>]          (the npm package of the same Node.js build; found next to --node when left out)
 // The runtime binary comes from the pinned upstream archive and is checked against desktop/platform.js.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -103,6 +104,16 @@ if (nodeLicense) fs.copyFileSync(nodeLicense, path.join(path.dirname(nodeDest), 
 else console.warn('package: no Node.js LICENSE found next to the node binary');
 fs.copyFileSync(opts.node, nodeDest);
 fs.chmodSync(nodeDest, 0o755);
+// npm goes with the bundled Node.js: the local model runtime (node-llama-cpp) is installed with it on first use,
+// and a PC without Node.js has no other npm. It sits where src/brain/runtime.js looks for it: next to node.exe on
+// Windows, in ../lib/node_modules on macOS and Linux, the layout of the official Node.js archives.
+const npmSrc = opts.npm || [path.join(path.dirname(opts.node), 'node_modules', 'npm'), path.join(path.dirname(path.dirname(opts.node)), 'lib', 'node_modules', 'npm')]
+  .find((d) => fs.existsSync(path.join(d, 'bin', 'npm-cli.js')));
+if (!npmSrc || !fs.existsSync(path.join(npmSrc, 'bin', 'npm-cli.js'))) throw new Error('package: npm was not found next to the bundled Node.js; pass --npm <folder>');
+const npmDest = opts.target === 'windows-x64'
+  ? path.join(path.dirname(nodeDest), 'node_modules', 'npm')
+  : path.join(path.dirname(path.dirname(nodeDest)), 'lib', 'node_modules', 'npm');
+fs.cpSync(npmSrc, npmDest, { recursive: true });
 
 const readme = [
   `hivedesk ${pkg.version} (${opts.target})`,

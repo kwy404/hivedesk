@@ -98,6 +98,9 @@ jobs:
       - name: Starts (version check with the bundled Node)
         shell: pwsh
         run: stage\hivedesk\node\node.exe stage\hivedesk\app\desktop\main.js --version
+      - name: Bundled npm runs
+        shell: pwsh
+        run: stage\hivedesk\node\node.exe stage\hivedesk\node\node_modules\npm\bin\npm-cli.js --version
       - name: App package (zip, what the installers and the updater download)
         shell: pwsh
         run: |
@@ -147,7 +150,7 @@ jobs:
           lipo -info build/node-universal
           cp "$(dirname "$(dirname "$arm")")/LICENSE" build/LICENSE
       - name: Stage
-        run: node desktop/scripts/package.mjs --target macos-universal --node build/node-universal --out stage
+        run: node desktop/scripts/package.mjs --target macos-universal --node build/node-universal --npm "$(ls -d build/node-arm64/node-*/lib/node_modules/npm)" --out stage
       - name: Ad hoc signature (Apple Silicon needs one; this is not a Developer ID signature)
         run: |
           codesign --force --sign - stage/hivedesk.app/Contents/Resources/app/desktop/bin/hivedesk-runtime
@@ -156,6 +159,8 @@ jobs:
           codesign --verify --deep --verbose=2 stage/hivedesk.app
       - name: Starts (version check with the bundled Node)
         run: stage/hivedesk.app/Contents/Resources/node/bin/node stage/hivedesk.app/Contents/Resources/app/desktop/main.js --version
+      - name: Bundled npm runs
+        run: stage/hivedesk.app/Contents/Resources/node/bin/node stage/hivedesk.app/Contents/Resources/node/lib/node_modules/npm/bin/npm-cli.js --version
       - name: App package (zip, what the updater downloads)
         run: |
           mkdir -p dist
@@ -186,6 +191,8 @@ jobs:
         run: node desktop/scripts/package.mjs --target linux-x64 --node "$NODE_BIN" --out stage
       - name: Starts (version check with the bundled Node)
         run: stage/hivedesk/node/bin/node stage/hivedesk/app/desktop/main.js --version
+      - name: Bundled npm runs
+        run: stage/hivedesk/node/bin/node stage/hivedesk/node/lib/node_modules/npm/bin/npm-cli.js --version
       - name: App package (tar.gz, what the install script and the updater download)
         run: |
           mkdir -p dist
