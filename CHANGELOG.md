@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1 (2026-10-20)
+
+* Downloading a model works in the desktop app again. The packages bring the npm of their bundled Node.js, so a PC without Node.js can install the local runtime; npm runs without a shell, so a user folder with spaces stays one path; a broken runtime folder is retried fresh; and a failed install says why.
+* Downloads of models and voices recover from a crash (a finished part file is verified and kept), report a full disk, a locked file, 404, 403, 429 and server errors with their own message and the real host, share one file when the same model is asked twice, and honor a short Retry-After. Voice works in a user folder with accents, a missing or blocked speech program fails at once with a clear message, and a busy port picks another.
+* The brief no longer blocks a job: "ok", "pode continuar", "sim" and the like in the chat approve it in 10 languages, the brief has buttons in the chat, the status says it waits for you, and a brief survives a restart. Questions like "where is my page?" are answered from the real job state, and a chat reply never claims work that did not start.
+* Model text is rendered as safe markdown in the windows and chats, and stripped in bubbles and notifications.
+* The Office view, the mini widget, the worker roles and the crew's chat lines are translated in 10 languages.
+* On Windows, a maximized window keeps the taskbar visible, and a window saved off screen comes back. The loading screen shows a Retry button instead of spinning forever.
+* The crew finishes more jobs on a local model: QA runs after a partly failed build so its fix rounds can repair it, a worker's history is trimmed to fit a 4096 token context, and a local model's plan gives each worker its own task so two workers never edit the same file at once.
+* A phone that connects no longer shows a "null" line, and the computer name it sees falls back to the profile name and the system name.
+
 ## 1.0.0 (2026-10-18)
 
 hivedesk becomes a peer to peer environment where AI agents, people and machines work together as one City. Your agents. Your machines. Your City.

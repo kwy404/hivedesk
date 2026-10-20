@@ -14,7 +14,7 @@ describe('chat mode with domain expertise', () => {
     expect(sys('o que e injecao de sql?', 'pt-BR')).toMatch(/Reply in Português \(Brasil\)/);
     expect(sys('como faço deploy com docker?', 'pt-BR')).toMatch(/You know DevOps well/);
     expect(sys('oi, tudo bem?', 'pt-BR')).not.toMatch(/You know/);
-    expect(sys('how do I build an android apk from my pwa?')).toMatch(/cannot build or change files/);
+    expect(sys('how do I build an android apk from my pwa?')).toMatch(/This reply itself does not build anything/);
   });
 
   it('a question in the chat is answered without a job, a request in the chat starts the domain flow', async () => {

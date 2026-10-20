@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs, joinWords, startUrl } from '../src/cli.js';
@@ -33,7 +34,7 @@ describe('cli', () => {
     expect(h.status).toBe(0);
     expect(h.stdout).toContain('--doctor');
     const v = spawnSync(process.execPath, [CLI, '--version'], { encoding: 'utf8' });
-    expect(v.stdout.trim()).toBe('1.0.0');
+    expect(v.stdout.trim()).toBe(JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version);
     const bad = spawnSync(process.execPath, [CLI, '--nope'], { encoding: 'utf8' });
     expect(bad.status).toBe(2);
   });

@@ -58,7 +58,7 @@ describe('subcommands', () => {
 
   it('prints the version and says when a subcommand is not in this build', () => {
     const home = tmpDir();
-    expect(run(['--version'], home).stdout.trim()).toBe('1.0.0');
+    expect(run(['--version'], home).stdout.trim()).toBe(JSON.parse(fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version);
     expect(run(['help'], home).stdout).toMatch(/invite\s+invite a friend/);
     // invite, join and peers come from src/p2p/cli.js when the p2p module is in the build.
     if (!fs.existsSync(path.join(path.dirname(CLI), 'p2p', 'cli.js'))) {
