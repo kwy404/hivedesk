@@ -276,8 +276,19 @@ async function downloadFile(p, final, opts) {
   const part = final + '.part';
   const host = hostOf(p.url);
   let have = 0;
-  try { have = fs.statSync(part).size; } catch { /* fresh */ }
-  if (have > p.bytes) { fs.rmSync(part, { force: true }); have = 0; }
+  let st = null;
+  try { st = fs.statSync(part); } catch { /* fresh */ }
+  // Something that is not a plain file sits where the part file goes (a folder, a device): never delete it.
+  if (st && !st.isFile()) {
+    throw new DownloadError('locked', `${part} is not a file, so the download cannot be written there.`, 'Move or remove it, then press Retry.');
+  }
+  if (st) have = st.size;
+  if (have > p.bytes) {
+    try { fs.rmSync(part, { force: true }); } catch (e) {
+      throw new DownloadError(LOCKED.test(e?.code || '') ? 'locked' : 'io', `${part} could not be removed (${e?.code || e?.message}).`, 'Close the program that uses it, then press Retry.');
+    }
+    have = 0;
+  }
   const hash = crypto.createHash('sha256');
   if (have > 0) await hashFile(part, hash);
   if (have === p.bytes) {
