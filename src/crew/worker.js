@@ -159,7 +159,8 @@ export function fitHistory(messages, limit) {
   for (let i = 2; i < out.length - 1; i += 2) {
     let a = null;
     try { a = JSON.parse(out[i].content); } catch { /* not an action */ }
-    if (a?.tool !== 'read_file' || typeof a.args?.path !== 'string') continue;
+    // Only a read that really returned the file counts (a repeated read gets "you already did this").
+    if (a?.tool !== 'read_file' || typeof a.args?.path !== 'string' || !String(out[i + 1].content).startsWith('Result:')) continue;
     const prev = readAt.get(a.args.path);
     if (prev !== undefined && out[prev].content.length > 200) out[prev].content = `[the content of ${a.args.path} is shown again further down]`;
     readAt.set(a.args.path, i + 1);

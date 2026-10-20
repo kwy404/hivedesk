@@ -102,3 +102,16 @@ describe('the Neutralinojs client link', async () => {
     expect(issues).toEqual(['resources/index.html: links to js/main.js, which does not exist']);
   });
 });
+
+describe('a repeated read that was refused', () => {
+  it('keeps the earlier copy of the file', () => {
+    const read = JSON.stringify({ tool: 'read_file', args: { path: 'index.html' } });
+    const page = `Result: ${'<canvas></canvas>\n'.repeat(40)}`;
+    const msgs = [
+      { role: 'system', content: 's' }, { role: 'user', content: 'u' },
+      { role: 'assistant', content: read }, { role: 'user', content: page },
+      { role: 'assistant', content: read }, { role: 'user', content: 'You already did exactly this. Do the next step of your task, or finish with done.' }
+    ];
+    expect(fitHistory(msgs, 100000)[3].content).toBe(page);
+  });
+});
